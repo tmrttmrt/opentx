@@ -1,26 +1,27 @@
-PROJECT( companion )
+project(companion)
 
-SET(C9X_VERSION_MAJOR "2")
-SET(C9X_VERSION_MINOR "1")
-SET(C9X_VERSION_REVISION "2")
-SET(C9X_VERSION_SUFFIX $ENV{OPENTX_VERSION_SUFFIX})
+set(C9X_VERSION_MAJOR "2")
+set(C9X_VERSION_MINOR "1")
+set(C9X_VERSION_REVISION "2")
+set(C9X_VERSION_SUFFIX $ENV{OPENTX_VERSION_SUFFIX})
+set(C9X_VERSION ${C9X_VERSION_MAJOR}.${C9X_VERSION_MINOR}.${C9X_VERSION_REVISION}${C9X_VERSION_SUFFIX})
 
-SET(C9X_VERSION ${C9X_VERSION_MAJOR}.${C9X_VERSION_MINOR}.${C9X_VERSION_REVISION}${C9X_VERSION_SUFFIX})
-MESSAGE(STATUS OpenTX Companion ${C9X_VERSION})
+cmake_minimum_required(VERSION 2.8.12)
+cmake_policy(SET CMP0020 NEW)
+cmake_policy(SET CMP0023 OLD)
+cmake_policy(SET CMP0043 NEW)
 
-CMAKE_MINIMUM_REQUIRED( VERSION 2.8 )
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  SET(C9X_NAME_SUFFIX ${C9X_VERSION_MAJOR}${C9X_VERSION_MINOR})
-  SET(COMPANION_NAME "companion${C9X_NAME_SUFFIX}")
-  SET(SIMULATOR_NAME "simulator${C9X_NAME_SUFFIX}")
-  SET( SIMULATOR_LIB_PATH ${CMAKE_INSTALL_PREFIX}/lib/companion${C9X_NAME_SUFFIX} )
-ELSE(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  SET(COMPANION_NAME "companion")
-  SET(SIMULATOR_NAME "simulator")
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  set(C9X_NAME_SUFFIX ${C9X_VERSION_MAJOR}${C9X_VERSION_MINOR})
+  set(COMPANION_NAME "companion${C9X_NAME_SUFFIX}")
+  set(SIMULATOR_NAME "simulator${C9X_NAME_SUFFIX}")
+  set(SIMULATOR_LIB_PATH ${CMAKE_INSTALL_PREFIX}/lib/companion${C9X_NAME_SUFFIX})
+else()
+  set(COMPANION_NAME "companion")
+  set(SIMULATOR_NAME "simulator")
+endif()
 
 OPTION(ALLOW_NIGHTLY_BUILDS "Allow nightly builds download / update") # Disabled by default 
 IF(ALLOW_NIGHTLY_BUILDS)
@@ -62,20 +63,11 @@ ELSE()
     MESSAGE( "SDL not found! Joysticks support will be disabled. Simulator audio will not work." )
 ENDIF()
 
-FIND_PACKAGE(Qt4 4.8.4 REQUIRED)
-SET( QT_USE_QTNETWORK True )
-SET( QT_USE_QTXML True )
-INCLUDE( ${QT_USE_FILE} )
-
-MESSAGE( STATUS "Looking for PHONON " )
-FIND_PACKAGE(Phonon)
-IF ( PHONON_FOUND )
-    INCLUDE_DIRECTORIES( ${PHONO_INCLUDE_DIR} )
-    MESSAGE("PHONON Include Path: " ${PHONON_INCLUDE_DIR} )
-    ADD_DEFINITIONS( -DPHONON )
-ELSE()
-    MESSAGE( "PHONON not found!" )
-ENDIF()
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Xml REQUIRED)
+find_package(Qt5LinguistTools REQUIRED)
+find_package(Qt5PrintSupport REQUIRED)
+find_package(Qt5Multimedia REQUIRED)
 
 MESSAGE( STATUS "Looking for QT lupdate " )
 FIND_PACKAGE(Lupdate)
@@ -140,9 +132,9 @@ set(common_SRCS
   appdata.cpp
 )
 
-qt4_wrap_cpp(common_SRCS)
-
+qt5_wrap_cpp(common_SRCS)
 add_library(common ${common_SRCS})
+qt5_use_modules(common Core Xml Widgets)
 
 set(companion_SRCS
   hexinterface.cpp
@@ -234,7 +226,7 @@ set(companion_UIS
   radionotfound.ui
 )
 
-set(companion_RCS
+set(companion_RESOURCES
   companion.qrc
   ${CMAKE_CURRENT_BINARY_DIR}/translations.qrc
 )
@@ -289,23 +281,23 @@ FOREACH( language ${LANGUAGES} )
   SET( companion_TS ${companion_TS} translations/companion_${language}.ts )
 ENDFOREACH( language )
 
-set( companion_SRCS ${companion_SRCS}  )
-QT4_WRAP_UI( companion_SRCS ${companion_UIS} )
-QT4_WRAP_CPP( companion_SRCS ${companion_MOC_HDRS} )
-QT4_ADD_TRANSLATION( companion_QM ${companion_TS}  )
-QT4_ADD_RESOURCES( companion_SRCS ${companion_RCS} )
+qt5_wrap_ui(companion_SRCS ${companion_UIS})
+qt5_wrap_cpp(companion_SRCS ${companion_MOC_HDRS})
+qt5_add_translation(companion_QM ${companion_TS})
+qt5_add_resources(companion_RCC ${companion_RESOURCES})
 
-ADD_DEFINITIONS( -DQT_TRANSLATIONS_DIR="${QT_TRANSLATIONS_DIR}" )
+ADD_DEFINITIONS(-DQT_TRANSLATIONS_DIR="${QT_TRANSLATIONS_DIR}")
 
 IF( APPLE )
-    ADD_EXECUTABLE( ${COMPANION_NAME} MACOSX_BUNDLE ${companion_SRCS} ${companion_QM} )
+    ADD_EXECUTABLE( ${COMPANION_NAME} MACOSX_BUNDLE ${companion_SRCS} ${companion_RCC} ${companion_QM} )
     # OS X compiler no longer automatically includes /Library/Frameworks in search path
     SET( CMAKE_EXE_LINKER_FLAGS -F/Library/Frameworks )
 ELSE( )
-    ADD_EXECUTABLE( ${COMPANION_NAME} WIN32 ${companion_SRCS} ${companion_QM} )
+    ADD_EXECUTABLE( ${COMPANION_NAME} WIN32 ${companion_SRCS} ${companion_RCC} ${companion_QM} )
 ENDIF( )
 
-target_link_libraries(${COMPANION_NAME} generaledit modeledit simulation common qcustomplot shared ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${XERCESC_LIBRARY} ${PTHREAD_LIBRARY} ${SDL_LIBRARY} ${PHONON_LIBS})
+qt5_use_modules(${COMPANION_NAME} Core Widgets Network)
+target_link_libraries(${COMPANION_NAME} PRIVATE generaledit modeledit simulation common qcustomplot shared ${XERCESC_LIBRARY} ${PTHREAD_LIBRARY} ${SDL_LIBRARY})
 
 ############# Standalone simu ###############
 
@@ -320,8 +312,7 @@ set(simu_MOC_HDRS
 )
 
 set( simu_SRCS ${simu_SRCS} )
-qt4_wrap_cpp(simu_SRCS ${simu_MOC_HDRS} )
-qt4_add_resources(simu_SRCS companion.qrc) # TODO not needed
+qt5_wrap_cpp(simu_SRCS ${simu_MOC_HDRS} )
 
 if(WIN32)
   set(simu_SRCS ${simu_SRCS} icon.rc)
@@ -330,10 +321,10 @@ endif()
 if(APPLE)
   add_executable(${SIMULATOR_NAME} MACOSX_BUNDLE ${simu_SRCS})
 else()
-  add_executable(${SIMULATOR_NAME} WIN32 ${simu_SRCS})
+  add_executable(${SIMULATOR_NAME} WIN32 ${simu_SRCS} ${companion_RCC})
 endif()
 
-target_link_libraries(${SIMULATOR_NAME} simulation common ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${PTHREAD_LIBRARY} ${SDL_LIBRARY} ${PHONON_LIBS} ${OPENTX_SIMULATOR_LIBS})
+target_link_libraries(${SIMULATOR_NAME} PRIVATE simulation common ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${PTHREAD_LIBRARY} ${SDL_LIBRARY} ${OPENTX_SIMULATOR_LIBS})
 
 ############# Packaging ####################
 

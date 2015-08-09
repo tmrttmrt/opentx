@@ -1,8 +1,7 @@
 #ifndef COMPAREDIALOG_H
 #define COMPAREDIALOG_H
 
-#include <QDialog>
-#include <QtGui>
+#include <QtWidgets>
 #include <QDir>
 #include "eeprominterface.h"
 #include "modelprinter.h"

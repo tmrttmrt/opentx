@@ -1142,9 +1142,9 @@ GeneralSettings::GeneralSettings()
         byte8u=(uint8_t)t_CountrySet.mid(2,2).toUInt(&ok,16);
         if (ok)
           imperial=byte8u;
-        QString chars=t_CountrySet.mid(4,2);
-        ttsLanguage[0]=chars[0].toAscii();
-        ttsLanguage[1]=chars[1].toAscii();
+        QString chars = t_CountrySet.mid(4, 2);
+        ttsLanguage[0] = chars[0].toLatin1();
+        ttsLanguage[1] = chars[1].toLatin1();
       }
     }
   }

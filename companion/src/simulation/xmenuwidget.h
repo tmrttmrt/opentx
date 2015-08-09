@@ -16,8 +16,7 @@
 #ifndef XMENUWIDGET_H
 #define	XMENUWIDGET_H
 
-#include <QWidget>
-#include <QtGui>
+#include <QtWidgets>
 
 class xmenuWidget : public QWidget {
 

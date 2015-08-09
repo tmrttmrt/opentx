@@ -81,10 +81,13 @@ class MyProxyStyle : public QProxyStyle
 int main(int argc, char *argv[])
 {
   Q_INIT_RESOURCE(companion);
+
   QApplication app(argc, argv);
   app.setApplicationName("OpenTX Simulator");
   app.setOrganizationName("OpenTX");
   app.setOrganizationDomain("open-tx.org");
+
+  g.init();
 
 #ifdef __APPLE__
   app.setStyle(new MyProxyStyle);
@@ -100,8 +103,6 @@ int main(int argc, char *argv[])
   app.installTranslator(&companionTranslator);
   app.installTranslator(&qtTranslator);
 */
-
-  QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
 #if defined(JOYSTICKS) || defined(SIMU_AUDIO)
   uint32_t sdlFlags = 0;
@@ -124,7 +125,7 @@ int main(int argc, char *argv[])
   registerSimulators();
   registerOpenTxFirmwares();
 
-  eedir = QDir(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
+  eedir = QDir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/data/OpenTX/Simulator");
   if (!eedir.exists("OpenTX")) {
     eedir.mkdir("OpenTX");
   }
@@ -158,7 +159,7 @@ int main(int argc, char *argv[])
     }
     current_firmware_variant = GetFirmware(firmwareId);
     eepromFileName = QString("eeprom-%1.bin").arg(radioId);
-    eepromFileName = eedir.filePath(eepromFileName.toAscii());
+    eepromFileName = eedir.filePath(eepromFileName.toLatin1());
     SimulatorFactory *factory = getSimulatorFactory(firmwareId);
     if (factory->type() == BOARD_TARANIS)
       dialog = new SimulatorDialogTaranis(NULL, factory->create(), SIMULATOR_FLAGS_S1|SIMULATOR_FLAGS_S2);
@@ -170,7 +171,7 @@ int main(int argc, char *argv[])
   }
 
   dialog->show();
-  dialog->start(eepromFileName.toAscii().constData());
+  dialog->start(eepromFileName.toLatin1().constData());
 
   int result = app.exec();
 

@@ -16,8 +16,7 @@
 #ifndef MENUWIDGET_H
 #define	MENUWIDGET_H
 
-#include <QWidget>
-#include <QtGui>
+#include <QtWidgets>
 
 class menuWidget : public QWidget {
 

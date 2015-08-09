@@ -4,10 +4,8 @@
 #include "helpers_html.h"
 #include "eeprominterface.h"
 #include "modelprinter.h"
-#include <QtGui>
-#include <QImage>
-#include <QColor>
-#include <QPainter>
+#include <QPrinter>
+#include <QPrintDialog>
 
 #if !defined WIN32 && defined __GNUC__
 #include <unistd.h>

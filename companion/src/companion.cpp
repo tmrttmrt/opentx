@@ -81,11 +81,14 @@ class MyProxyStyle : public QProxyStyle
 int main(int argc, char *argv[])
 {
   Q_INIT_RESOURCE(companion);
+
   QApplication app(argc, argv);
   app.setApplicationName("OpenTX Companion");
   app.setOrganizationName("OpenTX");
   app.setOrganizationDomain("open-tx.org");
   app.setAttribute(Qt::AA_DontShowIconsInMenus, false);
+
+  g.init();
 
 #ifdef __APPLE__
   app.setStyle(new MyProxyStyle);
@@ -97,8 +100,6 @@ int main(int argc, char *argv[])
   qtTranslator.load((QString)"qt_" + g.locale().left(2), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
   app.installTranslator(&companionTranslator);
   app.installTranslator(&qtTranslator);
-
-  QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
 #if defined(JOYSTICKS) || defined(SIMU_AUDIO)
   uint32_t sdlFlags = 0;

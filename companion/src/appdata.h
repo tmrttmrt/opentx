@@ -378,6 +378,7 @@ class AppData: protected CompStoreObj
 
     // Constructor
     AppData();
+    void init();
 };
 
 extern AppData g;

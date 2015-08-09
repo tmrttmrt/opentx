@@ -21,7 +21,7 @@
 #include <QString>
 #include <QStringList>
 #include <QList>
-#include <QtXml>
+#include <QtXml> // This should be removed from here, and remove Xml dependency from all libs which don't need it.
 #include <QComboBox>
 #include <iostream>
 #include "constants.h"

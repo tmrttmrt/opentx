@@ -1,8 +1,7 @@
 #ifndef MYSLIDER_H
 #define MYSLIDER_H
 
-#include <QSlider>
-#include <QtGui>
+#include <QtWidgets>
 
 class mySlider : public QSlider
 {

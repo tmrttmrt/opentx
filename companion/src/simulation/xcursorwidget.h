@@ -16,8 +16,7 @@
 #ifndef XCURSORWIDGET_H
 #define	XCURSORWIDGET_H
 
-#include <QWidget>
-#include <QtGui>
+#include <QtWidgets>
 
 class xcursorWidget : public QWidget {
 

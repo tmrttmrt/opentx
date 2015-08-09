@@ -16,8 +16,7 @@
 #ifndef CURSORWIDGET_H
 #define	CURSORWIDGET_H
 
-#include <QWidget>
-#include <QtGui>
+#include <QtWidgets>
 
 class cursorWidget : public QWidget {
 

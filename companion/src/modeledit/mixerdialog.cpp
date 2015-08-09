@@ -160,8 +160,8 @@ void MixerDialog::valuesChanged()
     md->speedUp   = round(ui->slowUpSB->value()*scale);
 
     int i=0;
-    for (i=0; i<ui->mixerName->text().toAscii().length(); i++) {
-      md->name[i]=ui->mixerName->text().toAscii().at(i);
+    for (i=0; i<ui->mixerName->text().toLatin1().length(); i++) {
+      md->name[i]=ui->mixerName->text().toLatin1().at(i);
     }
     md->name[i]=0;
     md->phases=0;

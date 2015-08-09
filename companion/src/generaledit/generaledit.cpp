@@ -1,6 +1,3 @@
-#include <QDateTime>
-#include <QtGui>
-#include <QScrollArea>
 #include "generaledit.h"
 #include "ui_generaledit.h"
 #include "helpers.h"
@@ -181,8 +178,8 @@ void GeneralEdit::on_calretrieve_PB_clicked()
         if (ok)
           generalSettings.imperial=byte8u;
         chars=CountrySet.mid(4,2);
-        generalSettings.ttsLanguage[0]=chars[0].toAscii();
-        generalSettings.ttsLanguage[1]=chars[1].toAscii();
+        generalSettings.ttsLanguage[0]=chars[0].toLatin1();
+        generalSettings.ttsLanguage[1]=chars[1].toLatin1();
       }
     }
     else {

@@ -17,6 +17,7 @@ set(shared_HDRS
   verticalscrollarea.h
 )
  
-qt4_wrap_cpp(shared_SRCS ${shared_HDRS})
+qt5_wrap_cpp(shared_SRCS ${shared_HDRS})
 
 add_library(shared ${shared_SRCS})
+qt5_use_modules(shared Widgets)

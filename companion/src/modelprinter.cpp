@@ -55,7 +55,7 @@ QString  ModelPrinter::printInputName(int idx)
   else {
     result = RawSource(SOURCE_TYPE_STICK, idx).toString(g_model);
   }
-  return Qt::escape(result);
+  return result.toHtmlEscaped();
 }
 
 QString ModelPrinter::printInputLine(const ExpoData * ed)
@@ -69,26 +69,26 @@ QString ModelPrinter::printInputLine(const ExpoData * ed)
   }
 
   if (firmware->getCapability(VirtualInputs)) {
-    str += Qt::escape(ed->srcRaw.toString(g_model));
+    str += ed->srcRaw.toString(g_model).toHtmlEscaped();
   }
 
-  str += " " + Qt::escape(QObject::tr("Weight")) + QString("(%1)").arg(getGVarString(ed->weight,true));
-  if (ed->curve.value) str += " " + Qt::escape(ed->curve.toString());
+  str += " " + QObject::tr("Weight").toHtmlEscaped() + QString("(%1)").arg(getGVarString(ed->weight,true));
+  if (ed->curve.value) str += " " + ed->curve.toString().toHtmlEscaped();
 
   QString phasesStr = printPhases(ed->phases);
-  if (!phasesStr.isEmpty()) str += " " + Qt::escape(phasesStr);
+  if (!phasesStr.isEmpty()) str += " " + phasesStr.toHtmlEscaped();
 
   if (ed->swtch.type != SWITCH_TYPE_NONE) 
-    str += " " + Qt::escape(QObject::tr("Switch") + QString("(%1)").arg(ed->swtch.toString()));
+    str += " " + QObject::tr("Switch").toHtmlEscaped() + QString("(%1)").arg(ed->swtch.toString());
 
 
   if (firmware->getCapability(VirtualInputs)) {
-    if (ed->carryTrim>0) str += " " + Qt::escape(QObject::tr("NoTrim"));
-    else if (ed->carryTrim<0) str += " " + Qt::escape(RawSource(SOURCE_TYPE_TRIM, (-(ed->carryTrim)-1)).toString(g_model));
+    if (ed->carryTrim>0) str += " " + QObject::tr("NoTrim").toHtmlEscaped();
+    else if (ed->carryTrim<0) str += " " + RawSource(SOURCE_TYPE_TRIM, (-(ed->carryTrim)-1)).toString(g_model).toHtmlEscaped();
   }
 
   if (firmware->getCapability(HasExpoNames) && ed->name[0]) 
-    str += Qt::escape(QString(" [%1]").arg(ed->name));
+    str += QString(" [%1]").arg(ed->name).toHtmlEscaped();
 
   return str;
 }
@@ -107,7 +107,7 @@ QString ModelPrinter::printMixerName(int curDest)
     name.append("        ");
     str += name.left(8);
   }
-  return Qt::escape(str);
+  return str.toHtmlEscaped();
 }
 
 QString ModelPrinter::printMixerLine(const MixData * md, int highlightedSource)
@@ -121,40 +121,40 @@ QString ModelPrinter::printMixerLine(const MixData * md, int highlightedSource)
   };
 
   // highlight source if needed
-  QString source = Qt::escape(md->srcRaw.toString(g_model));
+  QString source = md->srcRaw.toString(g_model).toHtmlEscaped();
   if ( (md->srcRaw.type == SOURCE_TYPE_CH) && (md->srcRaw.index+1 == (int)highlightedSource) ) {
     source = "<b>" + source + "</b>";
   }
   str += "&nbsp;" + source;
 
-  str += " " + Qt::escape(QObject::tr("Weight")) + QString("(%1)").arg(getGVarString(md->weight, true));
+  str += " " + QObject::tr("Weight").toHtmlEscaped() + QString("(%1)").arg(getGVarString(md->weight, true));
 
   QString phasesStr = printPhases(md->phases);
-  if (!phasesStr.isEmpty()) str += " " + Qt::escape(phasesStr);
+  if (!phasesStr.isEmpty()) str += " " + phasesStr.toHtmlEscaped();
 
   if (md->swtch.type != SWITCH_TYPE_NONE) {
-    str += " " + Qt::escape(QObject::tr("Switch")) + QString("(%1)").arg(md->swtch.toString());
+    str += " " + QObject::tr("Switch").toHtmlEscaped() + QString("(%1)").arg(md->swtch.toString());
   }
 
-  if (md->carryTrim>0)      str += " " + Qt::escape(QObject::tr("NoTrim"));
+  if (md->carryTrim>0)      str += " " + QObject::tr("NoTrim").toHtmlEscaped();
   else if (md->carryTrim<0) str += " " + RawSource(SOURCE_TYPE_TRIM, (-(md->carryTrim)-1)).toString(g_model);
 
-  if (firmware->getCapability(HasNoExpo) && md->noExpo) str += " " + Qt::escape(QObject::tr("No DR/Expo"));
-  if (md->sOffset)     str += " " + Qt::escape(QObject::tr("Offset")) + QString("(%1)").arg(getGVarString(md->sOffset));
-  if (md->curve.value) str += " " + Qt::escape(md->curve.toString());
+  if (firmware->getCapability(HasNoExpo) && md->noExpo) str += " " + QObject::tr("No DR/Expo").toHtmlEscaped();
+  if (md->sOffset)     str += " " + QObject::tr("Offset").toHtmlEscaped() + QString("(%1)").arg(getGVarString(md->sOffset));
+  if (md->curve.value) str += " " + md->curve.toString().toHtmlEscaped();
 
   int scale = firmware->getCapability(SlowScale);
   if (scale == 0)
     scale = 1;
   if (md->delayDown || md->delayUp)
-    str += " " + Qt::escape(QObject::tr("Delay")) + QString("(u%1:d%2)").arg((double)md->delayUp/scale).arg((double)md->delayDown/scale);
+    str += " " + QObject::tr("Delay").toHtmlEscaped() + QString("(u%1:d%2)").arg((double)md->delayUp/scale).arg((double)md->delayDown/scale);
   if (md->speedDown || md->speedUp)
-    str += " " + Qt::escape(QObject::tr("Slow")) + QString("(u%1:d%2)").arg((double)md->speedUp/scale).arg((double)md->speedDown/scale);
+    str += " " + QObject::tr("Slow").toHtmlEscaped() + QString("(u%1:d%2)").arg((double)md->speedUp/scale).arg((double)md->speedDown/scale);
   if (md->mixWarn)
     // str += Qt::escape(QObject::tr(" Warn(%1)").arg(md->mixWarn));
-    str += " " + Qt::escape(QObject::tr("Warn")) + QString("(%1)").arg(md->mixWarn);
+    str += " " + QObject::tr("Warn").toHtmlEscaped() + QString("(%1)").arg(md->mixWarn);
   if (firmware->getCapability(HasMixerNames) && md->name[0]) 
-    str += Qt::escape(QString(" [%1]").arg(md->name));
+    str += QString(" [%1]").arg(md->name).toHtmlEscaped();
   return str;
 }
 

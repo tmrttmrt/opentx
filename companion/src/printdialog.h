@@ -1,8 +1,7 @@
 #ifndef PRINTDIALOG_H
 #define PRINTDIALOG_H
 
-#include <QDialog>
-#include <QtGui>
+#include <QtWidgets>
 #include <QDir>
 #include "eeprominterface.h"
 #include "modelprinter.h"
