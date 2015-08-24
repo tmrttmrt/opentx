@@ -99,14 +99,14 @@ void _bootStart()
   // }
 
 #if defined(REV9E)
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN; 		// Enable portC clock
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOGEN; 		// Enable portG clock
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN | RCC_AHB1ENR_GPIOGEN | RCC_AHB1ENR_GPIODEN; 		// Enable portC clock
+  // RCC->AHB1ENR |= RCC_AHB1ENR_GPIOGEN; 		// Enable portG clock
+  //   RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;                                              // Enable portD clock 
 #else
   RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN; 		// Enable portC clock
   RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEEN; 		// Enable portE clock
 #endif
 
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;                                              // Enable portD clock 
     GPIOD->BSRRL = 1;     //set PWR_GPIO_PIN_ON pin to 1
     GPIOD->MODER = (GPIOD->MODER & 0xFFFFFFFC) | 1;                                   // General purpose output mode
 
