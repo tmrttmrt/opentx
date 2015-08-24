@@ -93,7 +93,6 @@ void _bootStart()
   // if (WAS_RESET_BY_WATCHDOG_OR_SOFTWARE()) {
     // We must not call any functions outside this source here, because this file is a part of the bootloader
     // The sequence of instructions is equivalent to the sequence in pwrInit() only without the function calls
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;                                              // Enable portD clock 
     // GPIOD->OSPEEDR = (GPIOD->OSPEEDR & ~GPIO_OSPEEDER_OSPEEDR0) | GPIO_Speed_100MHz;  // Speed mode configuration
     // GPIOD->OTYPER  = (GPIOD->OTYPER & ~GPIO_OTYPER_OT_0) | (uint16_t)GPIO_OType_PP;   // Output mode configuration
     // GPIOD->PUPDR = (GPIOD->PUPDR & ~GPIO_PUPDR_PUPDR0) | (uint32_t)GPIO_PuPd_UP;      // Pull-up Pull down resistor configuration
@@ -107,6 +106,7 @@ void _bootStart()
   RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEEN; 		// Enable portE clock
 #endif
 
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;                                              // Enable portD clock 
     GPIOD->BSRRL = 1;     //set PWR_GPIO_PIN_ON pin to 1
     GPIOD->MODER = (GPIOD->MODER & 0xFFFFFFFC) | 1;                                   // General purpose output mode
 
