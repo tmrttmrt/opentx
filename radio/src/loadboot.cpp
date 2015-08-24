@@ -89,32 +89,25 @@ const uint8_t BootCode[] = {
 __attribute__ ((section(".bootrodata"), used))
 void _bootStart()
 {
-  // Turn soft power ON now if the radio was reset by a watchdog or sw-reset
-  // if (WAS_RESET_BY_WATCHDOG_OR_SOFTWARE()) {
-    // We must not call any functions outside this source here, because this file is a part of the bootloader
-    // The sequence of instructions is equivalent to the sequence in pwrInit() only without the function calls
-    // GPIOD->OSPEEDR = (GPIOD->OSPEEDR & ~GPIO_OSPEEDER_OSPEEDR0) | GPIO_Speed_100MHz;  // Speed mode configuration
-    // GPIOD->OTYPER  = (GPIOD->OTYPER & ~GPIO_OTYPER_OT_0) | (uint16_t)GPIO_OType_PP;   // Output mode configuration
-    // GPIOD->PUPDR = (GPIOD->PUPDR & ~GPIO_PUPDR_PUPDR0) | (uint32_t)GPIO_PuPd_UP;      // Pull-up Pull down resistor configuration
-  // }
-
 #if defined(REV9E)
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN | RCC_AHB1ENR_GPIOGEN | RCC_AHB1ENR_GPIODEN; 		// Enable portC clock
-  // RCC->AHB1ENR |= RCC_AHB1ENR_GPIOGEN; 		// Enable portG clock
-  //   RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;                                              // Enable portD clock 
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN | RCC_AHB1ENR_GPIOGEN | RCC_AHB1ENR_GPIODEN;
 #else
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN; 		// Enable portC clock
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEEN; 		// Enable portE clock
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN | RCC_AHB1ENR_GPIOEEN | RCC_AHB1ENR_GPIODEN;
 #endif
 
-    GPIOD->BSRRL = 1;     //set PWR_GPIO_PIN_ON pin to 1
-    GPIOD->MODER = (GPIOD->MODER & 0xFFFFFFFC) | 1;                                   // General purpose output mode
+  // these two NOPs are needed (see STM32F errata sheet) before the peripheral 
+  // register can be written after the peripheral clock was enabled
+  __ASM volatile ("nop");
+  __ASM volatile ("nop");
+
+  // Turn soft power ON now
+  GPIOD->BSRRL = 1;                                  // set PWR_GPIO_PIN_ON pin to 1
+  GPIOD->MODER = (GPIOD->MODER & 0xFFFFFFFC) | 1;    // General purpose output mode
 
   GPIOC->PUPDR = 0x00000004;
   GPIOE->PUPDR = 0x00000040;
   
-  uint32_t i;
-  for (i = 0; i < 50000; i += 1) {
+  for (uint32_t i = 0; i < 50000; i += 1) {
     bwdt_reset();
   }
 
