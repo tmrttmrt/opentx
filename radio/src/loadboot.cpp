@@ -90,7 +90,7 @@ __attribute__ ((section(".bootrodata"), used))
 void _bootStart()
 {
   // Turn soft power ON now if the radio was reset by a watchdog or sw-reset
-  if (WAS_RESET_BY_WATCHDOG_OR_SOFTWARE()) {
+  // if (WAS_RESET_BY_WATCHDOG_OR_SOFTWARE()) {
     // We must not call any functions outside this source here, because this file is a part of the bootloader
     // The sequence of instructions is equivalent to the sequence in pwrInit() only without the function calls
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;                                              // Enable portD clock 
@@ -99,7 +99,7 @@ void _bootStart()
     // GPIOD->OSPEEDR = (GPIOD->OSPEEDR & ~GPIO_OSPEEDER_OSPEEDR0) | GPIO_Speed_100MHz;  // Speed mode configuration
     // GPIOD->OTYPER  = (GPIOD->OTYPER & ~GPIO_OTYPER_OT_0) | (uint16_t)GPIO_OType_PP;   // Output mode configuration
     // GPIOD->PUPDR = (GPIOD->PUPDR & ~GPIO_PUPDR_PUPDR0) | (uint32_t)GPIO_PuPd_UP;      // Pull-up Pull down resistor configuration
-  }
+  // }
 
 #if defined(REV9E)
   RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN; 		// Enable portC clock
