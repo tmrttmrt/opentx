@@ -66,7 +66,7 @@ inline void boardInit()
   OCR2A   = 156;
   TIMSK2 |= (1<<OCIE2A) |  (1<<TOIE2); // Enable Output-Compare and Overflow interrrupts
 
-  // TIMER4 set into CTC mode, prescaler 16MHz/64=246 kHz 
+  // TIMER4 set into CTC mode, prescaler 16MHz/64=250 kHz 
   // Used for audio tone generation
   TCCR4B  = (1<<WGM42) | (0b011 << CS00);
   TCCR4A  = 0x00;
