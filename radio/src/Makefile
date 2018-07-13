@@ -716,7 +716,7 @@ ifeq ($(PCB), MEGA2560)
   TRGT = avr-
   MCU = atmega2560
   OPT = s
-  CPPDEFS = -DF_CPU=$(F_CPU)UL -DPCBMEGA2560 -DCPUM2560 -DEEPROM_RLC -DEEPROM_VARIANT=0
+  CPPDEFS = -DF_CPU=$(F_CPU)UL -DPCBMEGA2560 -DCPUM2560 -DEEPROM_RLC -DEEPROM_VARIANT=0 -DAUDIO
   SDCARD = NO
   BUZZER = YES
   THR_TRACE = YES
@@ -725,7 +725,7 @@ ifeq ($(PCB), MEGA2560)
   BOARDSRC = main_avr.cpp targets/mega2560/board_mega2560.cpp
   EEPROMSRC = eeprom_common.cpp eeprom_rlc.cpp
   PULSESSRC = pulses/pulses_avr.cpp
-  CPPSRC += debug.cpp
+  CPPSRC += audio_avr.cpp debug.cpp
   BITMAPS += bitmaps/9X/splash.lbm bitmaps/9X/asterisk.lbm bitmaps/9X/about.lbm
   GUIGENERALSRC += gui/$(GUIDIRECTORY)/menu_general_diagkeys.cpp gui/$(GUIDIRECTORY)/menu_general_diaganas.cpp
 
