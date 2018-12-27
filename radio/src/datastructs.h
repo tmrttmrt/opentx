@@ -1127,6 +1127,19 @@ static inline void check_struct()
   CHKSIZE(FrSkyTelemetryData, 88);
   CHKSIZE(ModelHeader, 12);
   CHKTYPE(CurveData, 4);
+#elif defined(PCBESP_WROOM_32)
+  CHKSIZE(MixData, 9);
+  CHKSIZE(ExpoData, 4);
+  CHKSIZE(LimitData, 5);
+  CHKSIZE(CustomFunctionData, 3);
+  CHKSIZE(FlightModeData, 30);
+  CHKSIZE(TimerData, 3);
+  CHKSIZE(SwashRingData, 3);
+  CHKSIZE(FrSkyBarData, 3);
+  CHKSIZE(FrSkyLineData, 2);
+  CHKSIZE(FrSkyTelemetryData, 43);
+  CHKSIZE(ModelHeader, 11);
+  CHKTYPE(CurveData, 1);
 #else
   // Common for all variants
   CHKSIZE(LimitData, 5);

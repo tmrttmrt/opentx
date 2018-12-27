@@ -285,6 +285,19 @@
   #define pgm_read_adr(x)              *(x)
   #define cli()
   #define sei()
+#elif defined(CPUESP32)
+  typedef const unsigned char pm_uchar;
+  typedef const char pm_char;
+  typedef const uint16_t pm_uint16_t;
+  typedef const uint8_t pm_uint8_t;
+  typedef const int16_t pm_int16_t;
+  typedef const int8_t pm_int8_t;
+  #define PROGMEM
+  #define pgm_read_byte(address_short) (*(uint8_t*)(address_short))
+  #define sei()
+  #define cli()
+  #define PSTR(adr) adr
+  #define pgm_read_adr(x)              *(x)
 #endif
 
 #include "debug.h"
@@ -363,6 +376,9 @@ void memswap(void * a, void * b, uint8_t size);
   #include "fifo.h"
   #include "io/io_arm.h"
   // This doesn't need protection on this processor
+  extern volatile tmr10ms_t g_tmr10ms;
+  #define get_tmr10ms()                g_tmr10ms
+#elif defined(CPUESP32)
   extern volatile tmr10ms_t g_tmr10ms;
   #define get_tmr10ms()                g_tmr10ms
 #else
@@ -663,7 +679,7 @@ enum StartupWarningStates {
 
 
 // Fiddle to force compiler to use a pointer
-#if defined(CPUARM) || defined(SIMU)
+#if defined(CPUARM) || defined(SIMU) || defined(CPUESP32)
   #define FORCE_INDIRECT(ptr)
 #else
   #define FORCE_INDIRECT(ptr) __asm__ __volatile__ ("" : "=e" (ptr) : "0" (ptr))

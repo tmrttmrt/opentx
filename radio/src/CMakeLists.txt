@@ -1,7 +1,7 @@
 include(CMakeForceCompiler)
 include(Bitmaps)
 
-set(PCB_TYPES X7 XLITE X9D X9D+ X9E X10 X12S 9X 9XR 9X128 9XR128 9X2561 GRUVIN9X MEGA2560 SKY9X 9XRPRO AR9X ESP-WROOM-32)
+set(PCB_TYPES X7 XLITE X9D X9D+ X9E X10 X12S 9X 9XR 9X128 9XR128 9X2561 GRUVIN9X MEGA2560 SKY9X 9XRPRO AR9X ESP_WROOM_32)
 set(GUI_LANGUAGES CZ DE EN ES FR IT PT SK SE PL HU NL)
 set(TTS_LANGUAGES CZ DE EN ES FR IT PT SK SE PL HU NL RU)
 
@@ -118,9 +118,8 @@ elseif(PCB STREQUAL GRUVIN9X)
   include(targets/gruvin9x/CMakeLists.txt)
 elseif(PCB STREQUAL MEGA2560)
   include(targets/mega2560/CMakeLists.txt)
-elseif(PCB STREQUAL ESP-WROOM-32)
+elseif(PCB STREQUAL ESP_WROOM_32)
   include(targets/esp-wroom-32/CMakeLists.txt)
-  set(ARCH ESP32)
 else()
   message(FATAL_ERROR "Unknown PCB '${PCB}'")
 endif()
@@ -146,6 +145,8 @@ endif()
 
 if(ARCH STREQUAL ARM)
   include(targets/common/arm/CMakeLists.txt)
+elseif(ARCH STREQUAL ESP32)
+  include(targets/common/esp32/CMakeLists.txt)
 else()
   include(targets/common/avr/CMakeLists.txt)
 endif()
@@ -539,18 +540,18 @@ if(NOT MSVC)
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         )
     endif()
-  if(ARCH STREQUAL ESP32)
+  elseif(ARCH STREQUAL ESP32)
 
     enable_language(ASM)
-    set(CMAKE_C_COMPILER arm-none-eabi-gcc)
-    set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
-    set(CMAKE_ASM_COMPILER arm-none-eabi-as)
+    set(CMAKE_C_COMPILER xtensa-esp32-elf-gcc)
+    set(CMAKE_CXX_COMPILER xtensa-esp32-elf-g++)
+    set(CMAKE_ASM_COMPILER xtensa-esp32-elf-as)
 
     set(CMAKE_SYSTEM_NAME Generic)
     set(CMAKE_SYSTEM_VERSION 1)
     set(CMAKE_ASM_COMPILE_OBJECT "<CMAKE_ASM_COMPILER> -o <OBJECT> <SOURCE>")
 
-    set(COMMON_FLAGS "-mcpu=${MCU} -mthumb -fomit-frame-pointer -fverbose-asm -Wa,-ahlms=firmware.lst -O${OPT} -gdwarf-2 -DHSE_VALUE=${HSE_VALUE} -fno-exceptions -fdata-sections -ffunction-sections ${WARNING_FLAGS}")
+    set(COMMON_FLAGS "-fomit-frame-pointer -fverbose-asm -Wa,-ahlms=firmware.lst -O${OPT} -gdwarf-2 -DHSE_VALUE=${HSE_VALUE} -fno-exceptions -fdata-sections -ffunction-sections ${WARNING_FLAGS}")
     set(COMMON_FLAGS "${COMMON_FLAGS} ${FPU_FLAGS}")
 
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_FLAGS} -Wimplicit")
@@ -572,22 +573,6 @@ if(NOT MSVC)
       # Nano's malloc does work well with lua, use our own
       add_definitions(-DUSE_BIN_ALLOCATOR)
       set(SRC ${SRC} bin_allocator.cpp)
-    endif()
-
-
-    if(PCB STREQUAL XLITE OR PCB STREQUAL X9D OR PCB STREQUAL X9D+ OR PCB STREQUAL X9E OR PCB STREQUAL X7 OR PCB STREQUAL X10 OR PCB STREQUAL X12S)
-      add_subdirectory(targets/common/arm/stm32/bootloader)
-      include_directories(${CMAKE_CURRENT_BINARY_DIR}/targets/common/arm/stm32/bootloader)
-      set(FIRMWARE_DEPENDENCIES ${FIRMWARE_DEPENDENCIES} bootloader)
-    elseif(OPENRC_BOOTLOADER)
-      # We fetch Mike's bootloader as it is not included inside OpenTX
-      message(STATUS "Downloading Mike's bootloader: https://github.com/MikeBland/OpenRcBootloader/releases/download/V1.9/${OPENRC_BOOTLOADER}")
-      file(DOWNLOAD https://github.com/MikeBland/OpenRcBootloader/releases/download/V1.9/${OPENRC_BOOTLOADER} ${CMAKE_CURRENT_BINARY_DIR}/bootloader.lbm STATUS status)
-      list(GET status 0 error_code)
-      if(error_code)
-        list(GET status 1 error_message)
-        message(FATAL_ERROR "Download failed: ${error_message}")
-      endif()
     endif()
 
     add_executable(firmware ${SRC} ${FIRMWARE_HEADERS})
@@ -690,6 +675,12 @@ if(NOT MSVC)
 
     add_custom_target(jtag-flash
       COMMAND st-flash --reset write firmware.bin 0x8000000
+      DEPENDS firmware
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      )
+  elseif(CPU_FAMILY STREQUAL ESP32)
+    add_custom_target(flash
+      COMMAND echo not implemented
       DEPENDS firmware
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       )
