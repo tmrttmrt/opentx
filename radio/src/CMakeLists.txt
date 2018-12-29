@@ -559,22 +559,6 @@ if(NOT MSVC)
 
     # these are in addition to CMAKE_CXX_FLAGS
     set(CMAKE_EXE_LINKER_FLAGS "-lm -T${RADIO_SRC_DIRECTORY}/${LINKER_SCRIPT} -Wl,-Map=firmware.map,--cref,--no-warn-mismatch,--gc-sections")
-    if(SEMIHOSTING)
-      add_definitions(-DSEMIHOSTING)
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --specs=rdimon.specs")
-    endif()
-    # Use newlib nano, which saves a few kilobytes.
-    if(NOT NANO STREQUAL NO)
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --specs=nano.specs")
-      if(NOT LUA STREQUAL NO)
-        # Lua needs %g and %f
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -u _printf_float -u _scanf_float")
-      endif()
-      # Nano's malloc does work well with lua, use our own
-      add_definitions(-DUSE_BIN_ALLOCATOR)
-      set(SRC ${SRC} bin_allocator.cpp)
-    endif()
-
     add_executable(firmware ${SRC} ${FIRMWARE_HEADERS})
     link_libraries(firmware -lstdc++)
     add_dependencies(firmware ${FIRMWARE_DEPENDENCIES})
