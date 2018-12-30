@@ -37,6 +37,7 @@ uint8_t unexpectedShutdown = 0;
 
 /* AVR: mixer duration in 1/16ms */
 /* ARM: mixer duration in 0.5us */
+/* ESP32: mixer duration in us */
 uint16_t maxMixerDuration;
 
 #if defined(AUDIO) && !defined(CPUARM)
@@ -1758,7 +1759,7 @@ void doMixerCalculations()
     Current_max = Current_analogue ;
 #endif
 
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
   adcPrepareBandgap();
 #endif
 
@@ -1766,7 +1767,7 @@ void doMixerCalculations()
   evalMixes(tick10ms);
   DEBUG_TIMER_STOP(debugTimerEvalMixes);
 
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
   // Bandgap has had plenty of time to settle...
   getADC_bandgap();
 #endif
@@ -2221,7 +2222,7 @@ void checkBattery()
 #endif // #if !defined(CPUARM)
 
 
-#if !defined(SIMU) && !defined(CPUARM)
+#if !defined(SIMU) && !defined(CPUARM) && !defined(CPUESP32)
 
 volatile uint8_t g_tmr16KHz; //continuous timer 16ms (16MHz/1024/256) -- 8-bit counter overflow
 ISR(TIMER_16KHZ_VECT, ISR_NOBLOCK)
@@ -2504,7 +2505,7 @@ void moveTrimsToOffsets() // copy state of 3 primary to subtrim
 uint8_t rotencSpeed;
 #endif
 
-#if !defined(CPUARM) && !defined(SIMU)
+#if !defined(CPUARM) && !defined(SIMU) && !defined(CPUESP32)
 extern unsigned char __bss_end ;
 #define STACKPTR     _SFR_IO16(0x3D)
 void stackPaint()
@@ -2687,7 +2688,7 @@ void opentxInit(OPENTX_INIT_ARGS)
   init_trainer_capture();
 #endif
 
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
   doMixerCalculations();
 #endif
 
@@ -2786,7 +2787,7 @@ int main()
   }
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   tasksStart();
 #else
   opentxInit(mcusr);

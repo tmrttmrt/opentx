@@ -183,6 +183,9 @@ enum CurveType {
 #elif defined(CPUM2560)
   #define MAX_ROTARY_ENCODERS          2
   #define NUM_ROTARY_ENCODERS          2
+#elif defined(CPUESP32)
+  #define MAX_ROTARY_ENCODERS          2
+  #define NUM_ROTARY_ENCODERS          2  
 #else
   #define MAX_ROTARY_ENCODERS          0
   #define NUM_ROTARY_ENCODERS          0
@@ -630,7 +633,7 @@ enum SwitchSources {
 
 #if defined(PCBSKY9X)
   SWSRC_REa,
-#elif defined(CPUM2560)
+#elif defined(CPUM2560) || defined(CPUESP32)
   SWSRC_REa,
   SWSRC_REb,
 #endif
@@ -755,7 +758,7 @@ enum MixSources {
 #if defined(PCBSKY9X)
   MIXSRC_REa,
   MIXSRC_LAST_ROTARY_ENCODER = MIXSRC_REa,
-#elif defined(CPUM2560)
+#elif defined(CPUM2560) || defined(CPUESP32)
   MIXSRC_REa,
   MIXSRC_REb,
   #if ROTARY_ENCODERS > 2
