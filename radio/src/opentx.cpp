@@ -37,6 +37,7 @@ uint8_t unexpectedShutdown = 0;
 
 /* AVR: mixer duration in 1/16ms */
 /* ARM: mixer duration in 0.5us */
+/* ESP32: mixer duration in us */
 uint16_t maxMixerDuration;
 
 #if defined(AUDIO) && !defined(CPUARM)

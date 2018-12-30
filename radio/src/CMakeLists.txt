@@ -556,33 +556,18 @@ if(NOT MSVC)
 
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_FLAGS} -Wimplicit")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_FLAGS}")
+#    include_directories($ENV{IDF_PATH}/components/freertos/include targets/common/esp32/esp-idf/build/include)
+#    include_directories($ENV{IDF_PATH}/components/esp32/include $ENV{IDF_PATH}/components/soc/include)
+#	get_target_property(CompDefs firmware COMPILE_DEFINITIONS )
+#	message(STATUS "the value of CompDefs: " ${CMAKE_CXX_FLAGS})
 
     # these are in addition to CMAKE_CXX_FLAGS
     set(CMAKE_EXE_LINKER_FLAGS "-lm -T${RADIO_SRC_DIRECTORY}/${LINKER_SCRIPT} -Wl,-Map=firmware.map,--cref,--no-warn-mismatch,--gc-sections")
-    add_executable(firmware ${SRC} ${FIRMWARE_HEADERS})
+    add_library(firmware ${SRC} ${FIRMWARE_HEADERS})
     link_libraries(firmware -lstdc++)
     add_dependencies(firmware ${FIRMWARE_DEPENDENCIES})
 
-    add_custom_command(
-      TARGET firmware POST_BUILD
-      COMMAND arm-none-eabi-objcopy -O binary firmware.elf firmware.bin
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    )
 
-    find_program(GAWK gawk HINTS "c:/cygwin/bin/" "c:/msys/bin/" DOC "gawk for firmware size report.")  # OS X might only have "awk"
-    if (BASH AND GAWK)
-      add_custom_target(firmware-size
-        COMMAND ${BASH} -kc '${RADIO_DIRECTORY}/util/elf-size-report.sh --mcu=${CPU_TYPE_FULL} ${SIZE_TARGET_MEM_DEFINE} firmware.elf'
-        DEPENDS firmware
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        )
-    else()
-      add_custom_target(firmware-size
-        COMMAND arm-none-eabi-size -A firmware.elf
-        DEPENDS firmware
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        )
-    endif()
   else()  # AVR
 
     set(CMAKE_C_COMPILER avr-gcc)

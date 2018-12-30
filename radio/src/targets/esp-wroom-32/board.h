@@ -207,6 +207,12 @@ enum CalibratedAnalogs {
 #define buzzerOn()                //PORTH |=  (1 << OUT_H_SpeakerBuzzer)
 #define buzzerOff()               //PORTH &= ~(1 << OUT_H_SpeakerBuzzer)
 
+// Speaker driver
+#if defined(AUDIO)
+#define speakerOn()               //TCCR4A |=  (1 << COM4A0)
+#define speakerOff()              //TCCR4A &= ~(1 << COM4A0)
+#endif
+
 // Battery driver
 #define BATTERY_MIN                90  // 9V
 #define BATTERY_MAX                120 // 12V

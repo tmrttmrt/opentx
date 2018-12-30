@@ -1,0 +1,13 @@
+COMPONENT_OWNBUILDTARGET := true
+COMPONENT_OWNCLEANTARGET := true
+
+
+
+
+build:
+	echo Building $(COMPONENT_LIBRARY)
+	cd $(COMPONENT_PATH)/build ; \
+	mingw32-make firmware ;\
+	cp $(COMPONENT_PATH)/build/radio/src/libfirmware.a $(COMPONENT_LIBRARY)
+	
+clean:
