@@ -9,3 +9,5 @@ build*/
 cmake-build-*/
 /debian/
 sdkconfig
+radio/src/targets/common/esp32/esp-idf/components/startup/defines.mk
+radio/src/targets/common/esp32/esp-idf/components/startup/includes.mk
