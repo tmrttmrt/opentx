@@ -11,12 +11,15 @@
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
+#include "esp_log.h"
+
+static const char *TAG = "main.c";
 
 void ESPOpentxStart();
 
 void app_main()
 {
-    printf("OpenTX Start ...\n");
+    ESP_LOGI(TAG,"OpenTX Start ...\n");
 
 	ESPOpentxStart();
 }

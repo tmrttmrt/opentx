@@ -25,3 +25,7 @@ void boardInit()
 #if !defined(SIMU)
 #endif
 }
+
+void IRAM_ATTR readKeysAndTrims(){
+	
+}

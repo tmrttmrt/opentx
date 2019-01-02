@@ -22,6 +22,8 @@
 #ifndef _BOARD_ESP_WROOM_32_H_
 #define _BOARD_ESP_WROOM_32_H_
 
+#include "../common/esp32/board_esp32.h"
+
 // Stubs
 #define wdt_reset()
 #define wdt_enable(x)
@@ -30,6 +32,8 @@
 #define tasksStart()
 
 void boardInit(void);
+void readKeysAndTrims();
+
 #define boardOff()  pwrOff()
 
 // ADC driver

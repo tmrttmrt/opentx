@@ -29,6 +29,11 @@
 #include "opentx_types.h"
 #if defined(STM32)
 #include "usbd_conf.h"
+#endif 
+#if defined(CPUESP32)
+#include "esp_attr.h"
+#else
+#define IRAM_ATTR
 #endif
 
 #if defined(SIMU)
@@ -519,8 +524,10 @@ typedef struct {
 #endif
 
 #if !defined(SIMU)
-  #define assert(x)
-  #if !defined(CPUARM) || !defined(DEBUG)
+  #if !defined(HASASSERT)
+    #define assert(x)
+  #endif
+  #if (!defined(CPUARM) && !defined(CPUARM)) || !defined(DEBUG) 
     #define printf printf_not_allowed
   #endif
 #endif
@@ -866,6 +873,8 @@ extern uint16_t lastMixerDuration;
   static inline uint16_t getTmr2MHz() { return TIMER_2MHz_TIMER->CNT; }
 #elif defined(PCBSKY9X)
   static inline uint16_t getTmr2MHz() { return TC1->TC_CHANNEL[0].TC_CV; }
+#elif defined(PCBESP_WROOM_32)
+  uint16_t getTmr1MHz();
 #else
   uint16_t getTmr16KHz();
 #endif
@@ -912,7 +921,7 @@ void doLoopCommonActions();
 #define BITMASK(bit) (1<<(bit))
 
 #if !defined(UNUSED)
-#define UNUSED(x)	((void)(x))	/* to avoid warnings */
+#define UNUSED(x)   ((void)(x)) /* to avoid warnings */
 #endif
 
 /// returns the number of elements of an array

@@ -92,7 +92,7 @@ void watchdogSuspend(uint32_t timeout)
 }
 #endif
 
-void per10ms()
+void IRAM_ATTR per10ms()
 {
   g_tmr10ms++;
 

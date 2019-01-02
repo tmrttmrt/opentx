@@ -26,7 +26,7 @@
 #define TMR_NEGATIVE 2
 #define TMR_STOPPED  3
 
-#if defined(CPUARM)
+#if defined(CPUARM) // || defined(CPUESP32)
 typedef int32_t tmrval_t;
 typedef uint32_t tmrstart_t;
 typedef int16_t tmrmode_t;
