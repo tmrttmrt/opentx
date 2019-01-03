@@ -23,9 +23,14 @@
 void boardInit()
 {
 #if !defined(SIMU)
+initKeys();
+initADC();
+
+
 #endif
 }
 
 void IRAM_ATTR readKeysAndTrims(){
 	
 }
+

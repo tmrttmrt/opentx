@@ -3,11 +3,13 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "soc/timer_group_struct.h"
-#include "driver/periph_ctrl.h"	
+#include "driver/periph_ctrl.h" 
 #include "driver/timer.h"
 #include "esp_system.h"
 #include "esp_timer.h"
 #include "esp_log.h"
+#include <driver/adc.h>
+#include "driver/i2c.h"
 #define HASASSERT
 #include "opentx.h"
 
@@ -19,26 +21,30 @@
 #define MENU_TASK_PERIOD_TICKS      50/portTICK_PERIOD_MS    // 50ms
 #define MENU_TASK_CORE 0
 #define MIXER_TASK_CORE 1
+#define I2C_MASTER_FREQ_HZ 400000
+#define MCP23017_ADDR 0x20
 
 static const char *TAG = "startup.cpp";
+adc1_channel_t analogPorts[]={ADC1_CHANNEL_0,ADC1_CHANNEL_3,ADC1_CHANNEL_6,ADC1_CHANNEL_7,ADC1_CHANNEL_4,ADC1_CHANNEL_5,(adc1_channel_t) ADC2_CHANNEL_8};
+static_assert(sizeof(analogPorts)/sizeof(adc1_channel_t)==NUM_ANALOGS,"Analog pins assignment issue");
 
 uint16_t getTmr1MHz(){
-	return (uint16_t) xTaskGetTickCount ();
+    return (uint16_t) xTaskGetTickCount ();
 }
 
 void menusTask(void * pvParameters)
 {
-	TickType_t xLastWakeTime;
-	const TickType_t xTimeIncrement = MENU_TASK_PERIOD_TICKS;
-	
-	ESP_LOGI(TAG,"Starting menusTask.\n");
-	opentxInit();
-	
-	xLastWakeTime = xTaskGetTickCount ();
-	while (1){
-		vTaskDelayUntil( &xLastWakeTime, xTimeIncrement );
-		perMain();
-	}
+    TickType_t xLastWakeTime;
+    const TickType_t xTimeIncrement = MENU_TASK_PERIOD_TICKS;
+    
+    ESP_LOGI(TAG,"Starting menusTask.\n");
+    opentxInit();
+    
+    xLastWakeTime = xTaskGetTickCount ();
+    while (1){
+        vTaskDelayUntil( &xLastWakeTime, xTimeIncrement );
+        perMain();
+    }
     DEBUG_TIMER_STOP(debugTimerPerMain);
 
 
@@ -66,11 +72,11 @@ void mixerTask(void * pdata)
     processSbusInput();
 #endif
 
-	vTaskDelay(2/portTICK_PERIOD_MS);
+    vTaskDelay(2/portTICK_PERIOD_MS);
 //    if (isForcePowerOffRequested()) {
 //      pwrOff();
 //    }
-	
+    
     TickType_t now = xTaskGetTickCount ();
     bool run = false;
     if ((now - lastRunTime) >= 20) {     // run at least every 20ms
@@ -131,15 +137,15 @@ void mixerTask(void * pdata)
 
 void otxTasksStart()
 {
-	TaskHandle_t xMenusTaskHandle = NULL;
-	TaskHandle_t xMixerTaskHandle = NULL;
-	BaseType_t ret;
-	
+    TaskHandle_t xMenusTaskHandle = NULL;
+    TaskHandle_t xMixerTaskHandle = NULL;
+    BaseType_t ret;
+    
     ret=xTaskCreatePinnedToCore( menusTask, "menusTask", MENUS_STACK_SIZE, NULL, tskIDLE_PRIORITY, &xMenusTaskHandle, MENU_TASK_CORE );
-	ESP_LOGI(TAG,"xTaskCreatePinnedToCore: ret = %d.",ret);
+    ESP_LOGI(TAG,"xTaskCreatePinnedToCore: ret = %d.",ret);
     ret=xTaskCreatePinnedToCore( mixerTask, "mixerTask", MIXER_STACK_SIZE, NULL, tskIDLE_PRIORITY, &xMixerTaskHandle, MIXER_TASK_CORE );
-	ESP_LOGI(TAG,"xTaskCreatePinnedToCore: ret = %d.",ret);
-}	
+    ESP_LOGI(TAG,"xTaskCreatePinnedToCore: ret = %d.",ret);
+}   
 
 
 void IRAM_ATTR timer_group0_isr(void *para)
@@ -154,19 +160,19 @@ void IRAM_ATTR timer_group0_isr(void *para)
     /* Clear the interrupt
        and update the alarm time for the timer with reload */
     if ((intr_status & BIT(timer_idx)) && timer_idx == TIMER_0) {
-		TIMERG0.int_clr_timers.t0 = 1;
-	}
-	else if ((intr_status & BIT(timer_idx)) && timer_idx == TIMER_1) {
+        TIMERG0.int_clr_timers.t0 = 1;
+    }
+    else if ((intr_status & BIT(timer_idx)) && timer_idx == TIMER_1) {
         TIMERG0.int_clr_timers.t1 = 1;
-	}
-	
+    }
+    
     /* After the alarm has been triggered
       we need enable it again, so it is triggered the next time */
     TIMERG0.hw_timer[timer_idx].config.alarm_en = TIMER_ALARM_EN;
 
     /* Now just send the event data back to the main program task */
 //    xQueueSendFromISR(timer_queue, &evt, NULL);
-	per10ms();
+    per10ms();
 }
 
 static void tg0_timer_init(timer_idx_t timer_idx)
@@ -194,18 +200,99 @@ static void tg0_timer_init(timer_idx_t timer_idx)
     timer_start(TIMER_GROUP_0, timer_idx);
 }
 
+void IRAM_ATTR getADC(){
+    int     read_raw;
+    
+    int channel=0;
+    for(;channel<7;channel++){
+        s_anaFilt[channel]=adc1_get_raw(analogPorts[channel]);
+    }
+    for(;channel<NUM_ANALOGS;channel++){
+        adc2_get_raw((adc2_channel_t)analogPorts[channel], ADC_WIDTH_12Bit, &read_raw);
+        s_anaFilt[channel]=read_raw;
+    }
+    
+}
+
+void initADC(){
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    
+    int channel=0;
+    for(;channel<7;channel++){
+        adc1_config_channel_atten(analogPorts[channel], ADC_ATTEN_DB_11);
+    }
+    for(;channel<NUM_ANALOGS;channel++){
+        adc2_config_channel_atten((adc2_channel_t)analogPorts[channel], ADC_ATTEN_DB_11);
+    }
+    
+}
+
+
+
+void initKeys(){
+    i2c_config_t conf;
+    conf.mode = I2C_MODE_MASTER;
+    conf.sda_io_num = GPIO_NUM_23;
+    conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
+    conf.scl_io_num = GPIO_NUM_22;
+    conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
+    conf.master.clk_speed = I2C_MASTER_FREQ_HZ;
+    i2c_param_config(I2C_NUM_0, &conf);
+    esp_err_t ret = i2c_driver_install(I2C_NUM_0, conf.mode,
+                              I2C_MASTER_RX_BUF_DISABLE,
+                              I2C_MASTER_TX_BUF_DISABLE, 0);
+    if(ESP_OK=ret){
+        i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+        i2c_master_start(cmd);
+        i2c_master_write_byte(cmd, (MCP23017_ADDR << 1) | WRITE_BIT, true);
+        i2c_master_write_byte(cmd,0x0A,true); //IOCON
+        i2c_master_write_byte(cmd,BIT(5),true);//IOCON.SEQOP
+        i2c_master_start(cmd);
+        i2c_master_write_byte(cmd, (MCP23017_ADDR << 1) | WRITE_BIT, true);
+        i2c_master_write_byte(cmd,0x04,true); //GPPUA
+        i2c_master_write_byte(cmd,0x04,true); //GPPUA
+        i2c_master_write_byte(cmd,0xFF,true);
+        i2c_master_write_byte(cmd,0xFF,true);
+        i2c_master_stop(cmd);
+        ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_RATE_MS);
+        i2c_cmd_link_delete(cmd);
+    }
+                          
+}
+
+int16_t IRAM_ATTR readI2CGPIO(){
+    int16_t data;
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (MCP23017_ADDR << 1) | READ_BIT, true);
+    i2c_master_read(cmd, &data, 2, I2C_MASTER_NACK);
+    i2c_master_stop(cmd);
+    ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(cmd);
+    return data;
+}
+
+
+void IRAM_ATTR readKeysAndTrims(){
+    int16_t=readI2CGPIO();
+}
+
+uint8_t keyDown()
+{
+    return readI2CGPIO();
+}
 
 extern "C" { 
   
 void ESPOpentxStart(){
-	boardInit();
-	ESP_LOGI(TAG,"Starting 10ms timer.\n");
-	tg0_timer_init(TIMER_0); //10 ms interrupt
-	ESP_LOGI(TAG,"Starting tasks.\n");
-	otxTasksStart();
-	while(1){
-		vTaskDelay(1000/portTICK_PERIOD_MS);
-	};
+    boardInit();
+    ESP_LOGI(TAG,"Starting 10ms timer.\n");
+    tg0_timer_init(TIMER_0); //10 ms interrupt
+    ESP_LOGI(TAG,"Starting tasks.\n");
+    otxTasksStart();
+    while(1){
+        vTaskDelay(1000/portTICK_PERIOD_MS);
+    };
 }
 
 }
