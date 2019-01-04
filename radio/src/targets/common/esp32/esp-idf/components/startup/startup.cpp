@@ -21,8 +21,6 @@
 #define MENU_TASK_PERIOD_TICKS      50/portTICK_PERIOD_MS    // 50ms
 #define MENU_TASK_CORE 0
 #define MIXER_TASK_CORE 1
-#define I2C_MASTER_FREQ_HZ 400000
-#define MCP23017_ADDR 0x20
 
 static const char *TAG = "startup.cpp";
 adc1_channel_t analogPorts[]={ADC1_CHANNEL_0,ADC1_CHANNEL_3,ADC1_CHANNEL_6,ADC1_CHANNEL_7,ADC1_CHANNEL_4,ADC1_CHANNEL_5,(adc1_channel_t) ADC2_CHANNEL_8};
@@ -228,67 +226,18 @@ void initADC(){
 }
 
 
-
-void initKeys(){
-    i2c_config_t conf;
-    conf.mode = I2C_MODE_MASTER;
-    conf.sda_io_num = GPIO_NUM_23;
-    conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
-    conf.scl_io_num = GPIO_NUM_22;
-    conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
-    conf.master.clk_speed = I2C_MASTER_FREQ_HZ;
-    i2c_param_config(I2C_NUM_0, &conf);
-    esp_err_t ret = i2c_driver_install(I2C_NUM_0, conf.mode,
-                              I2C_MASTER_RX_BUF_DISABLE,
-                              I2C_MASTER_TX_BUF_DISABLE, 0);
-    if(ESP_OK=ret){
-        i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-        i2c_master_start(cmd);
-        i2c_master_write_byte(cmd, (MCP23017_ADDR << 1) | WRITE_BIT, true);
-        i2c_master_write_byte(cmd,0x0A,true); //IOCON
-        i2c_master_write_byte(cmd,BIT(5),true);//IOCON.SEQOP
-        i2c_master_start(cmd);
-        i2c_master_write_byte(cmd, (MCP23017_ADDR << 1) | WRITE_BIT, true);
-        i2c_master_write_byte(cmd,0x04,true); //GPPUA
-        i2c_master_write_byte(cmd,0x04,true); //GPPUA
-        i2c_master_write_byte(cmd,0xFF,true);
-        i2c_master_write_byte(cmd,0xFF,true);
-        i2c_master_stop(cmd);
-        ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_RATE_MS);
-        i2c_cmd_link_delete(cmd);
-    }
-                          
-}
-
-int16_t IRAM_ATTR readI2CGPIO(){
-    int16_t data;
-    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-    i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, (MCP23017_ADDR << 1) | READ_BIT, true);
-    i2c_master_read(cmd, &data, 2, I2C_MASTER_NACK);
-    i2c_master_stop(cmd);
-    ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_RATE_MS);
-    i2c_cmd_link_delete(cmd);
-    return data;
-}
-
-
-void IRAM_ATTR readKeysAndTrims(){
-    int16_t=readI2CGPIO();
-}
-
-uint8_t keyDown()
+uint16_t stackAvailable()
 {
-    return readI2CGPIO();
+  return 0; //getStackAvailable(&_main_stack_start, stackSize());
 }
 
 extern "C" { 
   
 void ESPOpentxStart(){
     boardInit();
-    ESP_LOGI(TAG,"Starting 10ms timer.\n");
+    ESP_LOGI(TAG,"Starting 10ms timer.");
     tg0_timer_init(TIMER_0); //10 ms interrupt
-    ESP_LOGI(TAG,"Starting tasks.\n");
+    ESP_LOGI(TAG,"Starting tasks.");
     otxTasksStart();
     while(1){
         vTaskDelay(1000/portTICK_PERIOD_MS);

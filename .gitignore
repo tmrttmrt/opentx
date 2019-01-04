@@ -11,3 +11,4 @@ cmake-build-*/
 sdkconfig
 radio/src/targets/common/esp32/esp-idf/components/startup/defines.mk
 radio/src/targets/common/esp32/esp-idf/components/startup/includes.mk
+radio/src/targets/common/esp32/esp-idf/log.txt

@@ -2164,7 +2164,7 @@ uint8_t getSticksNavigationEvent()
 }
 #endif
 
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
 void checkBattery()
 {
   static uint8_t counter = 0;

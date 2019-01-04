@@ -33,6 +33,7 @@
 
 void boardInit(void);
 void readKeysAndTrims();
+uint16_t getBatteryVoltage();   // returns current battery voltage in 10mV steps
 
 #define boardOff()  pwrOff()
 
@@ -42,6 +43,16 @@ void readKeysAndTrims();
 #define NUM_XPOTS                      0
 
 #define TIMERS 2
+
+// Switchs driver
+#define INP_ID2                 7
+#define INP_ID1                 6
+#define INP_AileDR              0
+#define INP_ThrCt               3
+#define INP_Gear                4
+#define INP_RuddDR              2
+#define INP_ElevDR              1
+#define INP_Trainer             5
 
 enum EnumSwitches
 {
@@ -77,9 +88,9 @@ void lcdInit(void);
 // DBLKeys driver
 #define KEYS_PRESSED()            0//(~PINL)
 
-// Power driver
-uint8_t pwrCheck();
-void pwrOff();
+// Power driver (none)
+#define pwrCheck()                 (e_power_on)
+#define pwrOff()
 #if defined(PWRMANAGE)
   #define UNEXPECTED_SHUTDOWN()   0//((mcusr & (1 << WDRF)) || g_eeGeneral.unexpectedShutdown)
 #else
@@ -198,6 +209,8 @@ enum CalibratedAnalogs {
 #define BATTERY_MIN                90  // 9V
 #define BATTERY_MAX                120 // 12V
 #define BATTERY_WARN               90  // 9V
+#define BATT_SCALE                    150
+#define BAT_AVG_SAMPLES       8
 
 // Analogs driver
 #define NUM_MOUSE_ANALOGS          0

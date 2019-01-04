@@ -28,12 +28,12 @@ $EndComp
 $Comp
 L power:GND #PWR?
 U 1 1 5499AE76
-P 6050 3050
-F 0 "#PWR?" H 6050 3050 30  0001 C CNN
-F 1 "GND" H 6050 2980 30  0001 C CNN
-F 2 "" H 6050 3050 60  0001 C CNN
-F 3 "" H 6050 3050 60  0001 C CNN
-	1    6050 3050
+P 6050 2800
+F 0 "#PWR?" H 6050 2800 30  0001 C CNN
+F 1 "GND" H 6050 2730 30  0001 C CNN
+F 2 "" H 6050 2800 60  0001 C CNN
+F 3 "" H 6050 2800 60  0001 C CNN
+	1    6050 2800
 	1    0    0    -1  
 $EndComp
 Text Notes 8050 4100 0    42   ~ 0
@@ -568,12 +568,12 @@ $EndComp
 $Comp
 L power:GND #PWR?
 U 1 1 54989B15
-P 1100 5550
-F 0 "#PWR?" H 1100 5550 50  0001 C CNN
-F 1 "GND" H 1100 5480 50  0001 C CNN
-F 2 "" H 1100 5550 60  0001 C CNN
-F 3 "" H 1100 5550 60  0001 C CNN
-	1    1100 5550
+P 1100 5300
+F 0 "#PWR?" H 1100 5300 50  0001 C CNN
+F 1 "GND" H 1100 5230 50  0001 C CNN
+F 2 "" H 1100 5300 60  0001 C CNN
+F 3 "" H 1100 5300 60  0001 C CNN
+	1    1100 5300
 	0    1    1    0   
 $EndComp
 $Comp
@@ -703,9 +703,9 @@ F 3 "" H 850 1800 60  0001 C CNN
 	1    850  1800
 	1    0    0    -1  
 $EndComp
-Text Label 5950 5100 2    42   ~ 0
+Text Label 5950 4850 2    42   ~ 0
 Key_►
-Text Label 5950 5200 2    42   ~ 0
+Text Label 5950 4950 2    42   ~ 0
 Key_▼
 Text Label 750  8150 3    42   ~ 0
 Voice_Busy
@@ -821,91 +821,87 @@ F 3 "" H 10400 4500 60  0001 C CNN
 	1    10400 4500
 	1    0    0    -1  
 $EndComp
-Text Label 3450 4500 2    42   ~ 0
+Text Label 3550 7700 1    42   ~ 0
 SW_AilDR
-Text Label 3450 4900 2    42   ~ 0
+Text Label 3250 7700 1    42   ~ 0
 SW_ThCut
-Text Label 3450 4700 2    42   ~ 0
+Text Label 3450 7700 1    42   ~ 0
 SW_RudDR
-Text Label 3450 5200 2    42   ~ 0
+Text Label 3150 7700 1    42   ~ 0
 SW_Gear
-Text Label 5950 5300 2    42   ~ 0
+Text Label 5950 5050 2    42   ~ 0
 Key_ESC
-Text Label 5950 5400 2    42   ~ 0
+Text Label 5950 5150 2    42   ~ 0
 Key_MENU
-Text Label 3450 4800 2    42   ~ 0
+Text Label 3350 7700 1    42   ~ 0
 SW_EleDR
-Text Label 5950 5000 2    42   ~ 0
+Text Label 5950 4750 2    42   ~ 0
 Key_▲
-Text Label 5950 4900 2    42   ~ 0
+Text Label 5950 4650 2    42   ~ 0
 Key_◄
-Text Label 700  5450 0    42   ~ 0
+Text Label 700  5200 0    42   ~ 0
 LCD_SI
-Text Label 700  5250 0    42   ~ 0
+Text Label 700  5000 0    42   ~ 0
 LCD_A0
-Text Label 5950 5600 2    42   ~ 0
+Text Label 2850 7700 1    42   ~ 0
 SW_ID2
-Text Label 5950 5500 2    42   ~ 0
+Text Label 2950 7700 1    42   ~ 0
 SW_ID1
-Text Label 700  5150 0    42   ~ 0
+Text Label 700  4900 0    42   ~ 0
 LCD_Light
-Text Label 700  5350 0    42   ~ 0
+Text Label 700  5100 0    42   ~ 0
 LCD_SCL
-Text Label 5950 4300 2    42   ~ 0
+Text Label 5950 4050 2    42   ~ 0
 Trim_LV-►
-Text Label 5950 4200 2    42   ~ 0
+Text Label 5950 3950 2    42   ~ 0
 Trim_LV◄-
-Text Label 5950 4500 2    42   ~ 0
+Text Label 5950 4250 2    42   ~ 0
 Trim_RV-►
-Text Label 5950 4400 2    42   ~ 0
+Text Label 5950 4150 2    42   ~ 0
 Trim_RV◄-
-Text Label 5950 4600 2    42   ~ 0
+Text Label 5950 4350 2    42   ~ 0
 Trim_RH◄-
-Text Label 5950 4700 2    42   ~ 0
+Text Label 5950 4450 2    42   ~ 0
 Trim_RH-►
-Text Label 5950 4000 2    42   ~ 0
+Text Label 5950 3750 2    42   ~ 0
 Trim_LH◄-
-Text Label 5950 4100 2    42   ~ 0
+Text Label 5950 3850 2    42   ~ 0
 Trim_LH-►
-Text Label 700  4550 0    42   ~ 0
+Text Label 700  4300 0    42   ~ 0
 Stick_LV
-Text Label 700  4450 0    42   ~ 0
+Text Label 700  4200 0    42   ~ 0
 Stick_RH
-Text Label 700  5050 0    42   ~ 0
+Text Label 700  4800 0    42   ~ 0
 U_batt
-Text Label 700  4850 0    42   ~ 0
+Text Label 700  4600 0    42   ~ 0
 Pot_1
-Text Label 700  4950 0    42   ~ 0
+Text Label 700  4700 0    42   ~ 0
 Pot_2
-Text Label 700  4650 0    42   ~ 0
+Text Label 700  4400 0    42   ~ 0
 Stick_RV
-Text Label 700  4750 0    42   ~ 0
+Text Label 700  4500 0    42   ~ 0
 Stick_LH
-Text Label 2700 8150 3    42   ~ 0
+Text Label 3450 4550 2    42   ~ 0
 Rot_2_B
-Text Label 2800 8150 3    42   ~ 0
+Text Label 3450 4650 2    42   ~ 0
 Rot_2_A
 Text Label 2600 8150 3    42   ~ 0
 Haptic
-Text Label 2400 8150 3    42   ~ 0
-Rot_1_Push
-Text Label 2300 8150 3    42   ~ 0
+Text Label 5950 5350 2    42   ~ 0
 Rot_2_Push
-Text Label 3000 8150 3    42   ~ 0
-I2C_SCL
-Text Label 2900 8150 3    42   ~ 0
-I2C_SDA
-Text Label 3550 5000 2    42   ~ 0
+Text Label 5950 5250 2    42   ~ 0
+Rot_1_Push
+Text Label 3550 4750 2    42   ~ 0
 Telemetry_TX
-Text Label 3550 5100 2    42   ~ 0
+Text Label 3550 4850 2    42   ~ 0
 Telemetry_RX
 Text Label 1400 8150 3    42   ~ 0
 Hold_Power
-Text Label 2550 6350 1    42   ~ 0
+Text Label 2550 6100 1    42   ~ 0
 Buzzer
-Text Label 1900 8150 3    42   ~ 0
+Text Label 3450 4450 2    42   ~ 0
 Rot_1_A
-Text Label 1800 8150 3    42   ~ 0
+Text Label 3450 4250 2    42   ~ 0
 Rot_1_B
 Text Label 1150 8150 3    42   ~ 0
 RF_Activated
@@ -915,7 +911,7 @@ Text Label 950  8150 3    42   ~ 0
 Sim_Control
 Text Label 1050 8150 3    42   ~ 0
 -----
-Text Label 1850 6350 1    42   ~ 0
+Text Label 1850 6100 1    42   ~ 0
 PPM_OUT
 $Comp
 L esp-wroom-32-rescue:CONN_1-MEGA2560 +
@@ -953,12 +949,12 @@ $EndComp
 $Comp
 L power:VCC 3.3V
 U 1 1 54989ABB
-P 1050 4250
-F 0 "3.3V" H 1050 4350 60  0001 C CNN
-F 1 "VCC" H 1050 4350 50  0000 C CNN
-F 2 "" H 1050 4250 60  0001 C CNN
-F 3 "" H 1050 4250 60  0001 C CNN
-	1    1050 4250
+P 1050 4000
+F 0 "3.3V" H 1050 4100 60  0001 C CNN
+F 1 "VCC" H 1050 4100 50  0000 C CNN
+F 2 "" H 1050 4000 60  0001 C CNN
+F 3 "" H 1050 4000 60  0001 C CNN
+	1    1050 4000
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -1049,7 +1045,7 @@ Wire Wire Line
 Wire Wire Line
 	8150 4350 7850 4350
 Wire Wire Line
-	6050 3050 6050 2650
+	6050 3050 6050 2800
 Wire Wire Line
 	7300 4650 8150 4650
 Wire Notes Line
@@ -1091,17 +1087,11 @@ Wire Wire Line
 Wire Wire Line
 	1500 900  1500 1250
 Wire Wire Line
-	3000 8600 3000 8150
-Wire Wire Line
-	2800 8600 2800 8150
-Wire Wire Line
 	2600 8600 2600 8150
 Wire Wire Line
-	2300 8600 2300 8150
+	3100 4750 3550 4750
 Wire Wire Line
-	3100 5000 3550 5000
-Wire Wire Line
-	1800 8600 1800 8150
+	3000 4450 3100 4450
 Wire Wire Line
 	1400 8600 1400 8150
 Wire Wire Line
@@ -1111,16 +1101,16 @@ Wire Wire Line
 Wire Wire Line
 	750  8600 750  8150
 Wire Wire Line
-	3100 4900 3450 4900
+	3250 7350 3250 7700
 Wire Wire Line
-	3100 4800 3450 4800
+	3350 7350 3350 7700
 Wire Wire Line
 	6750 2050 6750 2100
 Wire Wire Line
 	6750 2100 6900 2100
 Connection ~ 6750 2650
 Wire Wire Line
-	3100 4700 3450 4700
+	3450 7350 3450 7700
 Wire Wire Line
 	2500 1250 2350 1250
 Connection ~ 1500 1250
@@ -1134,21 +1124,13 @@ Wire Wire Line
 Wire Wire Line
 	850  1800 850  1650
 Wire Wire Line
-	1850 5900 1850 6350
+	1850 5650 1850 6100
 Wire Wire Line
 	1050 8600 1050 8150
 Wire Wire Line
-	2550 5900 2550 6350
+	2550 5650 2550 6100
 Wire Wire Line
-	1900 8600 1900 8150
-Wire Wire Line
-	3100 5100 3550 5100
-Wire Wire Line
-	2400 8600 2400 8150
-Wire Wire Line
-	2700 8600 2700 8150
-Wire Wire Line
-	2900 8600 2900 8150
+	3100 4850 3550 4850
 Wire Wire Line
 	1250 8600 1250 8150
 Wire Wire Line
@@ -1317,18 +1299,18 @@ $EndComp
 $Comp
 L power:GND #PWR?
 U 1 1 55731CE2
-P 5150 3200
-F 0 "#PWR?" H 5150 3200 50  0001 C CNN
-F 1 "GND" H 5150 3130 50  0001 C CNN
-F 2 "" H 5150 3200 60  0001 C CNN
-F 3 "" H 5150 3200 60  0001 C CNN
-	1    5150 3200
+P 5150 2950
+F 0 "#PWR?" H 5150 2950 50  0001 C CNN
+F 1 "GND" H 5150 2880 50  0001 C CNN
+F 2 "" H 5150 2950 60  0001 C CNN
+F 3 "" H 5150 2950 60  0001 C CNN
+	1    5150 2950
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
 	5150 2300 5150 2400
 Wire Wire Line
-	5150 2900 5150 3050
+	5150 2900 5150 2950
 $Comp
 L Device:C C1
 U 1 1 55732064
@@ -1342,7 +1324,6 @@ F 3 "" H 5500 2850 60  0001 C CNN
 $EndComp
 Wire Wire Line
 	5500 3050 5150 3050
-Connection ~ 5150 3050
 Text Label 5950 2650 2    42   ~ 0
 Stick_xx
 Wire Wire Line
@@ -1350,8 +1331,8 @@ Wire Wire Line
 Text Notes 5000 2050 0    60   ~ 0
 Stick anti-jitter filter
 Wire Wire Line
-	2350 3750 2350 4700
-Text Notes 2400 4750 3    50   ~ 0
+	2350 3500 2350 4450
+Text Notes 2400 4500 3    50   ~ 0
 Pin 9, can be soldered\nwith pin 8 (unused)
 $Comp
 L esp-wroom-32-rescue:TLP290-MEGA2560 U4
@@ -1446,16 +1427,16 @@ Wire Wire Line
 Wire Wire Line
 	8350 2900 9050 2900
 Wire Wire Line
-	5150 3050 5150 3200
+	5150 2800 5150 2900
 $Comp
 L ESP32-footprints-Shem-Lib:ESP32-WROOM U1
 U 1 1 5C2D33A7
-P 2200 4850
-F 0 "U1" H 2175 6237 60  0000 C CNN
-F 1 "ESP32-WROOM" H 2175 6131 60  0000 C CNN
-F 2 "ESP32-footprints-Lib:ESP32-WROOM" H 2550 6200 60  0001 C CNN
-F 3 "" H 1750 5300 60  0001 C CNN
-	1    2200 4850
+P 2200 4600
+F 0 "U1" H 2175 5987 60  0000 C CNN
+F 1 "ESP32-WROOM" H 2175 5881 60  0000 C CNN
+F 2 "ESP32-footprints-Lib:ESP32-WROOM" H 2550 5950 60  0001 C CNN
+F 3 "" H 1750 5050 60  0001 C CNN
+	1    2200 4600
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -1603,36 +1584,36 @@ Wire Wire Line
 Wire Wire Line
 	4350 2550 4600 2550
 Wire Wire Line
-	1050 4250 1250 4250
+	1050 4000 1250 4000
 Wire Wire Line
-	1100 5550 1250 5550
+	1100 5300 1250 5300
 Wire Wire Line
-	1250 4750 700  4750
+	1250 4500 700  4500
 Wire Wire Line
-	1250 4850 700  4850
+	1250 4600 700  4600
 Wire Wire Line
-	1250 4650 700  4650
+	1250 4400 700  4400
 Wire Wire Line
-	1250 4450 700  4450
+	1250 4200 700  4200
 Wire Wire Line
-	1250 4550 700  4550
+	1250 4300 700  4300
 Wire Wire Line
-	1250 4950 700  4950
+	1250 4700 700  4700
 Wire Wire Line
-	1250 5050 700  5050
+	1250 4800 700  4800
 Wire Wire Line
-	1250 5350 700  5350
+	1250 5100 700  5100
 Wire Wire Line
-	1250 5450 700  5450
+	1250 5200 700  5200
 $Comp
 L Interface_Expansion:MCP23017_SP U2
 U 1 1 5CECE7B2
-P 4750 4800
-F 0 "U2" H 4750 6078 50  0000 C CNN
-F 1 "MCP23017_SP" H 4750 5987 50  0000 C CNN
-F 2 "Package_DIP:DIP-28_W7.62mm" H 4950 3800 50  0001 L CNN
-F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf" H 4950 3700 50  0001 L CNN
-	1    4750 4800
+P 4750 4550
+F 0 "U2" H 4750 5828 50  0000 C CNN
+F 1 "MCP23017_SP" H 4750 5737 50  0000 C CNN
+F 2 "Package_DIP:DIP-28_W7.62mm" H 4950 3550 50  0001 L CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf" H 4950 3450 50  0001 L CNN
+	1    4750 4550
 	1    0    0    -1  
 $EndComp
 Text Notes 4800 7100 0    42   ~ 0
@@ -1654,139 +1635,245 @@ Wire Wire Line
 $Comp
 L esp-wroom-32-rescue:GND-MEGA2560 #PWR?
 U 1 1 5D013A16
-P 4750 6050
-F 0 "#PWR?" H 4750 6050 30  0001 C CNN
-F 1 "GND" H 4750 5980 30  0001 C CNN
-F 2 "" H 4750 6050 60  0000 C CNN
-F 3 "" H 4750 6050 60  0000 C CNN
-	1    4750 6050
+P 4750 5800
+F 0 "#PWR?" H 4750 5800 30  0001 C CNN
+F 1 "GND" H 4750 5730 30  0001 C CNN
+F 2 "" H 4750 5800 60  0000 C CNN
+F 3 "" H 4750 5800 60  0000 C CNN
+	1    4750 5800
 	1    0    0    -1  
 $EndComp
 $Comp
 L esp-wroom-32-rescue:VCC-MEGA2560 #PWR?
 U 1 1 5D013C96
-P 4750 3450
-F 0 "#PWR?" H 4750 3550 30  0001 C CNN
-F 1 "VCC" H 4753 3578 30  0000 C CNN
-F 2 "" H 4750 3450 60  0000 C CNN
-F 3 "" H 4750 3450 60  0000 C CNN
-	1    4750 3450
+P 4750 3200
+F 0 "#PWR?" H 4750 3300 30  0001 C CNN
+F 1 "VCC" H 4753 3328 30  0000 C CNN
+F 2 "" H 4750 3200 60  0000 C CNN
+F 3 "" H 4750 3200 60  0000 C CNN
+	1    4750 3200
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4750 3450 4750 3700
+	4750 3200 4750 3450
 Wire Wire Line
-	4750 6050 4750 5950
+	4750 5800 4750 5700
 Wire Wire Line
-	3100 4100 3250 4100
+	3100 3850 3250 3850
 Wire Wire Line
-	3100 4200 3400 4200
+	3100 3950 3400 3950
 Wire Wire Line
-	4050 5400 3900 5400
+	4050 5150 3900 5150
 Wire Wire Line
-	3900 5950 4750 5950
-Connection ~ 4750 5950
+	3900 5700 4750 5700
+Connection ~ 4750 5700
 Wire Wire Line
-	4750 5950 4750 5900
+	4750 5700 4750 5650
 Wire Wire Line
-	4050 5500 3900 5500
+	4050 5250 3900 5250
 Wire Wire Line
-	3900 5400 3900 5500
-Connection ~ 3900 5500
+	3900 5150 3900 5250
+Connection ~ 3900 5250
 Wire Wire Line
-	3900 5500 3900 5600
+	3900 5250 3900 5350
 Wire Wire Line
-	4050 5600 3900 5600
-Connection ~ 3900 5600
+	4050 5350 3900 5350
+Connection ~ 3900 5350
 Wire Wire Line
-	3900 5600 3900 5950
+	3900 5350 3900 5700
 $Comp
 L esp-wroom-32-rescue:VCC-MEGA2560 #PWR?
 U 1 1 5D12C4F8
-P 3950 4900
-F 0 "#PWR?" H 3950 5000 30  0001 C CNN
-F 1 "VCC" V 3954 4998 30  0000 L CNN
-F 2 "" H 3950 4900 60  0000 C CNN
-F 3 "" H 3950 4900 60  0000 C CNN
-	1    3950 4900
+P 3950 4650
+F 0 "#PWR?" H 3950 4750 30  0001 C CNN
+F 1 "VCC" V 3954 4748 30  0000 L CNN
+F 2 "" H 3950 4650 60  0000 C CNN
+F 3 "" H 3950 4650 60  0000 C CNN
+	1    3950 4650
 	0    -1   -1   0   
 $EndComp
 Wire Wire Line
-	3950 4900 4050 4900
+	3950 4650 4050 4650
 Wire Wire Line
-	700  5250 1250 5250
+	700  5000 1250 5000
 Wire Wire Line
-	700  5150 1250 5150
+	700  4900 1250 4900
 Wire Wire Line
-	5450 4000 5950 4000
+	5450 3750 5950 3750
 Wire Wire Line
-	5450 4100 5950 4100
+	5450 3850 5950 3850
 Wire Wire Line
-	5450 4200 5950 4200
+	5450 3950 5950 3950
 Wire Wire Line
-	5450 4300 5950 4300
+	5450 4050 5950 4050
 Wire Wire Line
-	5450 4400 5950 4400
+	5450 4150 5950 4150
 Wire Wire Line
-	5450 4500 5950 4500
+	5450 4250 5950 4250
 Wire Wire Line
-	5450 4600 5950 4600
+	5450 4350 5950 4350
 Wire Wire Line
-	5450 4700 5950 4700
+	5450 4450 5950 4450
 Wire Wire Line
-	5450 4900 5950 4900
+	5450 4650 5950 4650
 Wire Wire Line
-	5450 5000 5950 5000
+	5450 4750 5950 4750
 Wire Wire Line
-	5450 5100 5950 5100
+	5450 4850 5950 4850
 Wire Wire Line
-	5450 5200 5950 5200
+	5450 4950 5950 4950
 Wire Wire Line
-	5450 5300 5950 5300
+	5450 5050 5950 5050
 Wire Wire Line
-	5450 5400 5950 5400
+	5450 5150 5950 5150
 Wire Wire Line
-	5450 5500 5950 5500
+	3550 7350 3550 7700
 Wire Wire Line
-	5450 5600 5950 5600
+	3150 7350 3150 7700
 Wire Wire Line
-	3100 4500 3450 4500
-Wire Wire Line
-	3100 5200 3450 5200
-Wire Wire Line
-	3100 5300 3450 5300
-Text Label 3450 5300 2    42   ~ 0
+	3050 7350 3050 7700
+Text Label 3050 7700 1    42   ~ 0
 SW_Trn
 $Comp
 L esp-wroom-32-rescue:GND-MEGA2560 #PWR?
 U 1 1 5D5494FA
-P 3300 5700
-F 0 "#PWR?" H 3300 5700 30  0001 C CNN
-F 1 "GND" H 3300 5630 30  0001 C CNN
-F 2 "" H 3300 5700 60  0000 C CNN
-F 3 "" H 3300 5700 60  0000 C CNN
-	1    3300 5700
+P 3300 5450
+F 0 "#PWR?" H 3300 5450 30  0001 C CNN
+F 1 "GND" H 3300 5380 30  0001 C CNN
+F 2 "" H 3300 5450 60  0000 C CNN
+F 3 "" H 3300 5450 60  0000 C CNN
+	1    3300 5450
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3100 5400 3300 5400
+	3100 5150 3300 5150
 Wire Wire Line
-	3100 5500 3300 5500
+	3100 5250 3300 5250
 Wire Wire Line
-	3300 5400 3300 5500
-Connection ~ 3300 5500
+	3300 5150 3300 5250
+Connection ~ 3300 5250
 Wire Wire Line
-	3300 5500 3300 5700
+	3300 5250 3300 5450
 Wire Wire Line
 	7750 2650 7850 2650
 Connection ~ 7850 2650
 Connection ~ 8650 4000
 Wire Wire Line
-	3400 4200 3400 4100
+	3400 3950 3400 3850
 Wire Wire Line
-	3400 4100 4050 4100
+	3400 3850 3700 3850
 Wire Wire Line
-	3250 4100 3250 4000
+	3250 3850 3250 3750
 Wire Wire Line
-	3250 4000 4050 4000
+	3250 3750 3600 3750
+Connection ~ 5150 2900
+Connection ~ 5150 2950
+Wire Wire Line
+	5150 2950 5150 3050
+Connection ~ 6050 2800
+Wire Wire Line
+	6050 2800 6050 2650
+Wire Wire Line
+	4350 5950 4350 5900
+Connection ~ 3600 3750
+Wire Wire Line
+	3600 3750 4050 3750
+Wire Wire Line
+	4450 5950 4450 5800
+Connection ~ 3700 3850
+Wire Wire Line
+	3700 3850 4050 3850
+$Comp
+L esp-wroom-32-rescue:VCC-MEGA2560 #PWR?
+U 1 1 5C32810C
+P 4750 6500
+F 0 "#PWR?" H 4750 6600 30  0001 C CNN
+F 1 "VCC" H 4753 6628 30  0000 C CNN
+F 2 "" H 4750 6500 60  0000 C CNN
+F 3 "" H 4750 6500 60  0000 C CNN
+	1    4750 6500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4750 6500 4750 6650
+$Comp
+L esp-wroom-32-rescue:GND-MEGA2560 #PWR?
+U 1 1 5C3374EC
+P 2500 6800
+F 0 "#PWR?" H 2500 6800 30  0001 C CNN
+F 1 "GND" H 2500 6730 30  0001 C CNN
+F 2 "" H 2500 6800 60  0000 C CNN
+F 3 "" H 2500 6800 60  0000 C CNN
+	1    2500 6800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2550 6650 2500 6650
+Wire Wire Line
+	2500 6650 2500 6800
+Wire Wire Line
+	3050 5950 3050 5850
+Wire Wire Line
+	3050 5700 3900 5700
+Connection ~ 3900 5700
+Wire Wire Line
+	2950 5950 2950 5850
+Wire Wire Line
+	2950 5850 3050 5850
+Connection ~ 3050 5850
+Wire Wire Line
+	3050 5850 3050 5700
+$Comp
+L esp-wroom-32-rescue:VCC-MEGA2560 #PWR?
+U 1 1 5C366CB1
+P 2850 5900
+F 0 "#PWR?" H 2850 6000 30  0001 C CNN
+F 1 "VCC" H 2853 6028 30  0000 C CNN
+F 2 "" H 2850 5900 60  0000 C CNN
+F 3 "" H 2850 5900 60  0000 C CNN
+	1    2850 5900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2850 5900 2850 5950
+$Comp
+L Interface_Expansion:MCP23017_SP U?
+U 1 1 5C2FC793
+P 3650 6650
+F 0 "U?" H 3650 7928 50  0000 C CNN
+F 1 "MCP23017_SP" H 3650 7837 50  0000 C CNN
+F 2 "Package_DIP:DIP-28_W7.62mm" H 3850 5650 50  0001 L CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf" H 3850 5550 50  0001 L CNN
+	1    3650 6650
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4450 5800 3600 5800
+Wire Wire Line
+	4350 5900 3700 5900
+Wire Wire Line
+	3700 3850 3700 5900
+Wire Wire Line
+	2850 7350 2850 7700
+Wire Wire Line
+	2950 7350 2950 7700
+Wire Wire Line
+	5450 5250 5950 5250
+Wire Wire Line
+	5450 5350 5950 5350
+Text Label 3350 3750 0    50   ~ 0
+I2C_SDA
+Text Label 3500 3850 0    50   ~ 0
+I2C_SCL
+Wire Wire Line
+	3600 3750 3600 5800
+Wire Wire Line
+	3100 4250 3450 4250
+Wire Wire Line
+	3100 4450 3450 4450
+Connection ~ 3100 4450
+Wire Wire Line
+	3100 4550 3450 4550
+Wire Wire Line
+	3100 4650 3450 4650
 $EndSCHEMATC

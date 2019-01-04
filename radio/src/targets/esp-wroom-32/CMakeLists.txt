@@ -20,7 +20,6 @@ set(GUI_SRC
   radio_diagkeys.cpp
   radio_diaganas.cpp
   )
-set(FIRMWARE_SRC ${FIRMWARE_SRC} targets/9x/lcd_driver.cpp)
 if(PWRMANAGE)
   add_definitions(-DPWRMANAGE)
 endif()

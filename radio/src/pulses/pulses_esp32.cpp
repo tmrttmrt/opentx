@@ -2,7 +2,7 @@
  * Copyright (C) OpenTX
  *
  * Based on code named
- *   th9x - http://code.google.com/p/th9x
+ *   th9x - http://code.google.com/p/th9x 
  *   er9x - http://code.google.com/p/er9x
  *   gruvin9x - http://code.google.com/p/gruvin9x
  *
@@ -20,26 +20,8 @@
 
 #include "opentx.h"
 
-void boardInit()
+uint8_t s_pulses_paused = 0;
+
+void startPulses()
 {
-#if !defined(SIMU)
-initKeys();
-initADC();
-
-
-#endif
 }
-
-uint8_t keyState(uint8_t index)
-{
-  return keys[index].state();
-}
-
-uint16_t getBatteryVoltage()
-{
-  int32_t instant_vbat = anaIn(TX_VOLTAGE); // using filtered ADC value on purpose
-  instant_vbat = (instant_vbat * BATT_SCALE * (128 + g_eeGeneral.txVoltageCalibration) ) / 26214;
-  instant_vbat += 20; // add 0.2V because of the diode TODO check if this is needed, but removal will beak existing calibrations!!!
-  return (uint16_t)instant_vbat;
-}
-
