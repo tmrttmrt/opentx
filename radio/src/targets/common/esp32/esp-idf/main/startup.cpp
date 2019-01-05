@@ -8,23 +8,20 @@
 #include "esp_system.h"
 #include "esp_timer.h"
 #include "esp_log.h"
-#include <driver/adc.h>
-#include "driver/i2c.h"
+#include "esp_spiffs.h"
 #define HASASSERT
 #include "opentx.h"
 
 
 
 #define MENUS_STACK_SIZE       2000
-#define MIXER_STACK_SIZE       500
+#define MIXER_STACK_SIZE       2000
 #define AUDIO_STACK_SIZE       500
 #define MENU_TASK_PERIOD_TICKS      50/portTICK_PERIOD_MS    // 50ms
 #define MENU_TASK_CORE 0
 #define MIXER_TASK_CORE 1
 
 static const char *TAG = "startup.cpp";
-adc1_channel_t analogPorts[]={ADC1_CHANNEL_0,ADC1_CHANNEL_3,ADC1_CHANNEL_6,ADC1_CHANNEL_7,ADC1_CHANNEL_4,ADC1_CHANNEL_5,(adc1_channel_t) ADC2_CHANNEL_8};
-static_assert(sizeof(analogPorts)/sizeof(adc1_channel_t)==NUM_ANALOGS,"Analog pins assignment issue");
 
 uint16_t getTmr1MHz(){
     return (uint16_t) xTaskGetTickCount ();
@@ -105,12 +102,6 @@ void mixerTask(void * pdata)
 //      CoLeaveMutexSection(mixerMutex);
       DEBUG_TIMER_STOP(debugTimerMixer);
 
-#if defined(STM32) && !defined(SIMU)
-      if (getSelectedUsbMode() == USB_JOYSTICK_MODE) {
-        usbJoystickUpdate();
-      }
-#endif
-
 #if defined(TELEMETRY_FRSKY) || defined(TELEMETRY_MAVLINK)
       DEBUG_TIMER_START(debugTimerTelemetryWakeup);
       telemetryWakeup();
@@ -128,6 +119,7 @@ void mixerTask(void * pdata)
 
       t0 = esp_timer_get_time() - t0;
       if (t0 > maxMixerDuration) maxMixerDuration = t0 ;
+      ESP_LOGI(TAG,"maxMixerDuration %d",maxMixerDuration);
     }
   }
 }
@@ -198,33 +190,6 @@ static void tg0_timer_init(timer_idx_t timer_idx)
     timer_start(TIMER_GROUP_0, timer_idx);
 }
 
-void IRAM_ATTR getADC(){
-    int     read_raw;
-    
-    int channel=0;
-    for(;channel<7;channel++){
-        s_anaFilt[channel]=adc1_get_raw(analogPorts[channel]);
-    }
-    for(;channel<NUM_ANALOGS;channel++){
-        adc2_get_raw((adc2_channel_t)analogPorts[channel], ADC_WIDTH_12Bit, &read_raw);
-        s_anaFilt[channel]=read_raw;
-    }
-    
-}
-
-void initADC(){
-    adc1_config_width(ADC_WIDTH_BIT_12);
-    
-    int channel=0;
-    for(;channel<7;channel++){
-        adc1_config_channel_atten(analogPorts[channel], ADC_ATTEN_DB_11);
-    }
-    for(;channel<NUM_ANALOGS;channel++){
-        adc2_config_channel_atten((adc2_channel_t)analogPorts[channel], ADC_ATTEN_DB_11);
-    }
-    
-}
-
 
 uint16_t stackAvailable()
 {
@@ -232,16 +197,17 @@ uint16_t stackAvailable()
 }
 
 extern "C" { 
-  
-void ESPOpentxStart(){
-    boardInit();
-    ESP_LOGI(TAG,"Starting 10ms timer.");
-    tg0_timer_init(TIMER_0); //10 ms interrupt
-    ESP_LOGI(TAG,"Starting tasks.");
-    otxTasksStart();
-    while(1){
-        vTaskDelay(1000/portTICK_PERIOD_MS);
-    };
-}
-
+    void ESPOpentxStart(){
+        boardInit();
+        ESP_LOGI(TAG,"Starting 10ms timer.");
+//        tg0_timer_init(TIMER_0); //10 ms interrupt
+        ESP_LOGI(TAG,"Starting tasks.");
+//        otxTasksStart();
+        uint8_t buff[64];
+        eepromReadBlock(buff, 0, 64);
+        eepromReadBlock(buff, 128, 64);
+        while(1){
+            vTaskDelay(1000/portTICK_PERIOD_MS);
+        };
+    }
 }

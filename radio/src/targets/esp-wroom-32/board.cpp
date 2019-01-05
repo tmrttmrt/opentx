@@ -23,9 +23,10 @@
 void boardInit()
 {
 #if !defined(SIMU)
+initFS();
 initKeys();
 initADC();
-
+eepromInit();
 
 #endif
 }

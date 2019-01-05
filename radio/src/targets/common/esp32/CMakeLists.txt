@@ -7,7 +7,6 @@ set(TELEMETRY "NONE" CACHE STRING "Telemetry Type (${TELEMETRY_TYPES})")
 set_property(CACHE TELEMETRY PROPERTY STRINGS ${TELEMETRY_TYPES})
 
 add_definitions(-DLCD_${LCD})
-set(PULSES_SRC pulses_esp32.cpp)
 include_directories(targets/common/esp32)
 include_directories($ENV{IDF_PATH}/components/esp32/include $ENV{IDF_PATH}/components/soc/include)
 if(AUDIO)

@@ -49,7 +49,7 @@ void initKeys(){
         i2c_master_stop(cmd);
         ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 2);
         if(ESP_OK!=ret){
-            ESP_LOGI(TAG,"i2c write error.");
+            ESP_LOGE(TAG,"i2c write error.");
         }
         i2c_master_start(cmd);
         i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
@@ -68,11 +68,11 @@ void initKeys(){
         i2c_master_stop(cmd);
         ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 2);
         if(ESP_OK!=ret){
-            ESP_LOGI(TAG,"i2c write error.");
+            ESP_LOGE(TAG,"i2c write error.");
         }
         i2c_cmd_link_delete(cmd);
     } else {
-        ESP_LOGI(TAG,"i2c driver install error.");
+        ESP_LOGE(TAG,"i2c driver install error.");
    }
                           
 }
@@ -80,6 +80,7 @@ void initKeys(){
 uint8_t IRAM_ATTR readI2CGPIO(uint8_t addr){
     uint8_t dataa;
     uint8_t datab;
+    return 0;
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (addr << 1) | I2C_MASTER_READ, true);
@@ -89,7 +90,7 @@ uint8_t IRAM_ATTR readI2CGPIO(uint8_t addr){
     i2c_master_stop(cmd);
     esp_err_t ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 2);
     if(ESP_OK!=ret){
-        ESP_LOGI(TAG,"i2c read error.\n");
+        ESP_LOGE(TAG,"i2c read error.");
     }
     i2c_cmd_link_delete(cmd);
     return dataa & ((int16_t)datab)<<8;
@@ -97,6 +98,7 @@ uint8_t IRAM_ATTR readI2CGPIO(uint8_t addr){
 
 uint8_t IRAM_ATTR readI2CGPIO(uint8_t addr, uint8_t port){
     uint8_t data;
+    return 0;
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (addr << 1) | I2C_MASTER_READ, true);
@@ -105,7 +107,7 @@ uint8_t IRAM_ATTR readI2CGPIO(uint8_t addr, uint8_t port){
     i2c_master_stop(cmd);
     esp_err_t ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 2);
     if(ESP_OK!=ret){
-        ESP_LOGI(TAG,"i2c read error.\n");
+        ESP_LOGE(TAG,"i2c read error.\n");
     }
     i2c_cmd_link_delete(cmd);
     return data;

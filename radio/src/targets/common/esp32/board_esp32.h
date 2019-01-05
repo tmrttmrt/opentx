@@ -3,6 +3,14 @@
 uint16_t getTmr1MHz();
 void initADC();
 void initKeys();
+void eepromInit();
+#ifdef __cplusplus
+extern "C" {
+#endif
+void initFS();
+#ifdef __cplusplus
+}
+#endif
 
 enum Analogs {
   STICK1,
@@ -18,10 +26,5 @@ enum Analogs {
 };
 
 
-//File system
-
-typedef struct {
-    int16_t dummy;
-} FIL;
 
 #endif

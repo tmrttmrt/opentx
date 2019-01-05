@@ -21,6 +21,7 @@
 #include "opentx.h"
 
 uint8_t s_pulses_paused = 0;
+uint8_t s_current_protocol[1] = { 255 };
 
 void startPulses()
 {

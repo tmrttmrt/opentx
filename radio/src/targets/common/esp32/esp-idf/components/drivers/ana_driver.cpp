@@ -36,7 +36,7 @@ void IRAM_ATTR getADC(){
     int     read_raw;
     
     int channel=0;
-    for(;channel<7;channel++){
+    for(;channel<6;channel++){
         s_anaFilt[channel]=adc1_get_raw(analogPorts[channel]);
     }
     for(;channel<NUM_ANALOGS;channel++){
@@ -47,10 +47,11 @@ void IRAM_ATTR getADC(){
 }
 
 void initADC(){
+    ESP_LOGI(TAG,"Configuring ADCs ...");
     adc1_config_width(ADC_WIDTH_BIT_12);
     
     int channel=0;
-    for(;channel<7;channel++){
+    for(;channel<6;channel++){
         adc1_config_channel_atten(analogPorts[channel], ADC_ATTEN_DB_11);
     }
     for(;channel<NUM_ANALOGS;channel++){

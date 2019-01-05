@@ -825,7 +825,7 @@ Text Label 3550 7700 1    42   ~ 0
 SW_AilDR
 Text Label 3250 7700 1    42   ~ 0
 SW_ThCut
-Text Label 3450 7700 1    42   ~ 0
+Text Label 3350 7700 1    42   ~ 0
 SW_RudDR
 Text Label 3150 7700 1    42   ~ 0
 SW_Gear
@@ -833,7 +833,7 @@ Text Label 5950 5050 2    42   ~ 0
 Key_ESC
 Text Label 5950 5150 2    42   ~ 0
 Key_MENU
-Text Label 3350 7700 1    42   ~ 0
+Text Label 3450 7700 1    42   ~ 0
 SW_EleDR
 Text Label 5950 4750 2    42   ~ 0
 Key_▲
@@ -1103,14 +1103,12 @@ Wire Wire Line
 Wire Wire Line
 	3250 7350 3250 7700
 Wire Wire Line
-	3350 7350 3350 7700
-Wire Wire Line
 	6750 2050 6750 2100
 Wire Wire Line
 	6750 2100 6900 2100
 Connection ~ 6750 2650
 Wire Wire Line
-	3450 7350 3450 7700
+	3350 7350 3350 7700
 Wire Wire Line
 	2500 1250 2350 1250
 Connection ~ 1500 1250
@@ -1876,4 +1874,6 @@ Wire Wire Line
 	3100 4550 3450 4550
 Wire Wire Line
 	3100 4650 3450 4650
+Wire Wire Line
+	3450 7350 3450 7700
 $EndSCHEMATC
