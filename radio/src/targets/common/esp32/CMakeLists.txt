@@ -6,10 +6,6 @@ set(TELEMETRY_TYPES NONE MAVLINK ARDUPILOT FRSKY FRSKY_SPORT TELEMETREZ NMEA)
 set(TELEMETRY "NONE" CACHE STRING "Telemetry Type (${TELEMETRY_TYPES})")
 set_property(CACHE TELEMETRY PROPERTY STRINGS ${TELEMETRY_TYPES})
 
-set(SRC
-  ${SRC}
-  main_esp32.cpp
-)
 add_definitions(-DLCD_${LCD})
 set(PULSES_SRC pulses_esp32.cpp)
 include_directories(targets/common/esp32)

@@ -18,5 +18,10 @@ enum Analogs {
 };
 
 
+//File system
+
+typedef struct {
+    int16_t dummy;
+} FIL;
 
 #endif

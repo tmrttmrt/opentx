@@ -5,6 +5,6 @@
 
 COMPONENT_DEPENDS := firmware
 
-COMPONENT_EXTRA_INCLUDES := $(shell cat $(COMPONENT_PATH)/includes.mk)
-CPPFLAGS += $(shell cat $(COMPONENT_PATH)/defines.mk)
+COMPONENT_EXTRA_INCLUDES := $(shell cat $(COMPONENT_PATH)/../firmware/includes.mk)
+CPPFLAGS += $(shell cat $(COMPONENT_PATH)/../firmware/defines.mk)
 

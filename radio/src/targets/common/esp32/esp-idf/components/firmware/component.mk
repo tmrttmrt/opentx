@@ -13,9 +13,9 @@ build: ${COMPONENT_BUILD_DIR}/configured
 	mingw32-make MAKEFLAGS= firmware &&\
 	cp ${COMPONENT_BUILD_DIR}/build/radio/src/libfirmware.a ${COMPONENT_BUILD_DIR}/$(COMPONENT_LIBRARY)
 	grep CXX_DEFINES ${COMPONENT_BUILD_DIR}/build/radio/src/CMakeFiles/firmware.dir/flags.make |\
-	sed -E 's/CXX_DEFINES =\s*//;s/-I//g' > $(COMPONENT_PATH)/../startup/defines.mk
+	sed -E 's/CXX_DEFINES =\s*//;s/-I//g' > $(COMPONENT_PATH)/defines.mk
 	grep CXX_INCLUDES ${COMPONENT_BUILD_DIR}/build/radio/src/CMakeFiles/firmware.dir/flags.make |\
-	sed -E 's/CXX_INCLUDES =\s*//;s_-I(.):_/\l\1_g; s_\\_/_g' > $(COMPONENT_PATH)/../startup/includes.mk
+	sed -E 's/CXX_INCLUDES =\s*//;s_-I(.):_/\l\1_g; s_\\_/_g' > $(COMPONENT_PATH)/includes.mk
 
 clean:
 	cd ${COMPONENT_BUILD_DIR}/build && rm -r *

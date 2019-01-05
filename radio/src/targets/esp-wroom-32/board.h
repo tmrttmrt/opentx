@@ -30,6 +30,7 @@
 #define wdt_disable()
 #define stackPaint()
 #define tasksStart()
+#define DISPLAY_PROGRESS_BAR(x)
 
 void boardInit(void);
 void readKeysAndTrims();
