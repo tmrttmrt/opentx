@@ -4,4 +4,4 @@
 # (Uses default behaviour of compiling all source files in directory, adding 'include' to include path.)
 
 
-CPPFLAGS += -DOTX_EEPROM_SIZE=40960
+CPPFLAGS += -DEEPROM_SIZE=4096

@@ -11,17 +11,16 @@
 static wl_handle_t s_wl_handle = WL_INVALID_HANDLE;
 static const char *TAG = "fs_driver";
 // Mount path for the partition
-const char *base_path = "/spiflash";
+const char *base_path = "/spf";
 
 void initFS(){
-    ESP_LOGI(TAG, "Mounting FAT filesystem");
+    ESP_LOGI(TAG, "Mounting FAT filesystem ...");
     // To mount device we need name of device partition, define base_path
     // and allow format partition in case if it is new one and was not formated before
-    const esp_vfs_fat_mount_config_t mount_config = {
-        .max_files = 4,
-        .format_if_mount_failed = true,
-        .allocation_unit_size = CONFIG_WL_SECTOR_SIZE
-    };
+    esp_vfs_fat_mount_config_t mount_config;        
+    mount_config.max_files = 4;
+    mount_config.format_if_mount_failed = true;
+    mount_config.allocation_unit_size = CONFIG_WL_SECTOR_SIZE;
     esp_err_t err = esp_vfs_fat_spiflash_mount(base_path, "storage", &mount_config, &s_wl_handle);
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "Failed to mount FATFS (%s)", esp_err_to_name(err));

@@ -13,7 +13,7 @@ static const char *TAG = "fs_driver";
 // Mount path for the partition
 const char *base_path = "/spf";
 
-void initFSdis(){
+void initFS(){
     ESP_LOGI(TAG, "Mounting FAT filesystem");
     // To mount device we need name of device partition, define base_path
     // and allow format partition in case if it is new one and was not formated before
@@ -29,7 +29,7 @@ void initFSdis(){
     }
 }
 
-void initFS(){
+void initFSdis(){
 
 ESP_LOGI(TAG, "Initializing SPIFFS");
     
