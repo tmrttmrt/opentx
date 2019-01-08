@@ -24,6 +24,7 @@
 static const char *TAG = "startup.cpp";
 TaskHandle_t xMenusTaskHandle = NULL;
 TaskHandle_t xMixerTaskHandle = NULL;
+portMUX_TYPE mixerMux= portMUX_INITIALIZER_UNLOCKED; 
 
 uint16_t getTmr1MHz(){
     return (uint16_t) xTaskGetTickCount ();
@@ -97,11 +98,11 @@ void mixerTask(void * pdata)
             int64_t t0 = esp_timer_get_time();
 
             DEBUG_TIMER_START(debugTimerMixer);
-            //      CoEnterMutexSection(mixerMutex);
+            vTaskEnterCritical(&mixerMux);
             doMixerCalculations();
             DEBUG_TIMER_START(debugTimerMixerCalcToUsage);
             DEBUG_TIMER_SAMPLE(debugTimerMixerIterval);
-            //      CoLeaveMutexSection(mixerMutex);
+            vTaskExitCritical(&mixerMux);
             DEBUG_TIMER_STOP(debugTimerMixer);
 
 #if defined(TELEMETRY_FRSKY) || defined(TELEMETRY_MAVLINK)

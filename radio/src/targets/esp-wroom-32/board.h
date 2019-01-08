@@ -97,6 +97,10 @@ void lcdInit(void);
   #define UNEXPECTED_SHUTDOWN()   0//(mcusr & (1 << WDRF))
 #endif
 
+//PPM
+//#define INP_E_PPM_IN              4
+#define PPM_TX_GPIO               13
+
 // EEPROM driver
 #define EEPROM_SIZE                  4096
 void eepromReadBlock(uint8_t * buffer, size_t address, size_t size);
