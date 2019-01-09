@@ -23,6 +23,7 @@
 void boardInit()
 {
 #if !defined(SIMU)
+lcdInit();
 initFS();
 initKeys();
 initADC();

@@ -885,8 +885,8 @@ Text Label 3450 4550 2    42   ~ 0
 Rot_2_B
 Text Label 3450 4650 2    42   ~ 0
 Rot_2_A
-Text Label 2600 8150 3    42   ~ 0
-Haptic
+Text Label 2650 6100 1    42   ~ 0
+BUZZER
 Text Label 5950 5350 2    42   ~ 0
 Rot_2_Push
 Text Label 5950 5250 2    42   ~ 0
@@ -898,7 +898,7 @@ Telemetry_RX
 Text Label 1400 8150 3    42   ~ 0
 Hold_Power
 Text Label 2550 6100 1    42   ~ 0
-Buzzer
+LCD_NCS
 Text Label 3450 4450 2    42   ~ 0
 Rot_1_A
 Text Label 3450 4250 2    42   ~ 0
@@ -1087,7 +1087,7 @@ Wire Wire Line
 Wire Wire Line
 	1500 900  1500 1250
 Wire Wire Line
-	2600 8600 2600 8150
+	2650 5650 2650 6100
 Wire Wire Line
 	3100 4750 3550 4750
 Wire Wire Line
@@ -1679,19 +1679,6 @@ Wire Wire Line
 Connection ~ 3900 5350
 Wire Wire Line
 	3900 5350 3900 5700
-$Comp
-L esp-wroom-32-rescue:VCC-MEGA2560 #PWR?
-U 1 1 5D12C4F8
-P 3950 4650
-F 0 "#PWR?" H 3950 4750 30  0001 C CNN
-F 1 "VCC" V 3954 4748 30  0000 L CNN
-F 2 "" H 3950 4650 60  0000 C CNN
-F 3 "" H 3950 4650 60  0000 C CNN
-	1    3950 4650
-	0    -1   -1   0   
-$EndComp
-Wire Wire Line
-	3950 4650 4050 4650
 Wire Wire Line
 	700  5000 1250 5000
 Wire Wire Line
@@ -1876,4 +1863,19 @@ Wire Wire Line
 	3100 4650 3450 4650
 Wire Wire Line
 	3450 7350 3450 7700
+Wire Wire Line
+	3850 5050 3850 4650
+Wire Wire Line
+	3850 4650 4050 4650
+Wire Wire Line
+	3100 5050 3550 5050
+Wire Wire Line
+	3550 5950 3550 5050
+Connection ~ 3550 5050
+Wire Wire Line
+	3550 5050 3850 5050
+Text Label 3550 4950 2    42   ~ 0
+PPM_IN
+Wire Wire Line
+	3100 4950 3550 4950
 $EndSCHEMATC

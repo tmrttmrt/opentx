@@ -19,6 +19,7 @@
  */
 
 #include "driver/rmt.h"
+#include "freertos/task.h"
 #define HASASSERT
 #include "opentx.h"
 
@@ -30,6 +31,8 @@ uint8_t s_current_protocol[1] = { 255 };
 rmt_isr_handle_t handle;
 static portMUX_TYPE rmt_spinlock = portMUX_INITIALIZER_UNLOCKED;
 extern portMUX_TYPE mixerMux; 
+volatile uint32_t nextMixerEndTime = 0;
+#define SCHEDULE_MIXER_END(delay) nextMixerEndTime = esp_timer_get_time()/1000 + (delay)
 
 void IRAM_ATTR setupPulsesPPM(uint8_t proto)
 {
@@ -54,7 +57,7 @@ void IRAM_ATTR setupPulsesPPM(uint8_t proto)
       pulseLevel=0;
       idleLevel=1;
   }
-  vTaskEnterCritical(&mixerMux);
+  taskENTER_CRITICAL_ISR(&mixerMux);
   portENTER_CRITICAL(&rmt_spinlock);
   int j=0;
   volatile rmt_item32_t* pd = RMTMEM.chan[PPM_OUT_RMT_CHANNEL_0].data32;
@@ -81,7 +84,7 @@ void IRAM_ATTR setupPulsesPPM(uint8_t proto)
   pd->duration1 = 0;
   pd->level1 = idleLevel;
   portEXIT_CRITICAL(&rmt_spinlock);
-  vTaskExitCritical(&mixerMux);
+  taskEXIT_CRITICAL_ISR(&mixerMux);
   rmt_set_tx_thr_intr_en(PPM_OUT_RMT_CHANNEL_0, true, j); //Send interrupt SETUP_PULSES_DURATION before the end of the PPM packet
 }
 
@@ -102,8 +105,9 @@ void IRAM_ATTR setupPulses()
       telemetryInit();
     }
 #endif
-
+    rmt_tx_start(PPM_OUT_RMT_CHANNEL_0,true);
     s_current_protocol[0] = required_protocol;
+    
 
     switch (required_protocol) {
 #if defined(DSM2_PPM) // For DSM2=SERIAL, the default: case is executed, below
@@ -165,6 +169,7 @@ void IRAM_ATTR setupPulses()
 #endif
 
     default: // standard PPM protocol
+      SCHEDULE_MIXER_END(g_model.ppmFrameLength-SETUP_PULSES_DURATION/2000);//ms
       setupPulsesPPM(PROTO_PPM);
       break;
   }

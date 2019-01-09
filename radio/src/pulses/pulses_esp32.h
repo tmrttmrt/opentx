@@ -18,21 +18,28 @@
  * GNU General Public License for more details.
  */
 
-#include "opentx.h"
+#ifndef _PULSES_ESP32_H_
+#define _PULSES_ESP32_H_
 
-#if defined(PCBSTD) && defined(VOICE)
-volatile uint8_t LcdLock;
-#define LCD_LOCK() LcdLock = 1
-#define LCD_UNLOCK() LcdLock = 0
-#else
-#define LCD_LOCK()
-#define LCD_UNLOCK()
-#endif
+extern uint8_t s_current_protocol[1];
+extern uint8_t s_pulses_paused;
 
-#if defined(LCD_KS108)
-#include "targets/9x/lcd_ks108_driver.cpp"
-#elif defined(LCD_ST7920)
-#include "targets/9x/lcd_st7920_driver.cpp"
-#else 
-#include "targets/9x/lcd_default_driver.cpp"
-#endif
+extern volatile uint32_t nextMixerEndTime;
+
+extern uint8_t moduleFlag[NUM_MODULES];
+
+#define MAX_MIXER_DELTA (50*16) /* 50ms max as an interval between 2 mixer calculations */
+
+void startPulses();
+inline bool pulsesStarted() { return s_current_protocol[0] != 255; }
+inline void pausePulses() { s_pulses_paused = true; }
+inline void resumePulses() { s_pulses_paused = false; }
+void setupPulses();
+void DSM2_Init();
+void DSM2_Done();
+
+#define SEND_FAILSAFE_NOW()
+#define SEND_FAILSAFE_1S()
+
+#endif // _PULSES_ESP32_H_
+/*eof*/

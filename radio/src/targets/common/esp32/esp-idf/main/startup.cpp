@@ -2,6 +2,7 @@
 #include "esp_types.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_task.h"
 #include "soc/timer_group_struct.h"
 #include "driver/periph_ctrl.h" 
 #include "driver/timer.h"
@@ -14,7 +15,7 @@
 
 
 
-#define MENUS_STACK_SIZE       2000
+#define MENUS_STACK_SIZE       4000
 #define MIXER_STACK_SIZE       2000
 #define AUDIO_STACK_SIZE       500
 #define MENU_TASK_PERIOD_TICKS      50/portTICK_PERIOD_MS    // 50ms
@@ -26,9 +27,6 @@ TaskHandle_t xMenusTaskHandle = NULL;
 TaskHandle_t xMixerTaskHandle = NULL;
 portMUX_TYPE mixerMux= portMUX_INITIALIZER_UNLOCKED; 
 
-uint16_t getTmr1MHz(){
-    return (uint16_t) xTaskGetTickCount ();
-}
 
 void menusTask(void * pvParameters)
 {
@@ -52,8 +50,6 @@ void menusTask(void * pvParameters)
 #endif
 }
 
-uint32_t nextMixerTime[NUM_MODULES];
-
 void mixerTask(void * pdata)
 {
     static uint32_t lastRunTime;
@@ -70,30 +66,24 @@ void mixerTask(void * pdata)
         processSbusInput();
 #endif
 
-        vTaskDelay(2/portTICK_PERIOD_MS);
+        vTaskDelay(1);//1 tick 
         //    if (isForcePowerOffRequested()) {
         //      pwrOff();
         //    }
         
-        TickType_t now = xTaskGetTickCount ();
+        uint32_t now = esp_timer_get_time()/1000;
         bool run = false;
         if ((now - lastRunTime) >= 20) {     // run at least every 20ms
             run = true;
         }
-        else if (now == nextMixerTime[0]) {
+        else if (now >= nextMixerEndTime - 2) {
             run = true;
         }
-#if NUM_MODULES >= 2
-        else if (now == nextMixerTime[1]) {
-            run = true;
-        }
-#endif
         if (!run) {
             continue;  // go back to sleep
         }
 
         lastRunTime = now;
-
         if (!s_pulses_paused) {
             int64_t t0 = esp_timer_get_time();
 
@@ -134,7 +124,7 @@ void otxTasksStart()
     
     ret=xTaskCreatePinnedToCore( menusTask, "menusTask", MENUS_STACK_SIZE, NULL, tskIDLE_PRIORITY, &xMenusTaskHandle, MENU_TASK_CORE );
     ESP_LOGI(TAG,"xTaskCreatePinnedToCore: ret = %d.",ret);
-    ret=xTaskCreatePinnedToCore( mixerTask, "mixerTask", MIXER_STACK_SIZE, NULL, tskIDLE_PRIORITY, &xMixerTaskHandle, MIXER_TASK_CORE );
+    ret=xTaskCreatePinnedToCore( mixerTask, "mixerTask", MIXER_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &xMixerTaskHandle, MIXER_TASK_CORE );
     ESP_LOGI(TAG,"xTaskCreatePinnedToCore: ret = %d.",ret);
 }   
 
@@ -209,5 +199,6 @@ extern "C"   void app_main(){
     eepromReadBlock(buff, 128, 64);
     while(1){
         vTaskDelay(1000/portTICK_PERIOD_MS);
+//        ESP_LOGI(TAG,"maxMixerDuration %d",maxMixerDuration);
     };
 }
