@@ -134,17 +134,11 @@ uint8_t eepromIsTransferComplete();
 #define ROTENC_DIV2                 // rotary encoders resolution/2
 
 // Keys
-#define KEYS_GPIO_REG_MENU        pinl
 #define KEYS_GPIO_PIN_MENU        (1<<4)
-#define KEYS_GPIO_REG_EXIT        pinl
 #define KEYS_GPIO_PIN_EXIT        (1<<5)
-#define KEYS_GPIO_REG_RIGHT       pinl
 #define KEYS_GPIO_PIN_RIGHT       (1<<2)
-#define KEYS_GPIO_REG_LEFT        pinl
 #define KEYS_GPIO_PIN_LEFT        (1<<3)
-#define KEYS_GPIO_REG_UP          pinl
 #define KEYS_GPIO_PIN_UP          (1<<1)
-#define KEYS_GPIO_REG_DOWN        pinl
 #define KEYS_GPIO_PIN_DOWN        (1<<0)
 
 #define IS_SHIFT_KEY(index)       (false)
@@ -205,6 +199,7 @@ enum CalibratedAnalogs {
 
 // Speaker driver
 #if defined(AUDIO)
+#define AUD_DAC_GPIO   2
 #define speakerOn()               //TCCR4A |=  (1 << COM4A0)
 #define speakerOff()              //TCCR4A &= ~(1 << COM4A0)
 #endif

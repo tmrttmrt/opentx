@@ -152,7 +152,6 @@ void lcdSendData( const uint8_t *data, int len)
 void lcdInit()
 {
     esp_err_t ret;
-    spi_device_handle_t spi;
     spi_bus_config_t buscfg;
     buscfg.miso_io_num=PIN_NUM_MISO;
     buscfg.mosi_io_num=PIN_NUM_MOSI;

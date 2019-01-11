@@ -24,6 +24,7 @@ void boardInit()
 {
 #if !defined(SIMU)
 lcdInit();
+initAudio();
 initFS();
 initKeys();
 initADC();

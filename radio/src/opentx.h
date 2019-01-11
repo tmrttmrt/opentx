@@ -1350,11 +1350,9 @@ enum AUDIO_SOUNDS {
   AU_WARNING2,
   AU_WARNING3,
   AU_TRIM_MIDDLE,
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   AU_TRIM_MIN,
   AU_TRIM_MAX,
-#endif
-#if defined(CPUARM)
   AU_STICK1_MIDDLE,
   AU_STICK2_MIDDLE,
   AU_STICK3_MIDDLE,
@@ -1412,7 +1410,7 @@ enum AUDIO_SOUNDS {
 };
 
 #if defined(AUDIO)
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 #include "audio_arm.h"
 #else
 #include "audio_avr.h"

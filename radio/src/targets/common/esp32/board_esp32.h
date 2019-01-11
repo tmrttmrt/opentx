@@ -4,13 +4,8 @@ uint16_t getTmr1MHz();
 void initADC();
 void initKeys();
 void eepromInit();
-#ifdef __cplusplus
-extern "C" {
-#endif
+void initAudio();
 void initFS();
-#ifdef __cplusplus
-}
-#endif
 
 enum Analogs {
   STICK1,

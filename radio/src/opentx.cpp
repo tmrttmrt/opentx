@@ -40,7 +40,7 @@ uint8_t unexpectedShutdown = 0;
 /* ESP32: mixer duration in us */
 uint16_t maxMixerDuration;
 
-#if defined(AUDIO) && !defined(CPUARM)
+#if defined(AUDIO) && !defined(CPUARM) && !defined(CPUESP32)
 audioQueue  audio;
 #endif
 

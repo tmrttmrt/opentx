@@ -22,7 +22,12 @@
 #define _AUDIO_ARM_H_
 
 #include <stddef.h>
+#if defined(CPUESP32)
+#define  audioDisableIrq()
+#define  audioEnableIrq()
+#else
 #include "ff.h"
+#endif
 
 /*
   Implements a bit field, number of bits is set by the template,
@@ -226,7 +231,11 @@ class WavContext {
     AudioFragment fragment;
 
     struct {
+#if defined(CPUESP32)
+      int      file;
+#else
       FIL      file;
+#endif
       uint8_t  codec;
       uint32_t freq;
       uint32_t size;
