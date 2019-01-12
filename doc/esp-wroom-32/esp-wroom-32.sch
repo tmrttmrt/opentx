@@ -847,7 +847,7 @@ Text Label 2850 7700 1    42   ~ 0
 SW_ID2
 Text Label 2950 7700 1    42   ~ 0
 SW_ID1
-Text Label 700  4900 0    42   ~ 0
+Text Label 2650 6100 1    42   ~ 0
 LCD_Light
 Text Label 700  5100 0    42   ~ 0
 LCD_SCL
@@ -885,7 +885,7 @@ Text Label 3450 4550 2    42   ~ 0
 Rot_2_B
 Text Label 3450 4650 2    42   ~ 0
 Rot_2_A
-Text Label 2650 6100 1    42   ~ 0
+Text Label 700  4900 0    42   ~ 0
 BUZZER
 Text Label 5950 5350 2    42   ~ 0
 Rot_2_Push
@@ -1086,8 +1086,6 @@ Wire Wire Line
 	2500 2050 2500 1650
 Wire Wire Line
 	1500 900  1500 1250
-Wire Wire Line
-	2650 5650 2650 6100
 Wire Wire Line
 	3100 4750 3550 4750
 Wire Wire Line
@@ -1682,7 +1680,7 @@ Wire Wire Line
 Wire Wire Line
 	700  5000 1250 5000
 Wire Wire Line
-	700  4900 1250 4900
+	2650 6100 2650 5650
 Wire Wire Line
 	5450 3750 5950 3750
 Wire Wire Line
@@ -1878,4 +1876,6 @@ Text Label 3550 4950 2    42   ~ 0
 PPM_IN
 Wire Wire Line
 	3100 4950 3550 4950
+Wire Wire Line
+	700  4900 1250 4900
 $EndSCHEMATC

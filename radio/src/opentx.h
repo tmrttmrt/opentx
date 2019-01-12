@@ -1273,7 +1273,7 @@ enum FunctionsActive {
 #if defined(SDCARD)
   FUNCTION_LOGS,
 #endif
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   FUNCTION_BACKGND_MUSIC,
   FUNCTION_BACKGND_MUSIC_PAUSE,
 #endif
@@ -1321,14 +1321,14 @@ enum AUDIO_SOUNDS {
 #if defined(CPUARM)
   AU_BYE,
 #endif
-#if defined(VOICE)
+#if defined(VOICE) || defined(CPUESP32)
   AU_THROTTLE_ALERT,
   AU_SWITCH_ALERT,
   AU_BAD_RADIODATA,
 #endif
   AU_TX_BATTERY_LOW,
   AU_INACTIVITY,
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   AU_RSSI_ORANGE,
   AU_RSSI_RED,
   AU_RAS_RED,
@@ -1358,7 +1358,7 @@ enum AUDIO_SOUNDS {
   AU_STICK3_MIDDLE,
   AU_STICK4_MIDDLE,
 #endif
-#if defined(PCBTARANIS) || defined(PCBHORUS)
+#if defined(PCBTARANIS) || defined(PCBHORUS) || defined(CPUESP32)
   AU_POT1_MIDDLE,
   AU_POT2_MIDDLE,
 #if defined(PCBX9E)
@@ -1381,7 +1381,7 @@ enum AUDIO_SOUNDS {
   AU_MIX_WARNING_1,
   AU_MIX_WARNING_2,
   AU_MIX_WARNING_3,
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   AU_TIMER1_ELAPSED,
   AU_TIMER2_ELAPSED,
   AU_TIMER3_ELAPSED,

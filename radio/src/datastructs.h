@@ -397,7 +397,7 @@ PACK(struct GVarData {
  * Timer structure
  */
 
-#if defined(CPUARM)
+#if defined(CPUARM) 
 PACK(struct TimerData {
   int32_t  mode:9;            // timer trigger source -> off, abs, stk, stk%, sw/!sw, !m_sw/!m_sw
   uint32_t start:23;
@@ -409,7 +409,7 @@ PACK(struct TimerData {
   uint32_t direction:1;
   NOBACKUP(char name[LEN_TIMER_NAME]);
 });
-#elif defined(CPUM2560)
+#elif defined(CPUM2560) || defined(CPUESP32)
 PACK(struct TimerData {
   int8_t   mode;            // timer trigger source -> off, abs, stk, stk%, sw/!sw, !m_sw/!m_sw
   uint16_t start;
@@ -894,7 +894,7 @@ PACK(struct TrainerData {
   #define SPLASH_MODE uint8_t splashMode:1; uint8_t splashSpare:2
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) 
   #define EXTRA_GENERAL_FIELDS_ARM \
     NOBACKUP(uint8_t  backlightBright); \
     NOBACKUP(uint32_t globalTimer); \
@@ -915,6 +915,14 @@ PACK(struct TrainerData {
     NOBACKUP(int8_t   varioRange); \
     NOBACKUP(int8_t   varioRepeat); \
     CustomFunctionData customFn[MAX_SPECIAL_FUNCTIONS];
+#endif
+
+#if defined(CPUESP32)
+  #define EXTRA_GENERAL_FIELDS_ESP32 \
+    NOBACKUP(int8_t   beepVolume:4); \
+    NOBACKUP(int8_t   wavVolume:4); \
+    NOBACKUP(int8_t   varioVolume:4); \
+    NOBACKUP(int8_t   backgroundVolume:4); 
 #endif
 
 #if defined(PCBHORUS)
@@ -964,6 +972,8 @@ PACK(struct TrainerData {
     char anaNames[NUM_STICKS+NUM_POTS+NUM_SLIDERS][LEN_ANA_NAME];
 #elif defined(CPUARM)
   #define EXTRA_GENERAL_FIELDS  EXTRA_GENERAL_FIELDS_ARM
+#elif defined(CPUESP32)
+  #define EXTRA_GENERAL_FIELDS  EXTRA_GENERAL_FIELDS_ESP32  
 #elif defined(PXX)
   #define EXTRA_GENERAL_FIELDS uint8_t countryCode;
 #else
@@ -1133,7 +1143,7 @@ static inline void check_struct()
   CHKSIZE(LimitData, 5);
   CHKSIZE(CustomFunctionData, 3);
   CHKSIZE(FlightModeData, 30);
-  CHKSIZE(TimerData, 3);
+  CHKSIZE(TimerData, 6);
   CHKSIZE(SwashRingData, 3);
   CHKSIZE(FrSkyBarData, 3);
   CHKSIZE(FrSkyLineData, 2);

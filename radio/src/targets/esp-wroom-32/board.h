@@ -30,6 +30,7 @@
 #define wdt_disable()
 #define stackPaint()
 #define tasksStart()
+#define audioDefevent(a)
 
 void boardInit(void);
 void readKeysAndTrims();
@@ -199,7 +200,7 @@ enum CalibratedAnalogs {
 
 // Speaker driver
 #if defined(AUDIO)
-#define AUD_DAC_GPIO   2
+#define AUD_DAC_GPIO   26
 #define speakerOn()               //TCCR4A |=  (1 << COM4A0)
 #define speakerOff()              //TCCR4A &= ~(1 << COM4A0)
 #endif

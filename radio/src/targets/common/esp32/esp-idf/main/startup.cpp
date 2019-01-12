@@ -2,6 +2,7 @@
 #include "esp_types.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/semphr.h"
 #include "esp_task.h"
 #include "soc/timer_group_struct.h"
 #include "driver/periph_ctrl.h" 
@@ -15,17 +16,23 @@
 
 
 
-#define MENUS_STACK_SIZE       4000
-#define MIXER_STACK_SIZE       2000
-#define AUDIO_STACK_SIZE       500
+#define MENUS_STACK_SIZE       0x1000
+#define MIXER_STACK_SIZE       0x800
+#define AUDIO_STACK_SIZE       0x800
+#define AUDIO_PLAY_STACK_SIZE       0x800
 #define MENU_TASK_PERIOD_TICKS      50/portTICK_PERIOD_MS    // 50ms
 #define MENU_TASK_CORE 0
 #define MIXER_TASK_CORE 1
+#define AUDIO_TASK_CORE 1
+#define AUDIO_PLAY_TASK_CORE 0
 
 static const char *TAG = "startup.cpp";
 TaskHandle_t xMenusTaskHandle = NULL;
 TaskHandle_t xMixerTaskHandle = NULL;
-portMUX_TYPE mixerMux= portMUX_INITIALIZER_UNLOCKED; 
+TaskHandle_t xAudioTaskHandle = NULL;
+TaskHandle_t xAudioPlayTaskHandle = NULL;
+portMUX_TYPE mixerMux= portMUX_INITIALIZER_UNLOCKED;
+SemaphoreHandle_t audioMutex=NULL;
 
 
 void menusTask(void * pvParameters)
@@ -33,7 +40,7 @@ void menusTask(void * pvParameters)
     TickType_t xLastWakeTime;
     const TickType_t xTimeIncrement = MENU_TASK_PERIOD_TICKS;
     
-    ESP_LOGI(TAG,"Starting menusTask.\n");
+    ESP_LOGI(TAG,"Starting menusTask.");
     opentxInit();
     
     xLastWakeTime = xTaskGetTickCount ();
@@ -117,15 +124,23 @@ void mixerTask(void * pdata)
     }
 }
 
-
 void otxTasksStart()
 {
     BaseType_t ret;
     
     ret=xTaskCreatePinnedToCore( menusTask, "menusTask", MENUS_STACK_SIZE, NULL, tskIDLE_PRIORITY, &xMenusTaskHandle, MENU_TASK_CORE );
-    ESP_LOGI(TAG,"xTaskCreatePinnedToCore: ret = %d.",ret);
+    configASSERT( xMenusTaskHandle );
     ret=xTaskCreatePinnedToCore( mixerTask, "mixerTask", MIXER_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &xMixerTaskHandle, MIXER_TASK_CORE );
-    ESP_LOGI(TAG,"xTaskCreatePinnedToCore: ret = %d.",ret);
+    configASSERT( xMixerTaskHandle );
+    
+    audioMutex = xSemaphoreCreateBinary();
+    if( audioMutex != NULL )
+    {
+        ret=xTaskCreatePinnedToCore( audioTask, "audioTask", AUDIO_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &xAudioTaskHandle, AUDIO_TASK_CORE );
+        configASSERT( xAudioTaskHandle );
+    }
+    ret=xTaskCreatePinnedToCore( audioPlayTask, "audioPlayTask", AUDIO_PLAY_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &xAudioPlayTaskHandle, AUDIO_PLAY_TASK_CORE );
+    configASSERT( xAudioPlayTaskHandle );
 }   
 
 
@@ -199,6 +214,6 @@ extern "C"   void app_main(){
     eepromReadBlock(buff, 128, 64);
     while(1){
         vTaskDelay(1000/portTICK_PERIOD_MS);
-//        ESP_LOGI(TAG,"maxMixerDuration %d",maxMixerDuration);
+        //        ESP_LOGI(TAG,"maxMixerDuration %d",maxMixerDuration);
     };
 }

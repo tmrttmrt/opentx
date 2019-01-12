@@ -6,6 +6,8 @@ void initKeys();
 void eepromInit();
 void initAudio();
 void initFS();
+void setSampleRate(uint32_t frequency);
+void audioPlayTask(void * pdata);
 
 enum Analogs {
   STICK1,

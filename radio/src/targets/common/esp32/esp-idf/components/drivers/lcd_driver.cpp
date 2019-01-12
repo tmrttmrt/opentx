@@ -60,7 +60,7 @@ void lcdSendCtl(const uint8_t cmd)
     t.tx_buffer=&cmd;               //The data is the cmd itself
     t.user=(void*)0;                //D/C needs to be set to 0
     ret=spi_device_transmit(spi, &t);  //Transmit!
-//    assert(ret==ESP_OK);            //Should have had no issues.
+    assert(ret==ESP_OK);            //Should have had no issues.
 }
 
 const static pm_uchar lcdInitSequence[] PROGMEM =
@@ -118,7 +118,7 @@ void dispInit()
     vTaskDelay(100 / portTICK_RATE_MS);
 
     for (uint8_t i=0; i<DIM(lcdInitSequence); i++) {
-        lcdSendCtl(pgm_read_byte(&lcdInitSequence[i])) ;
+        lcdSendCtl(lcdInitSequence[i]) ;
     }
 #if defined(LCD_ERC12864FSF)
     g_eeGeneral.contrast = 0x2D;
@@ -146,13 +146,15 @@ void lcdSendData( const uint8_t *data, int len)
     t.tx_buffer=data;               //Data
     t.user=(void*)1;                //D/C needs to be set to 1
     ret=spi_device_transmit(spi, &t);  //Transmit!
-//    assert(ret==ESP_OK);            //Should have had no issues.
+    assert(ret==ESP_OK);            //Should have had no issues.
 }
 
 void lcdInit()
 {
+    ESP_LOGI(TAG,"lcdInit()");
     esp_err_t ret;
     spi_bus_config_t buscfg;
+    memset(&buscfg, 0, sizeof(buscfg));
     buscfg.miso_io_num=PIN_NUM_MISO;
     buscfg.mosi_io_num=PIN_NUM_MOSI;
     buscfg.sclk_io_num=PIN_NUM_CLK;
@@ -160,6 +162,7 @@ void lcdInit()
     buscfg.quadhd_io_num=-1;
     buscfg.max_transfer_sz=LCD_W;
     spi_device_interface_config_t devcfg;
+    memset(&devcfg, 0, sizeof(devcfg));
     devcfg.clock_speed_hz=10*1000*1000;           //Clock out at 10 MHz
     devcfg.mode=0;                                //SPI mode 0
     devcfg.spics_io_num=PIN_NUM_CS;               //CS pin

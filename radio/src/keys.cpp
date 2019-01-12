@@ -66,7 +66,7 @@ event_t getEvent()
 }
 #endif
 
-void Key::input(bool val)
+void IRAM_ATTR Key::input(bool val)
 {
   // store new value in the bits that hold the key state history (used for debounce)
   uint8_t t_vals = m_vals ;

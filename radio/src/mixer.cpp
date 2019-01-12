@@ -635,7 +635,7 @@ void evalInputs(uint8_t mode)
   evalTrims(); // when no virtual inputs, the trims need the anas array calculated above (when throttle trim enabled)
 
   if (mode == e_perout_mode_normal) {
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
     anaCenter &= g_model.beepANACenter;
     if (((bpanaCenter ^ anaCenter) & anaCenter)) AUDIO_POT_MIDDLE();
 #endif

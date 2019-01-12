@@ -945,7 +945,7 @@ void doLoopCommonActions()
   checkBacklight();
 }
 
-void backlightOn()
+void IRAM_ATTR backlightOn()
 {
   lightOffCounter = ((uint16_t)g_eeGeneral.lightAutoOff*250) << 1;
 }
@@ -2082,7 +2082,7 @@ void opentxResume()
 
   opentxStart(false);
 
-#if defined(CPUARM)
+#if defined(CPUARM) 
   referenceSystemAudioFiles();
 #endif
 
@@ -2646,6 +2646,12 @@ void opentxInit(OPENTX_INIT_ARGS)
   referenceSystemAudioFiles();
   audioQueue.start();
   BACKLIGHT_ENABLE();
+#endif
+
+#if defined(CPUESP32)
+//  referenceSystemAudioFiles();
+  audioQueue.start();
+//  BACKLIGHT_ENABLE();
 #endif
 
 #if defined(PCBSKY9X)
