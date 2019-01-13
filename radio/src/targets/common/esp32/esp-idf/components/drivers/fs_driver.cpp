@@ -17,7 +17,8 @@ void initFS(){
     ESP_LOGI(TAG, "Mounting FAT filesystem ...");
     // To mount device we need name of device partition, define base_path
     // and allow format partition in case if it is new one and was not formated before
-    esp_vfs_fat_mount_config_t mount_config;        
+    esp_vfs_fat_mount_config_t mount_config;
+    memset(&mount_config, 0, sizeof(mount_config));
     mount_config.max_files = 4;
     mount_config.format_if_mount_failed = true;
     mount_config.allocation_unit_size = CONFIG_WL_SECTOR_SIZE;

@@ -175,6 +175,7 @@ static void tg0_timer_init(timer_idx_t timer_idx)
 {
     /* Select and initialize basic parameters of the timer */
     timer_config_t config;
+    memset(&config, 0, sizeof(config));
     config.divider = 16; // TIMER_BASE_CLK/16
     config.counter_dir = TIMER_COUNT_UP;
     config.counter_en = TIMER_PAUSE;
@@ -202,6 +203,8 @@ uint16_t stackAvailable()
     return uxTaskGetStackHighWaterMark(xMenusTaskHandle);
 }
 
+extern "C" void initWiFi();
+
 
 extern "C"   void app_main(){
     boardInit();
@@ -209,6 +212,7 @@ extern "C"   void app_main(){
     tg0_timer_init(TIMER_0); //10 ms interrupt
     ESP_LOGI(TAG,"Starting tasks.");
     otxTasksStart();
+    initWiFi();
     while(1){
         vTaskDelay(1000/portTICK_PERIOD_MS);
         //        ESP_LOGI(TAG,"maxMixerDuration %d",maxMixerDuration);

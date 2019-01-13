@@ -27,7 +27,7 @@ void TelemetryValueWithMin::reset()
 }
 #endif
 
-void TelemetryValueWithMin::set(uint8_t value)
+void IRAM_ATTR TelemetryValueWithMin::set(uint8_t value)
 {
 #if defined(CPUARM)
   if (this->value == 0) {
