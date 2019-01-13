@@ -179,7 +179,7 @@ struct AudioFragment {
     strcpy(file, filename);
   }
 
-  void clear() { memset(this, 0, sizeof(AudioFragment)); };
+  void IRAM_ATTR clear() { memset(this, 0, sizeof(AudioFragment)); };
 };
 
 class ToneContext {
@@ -434,7 +434,7 @@ class AudioFragmentFifo
       return false;
     }
 
-    bool removePromptById(uint8_t id)
+    bool IRAM_ATTR removePromptById(uint8_t id)
     {
       uint8_t i = ridx;
       while (i != widx) {
@@ -455,7 +455,7 @@ class AudioFragmentFifo
       return ridx == nextIdx(widx);
     }
 
-    void clear()
+    void IRAM_ATTR clear()
     {
       widx = ridx;                      // clean the queue
     }

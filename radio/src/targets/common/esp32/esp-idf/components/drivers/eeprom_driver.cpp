@@ -13,29 +13,6 @@
 const char * const eepromFname = "/spf/eeprom.bin";
 static const char *TAG = "eeprom_driver.cpp";
 
-void IRAM_ATTR eepromReadBlockdis(uint8_t * buffer, size_t address, size_t size)
-{
-    ESP_LOGI(TAG,"Reading %d bytes at position %d from '%s'.", size ,address , eepromFname);
-    int fp = open ( eepromFname, O_RDONLY );
-    if (-1==fp) { /* Check if the file has been opened */
-        ESP_LOGE(TAG,"Failed to open ' %s': %d", eepromFname, errno);
-        return;
-    }
-    /*    if (-1==lseek(fp, address, SEEK_SET )) { 
-        close(fp);
-        ESP_LOGE(TAG,"Failed to seek to position %d bytes in '%s': %d",address, eepromFname, errno);
-        return;
-    }  */  
-    size_t br = read (fp,(void *)buffer,  size );
-    if (br != size ) {
-        ESP_LOGE(TAG,"Failed to read %d bytes from '%s': bytes read: %d.", size, eepromFname, br);
-        ESP_LOGE(TAG, "error is %d", errno);
-    }    
-    close(fp);
-    ESP_LOGI(TAG,"Read %d bytes at position %d from '%s'.", br ,address , eepromFname);
-}
-
-
 void IRAM_ATTR eepromReadBlock(uint8_t * buffer, size_t address, size_t size)
 {
     ESP_LOGI(TAG,"Reading %d bytes at position %d from '%s'.", size ,address , eepromFname);
@@ -55,7 +32,7 @@ void IRAM_ATTR eepromReadBlock(uint8_t * buffer, size_t address, size_t size)
         ESP_LOGE(TAG, "error is %d", errno);
     }    
     fclose(fp);
-    ESP_LOGI(TAG,"Read %d bytes at position %d from '%s'.", br ,address , eepromFname);
+//    ESP_LOGI(TAG,"Read %d bytes at position %d from '%s'.", br ,address , eepromFname);
 }
 
 void IRAM_ATTR eepromWriteBlock(uint8_t * buffer, size_t address, size_t size)
@@ -76,7 +53,7 @@ void IRAM_ATTR eepromWriteBlock(uint8_t * buffer, size_t address, size_t size)
         ESP_LOGE(TAG,"Failed to write %d bytes to '%s': bytes written: %d.", size, eepromFname, bw);
     }    
     fclose(fp);
-    ESP_LOGI(TAG,"Wrote %d bytes at position %d to '%s'.", bw ,address , eepromFname);
+//    ESP_LOGI(TAG,"Wrote %d bytes at position %d to '%s'.", bw ,address , eepromFname);
 }
 
 uint8_t eepromIsTransferComplete()

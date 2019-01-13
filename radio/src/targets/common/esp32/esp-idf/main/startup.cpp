@@ -209,9 +209,6 @@ extern "C"   void app_main(){
     tg0_timer_init(TIMER_0); //10 ms interrupt
     ESP_LOGI(TAG,"Starting tasks.");
     otxTasksStart();
-    uint8_t buff[64];
-    eepromReadBlock(buff, 0, 64);
-    eepromReadBlock(buff, 128, 64);
     while(1){
         vTaskDelay(1000/portTICK_PERIOD_MS);
         //        ESP_LOGI(TAG,"maxMixerDuration %d",maxMixerDuration);

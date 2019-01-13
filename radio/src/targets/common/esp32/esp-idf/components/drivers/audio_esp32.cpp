@@ -846,7 +846,7 @@ bool AudioQueue::isPlaying(uint8_t id)
          fragmentsFifo.hasPromptId(id);
 }
 
-void AudioQueue::playTone(uint16_t freq, uint16_t len, uint16_t pause, uint8_t flags, int8_t freqIncr)
+void IRAM_ATTR AudioQueue::playTone(uint16_t freq, uint16_t len, uint16_t pause, uint8_t flags, int8_t freqIncr)
 {
 #if defined(SIMU) && !defined(SIMU_AUDIO)
   return;
@@ -879,7 +879,7 @@ void AudioQueue::playTone(uint16_t freq, uint16_t len, uint16_t pause, uint8_t f
 }
 
 #if defined(SDCARD)
-void AudioQueue::playFile(const char * filename, uint8_t flags, uint8_t id)
+void IRAM_ATTR AudioQueue::playFile(const char * filename, uint8_t flags, uint8_t id)
 {
 #if defined(SIMU)
   TRACE("playFile(\"%s\", flags=%x, id=%d)", filename, flags, id);
@@ -916,7 +916,7 @@ void AudioQueue::playFile(const char * filename, uint8_t flags, uint8_t id)
   CoLeaveMutexSection(audioMutex);
 }
 
-void AudioQueue::stopPlay(uint8_t id)
+void IRAM_ATTR AudioQueue::stopPlay(uint8_t id)
 {
 #if defined(SIMU)
   TRACE("stopPlay(id=%d)", id);
@@ -1052,7 +1052,7 @@ void audioTimerCountdown(uint8_t timer, int value)
 #endif
 }
 
-void audioEvent(unsigned int index)
+void IRAM_ATTR audioEvent(unsigned int index)
 {
   if (index == AU_NONE)
     return;

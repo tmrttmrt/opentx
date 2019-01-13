@@ -2321,7 +2321,7 @@ FORCEINLINE void DSM2_USART_vect()
 }
 #endif
 
-#if !defined(SIMU) && !defined(CPUARM)
+#if !defined(SIMU) && !defined(CPUARM) && !defined(CPUESP32)
 
 #if defined(TELEMETRY_FRSKY)
 

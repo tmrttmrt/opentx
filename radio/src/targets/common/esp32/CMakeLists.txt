@@ -54,10 +54,6 @@ If you downloaded this project as a ZIP file, please instead run
 'git clone --recursive https://github.com/opentx/opentx.git'")
       endif()
   endif()
-  set(FIRMWARE_SRC
-    ${FIRMWARE_SRC}
-    targets/common/avr/telemetry_driver.cpp
-    )
   set(SRC ${SRC} telemetry/mavlink.cpp)
   set(GUI_SRC ${GUI_SRC} view_mavlink.cpp)
   math(EXPR EEPROM_VARIANT ${EEPROM_VARIANT}+${MAVLINK_VARIANT})
@@ -75,10 +71,6 @@ if(TELEMETRY STREQUAL FRSKY OR TELEMETRY STREQUAL FRSKY_SPORT OR TELEMETRY STREQ
   option(VARIO "Vario support" ON)
   add_definitions(-DTELEMETRY_FRSKY)
   set(SRC ${SRC} telemetry/telemetry.cpp telemetry/telemetry_holders.cpp telemetry/frsky.cpp telemetry/frsky_d.cpp)
-  set(FIRMWARE_SRC
-    ${FIRMWARE_SRC}
-    targets/common/avr/telemetry_driver.cpp
-    )
   set(GUI_SRC ${GUI_SRC} view_telemetry.cpp)
   if(FRSKY_HUB)
     add_definitions(-DFRSKY_HUB)
