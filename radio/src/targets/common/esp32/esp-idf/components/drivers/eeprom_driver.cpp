@@ -10,7 +10,7 @@
 #define HASASSERT
 #include "opentx.h"
 
-const char * const eepromFname = "/spf/eeprom.bin";
+const char * const eepromFname = "/flash/eeprom.bin";
 static const char *TAG = "eeprom_driver.cpp";
 
 void IRAM_ATTR eepromReadBlock(uint8_t * buffer, size_t address, size_t size)

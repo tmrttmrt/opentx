@@ -37,7 +37,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
-//#ifdef CONFIG_MICROPY_USE_FTPSERVER
+
 
 typedef enum {
     E_FTP_STE_DISABLED = 0,
@@ -57,10 +57,8 @@ typedef enum {
 } ftp_substate_t;
 
 #define FTP_USER_PASS_LEN_MAX	32
-#define FTP_DEF_USER            "micro"
-#define FTP_DEF_PASS            "python"
 #define FTP_MUTEX_TIMEOUT_MS    1000
-#define FTP_CMD_TIMEOUT_MS      (CONFIG_MICROPY_FTPSERVER_TIMEOUT*1000)
+#define FTP_CMD_TIMEOUT_MS      (FTPSERVER_TIMEOUT*1000)
 
 extern const char *FTP_TAG;
 extern char ftp_user[FTP_USER_PASS_LEN_MAX + 1];
@@ -82,6 +80,5 @@ bool ftp_terminate (void);
 bool ftp_stop_requested();
 int32_t ftp_get_maxstack (void);
 
-//#endif
 
 #endif /* FTP_H_ */

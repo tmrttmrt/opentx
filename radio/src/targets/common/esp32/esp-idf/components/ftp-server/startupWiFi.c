@@ -20,7 +20,7 @@
 #define FTP_SERVER_TASK_CORE 0
 #define FTP_SERVER_STACK_SIZE       0x1000
 
-TaskHandle_t xFTPServerTaskHandle = NULL;
+extern TaskHandle_t FtpTaskHandle;
 static const char *TAG = "startupWiFi.cpp";
 static EventGroupHandle_t wifi_event_group;
 tcpip_adapter_if_t tcpip_if[MAX_ACTIVE_INTERFACES];
@@ -133,7 +133,7 @@ exit:
     ftp_deinit();
 exit1:
     ESP_LOGI("[Ftp]", "\nTask terminated!");
-    xFTPServerTaskHandle = NULL;
+    FtpTaskHandle = NULL;
     vSemaphoreDelete(ftp_mutex);
     ftp_mutex = NULL;
     vTaskDelete(NULL);
@@ -209,6 +209,6 @@ void initWiFi(){
     }
     ESP_ERROR_CHECK(ret);
     wifi_init_softap();
-    BaseType_t ret_bt=xTaskCreatePinnedToCore(  ftpServerTask, "ftpServerTask", FTP_SERVER_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &xFTPServerTaskHandle, FTP_SERVER_TASK_CORE );
-    configASSERT( xFTPServerTaskHandle );
+    BaseType_t ret_bt=xTaskCreatePinnedToCore(  ftpServerTask, "ftpServerTask", FTP_SERVER_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &FtpTaskHandle, FTP_SERVER_TASK_CORE );
+    configASSERT( FtpTaskHandle );
 }

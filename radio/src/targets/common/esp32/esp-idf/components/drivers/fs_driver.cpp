@@ -11,7 +11,7 @@
 static wl_handle_t s_wl_handle = WL_INVALID_HANDLE;
 static const char *TAG = "fs_driver";
 // Mount path for the partition
-const char *base_path = "/spf";
+const char *base_path = "/flash";
 
 void initFS(){
     ESP_LOGI(TAG, "Mounting FAT filesystem ...");
