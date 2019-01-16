@@ -1,11 +1,69 @@
 EESchema-LIBRARY Version 2.4
 #encoding utf-8
 #
-# Device_C
+# esp-wroom-32-rescue_+BATT-power
 #
-DEF Device_C C 0 10 N Y 1 F N
+DEF esp-wroom-32-rescue_+BATT-power #PWR 0 0 Y Y 1 F P
+F0 "#PWR" 0 -150 50 H I C CNN
+F1 "esp-wroom-32-rescue_+BATT-power" 0 140 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+DRAW
+P 2 0 1 0 -30 50 0 100 N
+P 2 0 1 0 0 0 0 100 N
+P 2 0 1 0 0 100 30 50 N
+X +BATT 1 0 0 0 U 50 50 1 1 W N
+ENDDRAW
+ENDDEF
+#
+# esp-wroom-32-rescue_4066-MEGA2560
+#
+DEF esp-wroom-32-rescue_4066-MEGA2560 U 0 0 Y Y 4 F N
+F0 "U" 200 -149 40 H V C CNN
+F1 "esp-wroom-32-rescue_4066-MEGA2560" 200 150 40 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+P 3 0 1 0 -100 -150 0 -50 0 -50 N
+P 4 0 1 0 -100 0 100 100 100 -100 -100 0 N
+P 4 0 1 0 -100 100 100 0 -100 -100 -100 100 N
+X V+ 14 0 250 200 D 30 30 0 1 W
+X V- 7 0 -250 200 U 30 30 0 1 W
+X I/O 1 -300 0 200 R 40 40 1 1 P
+X ON 13 -300 -150 200 R 40 40 1 1 I
+X O/I 2 300 0 200 L 40 40 1 1 P
+X O/I 3 300 0 200 L 40 40 2 1 P
+X I/O 4 -300 0 200 R 40 40 2 1 P
+X ON 5 -300 -150 200 R 40 40 2 1 I
+X ON 6 -300 -150 200 R 40 40 3 1 I
+X I/O 8 -300 0 200 R 40 40 3 1 P
+X O/I 9 300 0 200 L 40 40 3 1 P
+X O/I 10 300 0 200 L 40 40 4 1 P
+X I/O 11 -300 0 200 R 40 40 4 1 P
+X ON 12 -300 -150 200 R 40 40 4 1 I
+ENDDRAW
+ENDDEF
+#
+# esp-wroom-32-rescue_7805-MEGA2560
+#
+DEF esp-wroom-32-rescue_7805-MEGA2560 U 0 30 N Y 1 F N
+F0 "U" 150 -196 60 H V C CNN
+F1 "esp-wroom-32-rescue_7805-MEGA2560" 0 200 60 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+S -200 -150 200 150 0 1 0 N
+X GND GND 0 -250 100 U 40 40 1 1 I
+X VI VI -400 50 200 R 40 40 1 1 I
+X VO VO 400 50 200 L 40 40 1 1 w
+ENDDRAW
+ENDDEF
+#
+# esp-wroom-32-rescue_C-Device
+#
+DEF esp-wroom-32-rescue_C-Device C 0 10 N Y 1 F N
 F0 "C" 25 100 50 H V L CNN
-F1 "Device_C" 25 -100 50 H V L CNN
+F1 "esp-wroom-32-rescue_C-Device" 25 -100 50 H V L CNN
 F2 "" 38 -150 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -19,51 +77,44 @@ X ~ 2 0 -150 110 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# Device_LED
+# esp-wroom-32-rescue_CONN_1-MEGA2560
 #
-DEF Device_LED D 0 40 N N 1 F N
-F0 "D" 0 100 50 H V C CNN
-F1 "Device_LED" 0 -100 50 H V C CNN
-F2 "" 0 0 50 H I C CNN
-F3 "" 0 0 50 H I C CNN
-$FPLIST
- LED*
- LED_SMD:*
- LED_THT:*
-$ENDFPLIST
+DEF ~esp-wroom-32-rescue_CONN_1-MEGA2560 P 0 30 N N 1 F N
+F0 "P" 80 0 40 H V L CNN
+F1 "esp-wroom-32-rescue_CONN_1-MEGA2560" 0 55 30 H I C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
 DRAW
-P 2 0 1 8 -50 -50 -50 50 N
-P 2 0 1 0 -50 0 50 0 N
-P 4 0 1 8 50 -50 50 50 -50 0 50 -50 N
-P 5 0 1 0 -120 -30 -180 -90 -150 -90 -180 -90 -180 -60 N
-P 5 0 1 0 -70 -30 -130 -90 -100 -90 -130 -90 -130 -60 N
-X K 1 -150 0 100 R 50 50 1 1 P
-X A 2 150 0 100 L 50 50 1 1 P
+C 0 0 31 0 1 0 N
+P 2 0 1 0 -30 0 -50 0 N
+X 1 1 -150 0 100 R 60 60 1 1 P
 ENDDRAW
 ENDDEF
 #
-# Device_R
+# esp-wroom-32-rescue_DIODESCH-MEGA2560
 #
-DEF Device_R R 0 0 N Y 1 F N
-F0 "R" 80 0 50 V V C CNN
-F1 "Device_R" 0 0 50 V V C CNN
-F2 "" -70 0 50 V I C CNN
-F3 "" 0 0 50 H I C CNN
+DEF esp-wroom-32-rescue_DIODESCH-MEGA2560 D 0 40 N N 1 F N
+F0 "D" 0 100 40 H V C CNN
+F1 "esp-wroom-32-rescue_DIODESCH-MEGA2560" 0 -100 40 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
 $FPLIST
- R_*
+ D?
+ S*
 $ENDFPLIST
 DRAW
-S -40 -100 40 100 0 1 10 N
-X ~ 1 0 150 50 D 50 50 1 1 P
-X ~ 2 0 -150 50 U 50 50 1 1 P
+P 3 0 1 0 -50 50 50 0 -50 -50 F
+P 6 0 1 8 75 25 75 50 50 50 50 -50 25 -50 25 -25 N
+X A 1 -200 0 150 R 40 40 1 1 P
+X K 2 200 0 150 L 40 40 1 1 P
 ENDDRAW
 ENDDEF
 #
-# ESP32-footprints-Shem-Lib_ESP32-WROOM
+# esp-wroom-32-rescue_ESP32-WROOM-ESP32-footprints-Shem-Lib
 #
-DEF ESP32-footprints-Shem-Lib_ESP32-WROOM U 0 40 Y Y 1 F N
+DEF esp-wroom-32-rescue_ESP32-WROOM-ESP32-footprints-Shem-Lib U 0 40 Y Y 1 F N
 F0 "U" -700 1250 60 H V C CNN
-F1 "ESP32-footprints-Shem-Lib_ESP32-WROOM" 500 1250 60 H V C CNN
+F1 "esp-wroom-32-rescue_ESP32-WROOM-ESP32-footprints-Shem-Lib" 500 1250 60 H V C CNN
 F2 "ESP32-footprints-Lib:ESP32-WROOM" 350 1350 60 H I C CNN
 F3 "" -450 450 60 H I C CNN
 DRAW
@@ -111,11 +162,60 @@ X IO33 9 -950 -100 200 R 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-# Interface_Expansion_MCP23017_SP
+# esp-wroom-32-rescue_GND-MEGA2560
 #
-DEF Interface_Expansion_MCP23017_SP U 0 40 Y Y 1 F N
+DEF ~esp-wroom-32-rescue_GND-MEGA2560 #PWR 0 0 Y Y 1 F P
+F0 "#PWR" 0 0 30 H I C CNN
+F1 "esp-wroom-32-rescue_GND-MEGA2560" 0 -70 30 H I C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+P 4 0 1 0 -50 0 0 -50 50 0 -50 0 N
+X GND 1 0 0 0 U 30 30 1 1 W N
+ENDDRAW
+ENDDEF
+#
+# esp-wroom-32-rescue_GND-power
+#
+DEF esp-wroom-32-rescue_GND-power #PWR 0 0 Y Y 1 F P
+F0 "#PWR" 0 -250 50 H I C CNN
+F1 "esp-wroom-32-rescue_GND-power" 0 -150 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+DRAW
+P 6 0 1 0 0 0 0 -50 50 -50 0 -100 -50 -50 0 -50 N
+X GND 1 0 0 0 D 50 50 1 1 W N
+ENDDRAW
+ENDDEF
+#
+# esp-wroom-32-rescue_LED-Device
+#
+DEF esp-wroom-32-rescue_LED-Device D 0 40 N N 1 F N
+F0 "D" 0 100 50 H V C CNN
+F1 "esp-wroom-32-rescue_LED-Device" 0 -100 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+$FPLIST
+ LED*
+ LED_SMD:*
+ LED_THT:*
+$ENDFPLIST
+DRAW
+P 2 0 1 8 -50 -50 -50 50 N
+P 2 0 1 0 -50 0 50 0 N
+P 4 0 1 8 50 -50 50 50 -50 0 50 -50 N
+P 5 0 1 0 -120 -30 -180 -90 -150 -90 -180 -90 -180 -60 N
+P 5 0 1 0 -70 -30 -130 -90 -100 -90 -130 -90 -130 -60 N
+X K 1 -150 0 100 R 50 50 1 1 P
+X A 2 150 0 100 L 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
+# esp-wroom-32-rescue_MCP23017_SP-Interface_Expansion
+#
+DEF esp-wroom-32-rescue_MCP23017_SP-Interface_Expansion U 0 40 Y Y 1 F N
 F0 "U" -450 950 50 H V C CNN
-F1 "Interface_Expansion_MCP23017_SP" 0 0 50 H V C CNN
+F1 "esp-wroom-32-rescue_MCP23017_SP-Interface_Expansion" 0 0 50 H V C CNN
 F2 "Package_DIP:DIP-28_W7.62mm" 200 -1000 50 H I L CNN
 F3 "" 200 -1100 50 H I L CNN
 $FPLIST
@@ -151,95 +251,6 @@ X GPB5 6 700 300 200 L 50 50 1 1 B
 X GPB6 7 700 200 200 L 50 50 1 1 B
 X GPB7 8 700 100 200 L 50 50 1 1 B
 X VDD 9 0 1100 200 D 50 50 1 1 W
-ENDDRAW
-ENDDEF
-#
-# esp-wroom-32-rescue_4066-MEGA2560
-#
-DEF esp-wroom-32-rescue_4066-MEGA2560 U 0 0 Y Y 4 F N
-F0 "U" 200 -149 40 H V C CNN
-F1 "esp-wroom-32-rescue_4066-MEGA2560" 200 150 40 H V C CNN
-F2 "" 0 0 60 H V C CNN
-F3 "" 0 0 60 H V C CNN
-DRAW
-P 3 0 1 0 -100 -150 0 -50 0 -50 N
-P 4 0 1 0 -100 0 100 100 100 -100 -100 0 N
-P 4 0 1 0 -100 100 100 0 -100 -100 -100 100 N
-X V+ 14 0 250 200 D 30 30 0 1 W
-X V- 7 0 -250 200 U 30 30 0 1 W
-X I/O 1 -300 0 200 R 40 40 1 1 P
-X ON 13 -300 -150 200 R 40 40 1 1 I
-X O/I 2 300 0 200 L 40 40 1 1 P
-X O/I 3 300 0 200 L 40 40 2 1 P
-X I/O 4 -300 0 200 R 40 40 2 1 P
-X ON 5 -300 -150 200 R 40 40 2 1 I
-X ON 6 -300 -150 200 R 40 40 3 1 I
-X I/O 8 -300 0 200 R 40 40 3 1 P
-X O/I 9 300 0 200 L 40 40 3 1 P
-X O/I 10 300 0 200 L 40 40 4 1 P
-X I/O 11 -300 0 200 R 40 40 4 1 P
-X ON 12 -300 -150 200 R 40 40 4 1 I
-ENDDRAW
-ENDDEF
-#
-# esp-wroom-32-rescue_7805-MEGA2560
-#
-DEF esp-wroom-32-rescue_7805-MEGA2560 U 0 30 N Y 1 F N
-F0 "U" 150 -196 60 H V C CNN
-F1 "esp-wroom-32-rescue_7805-MEGA2560" 0 200 60 H V C CNN
-F2 "" 0 0 60 H V C CNN
-F3 "" 0 0 60 H V C CNN
-DRAW
-S -200 -150 200 150 0 1 0 N
-X GND GND 0 -250 100 U 40 40 1 1 I
-X VI VI -400 50 200 R 40 40 1 1 I
-X VO VO 400 50 200 L 40 40 1 1 w
-ENDDRAW
-ENDDEF
-#
-# esp-wroom-32-rescue_CONN_1-MEGA2560
-#
-DEF ~esp-wroom-32-rescue_CONN_1-MEGA2560 P 0 30 N N 1 F N
-F0 "P" 80 0 40 H V L CNN
-F1 "esp-wroom-32-rescue_CONN_1-MEGA2560" 0 55 30 H I C CNN
-F2 "" 0 0 60 H V C CNN
-F3 "" 0 0 60 H V C CNN
-DRAW
-C 0 0 31 0 1 0 N
-P 2 0 1 0 -30 0 -50 0 N
-X 1 1 -150 0 100 R 60 60 1 1 P
-ENDDRAW
-ENDDEF
-#
-# esp-wroom-32-rescue_DIODESCH-MEGA2560
-#
-DEF esp-wroom-32-rescue_DIODESCH-MEGA2560 D 0 40 N N 1 F N
-F0 "D" 0 100 40 H V C CNN
-F1 "esp-wroom-32-rescue_DIODESCH-MEGA2560" 0 -100 40 H V C CNN
-F2 "" 0 0 60 H V C CNN
-F3 "" 0 0 60 H V C CNN
-$FPLIST
- D?
- S*
-$ENDFPLIST
-DRAW
-P 3 0 1 0 -50 50 50 0 -50 -50 F
-P 6 0 1 8 75 25 75 50 50 50 50 -50 25 -50 25 -25 N
-X A 1 -200 0 150 R 40 40 1 1 P
-X K 2 200 0 150 L 40 40 1 1 P
-ENDDRAW
-ENDDEF
-#
-# esp-wroom-32-rescue_GND-MEGA2560
-#
-DEF ~esp-wroom-32-rescue_GND-MEGA2560 #PWR 0 0 Y Y 1 F P
-F0 "#PWR" 0 0 30 H I C CNN
-F1 "esp-wroom-32-rescue_GND-MEGA2560" 0 -70 30 H I C CNN
-F2 "" 0 0 60 H V C CNN
-F3 "" 0 0 60 H V C CNN
-DRAW
-P 4 0 1 0 -50 0 0 -50 50 0 -50 0 N
-X GND 1 0 0 0 U 30 30 1 1 W N
 ENDDRAW
 ENDDEF
 #
@@ -297,6 +308,23 @@ P 3 0 1 0 0 50 -20 70 20 70 F
 X 1 1 -250 0 100 R 40 40 1 1 P
 X 2 2 0 150 80 D 40 40 1 1 P
 X 3 3 250 0 100 L 40 40 1 1 P
+ENDDRAW
+ENDDEF
+#
+# esp-wroom-32-rescue_R-Device
+#
+DEF esp-wroom-32-rescue_R-Device R 0 0 N Y 1 F N
+F0 "R" 80 0 50 V V C CNN
+F1 "esp-wroom-32-rescue_R-Device" 0 0 50 V V C CNN
+F2 "" -70 0 50 V I C CNN
+F3 "" 0 0 50 H I C CNN
+$FPLIST
+ R_*
+$ENDFPLIST
+DRAW
+S -40 -100 40 100 0 1 10 N
+X ~ 1 0 150 50 D 50 50 1 1 P
+X ~ 2 0 -150 50 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
@@ -409,39 +437,11 @@ X VCC 1 0 0 0 U 20 20 0 0 W N
 ENDDRAW
 ENDDEF
 #
-# power_+BATT
+# esp-wroom-32-rescue_VCC-power
 #
-DEF power_+BATT #PWR 0 0 Y Y 1 F P
+DEF esp-wroom-32-rescue_VCC-power #PWR 0 0 Y Y 1 F P
 F0 "#PWR" 0 -150 50 H I C CNN
-F1 "power_+BATT" 0 140 50 H V C CNN
-F2 "" 0 0 50 H I C CNN
-F3 "" 0 0 50 H I C CNN
-DRAW
-P 2 0 1 0 -30 50 0 100 N
-P 2 0 1 0 0 0 0 100 N
-P 2 0 1 0 0 100 30 50 N
-X +BATT 1 0 0 0 U 50 50 1 1 W N
-ENDDRAW
-ENDDEF
-#
-# power_GND
-#
-DEF power_GND #PWR 0 0 Y Y 1 F P
-F0 "#PWR" 0 -250 50 H I C CNN
-F1 "power_GND" 0 -150 50 H V C CNN
-F2 "" 0 0 50 H I C CNN
-F3 "" 0 0 50 H I C CNN
-DRAW
-P 6 0 1 0 0 0 0 -50 50 -50 0 -100 -50 -50 0 -50 N
-X GND 1 0 0 0 D 50 50 1 1 W N
-ENDDRAW
-ENDDEF
-#
-# power_VCC
-#
-DEF power_VCC #PWR 0 0 Y Y 1 F P
-F0 "#PWR" 0 -150 50 H I C CNN
-F1 "power_VCC" 0 150 50 H V C CNN
+F1 "esp-wroom-32-rescue_VCC-power" 0 150 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
