@@ -5,10 +5,10 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title "OpenTX board based on Arduino MEGA2560"
-Date "6 jan 2017"
+Title "OpenTX board based on Arduino ESP32"
+Date "2019-01-16"
 Rev "0"
-Comp "Copyright F. Aguerre"
+Comp "Copyright F. Aguerre & T. Mertelj"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -26,7 +26,7 @@ F 3 "" H 6350 2900 60  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 5499AE76
 P 6050 2800
 F 0 "#PWR?" H 6050 2800 30  0001 C CNN
@@ -39,7 +39,7 @@ $EndComp
 Text Notes 8050 4100 0    42   ~ 0
 JACK
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 5499ABF7
 P 7850 4450
 F 0 "#PWR?" H 7850 4450 30  0001 C CNN
@@ -52,7 +52,7 @@ $EndComp
 Text Label 7300 4650 0    42   ~ 0
 DSC_PPM
 $Comp
-L Device:C C1
+L esp-wroom-32-rescue:C-Device C1
 U 1 1 5499AA3F
 P 10400 4300
 F 0 "C1" V 10350 4150 50  0000 L CNN
@@ -63,7 +63,7 @@ F 3 "" H 10400 4300 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 549993C2
 P 2500 2600
 F 0 "#PWR?" H 2500 2600 30  0001 C CNN
@@ -74,7 +74,7 @@ F 3 "" H 2500 2600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C C1
+L esp-wroom-32-rescue:C-Device C1
 U 1 1 54998B4F
 P 8350 2350
 F 0 "C1" V 8300 2200 50  0000 L CNN
@@ -85,7 +85,7 @@ F 3 "" H 8350 2350 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C C1
+L esp-wroom-32-rescue:C-Device C1
 U 1 1 54998B49
 P 8100 2350
 F 0 "C1" V 8050 2200 50  0000 L CNN
@@ -96,7 +96,7 @@ F 3 "" H 8100 2350 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 54998B1E
 P 10750 3050
 F 0 "#PWR?" H 10750 3050 30  0001 C CNN
@@ -109,7 +109,7 @@ $EndComp
 Text Label 9950 5150 0    42   ~ 0
 Buzzer
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 549988B6
 P 10200 5650
 F 0 "#PWR?" H 10200 5650 30  0001 C CNN
@@ -122,7 +122,7 @@ $EndComp
 Text Notes 8500 3450 0    60   ~ 0
 Power management
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 5499853A
 P 7850 5750
 F 0 "#PWR?" H 7850 5750 30  0001 C CNN
@@ -133,7 +133,7 @@ F 3 "" H 7850 5750 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 549984D9
 P 8850 6300
 F 0 "#PWR?" H 8850 6300 30  0001 C CNN
@@ -144,7 +144,7 @@ F 3 "" H 8850 6300 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R7
+L esp-wroom-32-rescue:R-Device R7
 U 1 1 54997DEC
 P 8850 5950
 F 0 "R7" V 8930 5950 50  0000 C CNN
@@ -155,7 +155,7 @@ F 3 "" H 8850 5950 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L Device:R R5
+L esp-wroom-32-rescue:R-Device R5
 U 1 1 54997CFE
 P 7850 5400
 F 0 "R5" V 7930 5400 50  0000 C CNN
@@ -166,7 +166,7 @@ F 3 "" H 7850 5400 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L Device:R R4
+L esp-wroom-32-rescue:R-Device R4
 U 1 1 54997CE8
 P 8100 5150
 F 0 "R4" V 8180 5150 50  0000 C CNN
@@ -223,7 +223,7 @@ F 3 "" H 8350 5500 60  0001 C CNN
 	0    -1   1    0   
 $EndComp
 $Comp
-L Device:R R4
+L esp-wroom-32-rescue:R-Device R4
 U 1 1 549943BB
 P 8600 5700
 F 0 "R4" V 8680 5700 50  0000 C CNN
@@ -236,7 +236,7 @@ $EndComp
 Text Label 10900 4000 2    42   ~ 0
 RF_Activated
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 54994281
 P 10150 4500
 F 0 "#PWR?" H 10150 4500 30  0001 C CNN
@@ -247,7 +247,7 @@ F 3 "" H 10150 4500 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R4
+L esp-wroom-32-rescue:R-Device R4
 U 1 1 54994280
 P 9900 4000
 F 0 "R4" V 9980 4000 50  0000 C CNN
@@ -258,7 +258,7 @@ F 3 "" H 9900 4000 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L Device:R R5
+L esp-wroom-32-rescue:R-Device R5
 U 1 1 5499427F
 P 10150 4250
 F 0 "R5" V 10230 4250 50  0000 C CNN
@@ -293,7 +293,7 @@ $EndComp
 Text Label 6450 1050 2    42   ~ 0
 U_batt
 $Comp
-L Device:R R3
+L esp-wroom-32-rescue:R-Device R3
 U 1 1 54994034
 P 6050 1300
 F 0 "R3" V 6130 1300 50  0000 C CNN
@@ -304,7 +304,7 @@ F 3 "" H 6050 1300 60  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L Device:R R4
+L esp-wroom-32-rescue:R-Device R4
 U 1 1 54994033
 P 5800 1050
 F 0 "R4" V 5880 1050 50  0000 C CNN
@@ -315,7 +315,7 @@ F 3 "" H 5800 1050 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 54994032
 P 6050 1650
 F 0 "#PWR?" H 6050 1650 30  0001 C CNN
@@ -330,7 +330,7 @@ Battery voltage reading
 Text Notes 7100 1900 0    60   ~ 0
 Rotary encoders (x2)
 $Comp
-L Device:R R1
+L esp-wroom-32-rescue:R-Device R1
 U 1 1 54993DF7
 P 2750 1650
 F 0 "R1" V 2830 1650 50  0000 C CNN
@@ -341,7 +341,7 @@ F 3 "" H 2750 1650 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L Device:R R1
+L esp-wroom-32-rescue:R-Device R1
 U 1 1 54993D2B
 P 7150 2750
 F 0 "R1" V 7230 2750 50  0000 C CNN
@@ -352,7 +352,7 @@ F 3 "" H 7150 2750 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L Device:C C1
+L esp-wroom-32-rescue:C-Device C1
 U 1 1 54993C14
 P 7850 2350
 F 0 "C1" V 7800 2200 50  0000 L CNN
@@ -363,7 +363,7 @@ F 3 "" H 7850 2350 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 54993C0D
 P 8650 2200
 F 0 "#PWR?" H 8650 2200 30  0001 C CNN
@@ -395,7 +395,7 @@ PPM management
 Text Notes 9650 750  0    60   ~ 0
 LCD backlight (5V)
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 5499359A
 P 9600 1600
 F 0 "#PWR?" H 9600 1600 30  0001 C CNN
@@ -406,7 +406,7 @@ F 3 "" H 9600 1600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C C1
+L esp-wroom-32-rescue:C-Device C1
 U 1 1 54993599
 P 9600 1300
 F 0 "C1" V 9550 1150 50  0000 L CNN
@@ -417,7 +417,7 @@ F 3 "" H 9600 1300 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C C1
+L esp-wroom-32-rescue:C-Device C1
 U 1 1 54993563
 P 10400 1300
 F 0 "C1" V 10350 1150 50  0000 L CNN
@@ -428,7 +428,7 @@ F 3 "" H 10400 1300 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 54993562
 P 10400 1600
 F 0 "#PWR?" H 10400 1600 30  0001 C CNN
@@ -439,7 +439,7 @@ F 3 "" H 10400 1600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 549934C9
 P 10000 1600
 F 0 "#PWR?" H 10000 1600 30  0001 C CNN
@@ -450,7 +450,7 @@ F 3 "" H 10000 1600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:LED .
+L esp-wroom-32-rescue:LED-Device .
 U 1 1 549933C8
 P 10750 1450
 F 0 "." H 10800 1350 50  0000 C CNN
@@ -463,7 +463,7 @@ $EndComp
 Text Notes 6850 750  0    60   ~ 0
 Switches, trims & keybs deboucing (x22)
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 54992E9C
 P 8100 1500
 F 0 "#PWR?" H 8100 1500 30  0001 C CNN
@@ -474,7 +474,7 @@ F 3 "" H 8100 1500 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C C1
+L esp-wroom-32-rescue:C-Device C1
 U 1 1 54992E49
 P 8100 1200
 F 0 "C1" V 8050 1050 50  0000 L CNN
@@ -485,7 +485,7 @@ F 3 "" H 8100 1200 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R1
+L esp-wroom-32-rescue:R-Device R1
 U 1 1 54992E3A
 P 7850 1000
 F 0 "R1" V 7930 1000 50  0000 C CNN
@@ -496,7 +496,7 @@ F 3 "" H 7850 1000 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 54992E1E
 P 6900 1500
 F 0 "#PWR?" H 6900 1500 30  0001 C CNN
@@ -520,7 +520,7 @@ $EndComp
 Text Label 8650 1000 2    42   ~ 0
 M2560_Input
 $Comp
-L power:VCC 1
+L esp-wroom-32-rescue:VCC-power 1
 U 1 1 5498A277
 P 9450 950
 F 0 "1" H 9450 1050 30  0001 C CNN
@@ -544,7 +544,7 @@ $EndComp
 Text Label 2950 2550 0    42   ~ 0
 LCD_Light
 $Comp
-L Device:R .
+L esp-wroom-32-rescue:R-Device .
 U 1 1 5498A214
 P 10750 1900
 F 0 "." V 10750 1900 50  0000 C CNN
@@ -555,7 +555,7 @@ F 3 "" H 10750 1900 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L Device:R R8
+L esp-wroom-32-rescue:R-Device R8
 U 1 1 5498A213
 P 3600 2550
 F 0 "R8" V 3680 2550 50  0000 C CNN
@@ -566,7 +566,7 @@ F 3 "" H 3600 2550 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 54989B15
 P 1100 5300
 F 0 "#PWR?" H 1100 5300 50  0001 C CNN
@@ -588,7 +588,7 @@ F 3 "" H 1600 2500 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:VCC 1
+L esp-wroom-32-rescue:VCC-power 1
 U 1 1 549891B9
 P 1600 2250
 F 0 "1" H 1600 2350 30  0001 C CNN
@@ -599,7 +599,7 @@ F 3 "" H 1600 2250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 549891B8
 P 1600 2750
 F 0 "#PWR?" H 1600 2750 30  0001 C CNN
@@ -643,7 +643,7 @@ F 3 "" H 2200 2050 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R6
+L esp-wroom-32-rescue:R-Device R6
 U 1 1 549891B4
 P 2000 1650
 F 0 "R6" V 2080 1650 50  0000 C CNN
@@ -654,7 +654,7 @@ F 3 "" H 2000 1650 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L power:VCC 1
+L esp-wroom-32-rescue:VCC-power 1
 U 1 1 549891B3
 P 2350 1600
 F 0 "1" H 2350 1700 30  0001 C CNN
@@ -667,7 +667,7 @@ $EndComp
 Text Label 600  2650 0    42   ~ 0
 Sim_Control
 $Comp
-L power:VCC 1
+L esp-wroom-32-rescue:VCC-power 1
 U 1 1 549891AD
 P 1250 2250
 F 0 "1" H 1250 2350 30  0001 C CNN
@@ -678,7 +678,7 @@ F 3 "" H 1250 2250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R6
+L esp-wroom-32-rescue:R-Device R6
 U 1 1 549891AC
 P 2150 2500
 F 0 "R6" V 2230 2500 50  0000 C CNN
@@ -693,7 +693,7 @@ PPM_IN
 Text Label 600  1250 0    42   ~ 0
 PPM_OUT
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 549891A9
 P 850 1800
 F 0 "#PWR?" H 850 1800 30  0001 C CNN
@@ -703,14 +703,12 @@ F 3 "" H 850 1800 60  0001 C CNN
 	1    850  1800
 	1    0    0    -1  
 $EndComp
-Text Label 5950 4850 2    42   ~ 0
+Text Label 5950 4750 2    42   ~ 0
 Key_►
-Text Label 5950 4950 2    42   ~ 0
+Text Label 5950 4850 2    42   ~ 0
 Key_▼
-Text Label 750  8150 3    42   ~ 0
-Voice_Busy
 $Comp
-L Device:R R1
+L esp-wroom-32-rescue:R-Device R1
 U 1 1 54988260
 P 7600 2900
 F 0 "R1" V 7680 2900 50  0000 C CNN
@@ -721,7 +719,7 @@ F 3 "" H 7600 2900 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L Device:R R1
+L esp-wroom-32-rescue:R-Device R1
 U 1 1 5498825E
 P 7600 2650
 F 0 "R1" V 7680 2650 50  0000 C CNN
@@ -732,7 +730,7 @@ F 3 "" H 7600 2650 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L Device:R R4
+L esp-wroom-32-rescue:R-Device R4
 U 1 1 549881F1
 P 6750 2350
 F 0 "R4" V 6830 2350 50  0000 C CNN
@@ -743,7 +741,7 @@ F 3 "" H 6750 2350 60  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L Device:R R4
+L esp-wroom-32-rescue:R-Device R4
 U 1 1 549881F0
 P 6900 2350
 F 0 "R4" V 6980 2350 50  0000 C CNN
@@ -754,7 +752,7 @@ F 3 "" H 6900 2350 60  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L power:VCC 1
+L esp-wroom-32-rescue:VCC-power 1
 U 1 1 549881ED
 P 6750 2050
 F 0 "1" H 6750 2150 30  0001 C CNN
@@ -765,7 +763,7 @@ F 3 "" H 6750 2050 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 549881DD
 P 9150 6300
 F 0 "#PWR?" H 9150 6300 30  0001 C CNN
@@ -776,7 +774,7 @@ F 3 "" H 9150 6300 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R4
+L esp-wroom-32-rescue:R-Device R4
 U 1 1 549881DA
 P 9150 5250
 F 0 "R4" V 9230 5250 50  0000 C CNN
@@ -798,7 +796,7 @@ F 3 "" H 9150 4800 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L Device:R R7
+L esp-wroom-32-rescue:R-Device R7
 U 1 1 549881D8
 P 8900 5000
 F 0 "R7" V 8980 5000 50  0000 C CNN
@@ -811,7 +809,7 @@ $EndComp
 Text Label 7300 6200 0    42   ~ 0
 Hold_Power
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 549881D0
 P 10400 4500
 F 0 "#PWR?" H 10400 4500 30  0001 C CNN
@@ -821,51 +819,51 @@ F 3 "" H 10400 4500 60  0001 C CNN
 	1    10400 4500
 	1    0    0    -1  
 $EndComp
-Text Label 3550 7700 1    42   ~ 0
+Text Label 3550 7600 1    42   ~ 0
 SW_AilDR
-Text Label 3250 7700 1    42   ~ 0
+Text Label 3250 7600 1    42   ~ 0
 SW_ThCut
-Text Label 3350 7700 1    42   ~ 0
+Text Label 3350 7600 1    42   ~ 0
 SW_RudDR
-Text Label 3150 7700 1    42   ~ 0
+Text Label 3150 7600 1    42   ~ 0
 SW_Gear
-Text Label 5950 5050 2    42   ~ 0
+Text Label 5950 4950 2    42   ~ 0
 Key_ESC
-Text Label 5950 5150 2    42   ~ 0
+Text Label 5950 5050 2    42   ~ 0
 Key_MENU
-Text Label 3450 7700 1    42   ~ 0
+Text Label 3450 7600 1    42   ~ 0
 SW_EleDR
-Text Label 5950 4750 2    42   ~ 0
-Key_▲
 Text Label 5950 4650 2    42   ~ 0
+Key_▲
+Text Label 5950 4550 2    42   ~ 0
 Key_◄
 Text Label 700  5200 0    42   ~ 0
 LCD_SI
 Text Label 700  5000 0    42   ~ 0
 LCD_A0
-Text Label 2850 7700 1    42   ~ 0
+Text Label 2850 7600 1    42   ~ 0
 SW_ID2
-Text Label 2950 7700 1    42   ~ 0
+Text Label 2950 7600 1    42   ~ 0
 SW_ID1
 Text Label 2650 6100 1    42   ~ 0
 LCD_Light
 Text Label 700  5100 0    42   ~ 0
 LCD_SCL
-Text Label 5950 4050 2    42   ~ 0
-Trim_LV-►
 Text Label 5950 3950 2    42   ~ 0
-Trim_LV◄-
-Text Label 5950 4250 2    42   ~ 0
-Trim_RV-►
-Text Label 5950 4150 2    42   ~ 0
-Trim_RV◄-
-Text Label 5950 4350 2    42   ~ 0
-Trim_RH◄-
-Text Label 5950 4450 2    42   ~ 0
-Trim_RH-►
-Text Label 5950 3750 2    42   ~ 0
-Trim_LH◄-
+Trim_LV-►
 Text Label 5950 3850 2    42   ~ 0
+Trim_LV◄-
+Text Label 5950 4150 2    42   ~ 0
+Trim_RV-►
+Text Label 5950 4050 2    42   ~ 0
+Trim_RV◄-
+Text Label 5950 4250 2    42   ~ 0
+Trim_RH◄-
+Text Label 5950 4350 2    42   ~ 0
+Trim_RH-►
+Text Label 5950 3650 2    42   ~ 0
+Trim_LH◄-
+Text Label 5950 3750 2    42   ~ 0
 Trim_LH-►
 Text Label 700  4300 0    42   ~ 0
 Stick_LV
@@ -881,36 +879,34 @@ Text Label 700  4400 0    42   ~ 0
 Stick_RV
 Text Label 700  4500 0    42   ~ 0
 Stick_LH
-Text Label 3450 4550 2    42   ~ 0
+Text Label 4250 7600 1    42   ~ 0
 Rot_2_B
-Text Label 3450 4650 2    42   ~ 0
+Text Label 4150 7600 1    42   ~ 0
 Rot_2_A
 Text Label 700  4900 0    42   ~ 0
 BUZZER
-Text Label 5950 5350 2    42   ~ 0
-Rot_2_Push
 Text Label 5950 5250 2    42   ~ 0
+Rot_2_Push
+Text Label 5950 5150 2    42   ~ 0
 Rot_1_Push
 Text Label 3550 4750 2    42   ~ 0
 Telemetry_TX
 Text Label 3550 4850 2    42   ~ 0
 Telemetry_RX
-Text Label 1400 8150 3    42   ~ 0
+Text Label 3750 7600 1    42   ~ 0
 Hold_Power
 Text Label 2550 6100 1    42   ~ 0
-LCD_NCS
-Text Label 3450 4450 2    42   ~ 0
+LCD_N_CS
+Text Label 4350 7600 1    42   ~ 0
 Rot_1_A
-Text Label 3450 4250 2    42   ~ 0
+Text Label 4450 7600 1    42   ~ 0
 Rot_1_B
-Text Label 1150 8150 3    42   ~ 0
+Text Label 3950 7700 1    42   ~ 0
 RF_Activated
-Text Label 1250 8150 3    42   ~ 0
+Text Label 3850 7700 1    42   ~ 0
 DSC_Activated
-Text Label 950  8150 3    42   ~ 0
+Text Label 4050 7700 1    42   ~ 0
 Sim_Control
-Text Label 1050 8150 3    42   ~ 0
------
 Text Label 1850 6100 1    42   ~ 0
 PPM_OUT
 $Comp
@@ -947,7 +943,7 @@ F 3 "" H 3000 900 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:VCC 3.3V
+L esp-wroom-32-rescue:VCC-power 3.3V
 U 1 1 54989ABB
 P 1050 4000
 F 0 "3.3V" H 1050 4100 60  0001 C CNN
@@ -958,7 +954,7 @@ F 3 "" H 1050 4000 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L power:+BATT U?
+L esp-wroom-32-rescue:+BATT-power U?
 U 1 1 549E8260
 P 5450 950
 F 0 "U?" H 5450 900 60  0001 C CNN
@@ -1017,7 +1013,7 @@ F 3 "~" H 6350 2750 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 549E8FF9
 P 10450 3050
 F 0 "#PWR?" H 10450 3050 30  0001 C CNN
@@ -1028,7 +1024,7 @@ F 3 "" H 10450 3050 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R6
+L esp-wroom-32-rescue:R-Device R6
 U 1 1 549E8FFF
 P 10450 2700
 F 0 "R6" V 10530 2700 50  0000 C CNN
@@ -1091,22 +1087,18 @@ Wire Wire Line
 Wire Wire Line
 	3000 4450 3100 4450
 Wire Wire Line
-	1400 8600 1400 8150
+	3950 7250 3950 7700
 Wire Wire Line
-	1150 8600 1150 8150
+	4050 7250 4050 7700
 Wire Wire Line
-	950  8600 950  8150
-Wire Wire Line
-	750  8600 750  8150
-Wire Wire Line
-	3250 7350 3250 7700
+	3250 7250 3250 7600
 Wire Wire Line
 	6750 2050 6750 2100
 Wire Wire Line
 	6750 2100 6900 2100
 Connection ~ 6750 2650
 Wire Wire Line
-	3350 7350 3350 7700
+	3350 7250 3350 7600
 Wire Wire Line
 	2500 1250 2350 1250
 Connection ~ 1500 1250
@@ -1122,13 +1114,11 @@ Wire Wire Line
 Wire Wire Line
 	1850 5650 1850 6100
 Wire Wire Line
-	1050 8600 1050 8150
-Wire Wire Line
 	2550 5650 2550 6100
 Wire Wire Line
 	3100 4850 3550 4850
 Wire Wire Line
-	1250 8600 1250 8150
+	3850 7250 3850 7700
 Wire Wire Line
 	1050 2650 1050 1800
 Wire Notes Line
@@ -1189,7 +1179,7 @@ Connection ~ 8350 4000
 Wire Wire Line
 	1500 900  2400 900 
 $Comp
-L power:+BATT U?
+L esp-wroom-32-rescue:+BATT-power U?
 U 1 1 54DF6192
 P 10800 4700
 F 0 "U?" H 10800 4650 60  0001 C CNN
@@ -1200,7 +1190,7 @@ F 3 "" H 10800 4700 60  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L power:GND GND?
+L esp-wroom-32-rescue:GND-power GND?
 U 1 1 54DF675E
 P 7350 4100
 F 0 "GND?" H 7350 4100 50  0001 C CNN
@@ -1212,10 +1202,8 @@ F 3 "" H 7350 4100 60  0001 C CNN
 $EndComp
 Wire Wire Line
 	7350 4000 7350 4100
-Text Notes 4800 7750 0    42   ~ 0
-NOTA : all features are optional.\nM2560 can properly work without PPM / power management,\nswitch deboucing, stick voltage protection or  rotary encoder.\nMinimum requirement is just LCD and navigation keys. Some\nswitches could be usefull, especially for flight conditions, but\nnot fundamental.
 $Comp
-L Device:LED .
+L esp-wroom-32-rescue:LED-Device .
 U 1 1 5568D052
 P 4200 2550
 F 0 "." H 4250 2450 50  0000 C CNN
@@ -1234,7 +1222,7 @@ Wire Notes Line
 Wire Notes Line
 	4450 2700 3950 2700
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 5568D616
 P 4600 2800
 F 0 "#PWR?" H 4600 2800 30  0001 C CNN
@@ -1251,7 +1239,7 @@ LCD direct backlight (3.3V, 20 mA)
 Text Label 9450 2450 0    42   ~ 0
 LCD_Light
 $Comp
-L Device:R R4
+L esp-wroom-32-rescue:R-Device R4
 U 1 1 5568D86B
 P 10100 2450
 F 0 "R4" V 10180 2450 50  0000 C CNN
@@ -1282,7 +1270,7 @@ F 3 "~" H 5150 2650 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L power:VCC U?
+L esp-wroom-32-rescue:VCC-power U?
 U 1 1 55731CDB
 P 5150 2300
 F 0 "U?" H 5150 2400 60  0001 C CNN
@@ -1293,7 +1281,7 @@ F 3 "" H 5150 2300 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 55731CE2
 P 5150 2950
 F 0 "#PWR?" H 5150 2950 50  0001 C CNN
@@ -1308,7 +1296,7 @@ Wire Wire Line
 Wire Wire Line
 	5150 2900 5150 2950
 $Comp
-L Device:C C1
+L esp-wroom-32-rescue:C-Device C1
 U 1 1 55732064
 P 5500 2850
 F 0 "C1" V 5450 2700 50  0000 L CNN
@@ -1342,7 +1330,7 @@ F 3 "" H 4300 1600 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L esp-wroom-32-rescue:GND-power #PWR?
 U 1 1 567E7379
 P 3850 1850
 F 0 "#PWR?" H 3850 1850 30  0001 C CNN
@@ -1353,7 +1341,7 @@ F 3 "" H 3850 1850 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R8
+L esp-wroom-32-rescue:R-Device R8
 U 1 1 567E74B7
 P 3850 1200
 F 0 "R8" V 3930 1200 50  0000 C CNN
@@ -1364,7 +1352,7 @@ F 3 "" H 3850 1200 60  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L power:+BATT U?
+L esp-wroom-32-rescue:+BATT-power U?
 U 1 1 567E787B
 P 3850 950
 F 0 "U?" H 3850 900 60  0001 C CNN
@@ -1390,18 +1378,6 @@ Wire Wire Line
 	3950 1700 3850 1700
 Wire Wire Line
 	3950 1500 3850 1500
-Text Label 1600 8150 3    42   ~ 0
-Voice_Data
-Wire Wire Line
-	1600 8600 1600 8150
-Text Label 1700 8150 3    42   ~ 0
-Voice_Clock
-Wire Wire Line
-	1700 8600 1700 8150
-Text Label 2500 8150 3    42   ~ 0
-Voice_Reset
-Wire Wire Line
-	2500 8600 2500 8150
 Wire Wire Line
 	1500 1250 1750 1250
 Wire Wire Line
@@ -1425,7 +1401,7 @@ Wire Wire Line
 Wire Wire Line
 	5150 2800 5150 2900
 $Comp
-L ESP32-footprints-Shem-Lib:ESP32-WROOM U1
+L esp-wroom-32-rescue:ESP32-WROOM-ESP32-footprints-Shem-Lib U1
 U 1 1 5C2D33A7
 P 2200 4600
 F 0 "U1" H 2175 5987 60  0000 C CNN
@@ -1602,18 +1578,16 @@ Wire Wire Line
 Wire Wire Line
 	1250 5200 700  5200
 $Comp
-L Interface_Expansion:MCP23017_SP U2
+L esp-wroom-32-rescue:MCP23017_SP-Interface_Expansion U2
 U 1 1 5CECE7B2
-P 4750 4550
-F 0 "U2" H 4750 5828 50  0000 C CNN
-F 1 "MCP23017_SP" H 4750 5737 50  0000 C CNN
-F 2 "Package_DIP:DIP-28_W7.62mm" H 4950 3550 50  0001 L CNN
-F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf" H 4950 3450 50  0001 L CNN
-	1    4750 4550
+P 4750 4450
+F 0 "U2" V 4700 4150 50  0000 C CNN
+F 1 "MCP23017_SP" V 4700 4550 50  0000 C CNN
+F 2 "Package_DIP:DIP-28_W7.62mm" H 4950 3450 50  0001 L CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf" H 4950 3350 50  0001 L CNN
+	1    4750 4450
 	1    0    0    -1  
 $EndComp
-Text Notes 4800 7100 0    42   ~ 0
-LCD supported : ST7565P, ST7565R, ERC12864FSF, ST7920, KS108\nProtocol = 6800, 8 bits parallel mode\n\nLCD pinout labels (may differ, default = ST7565P) :\nRD = (Read) or (ST7920 : Enable)\nWR = (Write) or (ST7920 : Write(0)/Read(1)) or (KS108 : CS2)\nA0 = (R/S register select) or (D/I data/instruction select)\nRST = (RES reset)\nCS = (Chip Select) or (ST7920 : not used) or (KS108 : CS1)
 Wire Wire Line
 	7300 5150 7850 5150
 Wire Wire Line
@@ -1631,12 +1605,12 @@ Wire Wire Line
 $Comp
 L esp-wroom-32-rescue:GND-MEGA2560 #PWR?
 U 1 1 5D013A16
-P 4750 5800
-F 0 "#PWR?" H 4750 5800 30  0001 C CNN
-F 1 "GND" H 4750 5730 30  0001 C CNN
-F 2 "" H 4750 5800 60  0000 C CNN
-F 3 "" H 4750 5800 60  0000 C CNN
-	1    4750 5800
+P 4750 5700
+F 0 "#PWR?" H 4750 5700 30  0001 C CNN
+F 1 "GND" H 4750 5630 30  0001 C CNN
+F 2 "" H 4750 5700 60  0000 C CNN
+F 3 "" H 4750 5700 60  0000 C CNN
+	1    4750 5700
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -1651,36 +1625,22 @@ F 3 "" H 4750 3200 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4750 3200 4750 3450
-Wire Wire Line
-	4750 5800 4750 5700
+	4750 3100 4750 3200
 Wire Wire Line
 	3100 3850 3250 3850
 Wire Wire Line
-	3100 3950 3400 3950
+	3100 3950 3350 3950
 Wire Wire Line
-	4050 5150 3900 5150
+	4050 5500 4750 5500
 Wire Wire Line
-	3900 5700 4750 5700
-Connection ~ 4750 5700
-Wire Wire Line
-	4750 5700 4750 5650
-Wire Wire Line
-	4050 5250 3900 5250
-Wire Wire Line
-	3900 5150 3900 5250
-Connection ~ 3900 5250
-Wire Wire Line
-	3900 5250 3900 5350
-Wire Wire Line
-	4050 5350 3900 5350
-Connection ~ 3900 5350
-Wire Wire Line
-	3900 5350 3900 5700
+	4050 5150 4050 5250
+Connection ~ 4050 5250
 Wire Wire Line
 	700  5000 1250 5000
 Wire Wire Line
 	2650 6100 2650 5650
+Wire Wire Line
+	5450 3650 5950 3650
 Wire Wire Line
 	5450 3750 5950 3750
 Wire Wire Line
@@ -1696,7 +1656,7 @@ Wire Wire Line
 Wire Wire Line
 	5450 4350 5950 4350
 Wire Wire Line
-	5450 4450 5950 4450
+	5450 4550 5950 4550
 Wire Wire Line
 	5450 4650 5950 4650
 Wire Wire Line
@@ -1708,14 +1668,12 @@ Wire Wire Line
 Wire Wire Line
 	5450 5050 5950 5050
 Wire Wire Line
-	5450 5150 5950 5150
+	3550 7250 3550 7600
 Wire Wire Line
-	3550 7350 3550 7700
+	3150 7250 3150 7600
 Wire Wire Line
-	3150 7350 3150 7700
-Wire Wire Line
-	3050 7350 3050 7700
-Text Label 3050 7700 1    42   ~ 0
+	3050 7250 3050 7600
+Text Label 3050 7600 1    42   ~ 0
 SW_Trn
 $Comp
 L esp-wroom-32-rescue:GND-MEGA2560 #PWR?
@@ -1742,13 +1700,11 @@ Wire Wire Line
 Connection ~ 7850 2650
 Connection ~ 8650 4000
 Wire Wire Line
-	3400 3950 3400 3850
+	3350 3950 3350 3750
 Wire Wire Line
-	3400 3850 3700 3850
+	3350 3750 3650 3750
 Wire Wire Line
-	3250 3850 3250 3750
-Wire Wire Line
-	3250 3750 3600 3750
+	3250 3650 3750 3650
 Connection ~ 5150 2900
 Connection ~ 5150 2950
 Wire Wire Line
@@ -1757,28 +1713,25 @@ Connection ~ 6050 2800
 Wire Wire Line
 	6050 2800 6050 2650
 Wire Wire Line
-	4350 5950 4350 5900
-Connection ~ 3600 3750
+	4350 5850 4350 5800
+Connection ~ 3750 3650
 Wire Wire Line
-	3600 3750 4050 3750
+	4450 5850 4450 5700
 Wire Wire Line
-	4450 5950 4450 5800
-Connection ~ 3700 3850
-Wire Wire Line
-	3700 3850 4050 3850
+	3650 3750 4050 3750
 $Comp
 L esp-wroom-32-rescue:VCC-MEGA2560 #PWR?
 U 1 1 5C32810C
-P 4750 6500
-F 0 "#PWR?" H 4750 6600 30  0001 C CNN
-F 1 "VCC" H 4753 6628 30  0000 C CNN
-F 2 "" H 4750 6500 60  0000 C CNN
-F 3 "" H 4750 6500 60  0000 C CNN
-	1    4750 6500
+P 4750 6400
+F 0 "#PWR?" H 4750 6500 30  0001 C CNN
+F 1 "VCC" H 4753 6528 30  0000 C CNN
+F 2 "" H 4750 6400 60  0000 C CNN
+F 3 "" H 4750 6400 60  0000 C CNN
+	1    4750 6400
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4750 6500 4750 6650
+	4750 6400 4750 6550
 $Comp
 L esp-wroom-32-rescue:GND-MEGA2560 #PWR?
 U 1 1 5C3374EC
@@ -1795,87 +1748,123 @@ Wire Wire Line
 Wire Wire Line
 	2500 6650 2500 6800
 Wire Wire Line
-	3050 5950 3050 5850
+	3050 5850 3050 5750
 Wire Wire Line
-	3050 5700 3900 5700
-Connection ~ 3900 5700
+	2950 5850 2950 5750
 Wire Wire Line
-	2950 5950 2950 5850
+	2950 5750 3050 5750
+Connection ~ 3050 5750
 Wire Wire Line
-	2950 5850 3050 5850
-Connection ~ 3050 5850
-Wire Wire Line
-	3050 5850 3050 5700
+	3050 5750 3050 5600
 $Comp
 L esp-wroom-32-rescue:VCC-MEGA2560 #PWR?
 U 1 1 5C366CB1
-P 2850 5900
-F 0 "#PWR?" H 2850 6000 30  0001 C CNN
-F 1 "VCC" H 2853 6028 30  0000 C CNN
-F 2 "" H 2850 5900 60  0000 C CNN
-F 3 "" H 2850 5900 60  0000 C CNN
-	1    2850 5900
+P 2850 5800
+F 0 "#PWR?" H 2850 5900 30  0001 C CNN
+F 1 "VCC" H 2853 5928 30  0000 C CNN
+F 2 "" H 2850 5800 60  0000 C CNN
+F 3 "" H 2850 5800 60  0000 C CNN
+	1    2850 5800
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2850 5900 2850 5950
+	2850 5800 2850 5850
 $Comp
-L Interface_Expansion:MCP23017_SP U?
+L esp-wroom-32-rescue:MCP23017_SP-Interface_Expansion U3
 U 1 1 5C2FC793
-P 3650 6650
-F 0 "U?" H 3650 7928 50  0000 C CNN
-F 1 "MCP23017_SP" H 3650 7837 50  0000 C CNN
-F 2 "Package_DIP:DIP-28_W7.62mm" H 3850 5650 50  0001 L CNN
-F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf" H 3850 5550 50  0001 L CNN
-	1    3650 6650
+P 3650 6550
+F 0 "U3" V 3650 6150 50  0000 C CNN
+F 1 "MCP23017_SP" V 3650 6500 50  0000 C CNN
+F 2 "Package_DIP:DIP-28_W7.62mm" H 3850 5550 50  0001 L CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf" H 3850 5450 50  0001 L CNN
+	1    3650 6550
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	4450 5800 3600 5800
+	4450 5700 3750 5700
 Wire Wire Line
-	4350 5900 3700 5900
+	4350 5800 3650 5800
 Wire Wire Line
-	3700 3850 3700 5900
+	2850 7250 2850 7600
 Wire Wire Line
-	2850 7350 2850 7700
+	2950 7250 2950 7600
 Wire Wire Line
-	2950 7350 2950 7700
+	5450 5150 5950 5150
 Wire Wire Line
 	5450 5250 5950 5250
-Wire Wire Line
-	5450 5350 5950 5350
-Text Label 3350 3750 0    50   ~ 0
+Text Label 3250 3650 0    50   ~ 0
 I2C_SDA
-Text Label 3500 3850 0    50   ~ 0
+Text Label 3350 3750 0    50   ~ 0
 I2C_SCL
 Wire Wire Line
-	3600 3750 3600 5800
+	4450 7250 4450 7600
 Wire Wire Line
-	3100 4250 3450 4250
+	4350 7250 4350 7600
 Wire Wire Line
-	3100 4450 3450 4450
-Connection ~ 3100 4450
+	4250 7250 4250 7600
 Wire Wire Line
-	3100 4550 3450 4550
+	4150 7250 4150 7600
 Wire Wire Line
-	3100 4650 3450 4650
+	3450 7250 3450 7600
 Wire Wire Line
-	3450 7350 3450 7700
+	3950 5050 3950 4550
 Wire Wire Line
-	3850 5050 3850 4650
-Wire Wire Line
-	3850 4650 4050 4650
+	3950 4550 4050 4550
 Wire Wire Line
 	3100 5050 3550 5050
 Wire Wire Line
-	3550 5950 3550 5050
+	3550 5850 3550 5050
 Connection ~ 3550 5050
 Wire Wire Line
-	3550 5050 3850 5050
+	3550 5050 3950 5050
 Text Label 3550 4950 2    42   ~ 0
-PPM_IN
+SD_N_CS
 Wire Wire Line
 	3100 4950 3550 4950
 Wire Wire Line
 	700  4900 1250 4900
+Wire Wire Line
+	3850 5850 3850 4250
+Wire Wire Line
+	3850 4250 3100 4250
+Text Label 3550 4650 2    42   ~ 0
+SD_MISO
+Wire Wire Line
+	3100 4650 3550 4650
+Text Label 3550 4550 2    42   ~ 0
+SD_MOSI
+Wire Wire Line
+	3100 4550 3550 4550
+Text Label 3550 4450 2    42   ~ 0
+SD_SCK
+Wire Wire Line
+	3100 4450 3550 4450
+Wire Wire Line
+	3750 7250 3750 7600
+Wire Wire Line
+	4050 5050 4050 5150
+Wire Wire Line
+	3750 3650 3750 5700
+Wire Wire Line
+	4750 5550 4750 5700
+Connection ~ 4050 5500
+Wire Wire Line
+	4050 5500 4050 5600
+Connection ~ 4750 3200
+Wire Wire Line
+	4750 3200 4750 3350
+Wire Wire Line
+	3250 3650 3250 3850
+Connection ~ 3650 3750
+Wire Wire Line
+	3650 3750 3650 5800
+Wire Wire Line
+	3750 3650 4050 3650
+Connection ~ 4050 5150
+Wire Wire Line
+	4050 5250 4050 5500
+Wire Wire Line
+	3050 5600 4050 5600
+Text Label 3300 5050 0    42   ~ 0
+N_RESET
 $EndSCHEMATC
