@@ -12,6 +12,13 @@ static wl_handle_t s_wl_handle = WL_INVALID_HANDLE;
 static const char *TAG = "fs_driver";
 // Mount path for the partition
 const char *base_path = "/flash";
+const char *sd_base_path = "/sdcard";
+sdmmc_card_t* card;
+
+#define PIN_NUM_MISO GPIO_NUM_5
+#define PIN_NUM_MOSI GPIO_NUM_16
+#define PIN_NUM_CLK  GPIO_NUM_19
+#define PIN_NUM_CS   GPIO_NUM_4
 
 void initFS(){
     ESP_LOGI(TAG, "Mounting FAT filesystem ...");
@@ -29,37 +36,44 @@ void initFS(){
     }
 }
 
-void initFSSPIFFS(){
 
-ESP_LOGI(TAG, "Initializing SPIFFS");
-    
-    esp_vfs_spiffs_conf_t conf = {
-      .base_path = base_path,
-      .partition_label = NULL,
-      .max_files = 5,
-      .format_if_mount_failed = true
+void mountSDCard(){
+    ESP_LOGI(TAG, "Initializing SD card SPI peripheral");
+
+    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
+    host.slot=VSPI_HOST;
+    sdspi_slot_config_t slot_config = SDSPI_SLOT_CONFIG_DEFAULT();
+    slot_config.gpio_miso = PIN_NUM_MISO;
+    slot_config.gpio_mosi = PIN_NUM_MOSI;
+    slot_config.gpio_sck  = PIN_NUM_CLK;
+    slot_config.gpio_cs   = PIN_NUM_CS;
+    // This initializes the slot without card detect (CD) and write protect (WP) signals.
+    // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
+
+       // Options for mounting the filesystem.
+    // If format_if_mount_failed is set to true, SD card will be partitioned and
+    // formatted in case when mounting fails.
+    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
+        .format_if_mount_failed = false,
+        .max_files = 5,
+        .allocation_unit_size = 16 * 1024
     };
-    
-    // Use settings defined above to initialize and mount SPIFFS filesystem.
-    // Note: esp_vfs_spiffs_register is an all-in-one convenience function.
-    esp_err_t ret = esp_vfs_spiffs_register(&conf);
+
+    // Use settings defined above to initialize SD card and mount FAT filesystem.
+    // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
+    // Please check its source code and implement error recovery when developing
+    // production applications.
+    esp_err_t ret = esp_vfs_fat_sdmmc_mount("/sdcard", &host, &slot_config, &mount_config, &card);
 
     if (ret != ESP_OK) {
         if (ret == ESP_FAIL) {
-            ESP_LOGE(TAG, "Failed to mount or format filesystem");
-        } else if (ret == ESP_ERR_NOT_FOUND) {
-            ESP_LOGE(TAG, "Failed to find SPIFFS partition");
+            ESP_LOGE(TAG, "Failed to mount filesystem. "
+                "If you want the card to be formatted, set format_if_mount_failed = true.");
         } else {
-            ESP_LOGE(TAG, "Failed to initialize SPIFFS (%s)", esp_err_to_name(ret));
+            ESP_LOGE(TAG, "Failed to initialize the card (%s). "
+                "Make sure SD card lines have pull-up resistors in place.", esp_err_to_name(ret));
         }
         return;
     }
-    
-    size_t total = 0, used = 0;
-    ret = esp_spiffs_info(NULL, &total, &used);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to get SPIFFS partition information (%s)", esp_err_to_name(ret));
-    } else {
-        ESP_LOGI(TAG, "Partition size: total: %d, used: %d", total, used);
-    }
 }
+
