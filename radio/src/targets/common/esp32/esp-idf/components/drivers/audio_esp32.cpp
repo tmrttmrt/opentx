@@ -26,7 +26,7 @@
 #include "opentx.h"
 
 static const char *TAG = "audio_driver.cpp";
-extern SemaphoreHandle_t audioMutex;
+extern SemaphoreHandle_t xAudioSem;
 
 
 const int16_t sineValues[] =
@@ -767,9 +767,9 @@ void AudioQueue::wakeup()
 
     // mix the normal context (tones and wavs)
     if (normalContext.isEmpty() && !fragmentsFifo.empty()) {
-      xSemaphoreTake(audioMutex, portMAX_DELAY);
+      xSemaphoreTake(xAudioSem, portMAX_DELAY);
       normalContext.setFragment(fragmentsFifo.get());
-      xSemaphoreGive(audioMutex);
+      xSemaphoreGive(xAudioSem);
     }
     result = normalContext.mixBuffer(buffer, g_eeGeneral.beepVolume, g_eeGeneral.wavVolume, fade);
     if (result > 0) {
@@ -846,13 +846,13 @@ bool AudioQueue::isPlaying(uint8_t id)
          fragmentsFifo.hasPromptId(id);
 }
 
-void IRAM_ATTR AudioQueue::playTone(uint16_t freq, uint16_t len, uint16_t pause, uint8_t flags, int8_t freqIncr)
+void AudioQueue::playTone(uint16_t freq, uint16_t len, uint16_t pause, uint8_t flags, int8_t freqIncr)
 {
 #if defined(SIMU) && !defined(SIMU_AUDIO)
   return;
 #endif
 
-  xSemaphoreTake(audioMutex, portMAX_DELAY);
+  xSemaphoreTake(xAudioSem, portMAX_DELAY);
 
   freq = limit<uint16_t>(BEEP_MIN_FREQ, freq, BEEP_MAX_FREQ);
 
@@ -875,11 +875,11 @@ void IRAM_ATTR AudioQueue::playTone(uint16_t freq, uint16_t len, uint16_t pause,
     }
   }
 
-  xSemaphoreGive(audioMutex);
+  xSemaphoreGive(xAudioSem);
 }
 
 #if defined(SDCARD)
-void IRAM_ATTR AudioQueue::playFile(const char * filename, uint8_t flags, uint8_t id)
+void AudioQueue::playFile(const char * filename, uint8_t flags, uint8_t id)
 {
 #if defined(SIMU)
   TRACE("playFile(\"%s\", flags=%x, id=%d)", filename, flags, id);
@@ -903,7 +903,7 @@ void IRAM_ATTR AudioQueue::playFile(const char * filename, uint8_t flags, uint8_
     return;
   }
 
-  CoEnterMutexSection(audioMutex);
+  CoEnterMutexSection(xAudioSem);
 
   if (flags & PLAY_BACKGROUND) {
     backgroundContext.clear();
@@ -913,10 +913,10 @@ void IRAM_ATTR AudioQueue::playFile(const char * filename, uint8_t flags, uint8_
     fragmentsFifo.push(AudioFragment(filename, flags & 0x0f, id));
   }
 
-  CoLeaveMutexSection(audioMutex);
+  CoLeaveMutexSection(xAudioSem);
 }
 
-void IRAM_ATTR AudioQueue::stopPlay(uint8_t id)
+void AudioQueue::stopPlay(uint8_t id)
 {
 #if defined(SIMU)
   TRACE("stopPlay(id=%d)", id);
@@ -926,12 +926,12 @@ void IRAM_ATTR AudioQueue::stopPlay(uint8_t id)
   return;
 #endif
 
-  CoEnterMutexSection(audioMutex);
+  CoEnterMutexSection(xAudioSem);
 
   fragmentsFifo.removePromptById(id);
   backgroundContext.stop(id);
 
-  CoLeaveMutexSection(audioMutex);
+  CoLeaveMutexSection(xAudioSem);
 }
 
 void AudioQueue::stopSD()
@@ -946,19 +946,19 @@ void AudioQueue::stopSD()
 void AudioQueue::stopAll()
 {
   flush();
-  xSemaphoreTake(audioMutex, portMAX_DELAY);
+  xSemaphoreTake(xAudioSem, portMAX_DELAY);
   priorityContext.clear();
   normalContext.clear();
-  xSemaphoreGive(audioMutex);
+  xSemaphoreGive(xAudioSem);
 }
 
 void AudioQueue::flush()
 {
-  xSemaphoreTake(audioMutex, portMAX_DELAY);
+  xSemaphoreTake(xAudioSem, portMAX_DELAY);
   fragmentsFifo.clear();
   varioContext.clear();
   backgroundContext.clear();
-  xSemaphoreGive(audioMutex);
+  xSemaphoreGive(xAudioSem);
 }
 
 void audioPlay(unsigned int index, uint8_t id)
@@ -1052,7 +1052,7 @@ void audioTimerCountdown(uint8_t timer, int value)
 #endif
 }
 
-void IRAM_ATTR audioEvent(unsigned int index)
+void audioEvent(unsigned int index)
 {
   if (index == AU_NONE)
     return;

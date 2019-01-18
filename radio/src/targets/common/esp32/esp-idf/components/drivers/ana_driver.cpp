@@ -32,7 +32,7 @@ static_assert(sizeof(analogPorts)/sizeof(adc1_channel_t)==NUM_ANALOGS,"Analog pi
 
 static const char *TAG = "ana_driver.cpp";
 
-void IRAM_ATTR getADC(){
+void getADC(){
     int     read_raw;
     
     int channel=0;

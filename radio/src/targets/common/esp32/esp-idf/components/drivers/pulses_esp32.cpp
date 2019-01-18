@@ -30,7 +30,7 @@ uint8_t s_pulses_paused = 0;
 uint8_t s_current_protocol[1] = { 255 };
 rmt_isr_handle_t handle;
 static portMUX_TYPE rmt_spinlock = portMUX_INITIALIZER_UNLOCKED;
-extern portMUX_TYPE mixerMux; 
+extern SemaphoreHandle_t xMixerSem; 
 volatile uint32_t nextMixerEndTime = 0;
 #define SCHEDULE_MIXER_END(delay) nextMixerEndTime = esp_timer_get_time()/1000 + (delay)
 
@@ -57,7 +57,7 @@ void IRAM_ATTR setupPulsesPPM(uint8_t proto)
       pulseLevel=0;
       idleLevel=1;
   }
-  taskENTER_CRITICAL_ISR(&mixerMux);
+  xSemaphoreTake(xMixerSem, portMAX_DELAY);
   portENTER_CRITICAL(&rmt_spinlock);
   int j=0;
   volatile rmt_item32_t* pd = RMTMEM.chan[PPM_OUT_RMT_CHANNEL_0].data32;
@@ -84,7 +84,7 @@ void IRAM_ATTR setupPulsesPPM(uint8_t proto)
   pd->duration1 = 0;
   pd->level1 = idleLevel;
   portEXIT_CRITICAL(&rmt_spinlock);
-  taskEXIT_CRITICAL_ISR(&mixerMux);
+  xSemaphoreGive(xMixerSem);
   rmt_set_tx_thr_intr_en(PPM_OUT_RMT_CHANNEL_0, true, j); //Send interrupt SETUP_PULSES_DURATION before the end of the PPM packet
 }
 

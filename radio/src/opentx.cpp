@@ -92,7 +92,7 @@ void watchdogSuspend(uint32_t timeout)
 }
 #endif
 
-void IRAM_ATTR per10ms()
+void per10ms()
 {
   g_tmr10ms++;
 
@@ -945,7 +945,7 @@ void doLoopCommonActions()
   checkBacklight();
 }
 
-void IRAM_ATTR backlightOn()
+void backlightOn()
 {
   lightOffCounter = ((uint16_t)g_eeGeneral.lightAutoOff*250) << 1;
 }

@@ -20,19 +20,27 @@
 #define MIXER_STACK_SIZE       0x800
 #define AUDIO_STACK_SIZE       0x800
 #define AUDIO_PLAY_STACK_SIZE       0x800
+#define PER10MS_STACK_SIZE       0x800
+#define ENC_STACK_SIZE       0x800
 #define MENU_TASK_PERIOD_TICKS      50/portTICK_PERIOD_MS    // 50ms
 #define MENU_TASK_CORE 0
 #define MIXER_TASK_CORE 1
-#define AUDIO_TASK_CORE 1
-#define AUDIO_PLAY_TASK_CORE 0
+#define AUDIO_TASK_CORE 0
+#define AUDIO_PLAY_TASK_CORE 1
+#define PER10MS_TASK_CORE 0
+#define ENC_TASK_CORE 0
 
 static const char *TAG = "startup.cpp";
 TaskHandle_t xMenusTaskHandle = NULL;
 TaskHandle_t xMixerTaskHandle = NULL;
 TaskHandle_t xAudioTaskHandle = NULL;
 TaskHandle_t xAudioPlayTaskHandle = NULL;
-portMUX_TYPE mixerMux= portMUX_INITIALIZER_UNLOCKED;
-SemaphoreHandle_t audioMutex=NULL;
+TaskHandle_t xPer10msTaskHandle = NULL;
+TaskHandle_t xEncTaskHandle = NULL;
+SemaphoreHandle_t xMixerSem = NULL;
+SemaphoreHandle_t xAudioSem = NULL;
+SemaphoreHandle_t xPer10msSem = NULL;
+
 
 
 void menusTask(void * pvParameters)
@@ -95,11 +103,12 @@ void mixerTask(void * pdata)
             int64_t t0 = esp_timer_get_time();
 
             DEBUG_TIMER_START(debugTimerMixer);
-            vTaskEnterCritical(&mixerMux);
+            xSemaphoreTake(xMixerSem, portMAX_DELAY);
             doMixerCalculations();
+            xSemaphoreGive(xMixerSem);
             DEBUG_TIMER_START(debugTimerMixerCalcToUsage);
             DEBUG_TIMER_SAMPLE(debugTimerMixerIterval);
-            vTaskExitCritical(&mixerMux);
+
             DEBUG_TIMER_STOP(debugTimerMixer);
 
 #if defined(TELEMETRY_FRSKY) || defined(TELEMETRY_MAVLINK)
@@ -124,25 +133,36 @@ void mixerTask(void * pdata)
     }
 }
 
+void  per10msTask(void * pdata){
+    while(1){
+        xSemaphoreTake(xPer10msSem, portMAX_DELAY);
+        per10ms();
+    }
+}
+
 void otxTasksStart()
 {
     BaseType_t ret;
     
     ret=xTaskCreatePinnedToCore( menusTask, "menusTask", MENUS_STACK_SIZE, NULL, tskIDLE_PRIORITY, &xMenusTaskHandle, MENU_TASK_CORE );
     configASSERT( xMenusTaskHandle );
+    xMixerSem = xSemaphoreCreateBinary()
     ret=xTaskCreatePinnedToCore( mixerTask, "mixerTask", MIXER_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &xMixerTaskHandle, MIXER_TASK_CORE );
     configASSERT( xMixerTaskHandle );
     
-    audioMutex = xSemaphoreCreateBinary();
-    if( audioMutex != NULL )
+    xAudioSem = xSemaphoreCreateMutex();
+    if( xAudioSem != NULL )
     {
         ret=xTaskCreatePinnedToCore( audioTask, "audioTask", AUDIO_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &xAudioTaskHandle, AUDIO_TASK_CORE );
         configASSERT( xAudioTaskHandle );
+        ret=xTaskCreatePinnedToCore( audioPlayTask, "audioPlayTask", AUDIO_PLAY_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &xAudioPlayTaskHandle, AUDIO_PLAY_TASK_CORE );
+        configASSERT( xAudioPlayTaskHandle );
     }
-    ret=xTaskCreatePinnedToCore( audioPlayTask, "audioPlayTask", AUDIO_PLAY_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &xAudioPlayTaskHandle, AUDIO_PLAY_TASK_CORE );
-    configASSERT( xAudioPlayTaskHandle );
-}   
-
+    ret=xTaskCreatePinnedToCore( per10msTask, "per10msTask", PER10MS_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -2, &xPer10msTaskHandle, PER10MS_TASK_CORE );
+    configASSERT( xPer10msTaskHandle );
+    ret=xTaskCreatePinnedToCore( encoderTask, "encoderTask", ENC_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -2, &xEncTaskHandle, ENC_TASK_CORE );
+    configASSERT( xEncTaskHandle );
+}
 
 void IRAM_ATTR timer_group0_isr(void *para)
 {
@@ -166,9 +186,9 @@ void IRAM_ATTR timer_group0_isr(void *para)
     we need enable it again, so it is triggered the next time */
     TIMERG0.hw_timer[timer_idx].config.alarm_en = TIMER_ALARM_EN;
 
-    /* Now just send the event data back to the main program task */
-    //    xQueueSendFromISR(timer_queue, &evt, NULL);
-    per10ms();
+    BaseType_t mustYield=false;
+    xSemaphoreGiveFromISR(xPer10msSem, &mustYield);
+    if (mustYield) portYIELD_FROM_ISR();
 }
 
 static void tg0_timer_init(timer_idx_t timer_idx)
@@ -194,6 +214,7 @@ static void tg0_timer_init(timer_idx_t timer_idx)
     timer_isr_register(TIMER_GROUP_0, timer_idx, timer_group0_isr, 
     (void *) timer_idx, ESP_INTR_FLAG_IRAM, NULL);
 
+    xPer10msSem = xSemaphoreCreateBinary();
     timer_start(TIMER_GROUP_0, timer_idx);
 }
 

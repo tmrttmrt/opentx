@@ -50,7 +50,7 @@ uint16_t getChannelRatio(source_t channel)
   return (uint16_t)g_model.frsky.channels[channel].ratio << g_model.frsky.channels[channel].multiplier;
 }
 
-lcdint_t IRAM_ATTR applyChannelRatio(source_t channel, lcdint_t val)
+lcdint_t applyChannelRatio(source_t channel, lcdint_t val)
 {
   return ((int32_t)val+g_model.frsky.channels[channel].offset) * getChannelRatio(channel) * 2 / 51;
 }
@@ -209,7 +209,7 @@ void telemetryWakeup()
 #endif
 }
 
-void IRAM_ATTR telemetryInterrupt10ms()
+void telemetryInterrupt10ms()
 {
 #if defined(FRSKY_HUB) && !defined(CPUARM)
   uint16_t voltage = 0; /* unit: 1/10 volts */

@@ -8,6 +8,7 @@ void initAudio();
 void initFS();
 void setSampleRate(uint32_t frequency);
 void audioPlayTask(void * pdata);
+void encoderTask(void * pdata);
 uint8_t telemetryGetByte(uint8_t * byte);
 void telemetryPortInit();
 void telemetryTransmitBuffer(uint8_t * data, uint8_t len);

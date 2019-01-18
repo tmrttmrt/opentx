@@ -22,18 +22,29 @@
 #define ESP_INTR_FLAG_DEFAULT 0
 
 static const char *TAG = "keys_driver.cpp";
-static xQueueHandle gpio_evt_queue = NULL;
-portMUX_TYPE i2cMux= portMUX_INITIALIZER_UNLOCKED;
+SemaphoreHandle_t xRotEncSem = NULL;
+SemaphoreHandle_t i2cSem= NULL;
 
 uint8_t IRAM_ATTR readI2CGPIO(uint8_t addr, uint8_t port);
 
-static void IRAM_ATTR gpio_isr_handler(void* arg)
+void IRAM_ATTR gpio_isr_handler(void* arg)
 {
-    uint8_t gpio_num = readI2CGPIO(MCP23017_ADDR_SW,0x11); //INTCAPB
-    xQueueSendFromISR(gpio_evt_queue, &gpio_num, NULL);
+    BaseType_t mustYield=false;
+    xSemaphoreGiveFromISR(i2cSem, &mustYield);
+    if (mustYield) portYIELD_FROM_ISR();
 }
 
+void encoderTask(void * pdata){
+        while(1){
+            xSemaphoreTake(i2cSem, portMAX_DELAY);
+            uint8_t gpio = readI2CGPIO(MCP23017_ADDR_SW,0x11); //INTCAPB
+        }
+}
+
+
 void initKeys(){
+
+    i2cSem = xSemaphoreCreateMutex();
 
     i2c_config_t conf;
     memset(&conf, 0, sizeof(conf));
@@ -102,7 +113,7 @@ void initKeys(){
         io_conf.pull_up_en = (gpio_pullup_t)1;
         gpio_config(&io_conf);
         gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
-        gpio_evt_queue = xQueueCreate(10, sizeof(uint8_t));
+        xRotEncSem = xSemaphoreCreateBinary();
         gpio_isr_handler_add(GPIO_INTR_PIN, gpio_isr_handler, (void*) GPIO_INTR_PIN);
     } else {
         ESP_LOGE(TAG,"i2c driver install error.");
@@ -110,7 +121,7 @@ void initKeys(){
     
 }
 
-uint16_t IRAM_ATTR readI2CGPIO(uint8_t addr){
+uint16_t readI2CGPIO(uint8_t addr){
     uint8_t dataa;
     uint8_t datab;
     return 0;
@@ -121,9 +132,9 @@ uint16_t IRAM_ATTR readI2CGPIO(uint8_t addr){
     i2c_master_read(cmd, &dataa, 1, I2C_MASTER_ACK);
     i2c_master_read(cmd, &datab, 1, I2C_MASTER_NACK);
     i2c_master_stop(cmd);
-    vTaskEnterCritical(&i2cMux);
+    xSemaphoreTake(i2cSem, portMAX_DELAY);
     esp_err_t ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 2);
-    vTaskExitCritical(&i2cMux);
+    xSemaphoreGive(i2cSem);
     if(ESP_OK!=ret){
         ESP_LOGE(TAG,"i2c read error.");
     }
@@ -131,7 +142,7 @@ uint16_t IRAM_ATTR readI2CGPIO(uint8_t addr){
     return dataa & ((int16_t)datab)<<8;
 }
 
-uint8_t IRAM_ATTR readI2CGPIO(uint8_t addr, uint8_t port){
+uint8_t readI2CGPIO(uint8_t addr, uint8_t port){
     uint8_t data;
     return 0;
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
@@ -140,9 +151,9 @@ uint8_t IRAM_ATTR readI2CGPIO(uint8_t addr, uint8_t port){
     i2c_master_write_byte(cmd, port, true);
     i2c_master_read(cmd, &data, 1, I2C_MASTER_NACK);
     i2c_master_stop(cmd);
-    vTaskEnterCritical(&i2cMux);
+    xSemaphoreTake(i2cSem, portMAX_DELAY);;
     esp_err_t ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 2);
-    vTaskExitCritical(&i2cMux);
+    xSemaphoreGive(i2cSem);
     if(ESP_OK!=ret){
         ESP_LOGE(TAG,"i2c read error.\n");
     }
@@ -151,7 +162,7 @@ uint8_t IRAM_ATTR readI2CGPIO(uint8_t addr, uint8_t port){
 }
 
 
-void IRAM_ATTR readKeysAndTrims(){
+void readKeysAndTrims(){
     uint16_t keys_input = readI2CGPIO(MCP23017_ADDR_KEYS) ;
     uint32_t i;
 
