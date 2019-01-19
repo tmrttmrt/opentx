@@ -879,9 +879,9 @@ Text Label 700  4400 0    42   ~ 0
 Stick_RV
 Text Label 700  4500 0    42   ~ 0
 Stick_LH
-Text Label 4250 7600 1    42   ~ 0
-Rot_2_B
 Text Label 4150 7600 1    42   ~ 0
+Rot_2_B
+Text Label 4250 7600 1    42   ~ 0
 Rot_2_A
 Text Label 700  4900 0    42   ~ 0
 BUZZER
@@ -897,9 +897,9 @@ Text Label 3750 7600 1    42   ~ 0
 Hold_Power
 Text Label 2550 6100 1    42   ~ 0
 LCD_N_CS
-Text Label 4350 7600 1    42   ~ 0
-Rot_1_A
 Text Label 4450 7600 1    42   ~ 0
+Rot_1_A
+Text Label 4350 7600 1    42   ~ 0
 Rot_1_B
 Text Label 3950 7700 1    42   ~ 0
 RF_Activated
@@ -1797,13 +1797,13 @@ I2C_SDA
 Text Label 3350 3750 0    50   ~ 0
 I2C_SCL
 Wire Wire Line
-	4450 7250 4450 7600
-Wire Wire Line
 	4350 7250 4350 7600
 Wire Wire Line
-	4250 7250 4250 7600
+	4450 7250 4450 7600
 Wire Wire Line
 	4150 7250 4150 7600
+Wire Wire Line
+	4250 7250 4250 7600
 Wire Wire Line
 	3450 7250 3450 7600
 Wire Wire Line

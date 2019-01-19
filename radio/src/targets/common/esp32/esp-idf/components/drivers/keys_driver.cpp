@@ -35,10 +35,18 @@ void IRAM_ATTR gpio_isr_handler(void* arg)
 }
 
 void encoderTask(void * pdata){
-        while(1){
-            xSemaphoreTake(i2cSem, portMAX_DELAY);
-            uint8_t gpio = readI2CGPIO(MCP23017_ADDR_SW,0x11); //INTCAPB
-        }
+    static uint8_t old;
+    static int8_t lookup_table[] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
+    uint8_t addr;
+    while(1){
+        xSemaphoreTake(i2cSem, portMAX_DELAY);
+        uint8_t gpio = readI2CGPIO(MCP23017_ADDR_SW,0x11); //INTCAPB
+        addr= (old & 0b11) << 2 | (gpio & 0b11);
+        incRotaryEncoder(0, lookup_table[addr]);
+        addr= (old & 0b1100)  | (gpio & 0b1100) >> 2; 
+        incRotaryEncoder(1, lookup_table[addr]);
+        old = gpio;
+    }
 }
 
 

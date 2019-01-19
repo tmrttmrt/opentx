@@ -30,7 +30,7 @@ uint8_t s_pulses_paused = 0;
 uint8_t s_current_protocol[1] = { 255 };
 rmt_isr_handle_t handle;
 static portMUX_TYPE rmt_spinlock = portMUX_INITIALIZER_UNLOCKED;
-extern SemaphoreHandle_t xMixerSem; 
+extern portMUX_TYPE mixerMux; 
 volatile uint32_t nextMixerEndTime = 0;
 #define SCHEDULE_MIXER_END(delay) nextMixerEndTime = esp_timer_get_time()/1000 + (delay)
 
@@ -40,7 +40,6 @@ void IRAM_ATTR setupPulsesPPM(uint8_t proto)
   // Each channel's pulse is 0.7 to 1.7ms long, with a 0.3ms stop tail, making each compelte cycle 1 to 2ms.
 
   int16_t PPM_range = g_model.extendedLimits ? 640*2 : 512*2;   //range of 0.7..1.7msec
-
 
   //The pulse tick is 2mhz that's why everything is multiplied by 2
   uint8_t p = (proto == PROTO_PPM16 ? 16 : 8) + (g_model.ppmNCH * 2); //Channels *2
@@ -57,7 +56,7 @@ void IRAM_ATTR setupPulsesPPM(uint8_t proto)
       pulseLevel=0;
       idleLevel=1;
   }
-  xSemaphoreTake(xMixerSem, portMAX_DELAY);
+  vTaskEnterCritical(&mixerMux);
   portENTER_CRITICAL(&rmt_spinlock);
   int j=0;
   volatile rmt_item32_t* pd = RMTMEM.chan[PPM_OUT_RMT_CHANNEL_0].data32;
@@ -84,7 +83,7 @@ void IRAM_ATTR setupPulsesPPM(uint8_t proto)
   pd->duration1 = 0;
   pd->level1 = idleLevel;
   portEXIT_CRITICAL(&rmt_spinlock);
-  xSemaphoreGive(xMixerSem);
+  vTaskExitCritical(&mixerMux);
   rmt_set_tx_thr_intr_en(PPM_OUT_RMT_CHANNEL_0, true, j); //Send interrupt SETUP_PULSES_DURATION before the end of the PPM packet
 }
 
