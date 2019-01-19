@@ -4,6 +4,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "esp_vfs.h"
 #include "esp_vfs_fat.h"
 #include "esp_log.h"
@@ -12,10 +14,14 @@
 
 const char * const eepromFname = "/flash/eeprom.bin";
 static const char *TAG = "eeprom_driver.cpp";
+DRAM_ATTR uint8_t eeprom[EEPROM_SIZE];
 
-void IRAM_ATTR eepromReadBlock(uint8_t * buffer, size_t address, size_t size)
+void eepromReadBlock(uint8_t * buffer, size_t address, size_t size)
 {
     ESP_LOGI(TAG,"Reading %d bytes at position %d from '%s'.", size ,address , eepromFname);
+    memcpy(buffer,eeprom+address,size);
+    vTaskDelay(5);
+    return;
     FILE * fp = fopen ( eepromFname, "rb" );
     if (NULL==fp) { /* Check if the file has been opened */
         ESP_LOGE(TAG,"Failed to open ' %s' .", eepromFname);
@@ -32,14 +38,19 @@ void IRAM_ATTR eepromReadBlock(uint8_t * buffer, size_t address, size_t size)
         ESP_LOGE(TAG, "error is %d", errno);
     }    
     fclose(fp);
+    vTaskDelay(5);
 //    ESP_LOGI(TAG,"Read %d bytes at position %d from '%s'.", br ,address , eepromFname);
 }
 
-void IRAM_ATTR eepromWriteBlock(uint8_t * buffer, size_t address, size_t size)
+void eepromWriteBlock(uint8_t * buffer, size_t address, size_t size)
 {
     ESP_LOGI(TAG,"Writing %d bytes at position %d to '%s'.", size ,address , eepromFname);
-    FILE * fp=fopen ( eepromFname, "wb" );
-    if (NULL==fp) { /* Check if the file has been opened */
+    memcpy(eeprom+address,buffer,size);
+    vTaskDelay(1);
+    return;
+
+    FILE * fp = fopen ( eepromFname, "wb" );
+    if (NULL == fp) { /* Check if the file has been opened */
         ESP_LOGE(TAG,"Failed to open ' %s' .", eepromFname);
         return;
     }
@@ -53,7 +64,7 @@ void IRAM_ATTR eepromWriteBlock(uint8_t * buffer, size_t address, size_t size)
         ESP_LOGE(TAG,"Failed to write %d bytes to '%s': bytes written: %d.", size, eepromFname, bw);
     }    
     fclose(fp);
-//    ESP_LOGI(TAG,"Wrote %d bytes at position %d to '%s'.", bw ,address , eepromFname);
+    vTaskDelay(1);
 }
 
 uint8_t eepromIsTransferComplete()

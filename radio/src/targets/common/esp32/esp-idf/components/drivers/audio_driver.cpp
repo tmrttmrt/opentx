@@ -28,7 +28,8 @@ void initAudio(){
 }
 
 void setSampleRate(uint32_t frequency){
-    i2s_set_sample_rates(I2S_NUM_0, frequency);
+    ESP_LOGI(TAG,"setSampleRate: %d",frequency);
+//    i2s_set_sample_rates(I2S_NUM_0, frequency);
 }
 
 void audioPlayTask(void * pdata){
@@ -39,7 +40,7 @@ void audioPlayTask(void * pdata){
         
         if (nextBuffer) {
             size_t bytes_written=0;
-            i2s_write(I2S_NUM_0, (const void*) nextBuffer->data, nextBuffer->size * sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
+//            i2s_write(I2S_NUM_0, (const void*) nextBuffer->data, nextBuffer->size * sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
             audioQueue.buffersFifo.freeNextFilledBuffer();
             nextBuffer = audioQueue.buffersFifo.getNextFilledBuffer();
         } 

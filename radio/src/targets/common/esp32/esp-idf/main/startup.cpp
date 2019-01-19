@@ -21,7 +21,7 @@
 #define MIXER_STACK_SIZE       0x800
 #define AUDIO_STACK_SIZE       0x800
 #define AUDIO_PLAY_STACK_SIZE  0xA00
-#define PER10MS_STACK_SIZE     0x300
+#define PER10MS_STACK_SIZE     0x400
 #define ENC_STACK_SIZE         0x300
 #define MENU_TASK_PERIOD_TICKS      50/portTICK_PERIOD_MS    // 50ms
 #define MENU_TASK_CORE 0
@@ -134,6 +134,7 @@ void mixerTask(void * pdata)
     }
 }
 
+
 void  per10msTask(void * pdata){
     while(1){
         xSemaphoreTake(xPer10msSem, portMAX_DELAY);
@@ -145,7 +146,7 @@ void otxTasksStart()
 {
     BaseType_t ret;
     
-    ret=xTaskCreatePinnedToCore( menusTask, "menusTask", MENUS_STACK_SIZE, NULL, tskIDLE_PRIORITY, &xMenusTaskHandle, MENU_TASK_CORE );
+    ret=xTaskCreatePinnedToCore( menusTask, "menusTask", MENUS_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +0, &xMenusTaskHandle, MENU_TASK_CORE );
     configASSERT( xMenusTaskHandle );
     
     ret=xTaskCreatePinnedToCore( mixerTask, "mixerTask", MIXER_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &xMixerTaskHandle, MIXER_TASK_CORE );
@@ -156,14 +157,14 @@ void otxTasksStart()
     {
         ret=xTaskCreatePinnedToCore( audioTask, "audioTask", AUDIO_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &xAudioTaskHandle, AUDIO_TASK_CORE );
         configASSERT( xAudioTaskHandle );
-        ret=xTaskCreatePinnedToCore( audioPlayTask, "audioPlayTask", AUDIO_PLAY_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &xAudioPlayTaskHandle, AUDIO_PLAY_TASK_CORE );
+        ret=xTaskCreatePinnedToCore( audioPlayTask, "audioPlayTask", AUDIO_PLAY_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -6, &xAudioPlayTaskHandle, AUDIO_PLAY_TASK_CORE );
         configASSERT( xAudioPlayTaskHandle );
     }
     
     ret=xTaskCreatePinnedToCore( per10msTask, "per10msTask", PER10MS_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -2, &xPer10msTaskHandle, PER10MS_TASK_CORE );
     configASSERT( xPer10msTaskHandle );
     
-    ret=xTaskCreatePinnedToCore( encoderTask, "encoderTask", ENC_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -2, &xEncTaskHandle, ENC_TASK_CORE );
+    ret=xTaskCreatePinnedToCore( encoderTask, "encoderTask", ENC_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -5, &xEncTaskHandle, ENC_TASK_CORE );
     configASSERT( xEncTaskHandle );
 }
 
@@ -236,14 +237,14 @@ extern "C"   void app_main(){
     tg0_timer_init(TIMER_0); //10 ms interrupt
     ESP_LOGI(TAG,"Starting tasks.");
     otxTasksStart();
-    initWiFi();
+//    initWiFi();
     TaskHandle_t tasks[]={xMenusTaskHandle,xMixerTaskHandle,xAudioTaskHandle,xAudioPlayTaskHandle,xPer10msTaskHandle,xEncTaskHandle};
     uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
     while(1){
         for(uint8_t i=0; i< nTasks; i++){
-            ESP_LOGD(TAG,"Stack: %d: %s %d",(int)tasks[i],pcTaskGetTaskName(tasks[i]),uxTaskGetStackHighWaterMark(tasks[i]));
+            ESP_LOGD(TAG,"Min stack: %s: %d",pcTaskGetTaskName(tasks[i]),uxTaskGetStackHighWaterMark(tasks[i]));
         }
         ESP_LOGD(TAG,"maxMixerDuration %d",maxMixerDuration);
-        vTaskDelay(5000/portTICK_PERIOD_MS);
+        vTaskDelay(1000/portTICK_PERIOD_MS);
     };
 }
