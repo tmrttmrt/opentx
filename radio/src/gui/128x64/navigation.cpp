@@ -51,6 +51,11 @@ int8_t  checkIncDec_Ret;
 #define DBLKEYS_PRESSED_UP_DWN(in)     (false)
 #define DBLKEYS_PRESSED_RGT_UP(in)     (false)
 #define DBLKEYS_PRESSED_LFT_DWN(in)    (false)
+#elif defined(PCBESP_WROOM_32)
+#define DBLKEYS_PRESSED_RGT_LFT(in)    (false)
+#define DBLKEYS_PRESSED_UP_DWN(in)     (false)
+#define DBLKEYS_PRESSED_RGT_UP(in)     (false)
+#define DBLKEYS_PRESSED_LFT_DWN(in)    (false)
 #else
 #define DBLKEYS_PRESSED_RGT_LFT(in)    ((in & (KEYS_GPIO_PIN_RIGHT + KEYS_GPIO_PIN_LEFT)) == (KEYS_GPIO_PIN_RIGHT + KEYS_GPIO_PIN_LEFT))
 #define DBLKEYS_PRESSED_UP_DWN(in)     ((in & (KEYS_GPIO_PIN_UP + KEYS_GPIO_PIN_DOWN)) == (KEYS_GPIO_PIN_UP + KEYS_GPIO_PIN_DOWN))

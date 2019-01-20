@@ -17,8 +17,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
+#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "esp_log.h"
+#define HASASSERT
 #include "opentx.h"
+
+static const char *TAG = "main_esp32.cpp";
 
 void checkBattery();
 uint8_t checkTrim(event_t event);
@@ -57,6 +62,7 @@ void perMain()
 #endif
 
   event_t evt = getEvent();
+//  ESP_LOGI(TAG,"getEvent(): %d",evt);
   evt = checkTrim(evt);
 
   if (evt && (g_eeGeneral.backlightMode & e_backlight_mode_keys)) backlightOn(); // on keypress turn the light on

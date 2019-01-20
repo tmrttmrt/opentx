@@ -29,6 +29,7 @@ initFS();
 initKeys();
 initADC();
 eepromInit();
+timer10msInit();
 
 #endif
 }

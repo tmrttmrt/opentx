@@ -2734,12 +2734,12 @@ int main()
   bluetoothInit(BLUETOOTH_DEFAULT_BAUDRATE);   //BT is turn on for a brief period to differentiate X7 and X7S
 #endif
 
-#if defined(GUI) && !defined(PCBTARANIS) && !defined(PCBHORUS)
+#if defined(GUI) && !defined(PCBTARANIS) && !defined(PCBHORUS) && !defined(PCBESP_WROOM_32)
   // TODO remove this
   lcdInit();
 #endif
 
-#if !defined(SIMU)
+#if !defined(SIMU) && !defined(CPUESP32)
   stackPaint();
 #endif
 
@@ -2799,6 +2799,10 @@ int main()
   opentxInit(mcusr);
 #if defined(CPUM2560)
   uint8_t shutdown_state = 0;
+#endif
+
+#if defined(CPUESP32)
+    return 0; //return to app_main() 
 #endif
 
   while (1) {

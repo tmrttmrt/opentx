@@ -1,6 +1,7 @@
 #ifndef _BOARD_ESP32_H_
 #define _BOARD_ESP32_H_
 uint16_t getTmr1MHz();
+void timer10msInit();
 void initADC();
 void initKeys();
 void eepromInit();

@@ -173,13 +173,13 @@ uint16_t readI2CGPIO(uint8_t addr){
     i2c_master_read_byte(cmd, &datab, I2C_MASTER_NACK);
     i2c_master_stop(cmd);
     xSemaphoreTake(i2cSem, portMAX_DELAY);
-    esp_err_t ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 2);
+    esp_err_t ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 20);
     xSemaphoreGive(i2cSem);
     if(ESP_OK!=ret){
         ESP_LOGE(TAG,"i2c read error.");
     }
     i2c_cmd_link_delete(cmd);
-    return dataa & ((int16_t)datab)<<8;
+    return dataa | ((int16_t)datab)<<8;
 }
 
 uint8_t readI2CGPIO(uint8_t addr, uint8_t port){
@@ -207,7 +207,7 @@ void readKeysAndTrims(){
             
     uint16_t keys_input = readI2CGPIO(MCP23017_ADDR_KEYS) ;
     uint32_t i;
-//    ESP_LOGI(TAG,"readKeysAndTrims: %x",keys_input);
+    ESP_LOGD(TAG,"readKeysAndTrims: %x",keys_input);
 
 #if ROTARY_ENCODERS > 0
     keys[BTN_REa].input(keys_input | BIT(6));
@@ -215,11 +215,11 @@ void readKeysAndTrims(){
 
     uint8_t index = 0;
     for (i = 0; i < 6; i++) {
-        keys[index].input(keys_input & (0x0100 << i));
+        keys[index].input(keys_input & (0x0001 << i));
         ++index;
     }
 
-    for (i = 1; i < 256; i <<= 1) {
+    for (i = 0x0100; i < 0x8100; i <<= 1) {
         keys[index].input(keys_input & i);
         ++index;
     }

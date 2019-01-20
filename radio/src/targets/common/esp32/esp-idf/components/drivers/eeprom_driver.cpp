@@ -19,9 +19,8 @@ DRAM_ATTR uint8_t eeprom[EEPROM_SIZE];
 void eepromReadBlock(uint8_t * buffer, size_t address, size_t size)
 {
     ESP_LOGI(TAG,"Reading %d bytes at position %d from '%s'.", size ,address , eepromFname);
-    memcpy(buffer,eeprom+address,size);
-    vTaskDelay(5);
-    return;
+//    memcpy(buffer,eeprom+address,size);
+//    return;
     FILE * fp = fopen ( eepromFname, "rb" );
     if (NULL==fp) { /* Check if the file has been opened */
         ESP_LOGE(TAG,"Failed to open ' %s' .", eepromFname);
@@ -34,36 +33,37 @@ void eepromReadBlock(uint8_t * buffer, size_t address, size_t size)
     }    
     size_t br = fread ((void *)buffer, 1, size , fp);
     if (br != size ) {
+        perror ("perror: ");
         ESP_LOGE(TAG,"Failed to read %d bytes from '%s': bytes read: %d.", size, eepromFname, br);
-        ESP_LOGE(TAG, "error is %d", errno);
+        ESP_LOGE(TAG, "ferror is %d", ferror(fp));
+        ESP_LOGE(TAG, "feof is %d", feof(fp));
     }    
     fclose(fp);
-    vTaskDelay(5);
+    vTaskDelay(1);
 //    ESP_LOGI(TAG,"Read %d bytes at position %d from '%s'.", br ,address , eepromFname);
 }
 
 void eepromWriteBlock(uint8_t * buffer, size_t address, size_t size)
 {
     ESP_LOGI(TAG,"Writing %d bytes at position %d to '%s'.", size ,address , eepromFname);
-    memcpy(eeprom+address,buffer,size);
-    vTaskDelay(1);
-    return;
+//    memcpy(eeprom+address,buffer,size);
+//    return;
 
-    FILE * fp = fopen ( eepromFname, "wb" );
-    if (NULL == fp) { /* Check if the file has been opened */
+    int fd = open ( eepromFname, O_WRONLY );
+    if (-1 == fd) { /* Check if the file has been opened */
         ESP_LOGE(TAG,"Failed to open ' %s' .", eepromFname);
         return;
     }
-    if (fseek(fp, address, SEEK_SET )) { 
-        fclose(fp);
+    if (-1==lseek(fd, address, SEEK_SET)) { 
+        close(fd);
         ESP_LOGE(TAG,"Failed to seek to position %d bytes in '%s'.",address, eepromFname);
         return;
     }    
-    size_t bw = fwrite ((void *)buffer, 1 , size, fp);
+    size_t bw = write (fd,(void *)buffer,  size );
     if (bw != size ) {       
         ESP_LOGE(TAG,"Failed to write %d bytes to '%s': bytes written: %d.", size, eepromFname, bw);
     }    
-    fclose(fp);
+    close(fd);
     vTaskDelay(1);
 }
 

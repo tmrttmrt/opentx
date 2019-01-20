@@ -8,7 +8,7 @@
 #define TXD_PIN (GPIO_NUM_17)
 #define RXD_PIN (GPIO_NUM_16)
 static const int BUF_SIZE = 128;
-
+static const char *TAG = "telemetry_driver.cpp";
 
 uint8_t telemetryGetByte(uint8_t * byte){
     int rxBytes = uart_read_bytes(UART_NUM_1, byte, 1, 0);
@@ -20,6 +20,7 @@ uint8_t telemetryGetByte(uint8_t * byte){
 }
 
 void telemetryPortInit(){
+    ESP_LOGI(TAG,"telemetryPortInit");
     uart_config_t uart_config;
     memset(&uart_config, 0, sizeof(uart_config));
 

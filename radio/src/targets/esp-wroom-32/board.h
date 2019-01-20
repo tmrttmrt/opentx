@@ -28,10 +28,9 @@
 #define wdt_reset()
 #define wdt_enable(x)
 #define wdt_disable()
-#define stackPaint()
-#define tasksStart()
 #define audioDefevent(a)
 
+void tasksStart();
 void boardInit(void);
 void readKeysAndTrims();
 uint16_t getBatteryVoltage();   // returns current battery voltage in 10mV steps
@@ -103,7 +102,7 @@ void lcdInit(void);
 #define PPM_TX_GPIO               13
 
 // EEPROM driver
-#define EEPROM_SIZE                  4096
+#define EEPROM_SIZE                  0x1000
 void eepromReadBlock(uint8_t * buffer, size_t address, size_t size);
 uint8_t eepromIsTransferComplete();
 
@@ -135,12 +134,12 @@ uint8_t eepromIsTransferComplete();
 #define ROTENC_DIV2                 // rotary encoders resolution/2
 
 // Keys
-#define KEYS_GPIO_PIN_MENU        (1<<4)
+/*#define KEYS_GPIO_PIN_MENU        (1<<4)
 #define KEYS_GPIO_PIN_EXIT        (1<<5)
 #define KEYS_GPIO_PIN_RIGHT       (1<<2)
 #define KEYS_GPIO_PIN_LEFT        (1<<3)
 #define KEYS_GPIO_PIN_UP          (1<<1)
-#define KEYS_GPIO_PIN_DOWN        (1<<0)
+#define KEYS_GPIO_PIN_DOWN        (1<<0)*/
 
 #define IS_SHIFT_KEY(index)       (false)
 #define IS_SHIFT_PRESSED()        (false)
