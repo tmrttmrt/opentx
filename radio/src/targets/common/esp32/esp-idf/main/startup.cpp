@@ -234,6 +234,15 @@ uint16_t stackAvailable()
     return uxTaskGetStackHighWaterMark(xMenusTaskHandle);
 }
 
+void espLogI(const char * format, ...){
+    va_list arglist;
+    #define PRINTF_BUFFER_SIZE 255
+    char tmp[PRINTF_BUFFER_SIZE];
+    va_start(arglist, format);
+    vprintf( format, arglist);
+    va_end(arglist);    
+}
+
 extern "C" void initWiFi();
 
 int main();

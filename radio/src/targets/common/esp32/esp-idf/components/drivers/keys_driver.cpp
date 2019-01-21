@@ -210,7 +210,7 @@ void readKeysAndTrims(){
     ESP_LOGD(TAG,"readKeysAndTrims: %x",keys_input);
 
 #if ROTARY_ENCODERS > 0
-    keys[BTN_REa].input(keys_input | BIT(6));
+    keys[BTN_REa].input(keys_input & BIT(6));
 #endif
 
     uint8_t index = 0;
@@ -234,7 +234,7 @@ bool keyDown()
 {
     uint8_t keys = readI2CGPIO(MCP23017_ADDR_KEYS, 0x12);
     if(keys != 0){
-        ESP_LOGI(TAG,"keyDown: %x", keys);
+        ESP_LOGD(TAG,"keyDown: %x", keys);
     }
     return  readI2CGPIO(MCP23017_ADDR_KEYS, 0x12) & ~((uint16_t)(BIT(7)));
 }

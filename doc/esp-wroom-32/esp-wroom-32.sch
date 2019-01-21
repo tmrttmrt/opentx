@@ -703,9 +703,9 @@ F 3 "" H 850 1800 60  0001 C CNN
 	1    850  1800
 	1    0    0    -1  
 $EndComp
-Text Label 5950 4750 2    42   ~ 0
+Text Label 5950 4950 2    42   ~ 0
 Key_►
-Text Label 5950 4850 2    42   ~ 0
+Text Label 5950 4750 2    42   ~ 0
 Key_▼
 $Comp
 L esp-wroom-32-rescue:R-Device R1
@@ -827,15 +827,15 @@ Text Label 3350 7600 1    42   ~ 0
 SW_RudDR
 Text Label 3150 7600 1    42   ~ 0
 SW_Gear
-Text Label 5950 4950 2    42   ~ 0
+Text Label 5950 4650 2    42   ~ 0
 Key_ESC
-Text Label 5950 5050 2    42   ~ 0
+Text Label 5950 4550 2    42   ~ 0
 Key_MENU
 Text Label 3450 7600 1    42   ~ 0
 SW_EleDR
-Text Label 5950 4650 2    42   ~ 0
+Text Label 5950 4850 2    42   ~ 0
 Key_▲
-Text Label 5950 4550 2    42   ~ 0
+Text Label 5950 5050 2    42   ~ 0
 Key_◄
 Text Label 700  5200 0    42   ~ 0
 LCD_SI
@@ -1656,17 +1656,13 @@ Wire Wire Line
 Wire Wire Line
 	5450 4350 5950 4350
 Wire Wire Line
-	5450 4550 5950 4550
-Wire Wire Line
-	5450 4650 5950 4650
-Wire Wire Line
-	5450 4750 5950 4750
+	5450 5050 5950 5050
 Wire Wire Line
 	5450 4850 5950 4850
 Wire Wire Line
 	5450 4950 5950 4950
 Wire Wire Line
-	5450 5050 5950 5050
+	5450 4750 5950 4750
 Wire Wire Line
 	3550 7250 3550 7600
 Wire Wire Line
@@ -1867,4 +1863,8 @@ Wire Wire Line
 	3050 5600 4050 5600
 Text Label 3300 5050 0    42   ~ 0
 N_RESET
+Wire Wire Line
+	5450 4550 5950 4550
+Wire Wire Line
+	5450 4650 5950 4650
 $EndSCHEMATC

@@ -13,6 +13,7 @@ void encoderTask(void * pdata);
 uint8_t telemetryGetByte(uint8_t * byte);
 void telemetryPortInit();
 void telemetryTransmitBuffer(uint8_t * data, uint8_t len);
+void espLogI(const char * format, ...);
 
 enum Analogs {
   STICK1,
