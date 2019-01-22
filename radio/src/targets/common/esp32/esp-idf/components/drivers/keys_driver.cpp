@@ -242,6 +242,7 @@ bool keyDown()
 uint8_t switchState(uint8_t index)
 {
     uint8_t result = 0;
+    return result;
     uint8_t port_input = readI2CGPIO(MCP23017_ADDR_SW, 0x12) ;
     switch (index) {
     case SW_ELE:

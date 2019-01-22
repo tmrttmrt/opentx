@@ -14,6 +14,14 @@ uint8_t telemetryGetByte(uint8_t * byte);
 void telemetryPortInit();
 void telemetryTransmitBuffer(uint8_t * data, uint8_t len);
 void espLogI(const char * format, ...);
+void mixEnterCritical();
+void mixExitCritical();
+uint16_t audioStackAvailable();
+uint16_t per10msStackAvailable();
+uint16_t mixerStackAvailable();
+uint16_t menusStackAvailable();
+
+
 
 enum Analogs {
   STICK1,

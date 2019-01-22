@@ -21,7 +21,7 @@
 #define MIXER_STACK_SIZE       0x800
 #define AUDIO_STACK_SIZE       0x800
 #define AUDIO_PLAY_STACK_SIZE  0xA00
-#define PER10MS_STACK_SIZE     0x1400
+#define PER10MS_STACK_SIZE     0x500
 #define ENC_STACK_SIZE         0x300
 #define MENU_TASK_PERIOD_TICKS      50/portTICK_PERIOD_MS    // 50ms
 #define MENU_TASK_CORE 0
@@ -43,6 +43,38 @@ portMUX_TYPE mixerMux= portMUX_INITIALIZER_UNLOCKED;
 SemaphoreHandle_t xAudioSem = NULL;
 SemaphoreHandle_t xPer10msSem = NULL;
 
+uint16_t menusStackAvailable()
+{
+    return uxTaskGetStackHighWaterMark(xMenusTaskHandle);
+}
+
+uint16_t mixerStackAvailable()
+{
+    return uxTaskGetStackHighWaterMark(xMixerTaskHandle);
+}
+
+uint16_t per10msStackAvailable()
+{
+    return uxTaskGetStackHighWaterMark(xPer10msTaskHandle);
+}
+
+uint16_t audioStackAvailable()
+{
+    return uxTaskGetStackHighWaterMark(xAudioTaskHandle);
+}
+
+
+uint16_t getTmr2MHz(){
+    return ((uint16_t) esp_timer_get_time())*2;
+}
+
+void mixEnterCritical(){
+    vTaskEnterCritical(&mixerMux);
+}
+
+void mixExitCritical(){
+    vTaskExitCritical(&mixerMux);
+}
 
 
 void menusTask(void * pvParameters)
@@ -105,9 +137,7 @@ void mixerTask(void * pdata)
             int64_t t0 = esp_timer_get_time();
 
             DEBUG_TIMER_START(debugTimerMixer);
-            vTaskEnterCritical(&mixerMux);
             doMixerCalculations();
-            vTaskExitCritical(&mixerMux);
             DEBUG_TIMER_START(debugTimerMixerCalcToUsage);
             DEBUG_TIMER_SAMPLE(debugTimerMixerIterval);
             DEBUG_TIMER_STOP(debugTimerMixer);
@@ -129,7 +159,7 @@ void mixerTask(void * pdata)
 
             t0 = esp_timer_get_time() - t0;
             if (t0 > maxMixerDuration) maxMixerDuration = t0 ;
-            ESP_LOGI(TAG,"maxMixerDuration %d",maxMixerDuration);
+            ESP_LOGD(TAG,"maxMixerDuration %d",maxMixerDuration);
         }
     }
 }
@@ -229,11 +259,6 @@ void timer10msInit(){
     tg0_timer_init(TIMER_0); //10 ms interrupt
 }
 
-uint16_t stackAvailable()
-{
-    return uxTaskGetStackHighWaterMark(xMenusTaskHandle);
-}
-
 void espLogI(const char * format, ...){
     va_list arglist;
     #define PRINTF_BUFFER_SIZE 255
@@ -249,10 +274,12 @@ int main();
 
 extern "C"   void app_main(){
     main();
-    //    initWiFi();
+//    initFS();
+//    initWiFi();
     TaskHandle_t tasks[]={xMenusTaskHandle,xMixerTaskHandle,xAudioTaskHandle,xAudioPlayTaskHandle,xPer10msTaskHandle,xEncTaskHandle};
     uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
     while(1){
+        ESP_LOGD(TAG,"s_pulses_paused: %d",s_pulses_paused);
         for(uint8_t i=0; i< nTasks; i++){
             ESP_LOGD(TAG,"Min stack: %s: %d",pcTaskGetTaskName(tasks[i]),uxTaskGetStackHighWaterMark(tasks[i]));
         }

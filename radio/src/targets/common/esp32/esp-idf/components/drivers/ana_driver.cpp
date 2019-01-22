@@ -39,6 +39,7 @@ void getADC(){
     for(;channel<6;channel++){
         s_anaFilt[channel]=adc1_get_raw(analogPorts[channel]);
     }
+//    ESP_LOGI(TAG,"analog 0: %d",s_anaFilt[0]);
     for(;channel<NUM_ANALOGS;channel++){
         adc2_get_raw((adc2_channel_t)analogPorts[channel], ADC_WIDTH_12Bit, &read_raw);
         s_anaFilt[channel]=read_raw;

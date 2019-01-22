@@ -33,10 +33,9 @@ void eepromReadBlock(uint8_t * buffer, size_t address, size_t size)
     }    
     size_t br = fread ((void *)buffer, 1, size , fp);
     if (br != size ) {
-        perror ("perror: ");
         ESP_LOGE(TAG,"Failed to read %d bytes from '%s': bytes read: %d.", size, eepromFname, br);
-        ESP_LOGE(TAG, "ferror is %d", ferror(fp));
-        ESP_LOGE(TAG, "feof is %d", feof(fp));
+//        ESP_LOGE(TAG, "ferror is %d", ferror(fp));
+//        ESP_LOGE(TAG, "feof is %d", feof(fp));
     }    
     fclose(fp);
     vTaskDelay(1);

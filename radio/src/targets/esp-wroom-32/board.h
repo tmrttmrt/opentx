@@ -38,7 +38,7 @@ uint16_t getBatteryVoltage();   // returns current battery voltage in 10mV steps
 #define boardOff()  pwrOff()
 
 // ADC driver
-#define NUM_POTS                       3
+#define NUM_POTS                       2
 #define NUM_SLIDERS                    0
 #define NUM_XPOTS                      0
 

@@ -1218,7 +1218,13 @@ void evalMixes(uint8_t tick10ms)
     int16_t value = applyLimits(i, q);  // applyLimits will remove the 256 100% basis
 
     cli();
+#if defined(CPUESP32)
+    mixEnterCritical();
+#endif
     channelOutputs[i] = value;  // copy consistent word to int-level
+#if defined(CPUESP32)
+    mixExitCritical();
+#endif
     sei();
   }
 

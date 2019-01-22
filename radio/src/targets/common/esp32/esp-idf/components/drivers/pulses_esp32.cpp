@@ -82,9 +82,9 @@ void IRAM_ATTR setupPulsesPPM(uint8_t proto)
   pd->level0 = idleLevel;
   pd->duration1 = 0;
   pd->level1 = idleLevel;
+  RMT.tx_lim_ch[PPM_OUT_RMT_CHANNEL_0].limit = j; //Send interrupt SETUP_PULSES_DURATION before the end of the PPM packet
   portEXIT_CRITICAL(&rmt_spinlock);
   vTaskExitCritical(&mixerMux);
-  rmt_set_tx_thr_intr_en(PPM_OUT_RMT_CHANNEL_0, true, j); //Send interrupt SETUP_PULSES_DURATION before the end of the PPM packet
 }
 
 
@@ -214,6 +214,7 @@ void startPulses()
     rmt_isr_register(rmt_driver_isr_PPM, NULL, ESP_INTR_FLAG_IRAM, &handle );
     setupPulses();
     rmt_tx_start(PPM_OUT_RMT_CHANNEL_0,true);
+    s_pulses_paused = false;
 }
 
 

@@ -846,6 +846,8 @@ extern uint16_t lastMixerDuration;
 
 #if defined(CPUARM)
   #define DURATION_MS_PREC2(x) ((x)/20)
+#elif defined(CPUESP32)
+  #define DURATION_MS_PREC2(x) ((x)/10)
 #else
   #define DURATION_MS_PREC2(x) ((x)*100)/16
 #endif
@@ -874,7 +876,7 @@ extern uint16_t lastMixerDuration;
 #elif defined(PCBSKY9X)
   static inline uint16_t getTmr2MHz() { return TC1->TC_CHANNEL[0].TC_CV; }
 #elif defined(PCBESP_WROOM_32)
-  uint16_t getTmr1MHz();
+  uint16_t getTmr2MHz();
 #else
   uint16_t getTmr16KHz();
 #endif
