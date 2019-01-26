@@ -15,11 +15,12 @@
 
 const char * const eepromFname = "/flash/eeprom.bin";
 const char * const eepromDname = "/flash/eeprom.dir";
+const char * const eeGeneralName = "eeGeneral.bin";
 static const char *TAG = "eeprom_driver.cpp";
 //DRAM_ATTR uint8_t eeprom[EEPROM_SIZE];
 char fname[CONFIG_FATFS_MAX_LFN];
 
-char * makeEeFPath(char *fn){
+char * makeEeFPath(const char *fn){
     strcpy(fname,eepromDname);
     strcat(fname,"/");
     strcat(fname,fn);
@@ -27,13 +28,56 @@ char * makeEeFPath(char *fn){
 }
 
 char * makeModPath(uint8_t index){
-    char buff[10]; 
-    itoa(index,buff,10);
+#define MOD_FILE_PREFIX "model-"
+    char buff[16]=MOD_FILE_PREFIX; 
+    itoa(index,buff+sizeof(MOD_FILE_PREFIX)-1,10);
     strcat(buff,".bin");
     return makeEeFPath(buff);
 }
 
+void eeWriteModelData(uint8_t index){
+    ESP_LOGI(TAG,"Storing model %d.", index);
+    char * fn=makeModPath(index);
+    FILE * fp = fopen ( fn, "wb" );
+    if (NULL==fp) { /* Check if the file has been opened */
+        ESP_LOGE(TAG,"Failed to open '%s' for writing.", fn);
+        return;
+    }
+    if(1!=fwrite((uint8_t*)&g_model, sizeof(g_model), 1,fp)){
+        ESP_LOGE(TAG,"Failed to write model data to '%s' .", fn);
+    }
+    fclose(fp);
+}
+
+void eeWriteGeneral(){
+    
+    char * fn=makeEeFPath(eeGeneralName);
+    FILE * fp = fopen ( fn, "wb" );
+    if (NULL==fp) { /* Check if the file has been opened */
+        ESP_LOGE(TAG,"Failed to open ' %s' for writing.", fn);
+        return;
+    }
+    if (1!=fwrite ((uint8_t*)&g_eeGeneral, sizeof(g_eeGeneral), 1,fp) ) {
+        ESP_LOGE(TAG,"Failed to write radio settings data to '%s'.", fn);
+    }
+    fclose(fp);
+}
+
+
 void storageCheck(bool immediately){
+    
+    if (storageDirtyMsk & EE_GENERAL) {
+        TRACE("eeprom write general");
+        storageDirtyMsk -= EE_GENERAL;
+        eeWriteGeneral();
+        if (!immediately) return;
+    }
+
+    if (storageDirtyMsk & EE_MODEL) {
+        TRACE("eeprom write model");
+        storageDirtyMsk = 0;
+        eeWriteModelData(g_eeGeneral.currModel);
+    }
 }
 
 void eeDeleteModel(uint8_t index){
@@ -58,6 +102,7 @@ bool eeModelExists(uint8_t id){
 }
 
 bool eeCopyModel(uint8_t dst, uint8_t src){
+    ESP_LOGI(TAG,"eeCopyModel(%d, %d).", dst, src);
     char * fn=makeModPath(src);
     FILE * fps = fopen ( fn, "rb" );
     bool ret=true;
@@ -68,7 +113,9 @@ bool eeCopyModel(uint8_t dst, uint8_t src){
     fn=makeModPath(dst);
     FILE * fpd = fopen ( fn, "wb" );
     if (NULL==fpd) { /* Check if the file has been opened */
-        ESP_LOGE(TAG,"Failed to open '%s' .", fn);
+        ESP_LOGE(TAG,"Failed to open '%s'.", fn);
+        ESP_LOGE(TAG,"ferr: %d.", ferror(fpd));
+        ESP_LOGE(TAG,"feof: %d.", feof(fpd));
         fclose(fps);
         return false;
     }
@@ -87,53 +134,60 @@ bool eeCopyModel(uint8_t dst, uint8_t src){
 }
 
 void eeSwapModels(uint8_t id1, uint8_t id2){
-    eeCopyModel(id1, MAX_MODELS+1);
-    eeCopyModel(id2, id1);
-    eeCopyModel(MAX_MODELS+1, id2);
+    ESP_LOGI(TAG,"eeSwapModels(%d, %d).", id1, id2);
+    if(eeCopyModel(id1, MAX_MODELS+1)){
+        eeCopyModel(id2, id1);
+        eeCopyModel(MAX_MODELS+1, id2);
+        char * fn=makeModPath(MAX_MODELS+1);
+        unlink(fn); 
+    }
 }
 
 void eeLoadModelName(uint8_t id, char *name){
-  memclear(name, sizeof(g_model.header.name));
-  if (id < MAX_MODELS) {
-    char * fn=makeModPath(id);
-    FILE * fp = fopen ( fn, "rb" );
-    if (NULL==fp) { /* Check if the file has been opened */
-        ESP_LOGE(TAG,"Failed to open '%s' .", fn);
+    ESP_LOGI(TAG,"Load model %d.", id );
+    memclear(name, sizeof(g_model.header.name));
+    if (id < MAX_MODELS) {
+        char * fn=makeModPath(id);
+        FILE * fp = fopen ( fn, "rb" );
+        if (NULL==fp) { /* Check if the file has been opened */
+            ESP_LOGE(TAG,"Failed to open '%s' .", fn);
+            return;
+        }
+        if(1!=fread((uint8_t*)name, sizeof(g_model.header.name),1,fp)){
+            ESP_LOGE(TAG,"Failed to read model name from '%s' .", fn);
+        }
+        fclose(fp);
     }
-    if((sizeof(g_model.header.name))!=fread((uint8_t*)name, sizeof(g_model.header.name),1,fp)){
-        ESP_LOGE(TAG,"Failed to read model name from '%s' .", fn);
-    }
-    fclose(fp);
-  }
 }
 
 uint16_t eeLoadModelData(uint8_t index){
+    ESP_LOGI(TAG,"Load model %d data.", index );
     memset(&g_model, 0, sizeof(g_model));
     char * fn=makeModPath(index);
     FILE * fp = fopen ( fn, "rb" );
     if (NULL==fp) { /* Check if the file has been opened */
-        ESP_LOGE(TAG,"Failed to open '%s' .", fn);
+        ESP_LOGE(TAG,"Failed to open '%s'.", fn);
+        return 0;
     }
-    size_t br=fread((uint8_t*)&g_model, sizeof(g_model),1,fp);
-    if((sizeof(g_model))!=br){
-        ESP_LOGE(TAG,"Failed to read model data from '%s' .", fn);
+    if(1!=fread((uint8_t*)&g_model, sizeof(g_model),1,fp)){
+        ESP_LOGE(TAG,"Failed to read model data from '%s'.", fn);
     }
     fclose(fp);
-    return br;
+    ESP_LOGI(TAG,"Loaded model %d: name: '%s'.", index, g_model.header.name );
+    return sizeof(g_model);
 }
 
 bool eeLoadGeneral(){
-    const char gn[]="eeGeneral.bin";
-    char * fn=makeEeFPath((char *)gn);
+    char * fn=makeEeFPath(eeGeneralName);
     FILE * fp = fopen ( fn, "rb" );
     if (NULL==fp) { /* Check if the file has been opened */
-        ESP_LOGE(TAG,"Failed to open ' %s' .", fn);
+        ESP_LOGE(TAG,"Failed to open ' %s'.", fn);
         generalDefault();
         modelDefault(0);
         return true;
     }
-    if (fread ((uint8_t*)&g_eeGeneral,1, 3,fp) == 3 && g_eeGeneral.version == EEPROM_VER) {
-        if (fread ((uint8_t*)&g_eeGeneral, 1, sizeof(g_eeGeneral),fp) <= sizeof(g_eeGeneral) && g_eeGeneral.variant == EEPROM_VARIANT) {
+    if (fread ((uint8_t*)&g_eeGeneral, sizeof(g_eeGeneral), 1,fp) == 1) {
+        if(g_eeGeneral.version == EEPROM_VER){
             fclose(fp);
             return true;
         }
@@ -158,7 +212,7 @@ void storageFormat()
     DIR *dp;
     struct dirent *de;
     char fname[CONFIG_FATFS_MAX_LFN];
-    
+    ESP_LOGI(TAG,"storageFormat.");
     if(mkdir(eepromDname,0777) && errno != EEXIST){
         ESP_LOGE(TAG,"Failed to create directory: '%s'.", eepromDname);
     }
@@ -175,6 +229,7 @@ void storageFormat()
             strcat(fname,"/");
             strcat(fname,de->d_name);
             unlink(fname);
+            ESP_LOGI(TAG,"unlink '%s'.", fname);
         }
         closedir(dp);
     }
@@ -190,109 +245,3 @@ bool eepromOpen(){
     return false;
 }
 
-
-void eepromReadBlock(uint8_t * buffer, size_t address, size_t size)
-{
-    ESP_LOGI(TAG,"Reading %d bytes at position %d from '%s'.", size ,address , eepromFname);
-    //    memcpy(buffer,eeprom+address,size);
-    //    return;
-    FILE * fp = fopen ( eepromFname, "rb" );
-    if (NULL==fp) { /* Check if the file has been opened */
-        ESP_LOGE(TAG,"Failed to open ' %s' .", eepromFname);
-        return;
-    }
-    if (fseek(fp, address, SEEK_SET )) { 
-        fclose(fp);
-        ESP_LOGE(TAG,"Failed to seek to position %d bytes in '%s'.",address, eepromFname);
-        return;
-    }    
-    size_t br = fread ((void *)buffer, 1, size , fp);
-    if (br != size ) {
-        ESP_LOGE(TAG,"Failed to read %d bytes from '%s': bytes read: %d.", size, eepromFname, br);
-        //        ESP_LOGE(TAG, "ferror is %d", ferror(fp));
-        //        ESP_LOGE(TAG, "feof is %d", feof(fp));
-    }    
-    fclose(fp);
-    vTaskDelay(1);
-    //    ESP_LOGI(TAG,"Read %d bytes at position %d from '%s'.", br ,address , eepromFname);
-}
-
-void eepromWriteBlock(uint8_t * buffer, size_t address, size_t size)
-{
-    ESP_LOGI(TAG,"Writing %d bytes at position %d to '%s'.", size ,address , eepromFname);
-    //    memcpy(eeprom+address,buffer,size);
-    //    return;
-
-    int fd = open ( eepromFname, O_WRONLY );
-    if (-1 == fd) { /* Check if the file has been opened */
-        ESP_LOGE(TAG,"Failed to open ' %s' .", eepromFname);
-        return;
-    }
-    if (-1==lseek(fd, address, SEEK_SET)) { 
-        close(fd);
-        ESP_LOGE(TAG,"Failed to seek to position %d bytes in '%s'.",address, eepromFname);
-        return;
-    }    
-    size_t bw = write (fd,(void *)buffer,  size );
-    if (bw != size ) {       
-        ESP_LOGE(TAG,"Failed to write %d bytes to '%s': bytes written: %d.", size, eepromFname, bw);
-    }    
-    close(fd);
-    vTaskDelay(1);
-}
-
-uint8_t eepromIsTransferComplete()
-{
-    return 1;
-}
-
-
-void eepromInit(){
-    FILE * fp;
-    
-    struct stat st;
-    //    unlink(eepromFname);
-    //    return;
-    if (stat(eepromFname, &st) == 0) {
-        ESP_LOGI(TAG,"EEPROM file '%s' exists. Size: %ld",eepromFname,st.st_size);
-        if(st.st_size!=EEPROM_SIZE){
-            ESP_LOGI(TAG,"'%s' is wrong size: %ld bytes. Erasing ...", eepromFname, st.st_size);
-            fp=fopen ( eepromFname, "wb" );
-            if (fp == NULL){
-                ESP_LOGE(TAG,"Failed to open '%s'.", eepromFname);
-                return;
-            }
-            ESP_LOGI(TAG,"'%s' opened. Size: %ld bytes.", eepromFname, st.st_size);
-            int8_t ch=0;
-            size_t bw=0;
-            for(int i=0;i<EEPROM_SIZE;i++){
-                bw += fwrite ((void *)&ch, 1 , 1, fp);
-            }
-            if (bw!=EEPROM_SIZE) { 
-                ESP_LOGE(TAG,"Failed to allocate %d bytes for ' %s'.",EEPROM_SIZE, eepromFname);
-            }
-            fclose(fp);
-            if (stat(eepromFname, &st) == 0){
-                ESP_LOGI(TAG,"File '%s' expanded to %ld bytes.", eepromFname,  st.st_size);
-            }
-            return;
-            fclose(fp);
-        }
-    } else {
-        ESP_LOGI(TAG,"Creating '%s'.",eepromFname);
-        fp=fopen ( eepromFname, "wb+" );
-        if (fp == NULL){
-            ESP_LOGE(TAG,"Failed to create '%s'.", eepromFname);
-            return;
-        }
-        int8_t ch=0;
-        size_t bw=0;
-        for(int i=0;i<EEPROM_SIZE;i++){
-            bw += fwrite ((void *)&ch, 1 , 1, fp);
-        }
-        if (bw!=EEPROM_SIZE) { 
-            ESP_LOGE(TAG,"Failed to allocate %d bytes for ' %s'.",EEPROM_SIZE, eepromFname);
-        }
-        fclose(fp);
-    }
-}

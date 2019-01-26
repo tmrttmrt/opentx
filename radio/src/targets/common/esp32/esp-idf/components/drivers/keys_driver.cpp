@@ -53,6 +53,10 @@ void encoderTask(void * pdata){
 void initKeys(){
 
     i2cSem = xSemaphoreCreateMutex();
+    if( i2cSem == NULL )
+    {
+        ESP_LOGE(TAG,"Failed to create semaphore: i2cSem.");
+    }
 
     i2c_config_t conf;
     memset(&conf, 0, sizeof(conf));
@@ -152,6 +156,10 @@ void initKeys(){
         gpio_config(&io_conf);
         gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
         xRotEncSem = xSemaphoreCreateBinary();
+        if( xRotEncSem == NULL )
+        {
+            ESP_LOGE(TAG,"Failed to create semaphore: xRotEncSem.");
+        }
         gpio_isr_handler_add(GPIO_INTR_PIN, gpio_isr_handler, (void*) GPIO_INTR_PIN);
     } else {
         ESP_LOGE(TAG,"i2c driver install error.");

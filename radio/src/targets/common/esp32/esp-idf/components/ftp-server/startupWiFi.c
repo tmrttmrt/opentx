@@ -172,6 +172,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 
 void wifi_init_softap()
 {
+    ESP_LOGI(TAG, "wifi_init_softap ");
     wifi_event_group = xEventGroupCreate();
 
     tcpip_adapter_init();
@@ -209,6 +210,6 @@ void initWiFi(){
     }
     ESP_ERROR_CHECK(ret);
     wifi_init_softap();
-    BaseType_t ret_bt=xTaskCreatePinnedToCore(  ftpServerTask, "ftpServerTask", FTP_SERVER_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN +2, &FtpTaskHandle, FTP_SERVER_TASK_CORE );
+    BaseType_t ret_bt=xTaskCreatePinnedToCore(  ftpServerTask, "ftpServerTask", FTP_SERVER_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX +7, &FtpTaskHandle, FTP_SERVER_TASK_CORE );
     configASSERT( FtpTaskHandle );
 }

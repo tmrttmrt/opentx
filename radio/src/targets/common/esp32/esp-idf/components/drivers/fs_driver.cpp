@@ -26,7 +26,7 @@ void initFS(){
     // and allow format partition in case if it is new one and was not formated before
     esp_vfs_fat_mount_config_t mount_config;
     memset(&mount_config, 0, sizeof(mount_config));
-    mount_config.max_files = 4;
+    mount_config.max_files = 5;
     mount_config.format_if_mount_failed = true;
     mount_config.allocation_unit_size = CONFIG_WL_SECTOR_SIZE;
     esp_err_t err = esp_vfs_fat_spiflash_mount(base_path, "storage", &mount_config, &s_wl_handle);

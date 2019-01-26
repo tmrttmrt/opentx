@@ -48,7 +48,7 @@
 #include "esp_spi_flash.h"
 #include "nvs_flash.h"
 #include "esp_event.h"
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+//#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #include "esp_log.h"
 #include "esp_wifi.h"
 #include "lwip/sockets.h"

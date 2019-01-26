@@ -23,14 +23,12 @@
 void boardInit()
 {
 #if !defined(SIMU)
-lcdInit();
-initAudio();
-initFS();
-initKeys();
-initADC();
-eepromInit();
-timer10msInit();
-
+    lcdInit();
+    initAudio();
+    initFS();
+    initKeys();
+    initADC();
+    timer10msInit();
 #endif
 }
 

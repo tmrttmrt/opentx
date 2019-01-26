@@ -177,21 +177,22 @@ void tasksStart()
     BaseType_t ret;
 
     ESP_LOGI(TAG,"Starting tasks.");
+    xAudioSem = xSemaphoreCreateMutex();
+    if( xAudioSem == NULL )
+    {
+        ESP_LOGE(TAG,"Failed to create semaphore: xPer10msSem.");
+    } else {
+        ret=xTaskCreatePinnedToCore( audioTask, "audioTask", AUDIO_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -8, &xAudioTaskHandle, AUDIO_TASK_CORE );
+        configASSERT( xAudioTaskHandle );
+        ret=xTaskCreatePinnedToCore( audioPlayTask, "audioPlayTask", AUDIO_PLAY_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -7, &xAudioPlayTaskHandle, AUDIO_PLAY_TASK_CORE );
+        configASSERT( xAudioPlayTaskHandle );
+    }
 
     ret=xTaskCreatePinnedToCore( menusTask, "menusTask", MENUS_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -9, &xMenusTaskHandle, MENU_TASK_CORE );
     configASSERT( xMenusTaskHandle );
     
     ret=xTaskCreatePinnedToCore( mixerTask, "mixerTask", MIXER_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -6, &xMixerTaskHandle, MIXER_TASK_CORE );
     configASSERT( xMixerTaskHandle );
-    
-    xAudioSem = xSemaphoreCreateMutex();
-    if( xAudioSem != NULL )
-    {
-        ret=xTaskCreatePinnedToCore( audioTask, "audioTask", AUDIO_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -8, &xAudioTaskHandle, AUDIO_TASK_CORE );
-        configASSERT( xAudioTaskHandle );
-        ret=xTaskCreatePinnedToCore( audioPlayTask, "audioPlayTask", AUDIO_PLAY_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -7, &xAudioPlayTaskHandle, AUDIO_PLAY_TASK_CORE );
-        configASSERT( xAudioPlayTaskHandle );
-    }
     
     ret=xTaskCreatePinnedToCore( per10msTask, "per10msTask", PER10MS_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -5, &xPer10msTaskHandle, PER10MS_TASK_CORE );
     configASSERT( xPer10msTaskHandle );
@@ -222,9 +223,11 @@ void IRAM_ATTR timer_group0_isr(void *para)
     we need enable it again, so it is triggered the next time */
     TIMERG0.hw_timer[timer_idx].config.alarm_en = TIMER_ALARM_EN;
 
-    BaseType_t mustYield=false;
-    xSemaphoreGiveFromISR(xPer10msSem, &mustYield);
-    if (mustYield) portYIELD_FROM_ISR();
+//    if(NULL!=xPer10msSem){
+        BaseType_t mustYield=false;
+        xSemaphoreGiveFromISR(xPer10msSem, &mustYield);
+        if (mustYield) portYIELD_FROM_ISR();
+//    }
 }
 
 static void tg0_timer_init(timer_idx_t timer_idx)
@@ -251,6 +254,11 @@ static void tg0_timer_init(timer_idx_t timer_idx)
     (void *) timer_idx, ESP_INTR_FLAG_IRAM, NULL);
 
     xPer10msSem = xSemaphoreCreateBinary();
+    if( xPer10msSem == NULL )
+    {
+        ESP_LOGE(TAG,"Failed to create semaphore: xPer10msSem.");
+        return;
+    }
     timer_start(TIMER_GROUP_0, timer_idx);
 }
 
@@ -275,7 +283,7 @@ int main();
 extern "C"   void app_main(){
     main();
 //    initFS();
-//    initWiFi();
+    initWiFi();
     TaskHandle_t tasks[]={xMenusTaskHandle,xMixerTaskHandle,xAudioTaskHandle,xAudioPlayTaskHandle,xPer10msTaskHandle,xEncTaskHandle};
     uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
     while(1){
