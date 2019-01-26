@@ -293,6 +293,8 @@ enum UartModes {
   #define LEN_SWITCH_NAME              3
   #define LEN_ANA_NAME                 3
   #define LEN_BLUETOOTH_NAME           10
+#elif defined(CPUESP32)  
+    #define LEN_MODEL_FILENAME           16
 #endif
 
 #if defined(CPUARM)

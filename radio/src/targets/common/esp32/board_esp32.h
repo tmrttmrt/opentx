@@ -1,5 +1,19 @@
 #ifndef _BOARD_ESP32_H_
 #define _BOARD_ESP32_H_
+
+#define eeFlush()
+#define DISPLAY_PROGRESS_BAR(x)
+
+bool eepromOpen();
+bool eeLoadGeneral();
+void eeDeleteModel(uint8_t index);
+bool eeCopyModel(uint8_t dst, uint8_t src);
+void eeSwapModels(uint8_t id1, uint8_t id2);
+uint16_t eeLoadModelData(uint8_t index);
+void eeLoadModelName(uint8_t id, char *name);
+uint16_t eeModelSize(uint8_t index);
+
+
 uint16_t getTmr1MHz();
 void timer10msInit();
 void initADC();

@@ -7,8 +7,10 @@ set(TELEMETRY "NONE" CACHE STRING "Telemetry Type (${TELEMETRY_TYPES})")
 set_property(CACHE TELEMETRY PROPERTY STRINGS ${TELEMETRY_TYPES})
 
 add_definitions(-DLCD_${LCD})
-include_directories(targets/common/esp32)
-include_directories($ENV{IDF_PATH}/components/esp32/include $ENV{IDF_PATH}/components/soc/include)
+include_directories(targets/common/esp32 targets/common/esp32/esp-idf/build/include)
+include_directories($ENV{IDF_PATH}/components/esp32/include $ENV{IDF_PATH}/components/soc/include )
+#include_directories($ENV{IDF_PATH}/components/fatfs/src $ENV{IDF_PATH}/components/freertos/include $ENV{IDF_PATH}/components/soc/esp32/include $ENV{IDF_PATH}/components/heap/include $ENV{IDF_PATH}/components/driver/include)
+
 if(AUDIO)
   add_definitions(-DAUDIO)
   set(BUZZER OFF)
