@@ -196,7 +196,7 @@ extern const pm_char STR_OPEN9X[];
   #define OFS_VTMRMODES           (OFS_VSRCRAW + sizeof(TR_VSRCRAW))
 #endif
 #define OFS_DATETIME            (OFS_VTMRMODES + sizeof(TR_VTMRMODES))
-#if defined(CPUM2560) || defined(CPUARM)
+#if defined(CPUM2560) || defined(CPUARM) || defined(CPUESP32)
   #define OFS_VPERSISTENT       (OFS_DATETIME + sizeof(TR_DATETIME))
   #define OFS_VLCD              (OFS_VPERSISTENT + sizeof(TR_VPERSISTENT))
 #else
@@ -330,7 +330,7 @@ extern const pm_char STR_OPEN9X[];
   #define STR_VRENCODERS        (STR_OPEN9X + OFS_VRENCODERS)
 #endif
 
-#if defined(CPUM2560) || defined(CPUARM)
+#if defined(CPUM2560) || defined(CPUARM) || defined(CPUESP32)
   #define STR_DATETIME          (STR_OPEN9X + OFS_DATETIME)
   #define STR_VPERSISTENT       (STR_OPEN9X + OFS_VPERSISTENT)
 #endif
@@ -668,7 +668,7 @@ extern const pm_char STR_LATITUDE[];
 extern const pm_char STR_LONGITUDE[];
 #endif
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
 extern const pm_char STR_SHUTDOWN[];
 extern const pm_char STR_SAVEMODEL[];
 #endif

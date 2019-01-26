@@ -585,7 +585,7 @@ void menuMainView(event_t event)
 #endif
     }
     else {
-#if defined(PCBMEGA2560) && defined(ROTARY_ENCODERS)
+#if (defined(PCBMEGA2560) || defined(PCBESP_WROOM_32)) && defined(ROTARY_ENCODERS)
       for (uint8_t i=0; i<NUM_ROTARY_ENCODERS; i++) {
         int16_t val = getRotaryEncoder(i);
         int8_t len = limit((int16_t)0, (int16_t)(((val+1024) * BAR_HEIGHT) / 2048), (int16_t)BAR_HEIGHT);

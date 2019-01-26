@@ -103,7 +103,7 @@ PACK(struct MixData {
   uint8_t  speedDown;
   NOBACKUP(char name[LEN_EXPOMIX_NAME]);
 });
-#elif defined(CPUM2560) || defined(CPUM2561)
+#elif defined(CPUM2560) || defined(CPUM2561) || defined(CPUESP32)
 PACK(struct MixData {
   uint8_t destCh:4;          // 0, 1..MAX_OUTPUT_CHANNELS
   uint8_t curveMode:1;       // O=curve, 1=differential
@@ -167,7 +167,7 @@ PACK(struct ExpoData {
   int8_t   offset;
   CurveRef curve;
 });
-#elif defined(CPUM2560) || defined(CPUM2561)
+#elif defined(CPUM2560) || defined(CPUM2561) || defined(CPUESP32)
 PACK(struct ExpoData {
   uint8_t mode:2;         // 0=end, 1=pos, 2=neg, 3=both
   uint8_t chn:2;
@@ -276,7 +276,7 @@ PACK(struct CustomFunctionData {
   });
   uint8_t active;
 });
-#elif defined(CPUM2560)
+#elif defined(CPUM2560) || defined(CPUESP32)
 PACK(struct CustomFunctionData {
   int8_t  swtch;
   uint8_t func;
@@ -712,7 +712,7 @@ PACK(struct ModuleData {
  * Model structure
  */
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
 typedef uint16_t BeepANACenter;
 #else
 typedef uint8_t BeepANACenter;
@@ -1138,10 +1138,10 @@ static inline void check_struct()
   CHKSIZE(ModelHeader, 12);
   CHKTYPE(CurveData, 4);
 #elif defined(PCBESP_WROOM_32)
-  CHKSIZE(MixData, 9);
-  CHKSIZE(ExpoData, 4);
+  CHKSIZE(MixData, 10);
+  CHKSIZE(ExpoData, 5);
   CHKSIZE(LimitData, 5);
-  CHKSIZE(CustomFunctionData, 3);
+  CHKSIZE(CustomFunctionData, 4);
   CHKSIZE(FlightModeData, 30);
   CHKSIZE(TimerData, 6);
   CHKSIZE(SwashRingData, 3);

@@ -76,7 +76,7 @@
   #define CASE_LUA(x)
 #endif
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
   #define CASE_PERSISTENT_TIMERS(x) x,
 #else
   #define CASE_PERSISTENT_TIMERS(x)

@@ -107,13 +107,13 @@ bool eeCopyModel(uint8_t dst, uint8_t src){
     FILE * fps = fopen ( fn, "rb" );
     bool ret=true;
     if (NULL==fps) { /* Check if the file has been opened */
-        ESP_LOGE(TAG,"Failed to open '%s' .", fn);
+        ESP_LOGE(TAG,"Failed to open '%s' for read.", fn);
         return false;
     }
     fn=makeModPath(dst);
     FILE * fpd = fopen ( fn, "wb" );
     if (NULL==fpd) { /* Check if the file has been opened */
-        ESP_LOGE(TAG,"Failed to open '%s'.", fn);
+        ESP_LOGE(TAG,"Failed to open '%s' for write.", fn);
         ESP_LOGE(TAG,"ferr: %d.", ferror(fpd));
         ESP_LOGE(TAG,"feof: %d.", feof(fpd));
         fclose(fps);
@@ -135,12 +135,31 @@ bool eeCopyModel(uint8_t dst, uint8_t src){
 
 void eeSwapModels(uint8_t id1, uint8_t id2){
     ESP_LOGI(TAG,"eeSwapModels(%d, %d).", id1, id2);
-    if(eeCopyModel(id1, MAX_MODELS+1)){
-        eeCopyModel(id2, id1);
-        eeCopyModel(MAX_MODELS+1, id2);
-        char * fn=makeModPath(MAX_MODELS+1);
-        unlink(fn); 
+    char * fn1 = strdup(makeModPath(id1));
+    char * fn2 = strdup(makeModPath(id2));
+    char * fntmp = strdup(makeModPath(MAX_MODELS+1));
+
+    if(eeModelExists(MAX_MODELS+1)){
+        unlink(fntmp);
     }
+    if(eeModelExists(id1)){
+        if(0!=rename(fn1,fntmp)){
+            ESP_LOGE(TAG,"Failed to rename '%s' to '%s'.", fn1,fntmp);
+        }
+    }
+    if(eeModelExists(id2)){
+        if(0!=rename(fn2, fn1)){
+            ESP_LOGE(TAG,"Failed to rename '%s' to '%s'.", fn2, fn1);
+        } 
+    }
+    if(eeModelExists(MAX_MODELS+1)){
+        if(0!=rename(fntmp,fn2)){
+            ESP_LOGE(TAG,"Failed to rename '%s' to '%s'.", fntmp, fn2);
+        }
+    }
+    free(fn1);
+    free(fn2);
+    free(fntmp);
 }
 
 void eeLoadModelName(uint8_t id, char *name){
@@ -173,7 +192,6 @@ uint16_t eeLoadModelData(uint8_t index){
         ESP_LOGE(TAG,"Failed to read model data from '%s'.", fn);
     }
     fclose(fp);
-    ESP_LOGI(TAG,"Loaded model %d: name: '%s'.", index, g_model.header.name );
     return sizeof(g_model);
 }
 

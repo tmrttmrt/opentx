@@ -2086,7 +2086,7 @@ void opentxResume()
   referenceSystemAudioFiles();
 #endif
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
   if (!g_eeGeneral.unexpectedShutdown) {
     g_eeGeneral.unexpectedShutdown = 1;
     storageDirty(EE_GENERAL);
@@ -2677,7 +2677,7 @@ void opentxInit(OPENTX_INIT_ARGS)
     opentxStart();
   }
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
 	// TODO Horus does not need this
   if (!g_eeGeneral.unexpectedShutdown) {
     g_eeGeneral.unexpectedShutdown = 1;
