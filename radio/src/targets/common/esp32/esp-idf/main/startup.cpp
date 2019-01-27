@@ -22,7 +22,7 @@
 #define AUDIO_STACK_SIZE       0x800
 #define AUDIO_PLAY_STACK_SIZE  0xA00
 #define PER10MS_STACK_SIZE     0x500
-#define ENC_STACK_SIZE         0x300
+#define ENC_STACK_SIZE         0x800
 #define MENU_TASK_PERIOD_TICKS      50/portTICK_PERIOD_MS    // 50ms
 #define MENU_TASK_CORE 0
 #define MIXER_TASK_CORE 1

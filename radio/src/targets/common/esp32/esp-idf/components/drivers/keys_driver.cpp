@@ -38,9 +38,11 @@ void encoderTask(void * pdata){
     static uint8_t old;
     static int8_t lookup_table[] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
     uint8_t addr;
+    ESP_LOGI(TAG,"Starting encoder task.");
     while(1){
         xSemaphoreTake(xRotEncSem, portMAX_DELAY);
         uint8_t gpio = readI2CGPIO(MCP23017_ADDR_SW,0x11); //INTCAPB
+        ESP_LOGD(TAG,"encoder interrupt: %x",gpio);
         addr= (old & 0b11) << 2 | (gpio & 0b11);
         incRotaryEncoder(0, lookup_table[addr]);
         addr= (old & 0b1100)  | (gpio & 0b1100) >> 2; 
@@ -134,10 +136,40 @@ void initKeys(){
         i2c_master_write_byte(cmd,0x02,true); 
         i2c_master_write_byte(cmd,0xFF,true); //IPOLA
         i2c_master_write_byte(cmd,0xFF,true); //IPOLB
+        i2c_master_stop(cmd);
+        ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
+        if(ESP_OK!=ret){
+            ESP_LOGE(TAG,"i2c write error. addr: %d", MCP23017_ADDR_SW);
+        }
+        i2c_cmd_link_delete(cmd);
+        cmd = i2c_cmd_link_create();        
+        i2c_master_start(cmd);
+        i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
+        i2c_master_write_byte(cmd,0x02,true);
         i2c_master_write_byte(cmd,0x00,true); //GPINTENA
-        i2c_master_write_byte(cmd,0x0F,true); //GPINTENB
+        i2c_master_write_byte(cmd,0x0F,true); //GPINTENB        
+        i2c_master_stop(cmd);
+        ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
+        if(ESP_OK!=ret){
+            ESP_LOGE(TAG,"i2c write error. addr: %d", MCP23017_ADDR_SW);
+        }
+        i2c_cmd_link_delete(cmd);
+        cmd = i2c_cmd_link_create();        
+        i2c_master_start(cmd);
+        i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
+        i2c_master_write_byte(cmd,0x04,true);
         i2c_master_write_byte(cmd,0x00,true); //DEFVALA
-        i2c_master_write_byte(cmd,0x0F,true); //DEFVALB
+        i2c_master_write_byte(cmd,0x0F,true); //DEFVALB        
+        i2c_master_stop(cmd);
+        ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
+        if(ESP_OK!=ret){
+            ESP_LOGE(TAG,"i2c write error. addr: %d", MCP23017_ADDR_SW);
+        }
+        i2c_cmd_link_delete(cmd);
+        cmd = i2c_cmd_link_create();        
+        i2c_master_start(cmd);
+        i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
+        i2c_master_write_byte(cmd,0x06,true);
         i2c_master_write_byte(cmd,0x00,true); //INTCONA
         i2c_master_write_byte(cmd,0x0F,true); //INTCONB
         i2c_master_stop(cmd);
