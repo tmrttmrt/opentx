@@ -613,7 +613,7 @@ void menuMainView(event_t event)
         }
         y += 12;
       }
-#elif defined(CPUM2560)
+#elif defined(CPUM2560) || defined(CPUESP32)
       for (uint8_t i=0; i<MAX_LOGICAL_SWITCHES; i++) {
         drawSwitch(2*FW-3 + (i/3)*(i/3>2 ? 3*FW+2 : (3*FW-1)) + (i/3>2 ? 2*FW : 0), 4*FH+1 + (i%3)*FH, SWSRC_SW1+i, getSwitch(SWSRC_SW1+i) ? INVERS : 0);
       }

@@ -284,6 +284,7 @@ extern "C"   void app_main(){
     main();
 //    initFS();
     initWiFi();
+//    ESP_LOGI(TAG,"TR_PERSISTENT: %s",TR_PERSISTENT);
     TaskHandle_t tasks[]={xMenusTaskHandle,xMixerTaskHandle,xAudioTaskHandle,xAudioPlayTaskHandle,xPer10msTaskHandle,xEncTaskHandle};
     uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
     while(1){

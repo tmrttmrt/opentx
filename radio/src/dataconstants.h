@@ -84,7 +84,7 @@
   #define MAX_OUTPUT_CHANNELS          16 // number of real output channels CH1-CH16
   #define MAX_FLIGHT_MODES             5
   #define MAX_MIXERS                   32
-  #define MAX_EXPOS                    14
+  #define MAX_EXPOS                    16
   #define MAX_LOGICAL_SWITCHES         12
   #define MAX_SPECIAL_FUNCTIONS        24 // number of functions assigned to switches
   #define MAX_TRAINER_CHANNELS         8
@@ -303,8 +303,6 @@ enum UartModes {
   #define LEN_SWITCH_NAME              3
   #define LEN_ANA_NAME                 3
   #define LEN_BLUETOOTH_NAME           10
-#elif defined(CPUESP32)  
-    #define LEN_MODEL_FILENAME           16
 #endif
 
 #if defined(CPUARM)
