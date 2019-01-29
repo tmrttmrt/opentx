@@ -20,16 +20,22 @@ void initAudio(){
     i2s_config.intr_alloc_flags = 0; // default interrupt priority
     i2s_config.dma_buf_count = 8;
     i2s_config.dma_buf_len = 64;
-    i2s_config.use_apll = false;
+    i2s_config.use_apll = true;
 
+    esp_err_t err = i2s_driver_install(I2S_NUM_0,&i2s_config,0,NULL);
+    if (err != ESP_OK) {
+    // handle other errors
+        ESP_LOGD(TAG,"%s",esp_err_to_name(err));
+    }
     //You can call i2s_set_dac_mode to set built-in DAC output mode.
     i2s_set_dac_mode(I2S_DAC_CHANNEL_LEFT_EN);
+    
 
 }
 
 void setSampleRate(uint32_t frequency){
     ESP_LOGI(TAG,"setSampleRate: %d",frequency);
-//    i2s_set_sample_rates(I2S_NUM_0, frequency);
+    i2s_set_sample_rates(I2S_NUM_0, frequency);
 }
 
 void audioPlayTask(void * pdata){
@@ -40,7 +46,7 @@ void audioPlayTask(void * pdata){
         
         if (nextBuffer) {
             size_t bytes_written=0;
-//            i2s_write(I2S_NUM_0, (const void*) nextBuffer->data, nextBuffer->size * sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
+            i2s_write(I2S_NUM_0, (const void*) nextBuffer->data, nextBuffer->size * sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
             audioQueue.buffersFifo.freeNextFilledBuffer();
             nextBuffer = audioQueue.buffersFifo.getNextFilledBuffer();
         } 
