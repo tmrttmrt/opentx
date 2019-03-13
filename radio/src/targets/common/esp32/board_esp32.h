@@ -1,6 +1,8 @@
 #ifndef _BOARD_ESP32_H_
 #define _BOARD_ESP32_H_
 
+void espLogI(const char * format, ...);
+
 #define eeFlush()
 #define DISPLAY_PROGRESS_BAR(x)
 
@@ -35,6 +37,9 @@ uint16_t per10msStackAvailable();
 uint16_t mixerStackAvailable();
 uint16_t menusStackAvailable();
 
+void backlightEnable();
+void backlightDisable();
+bool isBacklightEnabled();
 
 
 enum Analogs {

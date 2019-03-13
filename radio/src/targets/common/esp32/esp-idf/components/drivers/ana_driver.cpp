@@ -28,19 +28,29 @@
 #define HASASSERT
 #include "opentx.h"
 
-adc1_channel_t analogPorts[]={ADC1_CHANNEL_0,ADC1_CHANNEL_3,ADC1_CHANNEL_6,ADC1_CHANNEL_7,ADC1_CHANNEL_4,ADC1_CHANNEL_5,(adc1_channel_t) ADC2_CHANNEL_8};
+adc1_channel_t analogPorts[]=ADC_CHAN;
+
 static_assert(sizeof(analogPorts)/sizeof(adc1_channel_t)==NUM_ANALOGS,"Analog pins assignment issue");
 
 static const char *TAG = "ana_driver.cpp";
 
 void getADC(){
     int     read_raw;
-    
+    int     i;
+    unsigned int sum;
     int channel=0;
-    for(;channel<6;channel++){
-        s_anaFilt[channel]=adc1_get_raw(analogPorts[channel]);
+    
+    for(;channel<(NUM_ANALOGS-NUM_ADC2);channel++){
+        sum=0;
+        for(i=0;i<ADC1_NAVG;i++){
+            sum += adc1_get_raw(analogPorts[channel]);
+        }
+        sum/=ADC1_NAVG;
+        s_anaFilt[channel]=sum;
+//        if(1==channel)
+//            espLogI("%d: %d\n",channel,sum);
     }
-    //    ESP_LOGI(TAG,"analog 0: %d",s_anaFilt[0]);
+
     for(;channel<NUM_ANALOGS;channel++){
         esp_err_t err=adc2_get_raw((adc2_channel_t)analogPorts[channel], ADC_WIDTH_12Bit, &read_raw);
         if ( err == ESP_OK ) {
@@ -57,7 +67,7 @@ void initADC(){
     adc1_config_width(ADC_WIDTH_BIT_12);
     
     int channel=0;
-    for(;channel<6;channel++){
+    for(;channel<(NUM_ANALOGS-NUM_ADC2);channel++){
         adc1_config_channel_atten(analogPorts[channel], ADC_ATTEN_DB_11);
     }
     for(;channel<NUM_ANALOGS;channel++){

@@ -36,14 +36,26 @@
 #define PIN_NUM_MISO -1
 #define PIN_NUM_MOSI GPIO_NUM_12
 #define PIN_NUM_CLK  GPIO_NUM_14
-#define PIN_NUM_CS   GPIO_NUM_15
+#define PIN_NUM_CS   GPIO_NUM_13
 
 #define PIN_NUM_DC   GPIO_NUM_27
 #define PIN_NUM_RST  GPIO_NUM_0
-#define PIN_NUM_BCKL GPIO_NUM_26
+#define PIN_NUM_BCKL GPIO_NUM_2
 
 static const char *TAG = "lcd_driver.cpp";
 spi_device_handle_t spi;
+
+void backlightEnable(){
+    gpio_set_level(PIN_NUM_BCKL, BACKLIGHT_ON?1:0);
+}
+
+void backlightDisable(){
+    gpio_set_level(PIN_NUM_BCKL, BACKLIGHT_ON?0:1);
+}
+
+bool isBacklightEnabled(){
+    return gpio_get_level (PIN_NUM_BCKL)==BACKLIGHT_ON?true:false;
+}
 
 void lcd_spi_pre_transfer_callback(spi_transaction_t *t)
 {

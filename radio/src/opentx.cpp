@@ -1488,7 +1488,7 @@ uint8_t checkTrim(event_t event)
 }
 
 #if !defined(SIMU)
-uint16_t s_anaFilt[NUM_ANALOGS];
+volatile uint16_t s_anaFilt[NUM_ANALOGS];
 #endif
 
 #if defined(SIMU)

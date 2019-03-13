@@ -1794,7 +1794,7 @@ extern Clipboard clipboard;
 #endif
 
 #if !defined(SIMU)
-extern uint16_t s_anaFilt[NUM_ANALOGS];
+extern volatile uint16_t s_anaFilt[NUM_ANALOGS];
 #endif
 
 #if defined(JITTER_MEASURE)

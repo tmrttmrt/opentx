@@ -41,6 +41,10 @@ uint16_t getBatteryVoltage();   // returns current battery voltage in 10mV steps
 #define NUM_POTS                       2
 #define NUM_SLIDERS                    0
 #define NUM_XPOTS                      0
+#define ADC_CHAN {ADC1_CHANNEL_0,ADC1_CHANNEL_3,ADC1_CHANNEL_6,ADC1_CHANNEL_7,ADC1_CHANNEL_4,ADC1_CHANNEL_5,(adc1_channel_t)ADC2_CHANNEL_8}
+#define NUM_ADC2 1
+#define ADC1_NAVG 20
+
 
 #define TIMERS 2
 
@@ -99,7 +103,7 @@ void lcdInit(void);
 
 //PPM
 //#define INP_E_PPM_IN              4
-#define PPM_TX_GPIO               13
+#define PPM_TX_GPIO               15
 
 // EEPROM driver
 #define EEPROM_SIZE                  0x1000
@@ -115,11 +119,9 @@ uint8_t eepromIsTransferComplete();
 #define JACK_PPM_IN()             0 //PORTB |= (1<<OUT_B_SIM_CTL)
 
 // Backlight driver
-#define backlightEnable()         //PORTC |= (1<<OUT_C_LIGHT)
-#define backlightDisable()        //PORTC &= ~(1<<OUT_C_LIGHT)
-#define isBacklightEnabled()      //(PORTC & (1<<OUT_C_LIGHT))
 #define BACKLIGHT_ENABLE()        backlightEnable()
 #define BACKLIGHT_DISABLE()       backlightDisable()
+#define BACKLIGHT_ON 1
 
 // Rotary encoders driver
 #define INP_E_ROT_ENC_1_A         4

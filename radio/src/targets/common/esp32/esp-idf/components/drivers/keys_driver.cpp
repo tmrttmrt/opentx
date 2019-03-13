@@ -45,7 +45,7 @@ void encoderTask(void * pdata){
         ESP_LOGD(TAG,"encoder interrupt: %x",gpio);
         addr= (old & 0b11) << 2 | (gpio & 0b11);
         incRotaryEncoder(0, lookup_table[addr]);
-        addr= (old & 0b1100)  | (gpio & 0b1100) >> 2; 
+        addr= (old & 0b1100)  | (gpio & 0b11000) >> 3; 
         incRotaryEncoder(1, lookup_table[addr]);
         old = gpio;
     }
@@ -159,7 +159,7 @@ void initKeys(){
         i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
         i2c_master_write_byte(cmd,0x04,true);
         i2c_master_write_byte(cmd,0x00,true); //DEFVALA
-        i2c_master_write_byte(cmd,0x0F,true); //DEFVALB        
+        i2c_master_write_byte(cmd,0x1B,true); //DEFVALB        
         i2c_master_stop(cmd);
         ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
         if(ESP_OK!=ret){
@@ -171,7 +171,7 @@ void initKeys(){
         i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
         i2c_master_write_byte(cmd,0x06,true);
         i2c_master_write_byte(cmd,0x00,true); //INTCONA
-        i2c_master_write_byte(cmd,0x0F,true); //INTCONB
+        i2c_master_write_byte(cmd,0x1B,true); //INTCONB
         i2c_master_stop(cmd);
         ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
         if(ESP_OK!=ret){
@@ -246,37 +246,39 @@ uint8_t readI2CGPIO(uint8_t addr, uint8_t port){
 void readKeysAndTrims(){
             
     uint16_t keys_input = readI2CGPIO(MCP23017_ADDR_KEYS) ;
-    uint32_t i;
+    uint16_t i;
     ESP_LOGD(TAG,"readKeysAndTrims: %x",keys_input);
 
-#if ROTARY_ENCODERS > 0
-    keys[BTN_REa].input(keys_input & BIT(6));
-#endif
-
     uint8_t index = 0;
-    for (i = 0; i < 6; i++) {
-        keys[index].input(keys_input & (0x0001 << i));
-        ++index;
-    }
-
-    for (i = 0x0100; i < 0x8100; i <<= 1) {
+    for (i = 0x0100; i < 0x2100; i <<= 1) {
         keys[index].input(keys_input & i);
         ++index;
     }
 
-    if ((keys_input & ~(uint16_t)(BIT(6)|BIT(7))) && (g_eeGeneral.backlightMode & e_backlight_mode_keys)) {
+    for (i = 0x0001; i < 0x0081; i <<= 1) {
+        keys[index].input(keys_input & i);
+        ++index;
+    }
+
+    if ((keys_input & ~(uint16_t)(BIT(30)|BIT(31))) && (g_eeGeneral.backlightMode & e_backlight_mode_keys)) {
         // on keypress turn the light on
         backlightOn();
     }
+    
+    #if ROTARY_ENCODERS > 0
+        keys_input = readI2CGPIO(MCP23017_ADDR_SW, 0x13) ;
+        keys[BTN_REa].input(keys_input & BIT(2));
+    #endif
 }
 
 bool keyDown()
 {
-    uint8_t keys = readI2CGPIO(MCP23017_ADDR_KEYS, 0x12);
-    if(keys != 0){
-        ESP_LOGD(TAG,"keyDown: %x", keys);
+    uint8_t keys = readI2CGPIO(MCP23017_ADDR_KEYS, 0x13)& ~((uint8_t)(BIT(7) | BIT(6)));
+    uint8_t keysre = readI2CGPIO(MCP23017_ADDR_SW, 0x13) & BIT(2);
+    if((keys | keysre) != 0){
+        ESP_LOGD(TAG,"keyDown: %x, keyRe: %x", keys, keysre);
     }
-    return  readI2CGPIO(MCP23017_ADDR_KEYS, 0x12) & ~((uint16_t)(BIT(7)));
+    return  keys | keysre;
 }
 
 uint8_t switchState(uint8_t index)

@@ -42,6 +42,7 @@ TaskHandle_t xEncTaskHandle = NULL;
 portMUX_TYPE mixerMux= portMUX_INITIALIZER_UNLOCKED;
 SemaphoreHandle_t xAudioSem = NULL;
 SemaphoreHandle_t xPer10msSem = NULL;
+//uint16_t testDuration;
 
 uint16_t menusStackAvailable()
 {
@@ -168,7 +169,9 @@ void mixerTask(void * pdata)
 void  per10msTask(void * pdata){
     while(1){
         xSemaphoreTake(xPer10msSem, portMAX_DELAY);
+//        uint32_t now = esp_timer_get_time();
         per10ms();
+//        testDuration = (uint16_t)(esp_timer_get_time()-now);
     }
 }
 
@@ -293,6 +296,8 @@ extern "C"   void app_main(){
             ESP_LOGD(TAG,"Min stack: %s: %d",pcTaskGetTaskName(tasks[i]),uxTaskGetStackHighWaterMark(tasks[i]));
         }
         ESP_LOGD(TAG,"maxMixerDuration %d",maxMixerDuration);
+//        ESP_LOGI(TAG,"last 10ms task duration %d",testDuration);
+        
         vTaskDelay(1000/portTICK_PERIOD_MS);
     };
 }

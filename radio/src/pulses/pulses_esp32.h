@@ -28,8 +28,6 @@ extern volatile uint32_t nextMixerEndTime;
 
 extern uint8_t moduleFlag[NUM_MODULES];
 
-#define MAX_MIXER_DELTA (50*16) /* 50ms max as an interval between 2 mixer calculations */
-
 void startPulses();
 inline bool pulsesStarted() { return s_current_protocol[0] != 255; }
 inline void pausePulses() { s_pulses_paused = true; }

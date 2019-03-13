@@ -83,6 +83,7 @@ void IRAM_ATTR setupPulsesPPM(uint8_t proto)
   pd->duration1 = 0;
   pd->level1 = idleLevel;
   RMT.tx_lim_ch[PPM_OUT_RMT_CHANNEL_0].limit = j; //Send interrupt SETUP_PULSES_DURATION before the end of the PPM packet
+  RMT.int_ena.val |= BIT(PPM_OUT_RMT_CHANNEL_0 + 24);
   portEXIT_CRITICAL(&rmt_spinlock);
   vTaskExitCritical(&mixerMux);
 }

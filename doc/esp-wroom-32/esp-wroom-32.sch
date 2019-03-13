@@ -703,9 +703,9 @@ F 3 "" H 850 1800 60  0001 C CNN
 	1    850  1800
 	1    0    0    -1  
 $EndComp
-Text Label 5950 4950 2    42   ~ 0
+Text Label 5850 4050 2    42   ~ 0
 Key_►
-Text Label 5950 4750 2    42   ~ 0
+Text Label 5850 3850 2    42   ~ 0
 Key_▼
 $Comp
 L esp-wroom-32-rescue:R-Device R1
@@ -827,15 +827,15 @@ Text Label 3350 7600 1    42   ~ 0
 SW_RudDR
 Text Label 3150 7600 1    42   ~ 0
 SW_Gear
-Text Label 5950 4650 2    42   ~ 0
+Text Label 5850 3750 2    42   ~ 0
 Key_ESC
-Text Label 5950 4550 2    42   ~ 0
+Text Label 5850 3650 2    42   ~ 0
 Key_MENU
 Text Label 3450 7600 1    42   ~ 0
 SW_EleDR
-Text Label 5950 4850 2    42   ~ 0
+Text Label 5850 3950 2    42   ~ 0
 Key_▲
-Text Label 5950 5050 2    42   ~ 0
+Text Label 5850 4150 2    42   ~ 0
 Key_◄
 Text Label 700  5200 0    42   ~ 0
 LCD_SI
@@ -849,21 +849,21 @@ Text Label 2650 6100 1    42   ~ 0
 LCD_Light
 Text Label 700  5100 0    42   ~ 0
 LCD_SCL
-Text Label 5950 3950 2    42   ~ 0
+Text Label 5950 4850 2    42   ~ 0
 Trim_LV-►
-Text Label 5950 3850 2    42   ~ 0
+Text Label 5950 4750 2    42   ~ 0
 Trim_LV◄-
-Text Label 5950 4150 2    42   ~ 0
+Text Label 5950 5050 2    42   ~ 0
 Trim_RV-►
-Text Label 5950 4050 2    42   ~ 0
+Text Label 5950 4950 2    42   ~ 0
 Trim_RV◄-
-Text Label 5950 4250 2    42   ~ 0
+Text Label 5950 5150 2    42   ~ 0
 Trim_RH◄-
-Text Label 5950 4350 2    42   ~ 0
+Text Label 5950 5250 2    42   ~ 0
 Trim_RH-►
-Text Label 5950 3650 2    42   ~ 0
+Text Label 5950 4550 2    42   ~ 0
 Trim_LH◄-
-Text Label 5950 3750 2    42   ~ 0
+Text Label 5950 4650 2    42   ~ 0
 Trim_LH-►
 Text Label 700  4300 0    42   ~ 0
 Stick_LV
@@ -879,15 +879,15 @@ Text Label 700  4400 0    42   ~ 0
 Stick_RV
 Text Label 700  4500 0    42   ~ 0
 Stick_LH
-Text Label 4150 7600 1    42   ~ 0
+Text Label 4050 7600 1    42   ~ 0
 Rot_2_B
-Text Label 4250 7600 1    42   ~ 0
+Text Label 4150 7600 1    42   ~ 0
 Rot_2_A
 Text Label 700  4900 0    42   ~ 0
 BUZZER
-Text Label 5950 5250 2    42   ~ 0
+Text Label 3950 7650 1    42   ~ 0
 Rot_2_Push
-Text Label 5950 5150 2    42   ~ 0
+Text Label 4250 7650 1    42   ~ 0
 Rot_1_Push
 Text Label 3550 4750 2    42   ~ 0
 Telemetry_TX
@@ -895,19 +895,19 @@ Text Label 3550 4850 2    42   ~ 0
 Telemetry_RX
 Text Label 3750 7600 1    42   ~ 0
 Hold_Power
-Text Label 2550 6100 1    42   ~ 0
+Text Label 1850 6100 1    42   ~ 0
 LCD_N_CS
 Text Label 4450 7600 1    42   ~ 0
 Rot_1_A
 Text Label 4350 7600 1    42   ~ 0
 Rot_1_B
-Text Label 3950 7700 1    42   ~ 0
+Text Label 5900 4350 2    42   ~ 0
 RF_Activated
-Text Label 3850 7700 1    42   ~ 0
+Text Label 5900 4250 2    42   ~ 0
 DSC_Activated
-Text Label 4050 7700 1    42   ~ 0
+Text Label 3850 7700 1    42   ~ 0
 Sim_Control
-Text Label 1850 6100 1    42   ~ 0
+Text Label 2550 6100 1    42   ~ 0
 PPM_OUT
 $Comp
 L esp-wroom-32-rescue:CONN_1-MEGA2560 +
@@ -1087,9 +1087,9 @@ Wire Wire Line
 Wire Wire Line
 	3000 4450 3100 4450
 Wire Wire Line
-	3950 7250 3950 7700
+	5450 4350 5900 4350
 Wire Wire Line
-	4050 7250 4050 7700
+	3850 7250 3850 7700
 Wire Wire Line
 	3250 7250 3250 7600
 Wire Wire Line
@@ -1112,13 +1112,13 @@ Wire Wire Line
 Wire Wire Line
 	850  1800 850  1650
 Wire Wire Line
-	1850 5650 1850 6100
-Wire Wire Line
 	2550 5650 2550 6100
+Wire Wire Line
+	1850 5650 1850 6100
 Wire Wire Line
 	3100 4850 3550 4850
 Wire Wire Line
-	3850 7250 3850 7700
+	5450 4250 5900 4250
 Wire Wire Line
 	1050 2650 1050 1800
 Wire Notes Line
@@ -1633,36 +1633,25 @@ Wire Wire Line
 Wire Wire Line
 	4050 5500 4750 5500
 Wire Wire Line
-	4050 5150 4050 5250
-Connection ~ 4050 5250
-Wire Wire Line
 	700  5000 1250 5000
 Wire Wire Line
 	2650 6100 2650 5650
 Wire Wire Line
-	5450 3650 5950 3650
+	5450 4550 5950 4550
 Wire Wire Line
-	5450 3750 5950 3750
+	5450 4650 5950 4650
 Wire Wire Line
-	5450 3850 5950 3850
-Wire Wire Line
-	5450 3950 5950 3950
-Wire Wire Line
-	5450 4050 5950 4050
-Wire Wire Line
-	5450 4150 5950 4150
-Wire Wire Line
-	5450 4250 5950 4250
-Wire Wire Line
-	5450 4350 5950 4350
-Wire Wire Line
-	5450 5050 5950 5050
+	5450 4750 5950 4750
 Wire Wire Line
 	5450 4850 5950 4850
 Wire Wire Line
 	5450 4950 5950 4950
 Wire Wire Line
-	5450 4750 5950 4750
+	5450 5050 5950 5050
+Wire Wire Line
+	5450 5150 5950 5150
+Wire Wire Line
+	5450 5250 5950 5250
 Wire Wire Line
 	3550 7250 3550 7600
 Wire Wire Line
@@ -1784,10 +1773,6 @@ Wire Wire Line
 	2850 7250 2850 7600
 Wire Wire Line
 	2950 7250 2950 7600
-Wire Wire Line
-	5450 5150 5950 5150
-Wire Wire Line
-	5450 5250 5950 5250
 Text Label 3250 3650 0    50   ~ 0
 I2C_SDA
 Text Label 3350 3750 0    50   ~ 0
@@ -1797,9 +1782,9 @@ Wire Wire Line
 Wire Wire Line
 	4450 7250 4450 7600
 Wire Wire Line
-	4150 7250 4150 7600
+	4050 7250 4050 7600
 Wire Wire Line
-	4250 7250 4250 7600
+	4150 7250 4150 7600
 Wire Wire Line
 	3450 7250 3450 7600
 Wire Wire Line
@@ -1838,8 +1823,6 @@ Wire Wire Line
 Wire Wire Line
 	3750 7250 3750 7600
 Wire Wire Line
-	4050 5050 4050 5150
-Wire Wire Line
 	3750 3650 3750 5700
 Wire Wire Line
 	4750 5550 4750 5700
@@ -1856,15 +1839,32 @@ Wire Wire Line
 	3650 3750 3650 5800
 Wire Wire Line
 	3750 3650 4050 3650
-Connection ~ 4050 5150
-Wire Wire Line
-	4050 5250 4050 5500
 Wire Wire Line
 	3050 5600 4050 5600
 Text Label 3300 5050 0    42   ~ 0
 N_RESET
 Wire Wire Line
-	5450 4550 5950 4550
+	4250 7250 4250 7650
 Wire Wire Line
-	5450 4650 5950 4650
+	3950 7250 3950 7650
+Wire Wire Line
+	5450 3650 5850 3650
+Wire Wire Line
+	5450 3750 5850 3750
+Wire Wire Line
+	5450 3850 5850 3850
+Wire Wire Line
+	5450 3950 5850 3950
+Wire Wire Line
+	5450 4050 5850 4050
+Wire Wire Line
+	5450 4150 5850 4150
+Wire Wire Line
+	4050 5250 4050 5500
+Connection ~ 4050 5150
+Connection ~ 4050 5250
+Wire Wire Line
+	4050 5050 4050 5150
+Wire Wire Line
+	4050 5150 4050 5250
 $EndSCHEMATC
