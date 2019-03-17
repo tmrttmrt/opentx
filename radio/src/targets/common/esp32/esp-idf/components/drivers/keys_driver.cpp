@@ -220,7 +220,7 @@ uint8_t readI2CGPIO(uint8_t addr, uint8_t port){
 
 
 void readKeysAndTrims(){
-            
+    
     uint16_t keys_input = readI2CGPIO(MCP23017_ADDR_KEYS) ;
     uint16_t i;
     ESP_LOGD(TAG,"readKeysAndTrims: %x",keys_input);
@@ -242,37 +242,42 @@ void readKeysAndTrims(){
     }
     
     #if ROTARY_ENCODERS > 0
-        keys_input = readI2CGPIO(MCP23017_ADDR_SW, 0x13) ;
-        keys[BTN_REa].input(keys_input & BIT(0));
+    keys_input = readI2CGPIO(MCP23017_ADDR_SW, 0x13) ;
+    keys[BTN_REa].input(keys_input & BIT(0));
     #endif
 }
 
 bool keyDown()
 {
     uint8_t keys = readI2CGPIO(MCP23017_ADDR_KEYS, 0x13)& ~((uint8_t)(BIT(7) | BIT(6)));
-    uint8_t keysre = readI2CGPIO(MCP23017_ADDR_SW, 0x13) & BIT(0);
+    uint8_t keysre = readI2CGPIO(MCP23017_ADDR_SW, 0x13) & BIT(INP_J_ROT_ENC_1_PUSH);
     if((keys | keysre) != 0){
         ESP_LOGD(TAG,"keyDown: %x, keyRe: %x", keys, keysre);
     }
     return  keys | keysre;
 }
 
+bool rEncDown(uint8_t bit)
+{
+    uint8_t keysre = readI2CGPIO(MCP23017_ADDR_SW, 0x13) & BIT(bit);
+    return  keysre;
+}
+
 uint8_t switchState(uint8_t index)
 {
     uint8_t result = 0;
-    return result;
     uint8_t port_input = readI2CGPIO(MCP23017_ADDR_SW, 0x12) ;
     switch (index) {
     case SW_ELE:
-        result = !(port_input & (1<<INP_ElevDR));
+        result = (port_input & (1<<INP_ElevDR));
         break;
 
     case SW_AIL:
-        result = !(port_input & (1<<INP_AileDR));
+        result = (port_input & (1<<INP_AileDR));
         break;
 
     case SW_RUD:
-        result = !(port_input & (1<<INP_RuddDR));
+        result = (port_input & (1<<INP_RuddDR));
         break;
 
         //       INP_C_ID1  INP_C_ID2
@@ -280,27 +285,27 @@ uint8_t switchState(uint8_t index)
         // ID1      1          1
         // ID2      1          0
     case SW_ID0:
-        result = !(port_input & (1<<INP_ID1));
+        result = (port_input & (1<<INP_ID1));
         break;
 
     case SW_ID1:
-        result = (port_input & (1<<INP_ID1))&& (port_input & (1<<INP_ID2));
+        result = !(port_input & (1<<INP_ID1))&& !(port_input & (1<<INP_ID2));
         break;
 
     case SW_ID2:
-        result = !(port_input & (1<<INP_ID2));
+        result = (port_input & (1<<INP_ID2));
         break;
 
     case SW_GEA:
-        result = !(port_input & (1<<INP_Gear));
+        result = (port_input & (1<<INP_Gear));
         break;
 
     case SW_THR:
-        result = !(port_input & (1<<INP_ThrCt));
+        result = (port_input & (1<<INP_ThrCt));
         break;
 
     case SW_TRN:
-        result = !(port_input & (1<<INP_Trainer));
+        result = (port_input & (1<<INP_Trainer));
         break;
 
     default:

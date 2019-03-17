@@ -105,11 +105,6 @@ void lcdInit(void);
 //#define INP_E_PPM_IN              4
 #define PPM_TX_GPIO               15
 
-// EEPROM driver
-#define EEPROM_SIZE                  0x1000
-void eepromReadBlock(uint8_t * buffer, size_t address, size_t size);
-uint8_t eepromIsTransferComplete();
-
 // Trims
 #define NUM_TRIMS                 4
 #define NUM_TRIMS_KEYS            (NUM_TRIMS * 2)
@@ -124,24 +119,12 @@ uint8_t eepromIsTransferComplete();
 #define BACKLIGHT_ON 1
 
 // Rotary encoders driver
-#define INP_E_ROT_ENC_1_A         4
-#define INP_E_ROT_ENC_1_B         5
-#define INP_D_ROT_ENC_2_A         2
-#define INP_D_ROT_ENC_2_B         3
 #define INP_J_ROT_ENC_1_PUSH      0
-#define INP_J_ROT_ENC_2_PUSH      1
-#define REA_DOWN()                0//(~PINJ & (1<<INP_J_ROT_ENC_1_PUSH))
-#define REB_DOWN()                0//(~PINJ & (1<<INP_J_ROT_ENC_2_PUSH))
+#define INP_J_ROT_ENC_2_PUSH      4
+#define REA_DOWN()                rEncDown(INP_J_ROT_ENC_1_PUSH)
+#define REB_DOWN()                rEncDown(INP_J_ROT_ENC_2_PUSH)
 #define ROTENC_DOWN()             (REA_DOWN() || REB_DOWN())
-#define ROTENC_DIV2                 // rotary encoders resolution/2
-
-// Keys
-/*#define KEYS_GPIO_PIN_MENU        (1<<4)
-#define KEYS_GPIO_PIN_EXIT        (1<<5)
-#define KEYS_GPIO_PIN_RIGHT       (1<<2)
-#define KEYS_GPIO_PIN_LEFT        (1<<3)
-#define KEYS_GPIO_PIN_UP          (1<<1)
-#define KEYS_GPIO_PIN_DOWN        (1<<0)*/
+//#define ROTENC_DIV2                 // rotary encoders resolution/2
 
 #define IS_SHIFT_KEY(index)       (false)
 #define IS_SHIFT_PRESSED()        (false)
