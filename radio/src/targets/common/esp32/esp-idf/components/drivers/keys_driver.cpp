@@ -43,9 +43,9 @@ void encoderTask(void * pdata){
         xSemaphoreTake(xRotEncSem, portMAX_DELAY);
         uint8_t gpio = readI2CGPIO(MCP23017_ADDR_SW,0x11); //INTCAPB
         ESP_LOGD(TAG,"encoder interrupt: %x",gpio);
-        addr= (old & 0b11) << 2 | (gpio & 0b11);
+        addr= (old & 0b110) << 1 | (gpio & 0b110)>>1;
         incRotaryEncoder(0, lookup_table[addr]);
-        addr= (old & 0b1100)  | (gpio & 0b11000) >> 3; 
+        addr= (old & 0b110000) >>2  | (gpio & 0b110000) >> 4; 
         incRotaryEncoder(1, lookup_table[addr]);
         old = gpio;
     }
@@ -145,33 +145,9 @@ void initKeys(){
         cmd = i2c_cmd_link_create();        
         i2c_master_start(cmd);
         i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
-        i2c_master_write_byte(cmd,0x02,true);
-        i2c_master_write_byte(cmd,0x00,true); //GPINTENA
-        i2c_master_write_byte(cmd,0x0F,true); //GPINTENB        
-        i2c_master_stop(cmd);
-        ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
-        if(ESP_OK!=ret){
-            ESP_LOGE(TAG,"i2c write error. addr: %d", MCP23017_ADDR_SW);
-        }
-        i2c_cmd_link_delete(cmd);
-        cmd = i2c_cmd_link_create();        
-        i2c_master_start(cmd);
-        i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
         i2c_master_write_byte(cmd,0x04,true);
-        i2c_master_write_byte(cmd,0x00,true); //DEFVALA
-        i2c_master_write_byte(cmd,0x1B,true); //DEFVALB        
-        i2c_master_stop(cmd);
-        ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
-        if(ESP_OK!=ret){
-            ESP_LOGE(TAG,"i2c write error. addr: %d", MCP23017_ADDR_SW);
-        }
-        i2c_cmd_link_delete(cmd);
-        cmd = i2c_cmd_link_create();        
-        i2c_master_start(cmd);
-        i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
-        i2c_master_write_byte(cmd,0x06,true);
-        i2c_master_write_byte(cmd,0x00,true); //INTCONA
-        i2c_master_write_byte(cmd,0x1B,true); //INTCONB
+        i2c_master_write_byte(cmd,0x00,true); //GPINTENA
+        i2c_master_write_byte(cmd,0x36,true); //GPINTENB        
         i2c_master_stop(cmd);
         ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
         if(ESP_OK!=ret){
@@ -232,7 +208,7 @@ uint8_t readI2CGPIO(uint8_t addr, uint8_t port){
     i2c_master_write_byte(cmd, (addr << 1) | I2C_MASTER_READ, true);
     i2c_master_read_byte(cmd, &data, I2C_MASTER_NACK);
     i2c_master_stop(cmd);
-    xSemaphoreTake(i2cSem, portMAX_DELAY);;
+    xSemaphoreTake(i2cSem, portMAX_DELAY);
     esp_err_t ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 2);
     xSemaphoreGive(i2cSem);
     if(ESP_OK!=ret){
@@ -267,14 +243,14 @@ void readKeysAndTrims(){
     
     #if ROTARY_ENCODERS > 0
         keys_input = readI2CGPIO(MCP23017_ADDR_SW, 0x13) ;
-        keys[BTN_REa].input(keys_input & BIT(2));
+        keys[BTN_REa].input(keys_input & BIT(0));
     #endif
 }
 
 bool keyDown()
 {
     uint8_t keys = readI2CGPIO(MCP23017_ADDR_KEYS, 0x13)& ~((uint8_t)(BIT(7) | BIT(6)));
-    uint8_t keysre = readI2CGPIO(MCP23017_ADDR_SW, 0x13) & BIT(2);
+    uint8_t keysre = readI2CGPIO(MCP23017_ADDR_SW, 0x13) & BIT(0);
     if((keys | keysre) != 0){
         ESP_LOGD(TAG,"keyDown: %x, keyRe: %x", keys, keysre);
     }
