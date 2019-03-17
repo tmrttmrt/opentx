@@ -39,9 +39,9 @@ TaskHandle_t xAudioPlayTaskHandle = NULL;
 TaskHandle_t xPer10msTaskHandle = NULL;
 TaskHandle_t xEncTaskHandle = NULL;
 
-portMUX_TYPE mixerMux= portMUX_INITIALIZER_UNLOCKED;
 SemaphoreHandle_t xAudioSem = NULL;
 SemaphoreHandle_t xPer10msSem = NULL;
+extern SemaphoreHandle_t xPPMSem;
 //uint16_t testDuration;
 
 uint16_t menusStackAvailable()
@@ -68,15 +68,6 @@ uint16_t audioStackAvailable()
 uint16_t getTmr2MHz(){
     return ((uint16_t) esp_timer_get_time())*2;
 }
-
-void mixEnterCritical(){
-    vTaskEnterCritical(&mixerMux);
-}
-
-void mixExitCritical(){
-    vTaskExitCritical(&mixerMux);
-}
-
 
 void menusTask(void * pvParameters)
 {
@@ -126,7 +117,7 @@ void mixerTask(void * pdata)
         if ((now - lastRunTime) >= 20) {     // run at least every 20ms
             run = true;
         }
-        else if (now >= nextMixerEndTime - 2) {
+        else if (xSemaphoreTake( xPPMSem, 0 ) == pdTRUE) {
             run = true;
         }
         if (!run) {
@@ -190,7 +181,12 @@ void tasksStart()
         ret=xTaskCreatePinnedToCore( audioPlayTask, "audioPlayTask", AUDIO_PLAY_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -7, &xAudioPlayTaskHandle, AUDIO_PLAY_TASK_CORE );
         configASSERT( xAudioPlayTaskHandle );
     }
-
+    
+    xPPMSem = xSemaphoreCreateMutex();
+    if( xPPMSem == NULL )
+    {
+        ESP_LOGE(TAG,"Failed to create semaphore: xPPMSem.");
+    }
     ret=xTaskCreatePinnedToCore( menusTask, "menusTask", MENUS_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -9, &xMenusTaskHandle, MENU_TASK_CORE );
     configASSERT( xMenusTaskHandle );
     
@@ -286,7 +282,7 @@ int main();
 extern "C"   void app_main(){
     main();
 //    initFS();
-    initWiFi();
+//    initWiFi();
 //    ESP_LOGI(TAG,"TR_PERSISTENT: %s",TR_PERSISTENT);
     TaskHandle_t tasks[]={xMenusTaskHandle,xMixerTaskHandle,xAudioTaskHandle,xAudioPlayTaskHandle,xPer10msTaskHandle,xEncTaskHandle};
     uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);

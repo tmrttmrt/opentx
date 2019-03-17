@@ -48,7 +48,7 @@ uint16_t getBatteryVoltage();   // returns current battery voltage in 10mV steps
 
 #define TIMERS 2
 
-// Switchs driver
+// Switches driver
 #define INP_ID2                 7
 #define INP_ID1                 6
 #define INP_AileDR              0

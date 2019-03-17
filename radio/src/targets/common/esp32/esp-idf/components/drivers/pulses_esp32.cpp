@@ -19,22 +19,25 @@
  */
 
 #include "driver/rmt.h"
+#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_log.h"
 #define HASASSERT
 #include "opentx.h"
 
 #define PPM_OUT_RMT_CHANNEL_0 RMT_CHANNEL_0
 #define SETUP_PULSES_DURATION 1000 // 500us
 
-uint8_t s_pulses_paused = 0;
-uint8_t s_current_protocol[1] = { 255 };
-rmt_isr_handle_t handle;
+static const char *TAG = "pulses_esp32.cpp";
+DRAM_ATTR uint8_t s_pulses_paused = 0;
+DRAM_ATTR uint8_t s_current_protocol[1] = { 255 };
+rmt_isr_handle_t handle = 0;
 static portMUX_TYPE rmt_spinlock = portMUX_INITIALIZER_UNLOCKED;
-extern portMUX_TYPE mixerMux; 
-volatile uint32_t nextMixerEndTime = 0;
-#define SCHEDULE_MIXER_END(delay) nextMixerEndTime = esp_timer_get_time()/1000 + (delay)
+QueueHandle_t xPulsesQueue; 
+SemaphoreHandle_t xPPMSem = NULL;
+DRAM_ATTR int16_t locChannelOutputs[MAX_OUTPUT_CHANNELS] = {0};
 
-void IRAM_ATTR setupPulsesPPM(uint8_t proto)
+void IRAM_ATTR setupPulsesPPM()
 {
   // Total frame length is a fixed 22.5msec (more than 9 channels is non-standard and requires this to be extended.)
   // Each channel's pulse is 0.7 to 1.7ms long, with a 0.3ms stop tail, making each compelte cycle 1 to 2ms.
@@ -42,7 +45,7 @@ void IRAM_ATTR setupPulsesPPM(uint8_t proto)
   int16_t PPM_range = g_model.extendedLimits ? 640*2 : 512*2;   //range of 0.7..1.7msec
 
   //The pulse tick is 2mhz that's why everything is multiplied by 2
-  uint8_t p = (proto == PROTO_PPM16 ? 16 : 8) + (g_model.ppmNCH * 2); //Channels *2
+  uint8_t p = 8 + (g_model.ppmNCH * 2); //Channels *2
   uint16_t q = (g_model.ppmDelay*50+300)*2; // Stoplen *2
   int32_t rest = 22500u*2 - q;
   rest += (int32_t(g_model.ppmFrameLength))*1000;
@@ -56,12 +59,11 @@ void IRAM_ATTR setupPulsesPPM(uint8_t proto)
       pulseLevel=0;
       idleLevel=1;
   }
-  vTaskEnterCritical(&mixerMux);
   portENTER_CRITICAL(&rmt_spinlock);
   int j=0;
   volatile rmt_item32_t* pd = RMTMEM.chan[PPM_OUT_RMT_CHANNEL_0].data32;
-  for ( uint8_t i=(proto==PROTO_PPM16) ? p-8 : 0; i<p; i++) {
-    int16_t v = limit((int16_t)-PPM_range, channelOutputs[i], (int16_t)PPM_range) + 2*PPM_CH_CENTER(i);
+  for ( uint8_t i=0; i<p; i++) {
+    int16_t v = limit((int16_t)-PPM_range, locChannelOutputs[i], (int16_t)PPM_range) + 2*PPM_CH_CENTER(i);
     rest -= v;
     pd->duration0 = q;
     pd->level0 = pulseLevel;
@@ -85,13 +87,15 @@ void IRAM_ATTR setupPulsesPPM(uint8_t proto)
   RMT.tx_lim_ch[PPM_OUT_RMT_CHANNEL_0].limit = j; //Send interrupt SETUP_PULSES_DURATION before the end of the PPM packet
   RMT.int_ena.val |= BIT(PPM_OUT_RMT_CHANNEL_0 + 24);
   portEXIT_CRITICAL(&rmt_spinlock);
-  vTaskExitCritical(&mixerMux);
 }
 
 
 void IRAM_ATTR setupPulses()
 {
   uint8_t required_protocol = g_model.protocol;
+  BaseType_t xHigherPriorityTaskWoken;
+  
+  xQueueReceiveFromISR( xPulsesQueue, locChannelOutputs, &xHigherPriorityTaskWoken );
 
   if (s_pulses_paused) {
     required_protocol = PROTO_NONE;
@@ -105,7 +109,6 @@ void IRAM_ATTR setupPulses()
       telemetryInit();
     }
 #endif
-    rmt_tx_start(PPM_OUT_RMT_CHANNEL_0,true);
     s_current_protocol[0] = required_protocol;
     
 
@@ -122,12 +125,8 @@ void IRAM_ATTR setupPulses()
         break;
 #endif
 
-      case PROTO_PPM16: // Not currently implemented
-        setupPulsesPPM(PROTO_PPM16);
-        break;
-
       case PROTO_PPMSIM:
-        setupPulsesPPM(PROTO_PPMSIM);
+        setupPulsesPPM();
         break;
 
 #if defined(DSM2_SERIAL) && defined(TELEMETRY_FRSKY)
@@ -167,11 +166,15 @@ void IRAM_ATTR setupPulses()
       // TODO BSS stbyLevel = 0; //start with 1
       break;
 #endif
-
+    case PROTO_NONE:
+        break;
     default: // standard PPM protocol
-      SCHEDULE_MIXER_END(g_model.ppmFrameLength-SETUP_PULSES_DURATION/2000);//ms
-      setupPulsesPPM(PROTO_PPM);
+      setupPulsesPPM();
+      xSemaphoreGiveFromISR( xPPMSem, &xHigherPriorityTaskWoken );
       break;
+  }
+  if ( xHigherPriorityTaskWoken == pdTRUE) {
+        portYIELD_FROM_ISR();
   }
 }
 
@@ -180,17 +183,25 @@ static void IRAM_ATTR rmt_driver_isr_PPM(void* arg)
 {
     uint32_t intr_st = RMT.int_st.val;
     if(intr_st & BIT(PPM_OUT_RMT_CHANNEL_0+24)){
-       setupPulses();
-       RMT.int_clr.val = intr_st & (BIT(PPM_OUT_RMT_CHANNEL_0) | 
+        setupPulses();
+        RMT.int_clr.val = intr_st & (BIT(PPM_OUT_RMT_CHANNEL_0) | 
             BIT(PPM_OUT_RMT_CHANNEL_0+1)| BIT(PPM_OUT_RMT_CHANNEL_0+2)| BIT(PPM_OUT_RMT_CHANNEL_0+24));
     }
 }
 
-
+void resumePulses() {
+    if(xPulsesQueue){
+        s_pulses_paused = false; 
+        setupPulses();
+    }
+}
 
 void startPulses()
 {
     rmt_config_t config;
+
+    xPulsesQueue=xQueueCreate( 1, sizeof( channelOutputs ) );
+    memset(&config, 0, sizeof(config));
     config.rmt_mode = RMT_MODE_TX;
     config.channel = PPM_OUT_RMT_CHANNEL_0;
     config.gpio_num = (gpio_num_t)PPM_TX_GPIO;
@@ -213,9 +224,13 @@ void startPulses()
 
     ESP_ERROR_CHECK(rmt_config(&config));
     rmt_isr_register(rmt_driver_isr_PPM, NULL, ESP_INTR_FLAG_IRAM, &handle );
+    s_pulses_paused = false;
     setupPulses();
     rmt_tx_start(PPM_OUT_RMT_CHANNEL_0,true);
-    s_pulses_paused = false;
+}
+
+void sendToPulses(){
+    xQueueOverwrite( xPulsesQueue, channelOutputs );
 }
 
 

@@ -37,6 +37,7 @@ uint16_t per10msStackAvailable();
 uint16_t mixerStackAvailable();
 uint16_t menusStackAvailable();
 bool rEncDown(uint8_t mask);
+void sendToPulses();
 
 
 void backlightEnable();

@@ -37,7 +37,7 @@ static const char *TAG = "ana_driver.cpp";
 void getADC(){
     int     read_raw;
     int     i;
-    unsigned int sum;
+    uint32_t sum;
     int channel=0;
     
     for(;channel<(NUM_ANALOGS-NUM_ADC2);channel++){

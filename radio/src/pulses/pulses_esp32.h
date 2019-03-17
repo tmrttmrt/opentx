@@ -31,7 +31,7 @@ extern uint8_t moduleFlag[NUM_MODULES];
 void startPulses();
 inline bool pulsesStarted() { return s_current_protocol[0] != 255; }
 inline void pausePulses() { s_pulses_paused = true; }
-inline void resumePulses() { s_pulses_paused = false; }
+void resumePulses();
 void setupPulses();
 void DSM2_Init();
 void DSM2_Done();

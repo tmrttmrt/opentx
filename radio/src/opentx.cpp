@@ -21,7 +21,7 @@
 #include "opentx.h"
 
 RadioData  g_eeGeneral;
-ModelData  g_model;
+DRAM_ATTR ModelData  g_model;
 
 #if defined(SDCARD)
 Clipboard clipboard;
@@ -219,7 +219,7 @@ MixData *mixAddress(uint8_t idx)
   return &g_model.mixData[idx];
 }
 
-LimitData *limitAddress(uint8_t idx)
+LimitData IRAM_ATTR *limitAddress(uint8_t idx)
 {
   return &g_model.limitData[idx];
 }

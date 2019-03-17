@@ -464,8 +464,10 @@ enum SwashType {
 
 enum Protocols {
   PROTO_PPM,
-#if !defined(CPUARM)
+#if !defined(CPUARM) 
+#if !defined(CPUESP32)
   PROTO_PPM16,
+#endif  
   PROTO_PPMSIM,
 #endif
 #if defined(PXX) || defined(DSM2) || defined(IRPROTOS)

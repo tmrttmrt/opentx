@@ -50,7 +50,7 @@ void eeWriteModelData(uint8_t index){
 }
 
 void eeWriteGeneral(){
-    
+    ESP_LOGI(TAG,"Storing general eeprom into '%s.'", eeGeneralName );
     char * fn=makeEeFPath(eeGeneralName);
     FILE * fp = fopen ( fn, "wb" );
     if (NULL==fp) { /* Check if the file has been opened */
@@ -67,14 +67,14 @@ void eeWriteGeneral(){
 void storageCheck(bool immediately){
     
     if (storageDirtyMsk & EE_GENERAL) {
-        TRACE("eeprom write general");
+        ESP_LOGD(TAG,"eeprom write general");
         storageDirtyMsk -= EE_GENERAL;
         eeWriteGeneral();
         if (!immediately) return;
     }
 
     if (storageDirtyMsk & EE_MODEL) {
-        TRACE("eeprom write model");
+        ESP_LOGD(TAG,"eeprom write model");
         storageDirtyMsk = 0;
         eeWriteModelData(g_eeGeneral.currModel);
     }

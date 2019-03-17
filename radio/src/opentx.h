@@ -34,6 +34,7 @@
 #include "esp_attr.h"
 #else
 #define IRAM_ATTR
+#define DRAM_ATTR
 #endif
 
 #if defined(SIMU)

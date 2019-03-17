@@ -1218,15 +1218,12 @@ void evalMixes(uint8_t tick10ms)
     int16_t value = applyLimits(i, q);  // applyLimits will remove the 256 100% basis
 
     cli();
-#if defined(CPUESP32)
-    mixEnterCritical();
-#endif
     channelOutputs[i] = value;  // copy consistent word to int-level
-#if defined(CPUESP32)
-    mixExitCritical();
-#endif
     sei();
   }
+#if defined(CPUESP32)
+  sendToPulses();
+#endif
 
   if (tick10ms && flightModesFade) {
     uint16_t tick_delta = delta * tick10ms;
