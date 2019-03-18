@@ -84,7 +84,17 @@
   #define MAX_OUTPUT_CHANNELS          16 // number of real output channels CH1-CH16
   #define MAX_FLIGHT_MODES             5
   #define MAX_MIXERS                   32
-  #define MAX_EXPOS                    14
+  #define MAX_EXPOS                    16
+  #define MAX_LOGICAL_SWITCHES         12
+  #define MAX_SPECIAL_FUNCTIONS        24 // number of functions assigned to switches
+  #define MAX_TRAINER_CHANNELS         8
+  #define MAX_TELEMETRY_SENSORS        0
+#elif defined(CPUESP32)
+  #define MAX_MODELS                   30
+  #define MAX_OUTPUT_CHANNELS          16 // number of real output channels CH1-CH16
+  #define MAX_FLIGHT_MODES             5
+  #define MAX_MIXERS                   32
+  #define MAX_EXPOS                    16
   #define MAX_LOGICAL_SWITCHES         12
   #define MAX_SPECIAL_FUNCTIONS        24 // number of functions assigned to switches
   #define MAX_TRAINER_CHANNELS         8
@@ -183,6 +193,9 @@ enum CurveType {
 #elif defined(CPUM2560)
   #define MAX_ROTARY_ENCODERS          2
   #define NUM_ROTARY_ENCODERS          2
+#elif defined(CPUESP32)
+  #define MAX_ROTARY_ENCODERS          2
+  #define NUM_ROTARY_ENCODERS          2  
 #else
   #define MAX_ROTARY_ENCODERS          0
   #define NUM_ROTARY_ENCODERS          0
@@ -630,7 +643,7 @@ enum SwitchSources {
 
 #if defined(PCBSKY9X)
   SWSRC_REa,
-#elif defined(CPUM2560)
+#elif defined(CPUM2560) || defined(CPUESP32)
   SWSRC_REa,
   SWSRC_REb,
 #endif
@@ -755,7 +768,7 @@ enum MixSources {
 #if defined(PCBSKY9X)
   MIXSRC_REa,
   MIXSRC_LAST_ROTARY_ENCODER = MIXSRC_REa,
-#elif defined(CPUM2560)
+#elif defined(CPUM2560) || defined(CPUESP32)
   MIXSRC_REa,
   MIXSRC_REb,
   #if ROTARY_ENCODERS > 2

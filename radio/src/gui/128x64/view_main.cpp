@@ -585,7 +585,7 @@ void menuMainView(event_t event)
 #endif
     }
     else {
-#if defined(PCBMEGA2560) && defined(ROTARY_ENCODERS)
+#if (defined(PCBMEGA2560) || defined(PCBESP_WROOM_32)) && defined(ROTARY_ENCODERS)
       for (uint8_t i=0; i<NUM_ROTARY_ENCODERS; i++) {
         int16_t val = getRotaryEncoder(i);
         int8_t len = limit((int16_t)0, (int16_t)(((val+1024) * BAR_HEIGHT) / 2048), (int16_t)BAR_HEIGHT);
@@ -613,7 +613,7 @@ void menuMainView(event_t event)
         }
         y += 12;
       }
-#elif defined(CPUM2560)
+#elif defined(CPUM2560) || defined(CPUESP32)
       for (uint8_t i=0; i<MAX_LOGICAL_SWITCHES; i++) {
         drawSwitch(2*FW-3 + (i/3)*(i/3>2 ? 3*FW+2 : (3*FW-1)) + (i/3>2 ? 2*FW : 0), 4*FH+1 + (i%3)*FH, SWSRC_SW1+i, getSwitch(SWSRC_SW1+i) ? INVERS : 0);
       }

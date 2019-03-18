@@ -8,3 +8,11 @@
 build*/
 cmake-build-*/
 /debian/
+sdkconfig
+radio/src/targets/common/esp32/esp-idf/components/startup/defines.mk
+radio/src/targets/common/esp32/esp-idf/components/startup/includes.mk
+radio/src/targets/common/esp32/esp-idf/log.txt
+radio/src/targets/common/esp32/esp-idf/sdkconfig.old
+radio/src/targets/common/esp32/esp-idf/components/firmware/defines.mk
+radio/src/targets/common/esp32/esp-idf/MicroPython_ESP32_psRAM_LoBo-master/
+radio/src/targets/common/esp32/esp-idf/components/firmware/includes.mk

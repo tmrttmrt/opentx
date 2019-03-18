@@ -45,7 +45,7 @@ void timerSet(int idx, int val)
 }
 #endif // #if defined(CPUARM)
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
 void restoreTimers()
 {
   for (uint8_t i=0; i<TIMERS; i++) {

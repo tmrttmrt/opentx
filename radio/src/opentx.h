@@ -29,6 +29,12 @@
 #include "opentx_types.h"
 #if defined(STM32)
 #include "usbd_conf.h"
+#endif 
+#if defined(CPUESP32)
+#include "esp_attr.h"
+#else
+#define IRAM_ATTR
+#define DRAM_ATTR
 #endif
 
 #if defined(SIMU)
@@ -71,7 +77,7 @@
   #define CASE_LUA(x)
 #endif
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
   #define CASE_PERSISTENT_TIMERS(x) x,
 #else
   #define CASE_PERSISTENT_TIMERS(x)
@@ -285,6 +291,19 @@
   #define pgm_read_adr(x)              *(x)
   #define cli()
   #define sei()
+#elif defined(CPUESP32)
+  typedef const unsigned char pm_uchar;
+  typedef const char pm_char;
+  typedef const uint16_t pm_uint16_t;
+  typedef const uint8_t pm_uint8_t;
+  typedef const int16_t pm_int16_t;
+  typedef const int8_t pm_int8_t;
+  #define PROGMEM
+  #define pgm_read_byte(address_short) (*(uint8_t*)(address_short))
+  #define sei()
+  #define cli()
+  #define PSTR(adr) adr
+  #define pgm_read_adr(x)              *(x)
 #endif
 
 #include "debug.h"
@@ -363,6 +382,9 @@ void memswap(void * a, void * b, uint8_t size);
   #include "fifo.h"
   #include "io/io_arm.h"
   // This doesn't need protection on this processor
+  extern volatile tmr10ms_t g_tmr10ms;
+  #define get_tmr10ms()                g_tmr10ms
+#elif defined(CPUESP32)
   extern volatile tmr10ms_t g_tmr10ms;
   #define get_tmr10ms()                g_tmr10ms
 #else
@@ -503,8 +525,10 @@ typedef struct {
 #endif
 
 #if !defined(SIMU)
-  #define assert(x)
-  #if !defined(CPUARM) || !defined(DEBUG)
+  #if !defined(HASASSERT)
+    #define assert(x)
+  #endif
+  #if (!defined(CPUARM) && !defined(CPUARM)) || !defined(DEBUG) 
     #define printf printf_not_allowed
   #endif
 #endif
@@ -663,7 +687,7 @@ enum StartupWarningStates {
 
 
 // Fiddle to force compiler to use a pointer
-#if defined(CPUARM) || defined(SIMU)
+#if defined(CPUARM) || defined(SIMU) || defined(CPUESP32)
   #define FORCE_INDIRECT(ptr)
 #else
   #define FORCE_INDIRECT(ptr) __asm__ __volatile__ ("" : "=e" (ptr) : "0" (ptr))
@@ -823,6 +847,8 @@ extern uint16_t lastMixerDuration;
 
 #if defined(CPUARM)
   #define DURATION_MS_PREC2(x) ((x)/20)
+#elif defined(CPUESP32)
+  #define DURATION_MS_PREC2(x) ((x)/10)
 #else
   #define DURATION_MS_PREC2(x) ((x)*100)/16
 #endif
@@ -850,6 +876,8 @@ extern uint16_t lastMixerDuration;
   static inline uint16_t getTmr2MHz() { return TIMER_2MHz_TIMER->CNT; }
 #elif defined(PCBSKY9X)
   static inline uint16_t getTmr2MHz() { return TC1->TC_CHANNEL[0].TC_CV; }
+#elif defined(PCBESP_WROOM_32)
+  uint16_t getTmr2MHz();
 #else
   uint16_t getTmr16KHz();
 #endif
@@ -896,7 +924,7 @@ void doLoopCommonActions();
 #define BITMASK(bit) (1<<(bit))
 
 #if !defined(UNUSED)
-#define UNUSED(x)	((void)(x))	/* to avoid warnings */
+#define UNUSED(x)   ((void)(x)) /* to avoid warnings */
 #endif
 
 /// returns the number of elements of an array
@@ -1248,7 +1276,7 @@ enum FunctionsActive {
 #if defined(SDCARD)
   FUNCTION_LOGS,
 #endif
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   FUNCTION_BACKGND_MUSIC,
   FUNCTION_BACKGND_MUSIC_PAUSE,
 #endif
@@ -1296,14 +1324,14 @@ enum AUDIO_SOUNDS {
 #if defined(CPUARM)
   AU_BYE,
 #endif
-#if defined(VOICE)
+#if defined(VOICE) || defined(CPUESP32)
   AU_THROTTLE_ALERT,
   AU_SWITCH_ALERT,
   AU_BAD_RADIODATA,
 #endif
   AU_TX_BATTERY_LOW,
   AU_INACTIVITY,
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   AU_RSSI_ORANGE,
   AU_RSSI_RED,
   AU_RAS_RED,
@@ -1325,17 +1353,15 @@ enum AUDIO_SOUNDS {
   AU_WARNING2,
   AU_WARNING3,
   AU_TRIM_MIDDLE,
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   AU_TRIM_MIN,
   AU_TRIM_MAX,
-#endif
-#if defined(CPUARM)
   AU_STICK1_MIDDLE,
   AU_STICK2_MIDDLE,
   AU_STICK3_MIDDLE,
   AU_STICK4_MIDDLE,
 #endif
-#if defined(PCBTARANIS) || defined(PCBHORUS)
+#if defined(PCBTARANIS) || defined(PCBHORUS) || defined(CPUESP32)
   AU_POT1_MIDDLE,
   AU_POT2_MIDDLE,
 #if defined(PCBX9E)
@@ -1358,7 +1384,7 @@ enum AUDIO_SOUNDS {
   AU_MIX_WARNING_1,
   AU_MIX_WARNING_2,
   AU_MIX_WARNING_3,
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   AU_TIMER1_ELAPSED,
   AU_TIMER2_ELAPSED,
   AU_TIMER3_ELAPSED,
@@ -1387,7 +1413,7 @@ enum AUDIO_SOUNDS {
 };
 
 #if defined(AUDIO)
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 #include "audio_arm.h"
 #else
 #include "audio_avr.h"
@@ -1769,7 +1795,7 @@ extern Clipboard clipboard;
 #endif
 
 #if !defined(SIMU)
-extern uint16_t s_anaFilt[NUM_ANALOGS];
+extern volatile uint16_t s_anaFilt[NUM_ANALOGS];
 #endif
 
 #if defined(JITTER_MEASURE)

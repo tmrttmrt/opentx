@@ -22,7 +22,13 @@
 #define _AUDIO_ARM_H_
 
 #include <stddef.h>
+#if defined(CPUESP32)
+#define  audioDisableIrq()
+#define  audioEnableIrq()
+#define audioConsumeCurrentBuffer()
+#else
 #include "ff.h"
+#endif
 
 /*
   Implements a bit field, number of bits is set by the template,
@@ -95,7 +101,7 @@ enum AudioBufferState
 };
 #endif
 
-#if defined(SIMU)
+#if defined(SIMU) || defined(CPUESP32)
   typedef uint16_t audio_data_t;
   #define AUDIO_DATA_SILENCE           0x8000
   #define AUDIO_DATA_MIN               0
@@ -226,7 +232,11 @@ class WavContext {
     AudioFragment fragment;
 
     struct {
+#if defined(CPUESP32)
+      int      file;
+#else
       FIL      file;
+#endif
       uint8_t  codec;
       uint32_t freq;
       uint32_t size;

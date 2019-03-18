@@ -38,7 +38,7 @@
 #if defined(CPUARM)
   #define EEPROM_VER             218
   #define FIRST_CONV_EEPROM_VER  216
-#elif defined(CPUM2560) || defined(CPUM2561)
+#elif defined(CPUM2560) || defined(CPUM2561) || defined(CPUESP32)
   #define EEPROM_VER             217
   #define FIRST_CONV_EEPROM_VER  EEPROM_VER
 #elif defined(CPUM128)
@@ -109,7 +109,7 @@
 #define CFN_GVAR_CST_MAX               GVAR_MAX
 #define MODEL_GVAR_MIN(idx)            (CFN_GVAR_CST_MIN + g_model.gvars[idx].min)
 #define MODEL_GVAR_MAX(idx)            (CFN_GVAR_CST_MAX - g_model.gvars[idx].max)
-#elif defined(CPUM2560)
+#elif defined(CPUM2560) || defined(CPUESP32)
 #define CFN_SWITCH(p)       ((p)->swtch)
 #define CFN_FUNC(p)         ((p)->func)
 #define CFN_ACTIVE(p)       ((p)->active)
@@ -450,7 +450,7 @@ enum SwashType {
 
 #if defined(CPUARM)
 #define IS_MANUAL_RESET_TIMER(idx)     (g_model.timers[idx].persistent == 2)
-#elif defined(CPUM2560)
+#elif defined(CPUM2560) || defined(CPUESP32)
 #define IS_MANUAL_RESET_TIMER(idx)     (g_model.timers[idx].persistent == 2)
 #else
 #define IS_MANUAL_RESET_TIMER(idx)     0
@@ -464,8 +464,10 @@ enum SwashType {
 
 enum Protocols {
   PROTO_PPM,
-#if !defined(CPUARM)
+#if !defined(CPUARM) 
+#if !defined(CPUESP32)
   PROTO_PPM16,
+#endif  
   PROTO_PPMSIM,
 #endif
 #if defined(PXX) || defined(DSM2) || defined(IRPROTOS)

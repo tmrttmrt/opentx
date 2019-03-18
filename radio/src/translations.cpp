@@ -90,7 +90,7 @@ const pm_char STR_OPEN9X[] PROGMEM =
     ISTR(INPUTNAMES)
 #endif
     ISTR(VTMRMODES)
-#if defined(CPUM2560) || defined(CPUARM)
+#if defined(CPUM2560) || defined(CPUARM) || defined(CPUESP32)
     ISTR(DATETIME)
     ISTR(VPERSISTENT)
 #endif
@@ -335,7 +335,7 @@ const pm_char STR_STORAGE_FORMAT[] PROGMEM = TR_STORAGE_FORMAT;
 const pm_char STR_FAS_OFFSET[] PROGMEM = TR_FAS_OFFSET;
 #endif
 
-#if defined(CPUM2560) || defined(CPUARM)
+#if defined(CPUM2560) || defined(CPUARM) || defined(CPUESP32)
 const pm_char STR_MENUDATEANDTIME[] PROGMEM = TR_MENUDATEANDTIME;
 #endif
 
@@ -418,7 +418,7 @@ const pm_char STR_LATITUDE[] PROGMEM = TR_LATITUDE;
 const pm_char STR_LONGITUDE[] PROGMEM = TR_LONGITUDE;
 #endif
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
 const pm_char STR_SHUTDOWN[] PROGMEM = TR_SHUTDOWN;
 const pm_char STR_SAVEMODEL[] PROGMEM = TR_SAVEMODEL;
 #endif

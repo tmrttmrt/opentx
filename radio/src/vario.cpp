@@ -79,9 +79,13 @@ void varioWakeup()
 
   if (isFunctionActive(FUNCTION_VARIO)) {
 #if defined(AUDIO)
+#if  defined(CPUESP32)
+    int16_t verticalSpeed = telemetryData.hub.varioSpeed;
+#elif
     cli();
     int16_t verticalSpeed = telemetryData.hub.varioSpeed;
     sei();
+#endif
 
 #if defined(PCBSTD)
     int16_t varioCenterMax = (int16_t)g_model.frsky.varioCenterMax * 10 + 50;
@@ -120,7 +124,13 @@ void varioWakeup()
         varioDuration = 20;
       }
       s_varioTmr = tmr10ms + (varioDuration/2);
+#if  defined(CPUESP32)
+      int varioPause = 0;
+      int8_t varioFlags = PLAY_BACKGROUND;
+      AUDIO_VARIO(varioFreq, varioDuration, varioPause, varioFlags);
+#elif
       AUDIO_VARIO(varioFreq, varioDuration);
+#endif
     }
 #endif
 
