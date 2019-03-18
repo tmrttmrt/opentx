@@ -464,7 +464,7 @@ enum SwashType {
 
 enum Protocols {
   PROTO_PPM,
-#if !defined(CPUARM) 
+#if !defined(CPUARM)
 #if !defined(CPUESP32)
   PROTO_PPM16,
 #endif  
@@ -556,7 +556,13 @@ enum MultiModuleRFProtocols {
   MM_RF_PROTO_HITEC,
   MM_RF_PROTO_WFLY,
   MM_RF_PROTO_BUGS,
-  MM_RF_PROTO_LAST= MM_RF_PROTO_BUGS
+  MM_RF_PROTO_BUGS_MINI,
+  MM_RF_PROTO_TRAXXAS,
+  MM_RF_PROTO_NCC1701,
+  MM_RF_PROTO_E01X,
+  MM_RF_PROTO_V911S,
+  MM_RF_PROTO_GD00X,
+  MM_RF_PROTO_LAST = MM_RF_PROTO_GD00X
 };
 
 enum MMDSM2Subtypes {

@@ -559,10 +559,6 @@ if(NOT MSVC)
 
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_FLAGS} -Wimplicit")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_FLAGS}")
-#    include_directories($ENV{IDF_PATH}/components/freertos/include targets/common/esp32/esp-idf/build/include)
-#    include_directories($ENV{IDF_PATH}/components/esp32/include $ENV{IDF_PATH}/components/soc/include)
-#	get_target_property(CompDefs firmware COMPILE_DEFINITIONS )
-#	message(STATUS "the value of CompDefs: " ${CMAKE_CXX_FLAGS})
 
     # these are in addition to CMAKE_CXX_FLAGS
     set(CMAKE_EXE_LINKER_FLAGS "-lm -T${RADIO_SRC_DIRECTORY}/${LINKER_SCRIPT} -Wl,-Map=firmware.map,--cref,--no-warn-mismatch,--gc-sections")
