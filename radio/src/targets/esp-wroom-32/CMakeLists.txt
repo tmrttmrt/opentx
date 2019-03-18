@@ -1,7 +1,7 @@
 set(CPU_FAMILY ESP32)
 option(PWRMANAGE "Pwr Manage" OFF)
 option(SDCARD "SD card support" OFF)
-option(ROTENC_DIV2 "Rotary encoder resolution/2" OFF)
+option(ROTENC_DIV2 "Rotary encoder resolution/2" ON)
 set(ARCH ESP32)
 set(MCU ESP32)
 set(LUA NO)
