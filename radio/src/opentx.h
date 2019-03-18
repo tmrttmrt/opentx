@@ -528,7 +528,7 @@ typedef struct {
   #if !defined(HASASSERT)
     #define assert(x)
   #endif
-  #if (!defined(CPUARM) && !defined(CPUARM)) || !defined(DEBUG) 
+  #if (!defined(CPUARM) && !defined(CPUESP32)) || !defined(DEBUG) 
     #define printf printf_not_allowed
   #endif
 #endif

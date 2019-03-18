@@ -47,12 +47,10 @@ class audioQueue
     inline void driver() {
       if (toneFreq) {
         toneCounter += toneFreq;
-        if ((toneCounter & 0x80) == 0x80){
+        if ((toneCounter & 0x80) == 0x80)
           buzzerOn();
-        }  
-        else{
+        else
           buzzerOff();
-        }
       }
     }
 

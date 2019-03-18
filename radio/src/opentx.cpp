@@ -2082,7 +2082,7 @@ void opentxResume()
 
   opentxStart(false);
 
-#if defined(CPUARM) 
+#if defined(CPUARM)
   referenceSystemAudioFiles();
 #endif
 
