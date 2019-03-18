@@ -13,7 +13,6 @@
 #define HASASSERT
 #include "opentx.h"
 
-const char * const eepromFname = "/flash/eeprom.bin";
 const char * const eepromDname = "/flash/eeprom.dir";
 const char * const eeGeneralName = "eeGeneral.bin";
 static const char *TAG = "eeprom_driver.cpp";
@@ -255,8 +254,7 @@ void storageFormat()
 
 bool eepromOpen(){
     struct stat st;
-    const char gn[]="eeGeneral.bin";
-    char * fn=makeEeFPath((char *)gn);
+    char * fn=makeEeFPath(eeGeneralName);
     if (stat(fn, &st) == 0) {
         return true;
     }
