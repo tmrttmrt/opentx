@@ -25,7 +25,6 @@
 #if defined(CPUESP32)
 #define  audioDisableIrq()
 #define  audioEnableIrq()
-#define audioConsumeCurrentBuffer()
 #else
 #include "ff.h"
 #endif
@@ -101,13 +100,13 @@ enum AudioBufferState
 };
 #endif
 
-#if defined(SIMU) || defined(CPUESP32)
+#if defined(SIMU) 
   typedef uint16_t audio_data_t;
   #define AUDIO_DATA_SILENCE           0x8000
   #define AUDIO_DATA_MIN               0
   #define AUDIO_DATA_MAX               0xffff
   #define AUDIO_BITS_PER_SAMPLE        16
-#elif defined(PCBX12S)
+#elif defined(PCBX12S) || defined(CPUESP32)
   typedef int16_t audio_data_t;
   #define AUDIO_DATA_SILENCE           0
   #define AUDIO_DATA_MIN               INT16_MIN
@@ -289,6 +288,7 @@ class MixedContext {
 
 };
 
+#if !defined(CPUESP32)
 class AudioBufferFifo {
 #if defined(CLI)
   friend void printAudioVars();
@@ -404,6 +404,7 @@ class AudioBufferFifo {
     }
 
 };
+#endif
 
 class AudioFragmentFifo
 {
@@ -506,9 +507,9 @@ class AudioQueue {
     bool isEmpty() const { return fragmentsFifo.empty(); };
     void wakeup();
     bool started() const { return _started; };
-
+#if !defined(CPUESP32)
     AudioBufferFifo buffersFifo;
-
+#endif
   private:
     volatile bool _started;
     MixedContext normalContext;

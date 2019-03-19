@@ -54,9 +54,18 @@
 #if defined(CPUARM)
   #define CASE_CPUARM(x)     x,
   #define IF_CPUARM(x)       x
+  #define CASE_CPUESP32(x)
+  #define IF_CPUESP32(x)
+#elif defined(CPUESP32)
+  #define CASE_CPUARM(x)
+  #define IF_CPUARM(x)
+  #define CASE_CPUESP32(x)     x,
+  #define IF_CPUESP32(x)       x
 #else
   #define CASE_CPUARM(x)
   #define IF_CPUARM(x)
+  #define CASE_CPUESP32(x)
+  #define IF_CPUESP32(x)
 #endif
 
 #if defined(STM32)

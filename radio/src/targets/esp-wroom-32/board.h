@@ -187,6 +187,7 @@ enum CalibratedAnalogs {
 #define AUD_DAC_GPIO   26
 #define speakerOn()               //TCCR4A |=  (1 << COM4A0)
 #define speakerOff()              //TCCR4A &= ~(1 << COM4A0)
+#define VOLUME_LEVEL_MAX  255
 #endif
 
 // Battery driver

@@ -27,7 +27,8 @@
 
 static const char *TAG = "audio_driver.cpp";
 extern SemaphoreHandle_t xAudioSem;
-
+uint8_t currentSpeakerVolume=2;
+extern QueueHandle_t xAudioQueue;
 
 const int16_t sineValues[] =
 {
@@ -497,8 +498,7 @@ AudioQueue audioQueue;
 AudioBuffer audioBuffers[AUDIO_BUFFER_COUNT];
 
 AudioQueue::AudioQueue()
-  : buffersFifo(),
-  _started(false),
+  :_started(false),
   normalContext(),
   backgroundContext(),
   priorityContext(),
@@ -743,12 +743,9 @@ int ToneContext::mixBuffer(AudioBuffer * buffer, int volume, unsigned int fade)
 
 void AudioQueue::wakeup()
 {
-  DEBUG_TIMER_START(debugTimerAudioConsume);
-  audioConsumeCurrentBuffer();
-  DEBUG_TIMER_STOP(debugTimerAudioConsume);
-
-  AudioBuffer * buffer;
-  while ((buffer = buffersFifo.getEmptyBuffer()) != 0) {
+  static AudioBuffer aBuffer;
+  AudioBuffer * buffer = & aBuffer;
+  while (uxQueueSpacesAvailable(xAudioQueue) != 0) {
     int result;
     unsigned int fade = 0;
     int size = 0;
@@ -803,22 +800,19 @@ void AudioQueue::wakeup()
           int32_t tmpSample = (int32_t) ((uint32_t) (buffer->data[i]) - AUDIO_DATA_SILENCE);  // conversion from uint16_t
           buffer->data[i] = (int16_t) (((tmpSample * currentSpeakerVolume) / VOLUME_LEVEL_MAX) + AUDIO_DATA_SILENCE);
         }
-        buffersFifo.audioPushBuffer();
+        xQueueSend( xAudioQueue, ( void * ) buffer, 1 );
       }
       else {
         break;
       }
 #else
-      buffersFifo.audioPushBuffer();
+      xQueueSend( xAudioQueue, ( void * ) buffer, 1 );
 #endif
     }
     else {
       // break the endless loop
       break;
     }
-    DEBUG_TIMER_START(debugTimerAudioConsume);
-    audioConsumeCurrentBuffer();
-    DEBUG_TIMER_STOP(debugTimerAudioConsume);
   }
 }
 

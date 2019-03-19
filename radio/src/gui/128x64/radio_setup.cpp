@@ -67,10 +67,13 @@ enum MenuRadioSetupItems {
   CASE_BUZZER(ITEM_SETUP_BUZZER_MODE)
   CASE_VOICE(ITEM_SETUP_SPEAKER_VOLUME)
   CASE_CPUARM(ITEM_SETUP_BEEP_VOLUME)
+  CASE_CPUESP32(ITEM_SETUP_BEEP_VOLUME)
   ITEM_SETUP_BEEP_LENGTH,
   CASE_AUDIO(ITEM_SETUP_SPEAKER_PITCH)
   CASE_CPUARM(ITEM_SETUP_WAV_VOLUME)
+  CASE_CPUESP32(ITEM_SETUP_WAV_VOLUME)
   CASE_CPUARM(ITEM_SETUP_BACKGROUND_VOLUME)
+  CASE_CPUESP32(ITEM_SETUP_BACKGROUND_VOLUME)
   CASE_VARIO_CPUARM(ITEM_SETUP_VARIO_LABEL)
   CASE_VARIO_CPUARM(ITEM_SETUP_VARIO_VOLUME)
   CASE_VARIO_CPUARM(ITEM_SETUP_VARIO_PITCH)
@@ -279,7 +282,7 @@ void menuRadioSetup(event_t event)
       }
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
       case ITEM_SETUP_BEEP_VOLUME:
         SLIDER_5POS(y, g_eeGeneral.beepVolume, STR_BEEP_VOLUME, event, attr);
         break;
@@ -298,7 +301,7 @@ void menuRadioSetup(event_t event)
 #if defined(AUDIO)
       case ITEM_SETUP_SPEAKER_PITCH:
         lcdDrawTextAlignedLeft( y, STR_SPKRPITCH);
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
         lcdDrawChar(RADIO_SETUP_2ND_COLUMN, y, '+', attr);
         lcdDrawNumber(RADIO_SETUP_2ND_COLUMN+FW, y, g_eeGeneral.speakerPitch*15, attr|LEFT);
         lcdDrawText(lcdLastRightPos, y, "Hz", attr);

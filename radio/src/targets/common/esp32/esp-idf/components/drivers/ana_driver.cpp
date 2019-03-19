@@ -55,8 +55,9 @@ void getADC(){
         esp_err_t err=adc2_get_raw((adc2_channel_t)analogPorts[channel], ADC_WIDTH_12Bit, &read_raw);
         if ( err == ESP_OK ) {
             s_anaFilt[channel]=read_raw;
+            s_anaFilt[channel]=1000;
         } else {
-            s_anaFilt[channel]=0;
+            s_anaFilt[channel]=1000;
         }
     }
     

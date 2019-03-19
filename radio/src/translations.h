@@ -695,6 +695,12 @@ extern const pm_char STR_BG_VOLUME[];
 extern const pm_char STR_PERSISTENT_MAH[];
 #endif
 
+#if defined(CPUESP32)
+extern const pm_char STR_BEEP_VOLUME[];
+extern const pm_char STR_WAV_VOLUME[];
+extern const pm_char STR_BG_VOLUME[];
+#endif
+
 #if defined(PCBSKY9X)
 #define LEN_CALIB_FIELDS               (PSIZE(TR_BATT_CALIB) > PSIZE(TR_CURRENT_CALIB) ? PSIZE(TR_BATT_CALIB) : PSIZE(TR_CURRENT_CALIB))
 #else
