@@ -100,13 +100,13 @@ enum AudioBufferState
 };
 #endif
 
-#if defined(SIMU) 
+#if defined(SIMU) || defined(CPUESP32)
   typedef uint16_t audio_data_t;
   #define AUDIO_DATA_SILENCE           0x8000
   #define AUDIO_DATA_MIN               0
   #define AUDIO_DATA_MAX               0xffff
   #define AUDIO_BITS_PER_SAMPLE        16
-#elif defined(PCBX12S) || defined(CPUESP32)
+#elif defined(PCBX12S) 
   typedef int16_t audio_data_t;
   #define AUDIO_DATA_SILENCE           0
   #define AUDIO_DATA_MIN               INT16_MIN

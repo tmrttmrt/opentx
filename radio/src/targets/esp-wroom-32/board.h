@@ -179,14 +179,14 @@ enum CalibratedAnalogs {
 };
 
 // Buzzer driver
-#define buzzerOn()                //PORTH |=  (1 << OUT_H_SpeakerBuzzer)
-#define buzzerOff()               //PORTH &= ~(1 << OUT_H_SpeakerBuzzer)
+#define buzzerOn()                
+#define buzzerOff()               
 
 // Speaker driver
 #if defined(AUDIO)
 #define AUD_DAC_GPIO   26
-#define speakerOn()               //TCCR4A |=  (1 << COM4A0)
-#define speakerOff()              //TCCR4A &= ~(1 << COM4A0)
+#define speakerOn()               
+#define speakerOff()              
 #define VOLUME_LEVEL_MAX  255
 #endif
 

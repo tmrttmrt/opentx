@@ -27,7 +27,7 @@
 
 static const char *TAG = "audio_driver.cpp";
 extern SemaphoreHandle_t xAudioSem;
-uint8_t currentSpeakerVolume=2;
+uint8_t currentSpeakerVolume=255;
 extern QueueHandle_t xAudioQueue;
 
 const int16_t sineValues[] =
