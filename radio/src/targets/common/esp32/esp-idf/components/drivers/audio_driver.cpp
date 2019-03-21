@@ -7,9 +7,6 @@
 #include "opentx.h"
 
 static const char *TAG = "audio_driver.cpp";
-QueueHandle_t xAudioQueue;
-QueueHandle_t xi2sEventQueue;
-#define I2S_EVENT_QUEUE_LEN 10
 
 
 void initAudio(){
@@ -26,15 +23,13 @@ void initAudio(){
     i2s_config.dma_buf_len = 1024;
     i2s_config.use_apll = false;
 
-    esp_err_t err = i2s_driver_install(I2S_NUM_0,&i2s_config,I2S_EVENT_QUEUE_LEN,&xi2sEventQueue);
+    esp_err_t err = i2s_driver_install(I2S_NUM_0,&i2s_config,0,NULL);
     if (err != ESP_OK) {
     // handle other errors
         ESP_LOGE(TAG,"%s",esp_err_to_name(err));
     }
     //You can call i2s_set_dac_mode to set built-in DAC output mode.
     i2s_set_dac_mode(I2S_DAC_CHANNEL_LEFT_EN);
-    xAudioQueue=xQueueCreate( AUDIO_BUFFER_COUNT, sizeof( AudioBuffer ) );
-
 }
 
 void setSampleRate(uint32_t frequency){
@@ -43,31 +38,3 @@ void setSampleRate(uint32_t frequency){
     i2s_set_clk(I2S_NUM_0, frequency, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO);
 }
 
-void audioPlayTask(void * pdata){
-    static AudioBuffer  nextBuffer ;
-    ESP_LOGI(TAG,"Starting audioPlayTask.");
-    bool stopped=false;
-    size_t bytes_written=0;
-    i2s_event_type_t evt;
-
-    while(true){
-        if (xQueueReceive(xAudioQueue, &nextBuffer, 1)) {
-            if(stopped){
-                i2s_start(I2S_NUM_0);
-                stopped=false;
-                ESP_LOGI(TAG,"i2s started");
-            }
-            ESP_LOGI(TAG,"audioPlayTask: nextBuffer");
-            bytes_written=0;
-            i2s_write(I2S_NUM_0, (const void*) nextBuffer.data, nextBuffer.size * sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
-        } else {
-            if (xQueueReceive(xi2sEventQueue, &evt, 0)){
-                if((evt==I2S_EVENT_TX_DONE) && !stopped){
-                    i2s_stop(I2S_NUM_0);
-                    stopped=true;
-                    ESP_LOGI(TAG,"i2s stopped");
-                }
-            }
-        }
-    }
-}

@@ -187,7 +187,6 @@ enum CalibratedAnalogs {
 #define AUD_DAC_GPIO   26
 #define speakerOn()               
 #define speakerOff()              
-#define VOLUME_LEVEL_MAX  255
 #endif
 
 // Battery driver

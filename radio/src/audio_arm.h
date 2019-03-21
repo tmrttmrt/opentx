@@ -128,7 +128,9 @@ struct AudioBuffer {
 #endif
 };
 
+#if !defined(CPUESP32)
 extern AudioBuffer audioBuffers[AUDIO_BUFFER_COUNT];
+#endif
 
 enum FragmentTypes {
   FRAGMENT_EMPTY,

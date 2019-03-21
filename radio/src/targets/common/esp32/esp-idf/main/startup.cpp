@@ -35,7 +35,6 @@ static const char *TAG = "startup.cpp";
 TaskHandle_t xMenusTaskHandle = NULL;
 TaskHandle_t xMixerTaskHandle = NULL;
 TaskHandle_t xAudioTaskHandle = NULL;
-TaskHandle_t xAudioPlayTaskHandle = NULL;
 TaskHandle_t xPer10msTaskHandle = NULL;
 TaskHandle_t xEncTaskHandle = NULL;
 
@@ -178,8 +177,6 @@ void tasksStart()
     } else {
         ret=xTaskCreatePinnedToCore( audioTask, "audioTask", AUDIO_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -8, &xAudioTaskHandle, AUDIO_TASK_CORE );
         configASSERT( xAudioTaskHandle );
-        ret=xTaskCreatePinnedToCore( audioPlayTask, "audioPlayTask", AUDIO_PLAY_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -7, &xAudioPlayTaskHandle, AUDIO_PLAY_TASK_CORE );
-        configASSERT( xAudioPlayTaskHandle );
     }
     
     xPPMSem = xSemaphoreCreateMutex();
@@ -284,7 +281,7 @@ extern "C"   void app_main(){
 //    initFS();
 //    initWiFi();
 //    ESP_LOGI(TAG,"TR_PERSISTENT: %s",TR_PERSISTENT);
-    TaskHandle_t tasks[]={xMenusTaskHandle,xMixerTaskHandle,xAudioTaskHandle,xAudioPlayTaskHandle,xPer10msTaskHandle,xEncTaskHandle};
+    TaskHandle_t tasks[]={xMenusTaskHandle,xMixerTaskHandle,xAudioTaskHandle,xPer10msTaskHandle,xEncTaskHandle};
     uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
     while(1){
         ESP_LOGD(TAG,"s_pulses_paused: %d",s_pulses_paused);
