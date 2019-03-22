@@ -13,11 +13,11 @@ The project is still in development. The radio firmware has basic functionality 
 Compilation
 
 To build radio firmware ESP-IDF environment is needed (only tested on Windows with ESP-IDF 4.0-dev). Due to peculiarities of ESP-IDF (and since I am not familiar with CMake) the compilation is different than for ATMEL and ARM based systems:
-
+```
 cd [OpenTX root folder]/firmware/opentx/radio/src/targets/common/esp32/esp-idf
-
-make flash (this will start also menuconfig where proper serial port needs to chosen, other necessary options are (hopefully) all set in sdkconfig.defaults)
-
+make flash 
+```
+This will start also menuconfig where proper serial port needs to chosen, other necessary options are (hopefully) all set in sdkconfig.defaults.
 
 Todo list:
 
