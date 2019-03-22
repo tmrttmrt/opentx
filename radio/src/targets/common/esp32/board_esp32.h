@@ -5,6 +5,7 @@ void espLogI(const char * format, ...);
 
 #define eeFlush()
 #define DISPLAY_PROGRESS_BAR(x)
+#define USPFACTOR 10//Upsampling factor to overcome i2s resampling issue.
 
 bool eepromOpen();
 bool eeLoadGeneral();

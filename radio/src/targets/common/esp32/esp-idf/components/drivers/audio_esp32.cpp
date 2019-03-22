@@ -672,7 +672,7 @@ int ToneContext::mixBuffer(AudioBuffer * buffer, int volume, unsigned int fade)
     if (fragment.tone.freq != state.freq) {
       state.freq = fragment.tone.freq;
       state.step = limit<float>(1, float(fragment.tone.freq) * (float(DIM(sineValues))/float(AUDIO_SAMPLE_RATE)), 512);
-      state.volume = 1.0f / evalVolumeRatio(fragment.tone.freq, volume);
+      state.volume = 2.0f / evalVolumeRatio(fragment.tone.freq, volume);
     }
 
     if (fragment.tone.freqIncr) {
@@ -784,7 +784,7 @@ void AudioQueue::wakeup()
         size = max(size, result);
       }
     }
-
+    
     buffer->size = AUDIO_BUFFER_SIZE;
 
 #if defined(SOFTWARE_VOLUME)
@@ -794,7 +794,24 @@ void AudioQueue::wakeup()
     }
 #endif
     size_t bytes_written=0;
-    i2s_write(I2S_NUM_0, (const void*) buffer, buffer->size * sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
+    static bool needsInit=true;
+    if(needsInit){
+        audio_data_t val[100];
+        for(uint32_t i=0;i<AUDIO_SAMPLE_RATE/100;){
+            for(int j=0;j<100;j++){
+                val[j]= (i++* AUDIO_DATA_SILENCE*100)/AUDIO_SAMPLE_RATE;
+            }
+            i2s_write(I2S_NUM_0, (const void*) &val, 100*sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
+        }
+        needsInit=false;
+    }
+    static audio_data_t usbuff[AUDIO_BUFFER_SIZE*2];
+    audio_data_t *p=usbuff;
+    for(uint16_t i=0;i<AUDIO_BUFFER_SIZE;i++){//Upsampling due to strange i2s behaviour 
+        *p++=buffer->data[i];
+        *p++=buffer->data[i];
+    }
+    i2s_write(I2S_NUM_0, (const void*) usbuff, 2*AUDIO_BUFFER_SIZE * sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
 }
 
 inline unsigned int getToneLength(uint16_t len)
