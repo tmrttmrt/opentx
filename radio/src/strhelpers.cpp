@@ -44,7 +44,7 @@ char idx2char(int8_t idx)
   return ' ';
 }
 
-#if defined(CPUARM) || defined(SIMU)
+#if defined(CPUARM) || defined(SIMU) || defined(CPUESP32) 
 int8_t char2idx(char c)
 {
   if (c == '_') return 37;

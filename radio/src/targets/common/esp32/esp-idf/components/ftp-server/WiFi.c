@@ -14,19 +14,22 @@
 
 #define mp_hal_ticks_ms()  (esp_timer_get_time()/1000)
 
-#define EXAMPLE_ESP_WIFI_SSID      "OpenTXWiFi"
-#define EXAMPLE_ESP_WIFI_PASS      ""
-#define EXAMPLE_MAX_STA_CONN       1
-#define FTP_SERVER_TASK_CORE 0
-#define FTP_SERVER_STACK_SIZE       0x1000
+#define DEFAULT_ESP_WIFI_SSID      "OpenTXWiFi"
+#define DEFAULT_ESP_WIFI_PASS      ""
+#define MAX_STA_CONN    1
 
-extern TaskHandle_t FtpTaskHandle;
-static const char *TAG = "startupWiFi.cpp";
+
+
+static const char *TAG = "WiFi.c";
 static EventGroupHandle_t wifi_event_group;
 tcpip_adapter_if_t tcpip_if[MAX_ACTIVE_INTERFACES];
-int wifi_network_state = 0;
+extern TaskHandle_t FtpTaskHandle;
 
 const int WIFI_CONNECTED_BIT = BIT0;
+
+bool isWiFiConnected(){
+    return xEventGroupGetBits(wifi_event_group) & WIFI_CONNECTED_BIT;
+}
 
 int network_get_active_interfaces()
 {
@@ -35,7 +38,6 @@ int network_get_active_interfaces()
     for (int i=0; i<MAX_ACTIVE_INTERFACES; i++) {
         tcpip_if[i] = TCPIP_ADAPTER_IF_MAX;
     }
-    if (wifi_network_state) {
         wifi_mode_t mode;
         esp_err_t ret = esp_wifi_get_mode(&mode);
         if (ret == ESP_OK) {
@@ -52,8 +54,9 @@ int network_get_active_interfaces()
                 tcpip_if[0] = TCPIP_ADAPTER_IF_STA;
                 tcpip_if[1] = TCPIP_ADAPTER_IF_AP;
             }
+        } else {
+            ESP_LOGE(TAG,"esp_wifi_get_mode error: %x", ret);
         }
-    }
     return n_if;
 }
 
@@ -85,6 +88,7 @@ static bool _check_network()
 void ftpServerTask (void *pvParameters)
 {
     uint64_t elapsed, time_ms = mp_hal_ticks_ms();
+    ESP_LOGI(TAG,"Starting FTP server task ...");
     // Initialize ftp, create rx buffer and mutex
     if (!ftp_init()) {
         ESP_LOGE("[Ftp]", "Init Error");
@@ -170,46 +174,59 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
     return ESP_OK;
 }
 
-void wifi_init_softap()
+void wifi_init_sta(char *ssid, char *passwd)
 {
-    ESP_LOGI(TAG, "wifi_init_softap ");
     wifi_event_group = xEventGroupCreate();
 
     tcpip_adapter_init();
-    ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL));
+    ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL) );
+
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+    wifi_config_t wifi_config = {
+        .sta = {
+            .ssid = "",
+            .password = ""
+        },
+    };
+    strcpy((char *)wifi_config.sta.ssid, ssid);
+    strcpy((char *)wifi_config.sta.password, passwd);
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
+    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
+    ESP_ERROR_CHECK(esp_wifi_start() );
+    ESP_LOGI(TAG, "wifi_init_sta finished.");
+    ESP_LOGI(TAG, "connect to ap SSID:%s password:%s",
+             ssid, passwd);
+}
+
+void wifi_init_softap()
+{
+    ESP_LOGI(TAG, "Initializing access point '%s'",DEFAULT_ESP_WIFI_SSID);
+    if(0 == wifi_event_group){
+        wifi_event_group = xEventGroupCreate();
+        tcpip_adapter_init();
+        ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL));
+    }
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
     wifi_config_t wifi_config = {
         .ap = {
-            .ssid = EXAMPLE_ESP_WIFI_SSID,
-            .ssid_len = strlen(EXAMPLE_ESP_WIFI_SSID),
-            .password = EXAMPLE_ESP_WIFI_PASS,
-            .max_connection = EXAMPLE_MAX_STA_CONN,
+            .ssid = DEFAULT_ESP_WIFI_SSID,
+            .ssid_len = strlen(DEFAULT_ESP_WIFI_SSID),
+            .password = DEFAULT_ESP_WIFI_PASS,
+            .max_connection = MAX_STA_CONN,
             .authmode = WIFI_AUTH_WPA_WPA2_PSK
         },
     };
-    if (strlen(EXAMPLE_ESP_WIFI_PASS) == 0) {
+    if (strlen(DEFAULT_ESP_WIFI_PASS) == 0) {
         wifi_config.ap.authmode = WIFI_AUTH_OPEN;
     }
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
-    wifi_network_state=1;
     ESP_LOGI(TAG, "wifi_init_softap finished.SSID:%s password:%s",
-    EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
+    DEFAULT_ESP_WIFI_SSID, DEFAULT_ESP_WIFI_PASS);
 }
 
-void initWiFi(){
-        //Initialize NVS
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-      ESP_ERROR_CHECK(nvs_flash_erase());
-      ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
-    wifi_init_softap();
-    BaseType_t ret_bt=xTaskCreatePinnedToCore(  ftpServerTask, "ftpServerTask", FTP_SERVER_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX +7, &FtpTaskHandle, FTP_SERVER_TASK_CORE );
-    configASSERT( FtpTaskHandle );
-}

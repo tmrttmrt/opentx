@@ -82,6 +82,7 @@ enum MenuRadioIndexes
   MENU_RADIO_SWITCHES_TEST,
   MENU_RADIO_ANALOGS_TEST,
   CASE_CPUARM(MENU_RADIO_HARDWARE)
+  CASE_CPUESP32(MENU_RADIO_HARDWARE)
   MENU_RADIO_CALIBRATION,
   MENU_RADIO_PAGES_COUNT
 };
@@ -105,6 +106,7 @@ static const MenuHandlerFunc menuTabGeneral[] PROGMEM = {
   menuRadioDiagKeys,
   menuRadioDiagAnalogs,
   CASE_CPUARM(menuRadioHardware)
+  CASE_CPUESP32(menuRadioHardware)
   menuRadioCalibration
 };
 

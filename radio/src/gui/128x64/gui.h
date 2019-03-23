@@ -224,7 +224,7 @@ void check_submenu_simple(event_t event, uint8_t maxrow);
 void title(const pm_char * s);
 #define TITLE(str) title(str)
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   #define MENU_TAB(...) const uint8_t mstate_tab[] = __VA_ARGS__
 #else
   #define MENU_TAB(...) static const pm_uint8_t mstate_tab[] PROGMEM = __VA_ARGS__
@@ -289,9 +289,15 @@ typedef int choice_t;
 #else
 typedef int8_t choice_t;
 #endif
-
+#if defined(CPUESP32)
+choice_t editChoiceIdt(coord_t xl,coord_t x, coord_t y, const pm_char * label, const pm_char *values, choice_t value, choice_t min, choice_t max, LcdFlags attr, event_t event);
+uint8_t editCheckBoxIdt(uint8_t value, coord_t xl, coord_t x, coord_t y, const pm_char *label, LcdFlags attr, event_t event );
+#define editChoice(x, y, label, values, value, min, max, attr, event) editChoiceIdt(0, x, y, label, values, value, min, max, attr, event)
+#define editCheckBox(value, x, y, label, attr, event) editCheckBoxIdt(value, 0, x, y, label, attr, event )
+#else
 choice_t editChoice(coord_t x, coord_t y, const pm_char * label, const pm_char *values, choice_t value, choice_t min, choice_t max, LcdFlags attr, event_t event);
 uint8_t editCheckBox(uint8_t value, coord_t x, coord_t y, const pm_char * label, LcdFlags attr, event_t event);
+#endif
 int8_t editSwitch(coord_t x, coord_t y, int8_t value, LcdFlags attr, event_t event);
 
 #define ON_OFF_MENU_ITEM(value, x, y, label, attr, event) value = editCheckBox(value, x, y, label, attr, event)

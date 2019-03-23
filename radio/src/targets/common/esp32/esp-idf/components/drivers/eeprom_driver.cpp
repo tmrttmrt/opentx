@@ -210,6 +210,7 @@ bool eeLoadGeneral(){
         }
     }
     fclose(fp);
+    return true;
 #if defined(EEPROM_CONVERSIONS)
     if (g_eeGeneral.version != EEPROM_VER) {
         TRACE("EEPROM version %d instead of %d", g_eeGeneral.version, EEPROM_VER);

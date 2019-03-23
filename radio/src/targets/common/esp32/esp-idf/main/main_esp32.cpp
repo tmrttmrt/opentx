@@ -56,6 +56,11 @@ void perMain()
       storageCheck(false);
   }
 */
+
+if (TIME_TO_WRITE()){
+      storageCheck(false);
+}
+
 #if defined(SDCARD)
   sdMountPoll();
   logsWrite();
@@ -81,7 +86,7 @@ void perMain()
   const char * warn = warningText;
   bool popupMenuActive = (popupMenuNoItems > 0);
 
-  if (IS_LCD_REFRESH_ALLOWED()) { // No need to redraw until lcdRefresh_ST7920(0) below completely refreshes the display.
+  if (IS_LCD_REFRESH_ALLOWED()) { 
     lcdClear();
     if (menuEvent) {
       menuVerticalPosition = menuEvent == EVT_ENTRY_UP ? menuVerticalPositions[menuLevel] : 0;

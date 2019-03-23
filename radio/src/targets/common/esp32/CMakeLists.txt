@@ -12,6 +12,10 @@ include_directories(targets/common/esp32 targets/common/esp32/esp-idf/build/incl
 include_directories($ENV{IDF_PATH}/components/esp32/include $ENV{IDF_PATH}/components/soc/include )
 #include_directories($ENV{IDF_PATH}/components/fatfs/src $ENV{IDF_PATH}/components/freertos/include $ENV{IDF_PATH}/components/soc/esp32/include $ENV{IDF_PATH}/components/heap/include $ENV{IDF_PATH}/components/driver/include)
 
+set(GUI_SRC ${GUI_SRC}
+    radio_hardware_esp32.cpp
+)
+
 if(AUDIO)
   add_definitions(-DAUDIO)
   set(BUZZER OFF)

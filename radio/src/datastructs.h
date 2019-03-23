@@ -922,7 +922,10 @@ PACK(struct TrainerData {
     NOBACKUP(int8_t   beepVolume:4); \
     NOBACKUP(int8_t   wavVolume:4); \
     NOBACKUP(int8_t   varioVolume:4); \
-    NOBACKUP(int8_t   backgroundVolume:4); 
+    NOBACKUP(int8_t   backgroundVolume:4); \
+    NOBACKUP(char ssid[33]);\
+    NOBACKUP(char passwd[12]);\
+    NOBACKUP(char ftppass[12]);
 #endif
 
 #if defined(PCBHORUS)

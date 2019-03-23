@@ -116,7 +116,11 @@ void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, ui
 
       if (c != v) {
         name[cur] = v;
+        #if  defined(CPUESP32)
+        storageDirty((menuVerticalPositions[0] == 0) ? EE_MODEL : EE_GENERAL);
+        #else
         storageDirty(EE_MODEL);
+        #endif
       }
 
       lcdDrawChar(x+editNameCursorPos*FW, y, idx2char(v), ERASEBG|INVERS|FIXEDWIDTH);
