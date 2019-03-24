@@ -24,14 +24,12 @@ void initKeys();
 void eepromInit();
 void initAudio();
 void initFS();
-void initWiFi();
 void setSampleRate(uint32_t frequency);
 void audioPlayTask(void * pdata);
 void encoderTask(void * pdata);
 uint8_t telemetryGetByte(uint8_t * byte);
 void telemetryPortInit();
 void telemetryTransmitBuffer(uint8_t * data, uint8_t len);
-void espLogI(const char * format, ...);
 void mixEnterCritical();
 void mixExitCritical();
 uint16_t audioStackAvailable();
@@ -46,6 +44,10 @@ void backlightEnable();
 void backlightDisable();
 bool isBacklightEnabled();
 
+void initWiFi();
+void startWiFi(char *ssid_zchar, char *passwd_zchar);
+void stopWiFi();
+char* getWiFiStatus();
 
 enum Analogs {
   STICK1,

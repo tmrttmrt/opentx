@@ -73,6 +73,7 @@ int zchar2str(char * dest, const char * src, int size)
   for (int c=0; c<size; c++) {
     dest[c] = idx2char(src[c]);
   }
+  size--;
   do {
     dest[size--] = '\0';
   } while (size >= 0 && dest[size] == ' ');

@@ -10,39 +10,66 @@
 #include "nvs_flash.h"
 #define HASASSERT
 #include "opentx.h"
-extern "C" {
-void wifi_init_sta(char *ssid, char *passwd);
-void wifi_init_softap();
-void ftpServerTask (void *pvParameters);
-bool isWiFiConnected();
-}
+#include "WiFi.h"
 
-#define STA_ESP_WIFI_SSID   "ssid"
-#define STA_ESP_WIFI_PASS   "passwd"
 #define FTP_SERVER_TASK_CORE    0
 #define FTP_SERVER_STACK_SIZE   0x1000
-#define STA_CONNECT_TMO 5000
+#define STA_CONNECT_TMO 10000
 
 static const char *TAG = "initWiFi.cpp";
-extern TaskHandle_t FtpTaskHandle;
+TaskHandle_t wifiTaskHandle = NULL;
+static char ssid[sizeof(g_eeGeneral.ssid)];
+static char passwd[sizeof(g_eeGeneral.passwd)];
+static bool wifiStarted = false;
+SemaphoreHandle_t wifi_mutex = NULL;
+
 
 void initWiFi(){
-    //Initialize NVS
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
-    strcpy((char *)(g_eeGeneral.ssid), STA_ESP_WIFI_SSID);
-    strcpy((char *)(g_eeGeneral.passwd), STA_ESP_WIFI_PASS);
-    wifi_init_sta(g_eeGeneral.ssid,g_eeGeneral.passwd);
+    wifi_mutex = xSemaphoreCreateMutex();
+    init_wifi();
+}
+
+void wifiTask(void *pvParameters){
+    wifi_init_sta(ssid,passwd);
     vTaskDelay(STA_CONNECT_TMO / portTICK_PERIOD_MS);
     if(!isWiFiConnected()){
-        ESP_LOGI(TAG, "Timeout connecting to '%s'",g_eeGeneral.ssid);
+        ESP_LOGI(TAG, "Timeout connecting to '%s'",ssid);
         wifi_init_softap();
     }
-    BaseType_t ret_bt=xTaskCreatePinnedToCore(  ftpServerTask, "ftpServerTask", FTP_SERVER_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX +7, &FtpTaskHandle, FTP_SERVER_TASK_CORE );
-    configASSERT( FtpTaskHandle );
-    
+    ftpServerTask(pvParameters);
+    ESP_LOGI(TAG, "Stopping WiFi ...");
+    ESP_ERROR_CHECK(esp_wifi_stop());
+    vTaskDelay(100/ portTICK_PERIOD_MS);
+    ESP_LOGI(TAG, "Deinit WiFi ...");
+    ESP_ERROR_CHECK(esp_wifi_deinit());
+    wifiTaskHandle = NULL;
+    vTaskDelete(NULL);
+}
+
+
+void startWiFi( char *ssid_zchar, char *passwd_zchar){
+    if(wifiStarted) return;
+    wifiStarted=true;
+    zchar2str(ssid,ssid_zchar,sizeof(g_eeGeneral.ssid));
+    zchar2str(passwd,passwd_zchar,sizeof(g_eeGeneral.passwd));
+    ESP_LOGI(TAG,"ssid: '%s'",ssid);
+    ESP_LOGI(TAG,"passwd: '%s'",passwd);
+    BaseType_t ret_bt=xTaskCreatePinnedToCore(  wifiTask, "wifiTask", FTP_SERVER_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX +7, &wifiTaskHandle, FTP_SERVER_TASK_CORE );
+    configASSERT( wifiTaskHandle );
+}
+
+
+void stopWiFi(){
+    if(!wifiStarted) return;
+    wifiStarted=false;
+    stop_wifi();
+}
+
+char* getWiFiStatus(){
+    static char buffer[sizeof(wifiStatus)];
+    if(xSemaphoreTake(wifi_mutex, 100/ portTICK_PERIOD_MS) == pdTRUE){
+        strcpy(buffer,wifiStatus);
+        xSemaphoreGive(wifi_mutex);
+    }
+    return buffer;
 }

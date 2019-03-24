@@ -26,15 +26,16 @@ enum MenuRadioHardwareItems {
   ITEM_RADIO_HARDWARE_WIFI,
   ITEM_RADIO_HARDWARE_WIFI_NAME,
   ITEM_RADIO_HARDWARE_WIFI_PASSWD,
-  ITEM_RADIO_HARDWARE_WIFI_TOGGLE,
+  ITEM_RADIO_HARDWARE_WIFI_STATUS,
+  ITEM_RADIO_HARDWARE_FTP_PASSWD,
   ITEM_RADIO_HARDWARE_MAX
 };
 
-#define WIFI_COL 9*FW
+#define WIFI_COL (int)(5.8*FW)
 
 void menuRadioHardware(event_t event)
 {
-  MENU(STR_HARDWARE, menuTabGeneral, MENU_RADIO_HARDWARE, ITEM_RADIO_HARDWARE_MAX+1, {HEADER_LINE_COLUMNS LABEL(WiFi),0,0,0});
+  MENU(STR_HARDWARE, menuTabGeneral, MENU_RADIO_HARDWARE, ITEM_RADIO_HARDWARE_MAX+1, {HEADER_LINE_COLUMNS 0,0,0,0,0});
 
   uint8_t sub = menuVerticalPosition - HEADER_LINE;
 
@@ -50,22 +51,29 @@ void menuRadioHardware(event_t event)
 
     switch(k) {
       case ITEM_RADIO_HARDWARE_WIFI:
-        lcdDrawTextAlignedLeft(y, "WiFi");
+        static uint8_t value=false;
+        value=editCheckBox(value,  WIFI_COL, y, "WiFi", attr, event);
+        if(value){
+            startWiFi(g_eeGeneral.ssid, g_eeGeneral.passwd);
+        } else {
+            stopWiFi();
+        }   
         break;
       case ITEM_RADIO_HARDWARE_WIFI_NAME:
-        lcdDrawText(FW, y, "SSID:");
-        char tmp[sizeof(g_eeGeneral.ssid)];
-        str2zchar(tmp,g_eeGeneral.ssid,sizeof(g_eeGeneral.ssid));
-        editName(WIFI_COL, y, tmp, sizeof(g_eeGeneral.ssid), event, attr);
-        zchar2str(g_eeGeneral.ssid,tmp,sizeof(g_eeGeneral.ssid));
+        lcdDrawText(FW/2, y, "SSID:");
+        editName(WIFI_COL, y, g_eeGeneral.ssid, sizeof(g_eeGeneral.ssid), event, attr);
         break;
       case ITEM_RADIO_HARDWARE_WIFI_PASSWD:
-        lcdDrawText(FW, y, "Passwd:");
+        lcdDrawText(FW/2, y, "Pass:");
         editName(WIFI_COL, y,  g_eeGeneral.passwd, sizeof(g_eeGeneral.passwd), event, attr);
         break;
-      case ITEM_RADIO_HARDWARE_WIFI_TOGGLE:
-        static uint8_t value=false;
-        value=editCheckBoxIdt(value, FW, WIFI_COL, y, "Enabled:", attr, event);        
+      case ITEM_RADIO_HARDWARE_WIFI_STATUS:
+        lcdDrawText(FW/2, y, "Stat:");
+        lcdDrawText(WIFI_COL, y, (char *)getWiFiStatus());
+        break;
+      case ITEM_RADIO_HARDWARE_FTP_PASSWD:
+        lcdDrawText(FW/2, y, "FTP P.:");
+        editName(WIFI_COL, y,  g_eeGeneral.ftppass, sizeof(g_eeGeneral.ftppass), event, attr);
         break;
     }
   }

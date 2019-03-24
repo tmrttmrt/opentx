@@ -18,24 +18,26 @@
  * GNU General Public License for more details.
  */
 
-#include "opentx.h"
+#ifndef _WIFI_H_
+#define _WIFI_H_
 
-void boardInit()
-{
-#if !defined(SIMU)
-    lcdInit();
-    initAudio();
-    initFS();
-    initKeys();
-    initADC();
-    timer10msInit();
-    initWiFi();
+#define STATUS_LEN 32
+
+#if defined(__cplusplus) 
+extern "C" {
 #endif
+void wifi_init_sta(char *ssid, char *passwd);
+void wifi_init_softap();
+void stop_wifi();
+void init_wifi();
+void ftpServerTask (void *pvParameters);
+bool isWiFiConnected();
+extern char wifiStatus[STATUS_LEN];
+#if defined(__cplusplus) 
 }
+#endif
 
-uint8_t keyState(uint8_t index)
-{
-  return keys[index].state();
-}
+extern TaskHandle_t wifiTaskHandle;
+extern SemaphoreHandle_t wifi_mutex; 
 
-
+#endif

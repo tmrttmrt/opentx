@@ -272,6 +272,9 @@ void espLogI(const char * format, ...){
     va_end(arglist);    
 }
 
+char g_ssid[sizeof(g_eeGeneral.ssid)];
+char g_passwd[sizeof(g_eeGeneral.passwd)];
+
 
 
 int main();
@@ -279,8 +282,7 @@ int main();
 extern "C"   void app_main(){
     main();
 //    initFS();
-    initWiFi();
-//    ESP_LOGI(TAG,"TR_PERSISTENT: %s",TR_PERSISTENT);
+//    initWiFi();
     TaskHandle_t tasks[]={xMenusTaskHandle,xMixerTaskHandle,xAudioTaskHandle,xPer10msTaskHandle,xEncTaskHandle};
     uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
     while(1){

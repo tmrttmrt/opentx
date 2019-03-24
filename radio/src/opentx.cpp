@@ -20,7 +20,7 @@
 
 #include "opentx.h"
 
-RadioData  g_eeGeneral;
+DRAM_ATTR RadioData  g_eeGeneral;
 DRAM_ATTR ModelData  g_model;
 
 #if defined(SDCARD)

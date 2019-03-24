@@ -59,6 +59,7 @@
 #include "freertos/semphr.h"
 #include "network.h"
 #include "ftp.h"
+#include "wifi.h"
 
 
 #define FTPSERVER_BUFFER_SIZE 0x2000
@@ -72,7 +73,6 @@
 bool native_vfs_mounted[2] = {true, false};
 extern tcpip_adapter_if_t tcpip_if[MAX_ACTIVE_INTERFACES];
 
-TaskHandle_t FtpTaskHandle = NULL;
 QueueHandle_t ftp_mutex = NULL;
 uint32_t ftp_stack_size;
 int ftp_buff_size = FTPSERVER_BUFFER_SIZE;
@@ -1360,7 +1360,7 @@ int ftp_run (uint32_t elapsed)
 
 //----------------------
 bool ftp_enable (void) {
-    if ((FtpTaskHandle == NULL) || (ftp_mutex == NULL)) return false;
+    if ((wifiTaskHandle == NULL) || (ftp_mutex == NULL)) return false;
     if (xSemaphoreTake(ftp_mutex, FTP_MUTEX_TIMEOUT_MS / portTICK_PERIOD_MS) !=pdTRUE) return false;
 
     bool res = false;
@@ -1374,7 +1374,7 @@ bool ftp_enable (void) {
 
 //-------------------------
 bool ftp_isenabled (void) {
-    if ((FtpTaskHandle == NULL) || (ftp_mutex == NULL)) return false;
+    if ((wifiTaskHandle == NULL) || (ftp_mutex == NULL)) return false;
     if (xSemaphoreTake(ftp_mutex, FTP_MUTEX_TIMEOUT_MS / portTICK_PERIOD_MS) !=pdTRUE) return false;
 
     bool res = (ftp_data.enabled == true);
@@ -1384,7 +1384,7 @@ bool ftp_isenabled (void) {
 
 //-----------------------
 bool ftp_disable (void) {
-    if ((FtpTaskHandle == NULL) || (ftp_mutex == NULL)) return false;
+    if ((wifiTaskHandle == NULL) || (ftp_mutex == NULL)) return false;
     if (xSemaphoreTake(ftp_mutex, FTP_MUTEX_TIMEOUT_MS / portTICK_PERIOD_MS) !=pdTRUE) return false;
 
     bool res = false;
@@ -1400,7 +1400,7 @@ bool ftp_disable (void) {
 
 //---------------------
 bool ftp_reset (void) {
-    if ((FtpTaskHandle == NULL) || (ftp_mutex == NULL)) return false;
+    if ((wifiTaskHandle == NULL) || (ftp_mutex == NULL)) return false;
     if (xSemaphoreTake(ftp_mutex, FTP_MUTEX_TIMEOUT_MS / portTICK_PERIOD_MS) !=pdTRUE) return false;
 
     _ftp_reset();
@@ -1411,7 +1411,7 @@ bool ftp_reset (void) {
 // Return current ftp server state
 //------------------
 int ftp_getstate() {
-    if ((FtpTaskHandle == NULL) || (ftp_mutex == NULL)) return -1;
+    if ((wifiTaskHandle == NULL) || (ftp_mutex == NULL)) return -1;
     if (xSemaphoreTake(ftp_mutex, FTP_MUTEX_TIMEOUT_MS / portTICK_PERIOD_MS) !=pdTRUE) return -2;
 
     int fstate = ftp_data.state | (ftp_data.substate << 8);
@@ -1422,7 +1422,7 @@ int ftp_getstate() {
 
 //-------------------------
 bool ftp_terminate (void) {
-    if ((FtpTaskHandle == NULL) || (ftp_mutex == NULL)) return false;
+    if ((wifiTaskHandle == NULL) || (ftp_mutex == NULL)) return false;
     if (xSemaphoreTake(ftp_mutex, FTP_MUTEX_TIMEOUT_MS / portTICK_PERIOD_MS) !=pdTRUE) return false;
 
     bool res = false;
@@ -1437,7 +1437,7 @@ bool ftp_terminate (void) {
 
 //-------------------------
 bool ftp_stop_requested() {
-    if ((FtpTaskHandle == NULL) || (ftp_mutex == NULL)) return false;
+    if ((wifiTaskHandle == NULL) || (ftp_mutex == NULL)) return false;
     if (xSemaphoreTake(ftp_mutex, FTP_MUTEX_TIMEOUT_MS / portTICK_PERIOD_MS) !=pdTRUE) return false;
 
     bool res = (ftp_stop == 1);
@@ -1447,10 +1447,10 @@ bool ftp_stop_requested() {
 
 //-------------------------------
 int32_t ftp_get_maxstack (void) {
-    if ((FtpTaskHandle == NULL) || (ftp_mutex == NULL)) return -1;
+    if ((wifiTaskHandle == NULL) || (ftp_mutex == NULL)) return -1;
     if (xSemaphoreTake(ftp_mutex, FTP_MUTEX_TIMEOUT_MS / portTICK_PERIOD_MS) !=pdTRUE) return false;
 
-    int32_t maxstack = ftp_stack_size - uxTaskGetStackHighWaterMark(FtpTaskHandle);
+    int32_t maxstack = ftp_stack_size - uxTaskGetStackHighWaterMark(wifiTaskHandle);
     xSemaphoreGive(ftp_mutex);
     return maxstack;
 }
