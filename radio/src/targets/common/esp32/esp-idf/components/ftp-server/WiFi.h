@@ -22,6 +22,7 @@
 #define _WIFI_H_
 
 #define STATUS_LEN 32
+#define mp_hal_ticks_ms()  (esp_timer_get_time()/1000)
 
 enum WifiState {
     WIFI_IDLE = BIT0,
@@ -38,9 +39,10 @@ void wifi_init_sta(char *ssid, char *passwd);
 void wifi_init_softap();
 bool stop_wifi();
 void init_wifi();
+uint32_t network_hasip();
 void ftpServerTask (void *pvParameters);
-extern char wifiStatus[STATUS_LEN];
 extern volatile enum WifiState wifiState;
+extern volatile uint32_t expireTimer_ms;
 #if defined(__cplusplus) 
 }
 #endif

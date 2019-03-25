@@ -289,15 +289,9 @@ typedef int choice_t;
 #else
 typedef int8_t choice_t;
 #endif
-#if defined(CPUESP32)
-choice_t editChoiceIdt(coord_t xl,coord_t x, coord_t y, const pm_char * label, const pm_char *values, choice_t value, choice_t min, choice_t max, LcdFlags attr, event_t event);
-uint8_t editCheckBoxIdt(uint8_t value, coord_t xl, coord_t x, coord_t y, const pm_char *label, LcdFlags attr, event_t event );
-#define editChoice(x, y, label, values, value, min, max, attr, event) editChoiceIdt(0, x, y, label, values, value, min, max, attr, event)
-#define editCheckBox(value, x, y, label, attr, event) editCheckBoxIdt(value, 0, x, y, label, attr, event )
-#else
+
 choice_t editChoice(coord_t x, coord_t y, const pm_char * label, const pm_char *values, choice_t value, choice_t min, choice_t max, LcdFlags attr, event_t event);
 uint8_t editCheckBox(uint8_t value, coord_t x, coord_t y, const pm_char * label, LcdFlags attr, event_t event);
-#endif
 int8_t editSwitch(coord_t x, coord_t y, int8_t value, LcdFlags attr, event_t event);
 
 #define ON_OFF_MENU_ITEM(value, x, y, label, attr, event) value = editCheckBox(value, x, y, label, attr, event)
@@ -329,6 +323,9 @@ void gvarWeightItem(coord_t x, coord_t y, MixData * md, LcdFlags attr, event_t e
 
 #if defined(CPUARM)
 void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, uint8_t active, LcdFlags attr=ZCHAR);
+#elif defined(CPUESP32)
+#define editName(x, y, name, size, event, active) editNameMask(x, y, name, size, false, event, active)
+void editNameMask(coord_t x, coord_t y, char * name, uint8_t size, uint8_t mask, event_t event, uint8_t active);
 #else
 void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, uint8_t active);
 #endif

@@ -11,6 +11,9 @@
 #define HASASSERT
 #include "opentx.h"
 #include "WiFi.h"
+extern "C"{
+#include "ftp.h"
+}
 
 #define FTP_SERVER_TASK_CORE    0
 #define FTP_SERVER_STACK_SIZE   0x1000
@@ -47,11 +50,12 @@ void wifiTask(void *pvParameters){
 }
 
 
-void startWiFi( char *ssid_zchar, char *passwd_zchar){
+void startWiFi( char *ssid_zchar, char *passwd_zchar, char* ftppass_zchar){
     if(!(wifiState & WIFI_IDLE)) return;
     wifiState = WIFI_STARTING;
     zchar2str(ssid,ssid_zchar,sizeof(g_eeGeneral.ssid));
     zchar2str(passwd,passwd_zchar,sizeof(g_eeGeneral.passwd));
+    zchar2str(ftp_pass,ftppass_zchar,sizeof(g_eeGeneral.ftppass));
     ESP_LOGI(TAG,"ssid: '%s'",ssid);
     ESP_LOGI(TAG,"passwd: '%s'",passwd);
     BaseType_t ret_bt=xTaskCreatePinnedToCore(  wifiTask, "wifiTask", FTP_SERVER_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX +7, &wifiTaskHandle, FTP_SERVER_TASK_CORE );
@@ -66,15 +70,33 @@ void stopWiFi(){
     }
 }
 
-char* getWiFiStatus(){
-    static char buffer[sizeof(wifiStatus)];
-    if(xSemaphoreTake(wifi_mutex, 100/ portTICK_PERIOD_MS) == pdTRUE){
-        strcpy(buffer,wifiStatus);
-        xSemaphoreGive(wifi_mutex);
+const char* getWiFiStatus(){
+    static char stat[STATUS_LEN]="Idle";
+    switch(wifiState){
+        case WIFI_IDLE:
+            return "Idle";
+            break;
+        case WIFI_STARTING:
+            return "Starting...";
+            break;
+        case WIFI_CONNECTING:
+            return "Connecting...";
+            break;
+        case WIFI_CONNECTED:
+            ip4_addr_t tmp;
+            tmp.addr=network_hasip();
+            strcpy(stat,"IP: ");
+            strcat(stat,ip4addr_ntoa(&tmp));
+            return stat;
+            break;
+        case WIFI_STOPPING:
+            return "Stopping...";
+            break;
     }
-    return buffer;
+    return stat;
 }
 
 bool isWiFiStarted(){
+    expireTimer_ms=mp_hal_ticks_ms()+500;
     return !(wifiState & WIFI_IDLE) ;
 }

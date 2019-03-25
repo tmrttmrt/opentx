@@ -45,9 +45,9 @@ void backlightDisable();
 bool isBacklightEnabled();
 
 void initWiFi();
-void startWiFi(char *ssid_zchar, char *passwd_zchar);
+void startWiFi( char *ssid_zchar, char *passwd_zchar, char* ftppass_zchar);
 void stopWiFi();
-char* getWiFiStatus();
+const char* getWiFiStatus();
 bool isWiFiStarted();
 
 enum Analogs {

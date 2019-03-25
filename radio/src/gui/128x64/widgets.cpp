@@ -72,26 +72,6 @@ void title(const pm_char * s)
   lcdDrawText(0, 0, s, INVERS);
 }
 
-#if defined(CPUESP32)
-choice_t editChoiceIdt(coord_t xl,coord_t x, coord_t y, const pm_char * label, const pm_char *values, choice_t value, choice_t min, choice_t max, LcdFlags attr, event_t event)
-{
-  lcdDrawText(xl, y, label);
-  if (values) lcdDrawTextAtIndex(x, y, values, value-min, attr);
-  if (attr & (~RIGHT)) value = checkIncDec(event, value, min, max, (menuVerticalPositions[0] == 0) ? EE_MODEL : EE_GENERAL);
-  return value;
-}
-
-uint8_t editCheckBoxIdt(uint8_t value, coord_t xl, coord_t x, coord_t y, const pm_char *label, LcdFlags attr, event_t event )
-{
-#if defined(GRAPHICS)
-  drawCheckBox(x, y, value, attr);
-  return editChoiceIdt(xl,x, y, label, NULL, value, 0, 1, attr, event);
-#else
-  return editChoiceIdt(xl,x, y, label, STR_OFFON, value, 0, 1, attr, event);
-#endif
-}
-#else
-
 choice_t editChoice(coord_t x, coord_t y, const pm_char * label, const pm_char *values, choice_t value, choice_t min, choice_t max, LcdFlags attr, event_t event)
 {
   drawFieldLabel(x, y, label);
@@ -100,7 +80,6 @@ choice_t editChoice(coord_t x, coord_t y, const pm_char * label, const pm_char *
   return value;
 }
 
-    
 uint8_t editCheckBox(uint8_t value, coord_t x, coord_t y, const pm_char *label, LcdFlags attr, event_t event )
 {
 #if defined(GRAPHICS)
@@ -110,7 +89,7 @@ uint8_t editCheckBox(uint8_t value, coord_t x, coord_t y, const pm_char *label, 
   return editChoice(x, y, label, STR_OFFON, value, 0, 1, attr, event);
 #endif
 }
-#endif
+
 int8_t editSwitch(coord_t x, coord_t y, int8_t value, LcdFlags attr, event_t event)
 {
   drawFieldLabel(x, y, STR_SWITCH);

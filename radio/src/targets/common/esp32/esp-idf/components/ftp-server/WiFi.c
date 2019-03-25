@@ -12,7 +12,7 @@
 #include "ftp.h"
 #include "network.h"
 #include "WiFi.h"
-#define mp_hal_ticks_ms()  (esp_timer_get_time()/1000)
+
 
 #define DEFAULT_ESP_WIFI_SSID      "OpenTXWiFi"
 #define DEFAULT_ESP_WIFI_PASS      ""
@@ -22,19 +22,8 @@
 
 static const char *TAG = "WiFi.c";
 tcpip_adapter_if_t tcpip_if[MAX_ACTIVE_INTERFACES];
-char wifiStatus[STATUS_LEN]="idle";
 volatile enum WifiState wifiState=WIFI_IDLE;
-
-
-static void setStatus(const char * format, ...){
-    va_list arglist;
-    va_start(arglist, format);
-    xSemaphoreTake(wifi_mutex, portMAX_DELAY);
-    vsnprintf(wifiStatus,sizeof(wifiStatus)-1, format, arglist);
-    xSemaphoreGive(wifi_mutex);
-    va_end(arglist);
-    wifiStatus[STATUS_LEN-1]=0;
-}
+volatile uint32_t expireTimer_ms;
 
 
 int network_get_active_interfaces()
@@ -44,25 +33,25 @@ int network_get_active_interfaces()
     for (int i=0; i<MAX_ACTIVE_INTERFACES; i++) {
         tcpip_if[i] = TCPIP_ADAPTER_IF_MAX;
     }
-        wifi_mode_t mode;
-        esp_err_t ret = esp_wifi_get_mode(&mode);
-        if (ret == ESP_OK) {
-            if (mode == WIFI_MODE_STA) {
-                n_if = 1;
-                tcpip_if[0] = TCPIP_ADAPTER_IF_STA;
-            }
-            else if (mode == WIFI_MODE_AP) {
-                n_if = 1;
-                tcpip_if[0] = TCPIP_ADAPTER_IF_AP;
-            }
-            else if (mode == WIFI_MODE_APSTA) {
-                n_if = 2;
-                tcpip_if[0] = TCPIP_ADAPTER_IF_STA;
-                tcpip_if[1] = TCPIP_ADAPTER_IF_AP;
-            }
-        } else {
-            ESP_LOGE(TAG,"esp_wifi_get_mode error: %x", ret);
+    wifi_mode_t mode;
+    esp_err_t ret = esp_wifi_get_mode(&mode);
+    if (ret == ESP_OK) {
+        if (mode == WIFI_MODE_STA) {
+            n_if = 1;
+            tcpip_if[0] = TCPIP_ADAPTER_IF_STA;
         }
+        else if (mode == WIFI_MODE_AP) {
+            n_if = 1;
+            tcpip_if[0] = TCPIP_ADAPTER_IF_AP;
+        }
+        else if (mode == WIFI_MODE_APSTA) {
+            n_if = 2;
+            tcpip_if[0] = TCPIP_ADAPTER_IF_STA;
+            tcpip_if[1] = TCPIP_ADAPTER_IF_AP;
+        }
+    } else {
+        ESP_LOGE(TAG,"esp_wifi_get_mode error: %x", ret);
+    }
     return n_if;
 }
 
@@ -115,6 +104,9 @@ void ftpServerTask (void *pvParameters)
         elapsed = mp_hal_ticks_ms() - time_ms;
         time_ms = mp_hal_ticks_ms();
 
+        if(time_ms>expireTimer_ms){
+            ftp_terminate();
+        }
         int res = ftp_run(elapsed);
         if (res < 0) {
             if (res == -1) {
@@ -132,6 +124,9 @@ void ftpServerTask (void *pvParameters)
             ftp_disable();
             while (!_check_network()) {
                 vTaskDelay(200 / portTICK_PERIOD_MS);
+                if(time_ms>expireTimer_ms){
+                    ftp_terminate();
+                }
                 if (ftp_stop_requested()) goto exit;
             }
             if (was_enabled) ftp_enable();
@@ -151,28 +146,24 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 {
     switch(event->event_id) {
     case SYSTEM_EVENT_STA_START:
-        setStatus("connecting ...");
         esp_wifi_connect();
+        wifiState = WIFI_CONNECTING;
         break;
     case SYSTEM_EVENT_STA_GOT_IP:
         ESP_LOGI(TAG, "got ip:%s", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
-        setStatus("IP:%s",ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
         wifiState = WIFI_CONNECTED;
         break;
     case SYSTEM_EVENT_AP_STACONNECTED:
         ESP_LOGI(TAG, "station:"MACSTR" join, AID=%d", MAC2STR(event->event_info.sta_connected.mac), event->event_info.sta_connected.aid);
-        setStatus("IP:%s",ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
         break;
     case SYSTEM_EVENT_AP_STADISCONNECTED:
-        setStatus("reconnecting ...");
         ESP_LOGI(TAG, "station:"MACSTR"leave, AID=%d",
         MAC2STR(event->event_info.sta_disconnected.mac),
         event->event_info.sta_disconnected.aid);
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
-        setStatus("reconnecting ...");
         esp_wifi_connect();
-        wifiState = WIFI_CONNECTED;
+        wifiState = WIFI_CONNECTING;
         break;
     default:
         break;
@@ -197,7 +188,7 @@ void wifi_init_sta(char *ssid, char *passwd)
     ESP_ERROR_CHECK(esp_wifi_start() );
     ESP_LOGI(TAG, "wifi_init_sta finished.");
     ESP_LOGI(TAG, "connect to ap SSID:%s password:%s",
-             ssid, passwd);
+    ssid, passwd);
 }
 
 void wifi_init_softap()
@@ -222,8 +213,8 @@ void wifi_init_softap()
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
-    ESP_LOGI(TAG, "wifi_init_softap finished.SSID:%s password:%s",
-    DEFAULT_ESP_WIFI_SSID, DEFAULT_ESP_WIFI_PASS);
+    ESP_LOGI(TAG, "wifi_init_softap finished.SSID:%s password:%s", DEFAULT_ESP_WIFI_SSID, DEFAULT_ESP_WIFI_PASS);
+    wifiState = WIFI_CONNECTED;
 }
 
 void init_wifi(){
@@ -241,9 +232,8 @@ void init_wifi(){
 
 bool stop_wifi()
 {
-	ESP_LOGI(TAG, "Stop FTP");
+    ESP_LOGI(TAG, "Stop FTP");
     if(ftp_terminate ()){
-        setStatus("idle");
         return true;
     }
     return false;

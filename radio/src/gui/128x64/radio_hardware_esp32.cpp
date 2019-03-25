@@ -35,7 +35,7 @@ enum MenuRadioHardwareItems {
 
 void menuRadioHardware(event_t event)
 {
-  MENU(STR_HARDWARE, menuTabGeneral, MENU_RADIO_HARDWARE, ITEM_RADIO_HARDWARE_MAX+1, {HEADER_LINE_COLUMNS 0,0,0,0,0});
+  MENU(STR_HARDWARE, menuTabGeneral, MENU_RADIO_HARDWARE, ITEM_RADIO_HARDWARE_MAX+1, {HEADER_LINE_COLUMNS 0,0,0,(uint8_t)-1,0});
 
   uint8_t sub = menuVerticalPosition - HEADER_LINE;
 
@@ -51,11 +51,16 @@ void menuRadioHardware(event_t event)
 
     switch(k) {
       case ITEM_RADIO_HARDWARE_WIFI:
-        if(editCheckBox(isWiFiStarted(),  WIFI_COL, y, "WiFi", attr, event)){
-            startWiFi(g_eeGeneral.ssid, g_eeGeneral.passwd);
-        } else {
-            stopWiFi();
-        }   
+        {
+            uint8_t val = editCheckBox(isWiFiStarted(),  WIFI_COL, y, "WiFi", attr, event);
+            if((bool)val != (bool)isWiFiStarted()){ 
+                if(val){
+                    startWiFi(g_eeGeneral.ssid, g_eeGeneral.passwd, g_eeGeneral.ftppass);
+                } else {
+                    stopWiFi();
+                }   
+            }
+        }
         break;
       case ITEM_RADIO_HARDWARE_WIFI_NAME:
         lcdDrawText(FW/2, y, "SSID:");
@@ -63,7 +68,7 @@ void menuRadioHardware(event_t event)
         break;
       case ITEM_RADIO_HARDWARE_WIFI_PASSWD:
         lcdDrawText(FW/2, y, "Pass:");
-        editName(WIFI_COL, y,  g_eeGeneral.passwd, sizeof(g_eeGeneral.passwd), event, attr);
+        editNameMask(WIFI_COL, y,  g_eeGeneral.passwd, sizeof(g_eeGeneral.passwd), true, event, attr);
         break;
       case ITEM_RADIO_HARDWARE_WIFI_STATUS:
         lcdDrawText(FW/2, y, "Stat:");
@@ -71,7 +76,7 @@ void menuRadioHardware(event_t event)
         break;
       case ITEM_RADIO_HARDWARE_FTP_PASSWD:
         lcdDrawText(FW/2, y, "FTP P.:");
-        editName(WIFI_COL, y,  g_eeGeneral.ftppass, sizeof(g_eeGeneral.ftppass), event, attr);
+        editNameMask(WIFI_COL, y,  g_eeGeneral.ftppass, sizeof(g_eeGeneral.ftppass), true, event, attr);
         break;
     }
   }

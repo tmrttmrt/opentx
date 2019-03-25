@@ -44,7 +44,11 @@ uint8_t s_copySrcCh;
 #endif
 
 #if !defined(CPUARM)
+#if defined(CPUESP32)
+void editNameMask(coord_t x, coord_t y, char * name, uint8_t size, uint8_t mask, event_t event, uint8_t active)
+#else
 void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, uint8_t active)
+#endif
 {
 #if defined(CPUM64)
   // in order to save flash
@@ -58,9 +62,24 @@ void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, ui
     else
       mode = FIXEDWIDTH;
   }
-
+#if defined(CPUESP32)
+    if(mask){
+        char buff[size];
+        for (int i=0; i<size; ++i) {
+            if (!name[i]) {
+                buff[i] = 0;
+            } else {
+                buff[i] = '*';
+            }
+        }
+        lcdDrawSizedText(x, y, buff, size, mode);
+    }
+    else{
+        lcdDrawSizedText(x, y, name, size, ZCHAR | mode);
+    }
+#else
   lcdDrawSizedText(x, y, name, size, ZCHAR | mode);
-
+#endif
   if (active) {
     uint8_t cur = editNameCursorPos;
     if (s_editMode > 0) {
