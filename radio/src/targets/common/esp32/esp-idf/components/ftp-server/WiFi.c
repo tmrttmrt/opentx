@@ -21,9 +21,10 @@
 
 
 static const char *TAG = "WiFi.c";
-static EventGroupHandle_t wifi_event_group;
 tcpip_adapter_if_t tcpip_if[MAX_ACTIVE_INTERFACES];
 char wifiStatus[STATUS_LEN]="idle";
+volatile enum WifiState wifiState=WIFI_IDLE;
+
 
 static void setStatus(const char * format, ...){
     va_list arglist;
@@ -35,12 +36,6 @@ static void setStatus(const char * format, ...){
     wifiStatus[STATUS_LEN-1]=0;
 }
 
-
-const int WIFI_CONNECTED_BIT = BIT0;
-
-bool isWiFiConnected(){
-    return xEventGroupGetBits(wifi_event_group) & WIFI_CONNECTED_BIT;
-}
 
 int network_get_active_interfaces()
 {
@@ -162,14 +157,14 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
     case SYSTEM_EVENT_STA_GOT_IP:
         ESP_LOGI(TAG, "got ip:%s", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
         setStatus("IP:%s",ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
-        xEventGroupSetBits(wifi_event_group, WIFI_CONNECTED_BIT);
+        wifiState = WIFI_CONNECTED;
         break;
     case SYSTEM_EVENT_AP_STACONNECTED:
-        ESP_LOGI(TAG, "station:"MACSTR" join, AID=%d",
-        MAC2STR(event->event_info.sta_connected.mac),
-        event->event_info.sta_connected.aid);
+        ESP_LOGI(TAG, "station:"MACSTR" join, AID=%d", MAC2STR(event->event_info.sta_connected.mac), event->event_info.sta_connected.aid);
+        setStatus("IP:%s",ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
         break;
     case SYSTEM_EVENT_AP_STADISCONNECTED:
+        setStatus("reconnecting ...");
         ESP_LOGI(TAG, "station:"MACSTR"leave, AID=%d",
         MAC2STR(event->event_info.sta_disconnected.mac),
         event->event_info.sta_disconnected.aid);
@@ -177,7 +172,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
     case SYSTEM_EVENT_STA_DISCONNECTED:
         setStatus("reconnecting ...");
         esp_wifi_connect();
-        xEventGroupClearBits(wifi_event_group, WIFI_CONNECTED_BIT);
+        wifiState = WIFI_CONNECTED;
         break;
     default:
         break;
@@ -240,14 +235,16 @@ void init_wifi(){
     }
     ESP_ERROR_CHECK(ret);
     tcpip_adapter_init();
-    wifi_event_group = xEventGroupCreate();
     ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL));
 }
 
 
-void stop_wifi()
+bool stop_wifi()
 {
 	ESP_LOGI(TAG, "Stop FTP");
-    ftp_terminate ();
-    setStatus("idle");
+    if(ftp_terminate ()){
+        setStatus("idle");
+        return true;
+    }
+    return false;
 }

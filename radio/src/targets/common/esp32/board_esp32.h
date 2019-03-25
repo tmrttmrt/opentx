@@ -48,6 +48,7 @@ void initWiFi();
 void startWiFi(char *ssid_zchar, char *passwd_zchar);
 void stopWiFi();
 char* getWiFiStatus();
+bool isWiFiStarted();
 
 enum Analogs {
   STICK1,

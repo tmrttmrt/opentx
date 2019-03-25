@@ -20,7 +20,6 @@ static const char *TAG = "initWiFi.cpp";
 TaskHandle_t wifiTaskHandle = NULL;
 static char ssid[sizeof(g_eeGeneral.ssid)];
 static char passwd[sizeof(g_eeGeneral.passwd)];
-static bool wifiStarted = false;
 SemaphoreHandle_t wifi_mutex = NULL;
 
 
@@ -32,7 +31,7 @@ void initWiFi(){
 void wifiTask(void *pvParameters){
     wifi_init_sta(ssid,passwd);
     vTaskDelay(STA_CONNECT_TMO / portTICK_PERIOD_MS);
-    if(!isWiFiConnected()){
+    if(wifiState!=WIFI_CONNECTED){
         ESP_LOGI(TAG, "Timeout connecting to '%s'",ssid);
         wifi_init_softap();
     }
@@ -43,13 +42,14 @@ void wifiTask(void *pvParameters){
     ESP_LOGI(TAG, "Deinit WiFi ...");
     ESP_ERROR_CHECK(esp_wifi_deinit());
     wifiTaskHandle = NULL;
+    wifiState=WIFI_IDLE;
     vTaskDelete(NULL);
 }
 
 
 void startWiFi( char *ssid_zchar, char *passwd_zchar){
-    if(wifiStarted) return;
-    wifiStarted=true;
+    if(!(wifiState & WIFI_IDLE)) return;
+    wifiState = WIFI_STARTING;
     zchar2str(ssid,ssid_zchar,sizeof(g_eeGeneral.ssid));
     zchar2str(passwd,passwd_zchar,sizeof(g_eeGeneral.passwd));
     ESP_LOGI(TAG,"ssid: '%s'",ssid);
@@ -60,9 +60,10 @@ void startWiFi( char *ssid_zchar, char *passwd_zchar){
 
 
 void stopWiFi(){
-    if(!wifiStarted) return;
-    wifiStarted=false;
-    stop_wifi();
+    if(wifiState & (WIFI_STOPPING | WIFI_IDLE)) return;
+    if(stop_wifi()){
+        wifiState = WIFI_STOPPING;
+    }
 }
 
 char* getWiFiStatus(){
@@ -72,4 +73,8 @@ char* getWiFiStatus(){
         xSemaphoreGive(wifi_mutex);
     }
     return buffer;
+}
+
+bool isWiFiStarted(){
+    return !(wifiState & WIFI_IDLE) ;
 }

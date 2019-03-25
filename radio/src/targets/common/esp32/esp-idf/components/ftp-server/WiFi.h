@@ -23,21 +23,31 @@
 
 #define STATUS_LEN 32
 
+enum WifiState {
+    WIFI_IDLE = BIT0,
+    WIFI_STARTING = BIT1,
+    WIFI_CONNECTING = BIT2,
+    WIFI_CONNECTED = BIT3,
+    WIFI_STOPPING = BIT4
+};
+
 #if defined(__cplusplus) 
 extern "C" {
 #endif
 void wifi_init_sta(char *ssid, char *passwd);
 void wifi_init_softap();
-void stop_wifi();
+bool stop_wifi();
 void init_wifi();
 void ftpServerTask (void *pvParameters);
-bool isWiFiConnected();
 extern char wifiStatus[STATUS_LEN];
+extern volatile enum WifiState wifiState;
 #if defined(__cplusplus) 
 }
 #endif
 
 extern TaskHandle_t wifiTaskHandle;
 extern SemaphoreHandle_t wifi_mutex; 
+
+
 
 #endif

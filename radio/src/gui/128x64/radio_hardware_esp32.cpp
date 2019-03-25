@@ -51,9 +51,7 @@ void menuRadioHardware(event_t event)
 
     switch(k) {
       case ITEM_RADIO_HARDWARE_WIFI:
-        static uint8_t value=false;
-        value=editCheckBox(value,  WIFI_COL, y, "WiFi", attr, event);
-        if(value){
+        if(editCheckBox(isWiFiStarted(),  WIFI_COL, y, "WiFi", attr, event)){
             startWiFi(g_eeGeneral.ssid, g_eeGeneral.passwd);
         } else {
             stopWiFi();
