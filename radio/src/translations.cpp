@@ -521,6 +521,9 @@ const pm_char STR_LOGS_PATH[] PROGMEM = LOGS_PATH;
 const pm_char STR_LOGS_EXT[] PROGMEM = LOGS_EXT;
 const pm_char STR_MODELS_PATH[] PROGMEM = MODELS_PATH;
 const pm_char STR_MODELS_EXT[] PROGMEM = MODELS_EXT;
+#if defined(CPUESP32)
+const pm_char STR_OUT_OF_MEM[] PROGMEM = TR_OUT_OF_MEM;
+#endif  
 #endif
 
 const pm_char STR_CAT_NOT_EMPTY[] PROGMEM = TR_CAT_NOT_EMPTY;

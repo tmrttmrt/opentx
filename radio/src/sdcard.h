@@ -21,13 +21,16 @@
 #ifndef _SDCARD_H_
 #define _SDCARD_H_
 
-#if !defined(SIMU)
+#if !defined(SIMU) && !defined(CPUESP32)
 #include "ff.h"
 #endif
 
 #include "opentx.h"
-
+#if defined(CPUESP32) 
+#define ROOT_PATH           SD_PATH "/"
+#else
 #define ROOT_PATH           "/"
+#endif
 #define MODELS_PATH         ROOT_PATH "MODELS"      // no trailing slash = important
 #define RADIO_PATH          ROOT_PATH "RADIO"       // no trailing slash = important
 #define LOGS_PATH           ROOT_PATH "LOGS"
@@ -144,6 +147,9 @@ const char * getFileExtension(const char * filename, uint8_t size=0, uint8_t ext
 #elif defined(PCBGRUVIN9X) || defined(PCBMEGA2560)
   #define OTX_FOURCC 0x3178746F // otx for gruvin9x/MEGA2560
   #define O9X_FOURCC 0x3178396F // o9x for gruvin9x/MEGA2560
+#elif defined(PCBESP_WROOM_32)
+  #define OTX_FOURCC 0x3878746F // otx for ESP32
+  #define O9X_FOURCC 0x3878396F // o9x for ESP32  
 #endif
 
 bool isFileAvailable(const char * filename, bool exclDir = false);

@@ -1,12 +1,15 @@
 #ifndef _BOARD_ESP32_H_
 #define _BOARD_ESP32_H_
 
+#define strcpy_P strcpy
+
 void espLogI(const char * format, ...);
 
 #define eeFlush()
 #define DISPLAY_PROGRESS_BAR(x)
 
-
+size_t fsLoadModelData(uint8_t index, uint8_t *buff, size_t size);
+size_t fsWriteModelData(uint8_t index, uint8_t *buff, size_t size);
 bool eepromOpen();
 bool eeLoadGeneral();
 void eeDeleteModel(uint8_t index);
@@ -15,6 +18,24 @@ void eeSwapModels(uint8_t id1, uint8_t id2);
 uint16_t eeLoadModelData(uint8_t index);
 void eeLoadModelName(uint8_t id, char *name);
 uint16_t eeModelSize(uint8_t index);
+
+
+#if defined(SDCARD)
+#define SD_IS_HC()                      (sdIsHC())
+#define SD_GET_SPEED()                 (sdGetSpeed())
+#define _MAX_LFN      CONFIG_FATFS_MAX_LFN
+#define SD_PATH "/sdcard"
+#define sdPoll10ms()
+
+void sdInit(void);
+uint32_t sdIsHC(void);
+uint32_t sdGetSpeed(void);
+uint32_t sdMounted(void);
+const char * eeBackupModel(uint8_t i_fileSrc);
+const char * eeRestoreModel(uint8_t i_fileDst, char *model_name);
+
+#endif
+
 
 
 uint16_t getTmr1MHz();
@@ -38,6 +59,8 @@ uint16_t mixerStackAvailable();
 uint16_t menusStackAvailable();
 bool rEncDown(uint8_t mask);
 void sendToPulses();
+void mountSDCard();
+
 
 
 void backlightEnable();

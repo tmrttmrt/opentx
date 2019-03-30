@@ -167,8 +167,8 @@ elseif(${EEPROM} STREQUAL EEPROM_RLC)
   set(SRC ${SRC} storage/storage_common.cpp storage/eeprom_common.cpp storage/eeprom_rlc.cpp) 
   add_definitions(-DEEPROM -DEEPROM_RLC)
 elseif(${EEPROM} STREQUAL SPIFLASH)
-  set(SRC ${SRC} storage/storage_common.cpp storage/eeprom_common.cpp) 
-  add_definitions(-DEEPROM -DSPIFLASH)
+  set(SRC ${SRC} storage/storage_common.cpp storage/eeprom_common.cpp ) 
+  add_definitions(-DEEPROM -DSPIFLASH )
 else()
   set(SRC ${SRC} storage/storage_common.cpp storage/eeprom_common.cpp storage/eeprom_raw.cpp)
   add_definitions(-DEEPROM -DEEPROM_RAW)
@@ -291,7 +291,7 @@ if(SIMU_DISKIO)
   add_definitions(-DSIMU_DISKIO)
 endif()
 
-if(SDCARD)
+if(SDCARD AND NOT CPU_FAMILY STREQUAL ESP32)
   add_definitions(-DSDCARD)
   include_directories(${FATFS_DIR} ${FATFS_DIR}/option)
   set(SRC ${SRC} sdcard.cpp rtc.cpp logs.cpp)
@@ -562,9 +562,9 @@ if(NOT MSVC)
 
     # these are in addition to CMAKE_CXX_FLAGS
     set(CMAKE_EXE_LINKER_FLAGS "-lm -T${RADIO_SRC_DIRECTORY}/${LINKER_SCRIPT} -Wl,-Map=firmware.map,--cref,--no-warn-mismatch,--gc-sections")
-    add_library(firmware ${SRC} ${FIRMWARE_HEADERS})
-    link_libraries(firmware -lstdc++)
-    add_dependencies(firmware ${FIRMWARE_DEPENDENCIES})
+    add_library(otxcore ${SRC} ${FIRMWARE_HEADERS})
+    link_libraries(otxcore -lstdc++)
+    add_dependencies(otxcore ${FIRMWARE_DEPENDENCIES})
 
 
   else()  # AVR

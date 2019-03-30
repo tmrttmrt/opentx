@@ -58,6 +58,7 @@ void startWiFi( char *ssid_zchar, char *passwd_zchar, char* ftppass_zchar){
     zchar2str(ftp_pass,ftppass_zchar,sizeof(g_eeGeneral.ftppass));
     ESP_LOGI(TAG,"ssid: '%s'",ssid);
     ESP_LOGI(TAG,"passwd: '%s'",passwd);
+    ESP_LOGI(TAG,"ftppasswd: '%s'",ftp_pass);
     BaseType_t ret_bt=xTaskCreatePinnedToCore(  wifiTask, "wifiTask", FTP_SERVER_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX +7, &wifiTaskHandle, FTP_SERVER_TASK_CORE );
     configASSERT( wifiTaskHandle );
 }

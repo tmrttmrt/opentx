@@ -233,11 +233,7 @@ class WavContext {
     AudioFragment fragment;
 
     struct {
-#if defined(CPUESP32)
-      int      file;
-#else
       FIL      file;
-#endif
       uint8_t  codec;
       uint32_t freq;
       uint32_t size;

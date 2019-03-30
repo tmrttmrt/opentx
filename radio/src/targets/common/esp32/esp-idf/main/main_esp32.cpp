@@ -62,7 +62,7 @@ if (TIME_TO_WRITE()){
 }
 
 #if defined(SDCARD)
-  sdMountPoll();
+//  sdMountPoll();
   logsWrite();
 #endif
 

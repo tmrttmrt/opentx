@@ -169,6 +169,12 @@ enum CurveType {
   #define LEN_FUNCTION_NAME            6
   #define MAX_CURVES                   16   // TODO next EEPROM check if can be changed to 32 to have all ARM the same
   #define MAX_CURVE_POINTS             512
+#elif defined(CPUESP32)
+  #define LEN_MODEL_NAME               10
+  #define LEN_FLIGHT_MODE_NAME         6
+  #define MAX_CURVES                   8
+  #define MAX_CURVE_POINTS             (112-MAX_CURVES)
+  #define LEN_FUNCTION_NAME            6  
 #else
   #define LEN_MODEL_NAME               10
   #define LEN_FLIGHT_MODE_NAME         6
@@ -927,6 +933,9 @@ enum Functions {
   FUNC_SET_TIMER,
 #endif
   FUNC_ADJUST_GVAR,
+#if defined(CPUESP32)
+  FUNC_VOLUME,  
+#endif
 #if defined(CPUARM)
   FUNC_VOLUME,
   FUNC_SET_FAILSAFE,
@@ -941,7 +950,7 @@ enum Functions {
   FUNC_PLAY_BOTH,
 #endif
   FUNC_PLAY_VALUE,
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   FUNC_RESERVE4,
   FUNC_PLAY_SCRIPT,
   FUNC_RESERVE5,

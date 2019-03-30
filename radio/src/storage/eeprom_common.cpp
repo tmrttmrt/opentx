@@ -78,7 +78,7 @@ void selectModel(uint8_t sub)
   eeLoadModel(sub);
 }
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 ModelHeader modelHeaders[MAX_MODELS];
 void eeLoadModelHeaders()
 {

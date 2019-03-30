@@ -70,7 +70,7 @@
 #define VFS_NATIVE_INTERNAL_MP "/flash"
 #define VFS_NATIVE_EXTERNAL_MP "/sdcard"
 
-bool native_vfs_mounted[2] = {true, false};
+bool native_vfs_mounted[2] = {true, true};
 extern tcpip_adapter_if_t tcpip_if[MAX_ACTIVE_INTERFACES];
 
 QueueHandle_t ftp_mutex = NULL;

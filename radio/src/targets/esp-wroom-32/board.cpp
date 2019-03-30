@@ -26,6 +26,7 @@ void boardInit()
     lcdInit();
     initAudio();
     initFS();
+    mountSDCard();
     initKeys();
     initADC();
     timer10msInit();

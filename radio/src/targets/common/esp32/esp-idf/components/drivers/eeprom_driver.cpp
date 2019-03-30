@@ -12,6 +12,7 @@
 #include "esp_log.h"
 #define HASASSERT
 #include "opentx.h"
+#undef DIR
 
 const char * const eepromDname = "/flash/eeprom.dir";
 const char * const eeGeneralName = "eeGeneral.bin";
@@ -34,18 +35,24 @@ char * makeModPath(uint8_t index){
     return makeEeFPath(buff);
 }
 
-void eeWriteModelData(uint8_t index){
+size_t fsWriteModelData(uint8_t index, uint8_t *buff, size_t size){
     ESP_LOGI(TAG,"Storing model %d.", index);
     char * fn=makeModPath(index);
     FILE * fp = fopen ( fn, "wb" );
     if (NULL==fp) { /* Check if the file has been opened */
         ESP_LOGE(TAG,"Failed to open '%s' for writing.", fn);
-        return;
+        return 0;
     }
-    if(1!=fwrite((uint8_t*)&g_model, sizeof(g_model), 1,fp)){
+    if(1!=fwrite(buff, size, 1,fp)){
         ESP_LOGE(TAG,"Failed to write model data to '%s' .", fn);
+        return 0;
     }
     fclose(fp);
+    return size;
+}
+
+void eeWriteModelData(uint8_t index){
+    fsWriteModelData(index, (uint8_t*)&g_model, sizeof(g_model));
 }
 
 void eeWriteGeneral(){
@@ -178,20 +185,32 @@ void eeLoadModelName(uint8_t id, char *name){
     }
 }
 
-uint16_t eeLoadModelData(uint8_t index){
+
+size_t fsLoadModelData(uint8_t index, uint8_t *buff, size_t size){
+    uint16_t ret=size;
     ESP_LOGI(TAG,"Load model %d data.", index );
-    memset(&g_model, 0, sizeof(g_model));
     char * fn=makeModPath(index);
     FILE * fp = fopen ( fn, "rb" );
     if (NULL==fp) { /* Check if the file has been opened */
         ESP_LOGE(TAG,"Failed to open '%s'.", fn);
         return 0;
     }
-    if(1!=fread((uint8_t*)&g_model, sizeof(g_model),1,fp)){
+    if(1!=fread((uint8_t*)buff, size,1,fp)){
         ESP_LOGE(TAG,"Failed to read model data from '%s'.", fn);
+        ret=0;
     }
     fclose(fp);
-    return sizeof(g_model);
+    return ret;
+}
+
+uint16_t eeLoadModelData(uint8_t index){
+    memset(&g_model, 0, sizeof(g_model));
+    return fsLoadModelData(index,(uint8_t *) &g_model,  sizeof(g_model));
+}
+
+void eeLoadModelHeader(uint8_t id, ModelHeader * header)
+{
+  fsLoadModelData(id,(uint8_t *) header,  sizeof(ModelHeader));
 }
 
 bool eeLoadGeneral(){

@@ -9,8 +9,14 @@ set_property(CACHE TELEMETRY PROPERTY STRINGS ${TELEMETRY_TYPES})
 
 add_definitions(-DLCD_${LCD})
 include_directories(targets/common/esp32 targets/common/esp32/esp-idf/build/include)
-include_directories($ENV{IDF_PATH}/components/esp32/include $ENV{IDF_PATH}/components/soc/include )
+include_directories($ENV{IDF_PATH}/components/esp32/include $ENV{IDF_PATH}/components/soc/include $ENV{IDF_PATH}/components/soc/esp32/include)
+include_directories($ENV{IDF_PATH}/components/vfs/include $ENV{IDF_PATH}/components/freertos/include $ENV{IDF_PATH}/components/heap/include $ENV{IDF_PATH}/components/driver/include $ENV{IDF_PATH}/components/fatfs/src $ENV{IDF_PATH}/components/wear_levelling/include $ENV{IDF_PATH}/components/log/include $ENV{IDF_PATH}/components/spi_flash/include)
 #include_directories($ENV{IDF_PATH}/components/fatfs/src $ENV{IDF_PATH}/components/freertos/include $ENV{IDF_PATH}/components/soc/esp32/include $ENV{IDF_PATH}/components/heap/include $ENV{IDF_PATH}/components/driver/include)
+set(TTS_LANGUAGES EN)
+foreach(LANGUAGE ${TTS_LANGUAGES})
+  string(TOLOWER ${LANGUAGE} lang_lower)
+  set(SRC ${SRC} translations/tts_${lang_lower}.cpp)
+endforeach()
 
 set(GUI_SRC ${GUI_SRC}
     radio_hardware_esp32.cpp
@@ -22,6 +28,12 @@ if(AUDIO)
 else()
   set(BUZZER ON)
 endif()
+if(SDCARD)
+  add_definitions(-DSDCARD -DVOICE)
+  set(SRC ${SRC} sdcard.cpp rtc.cpp )
+#  set(SRC ${SRC} sdcard.cpp rtc.cpp logs.cpp)
+endif()
+
 
 if(GRAPHICS)
   add_definitions(-DGRAPHICS)

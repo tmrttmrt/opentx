@@ -210,7 +210,7 @@ PLAY_FUNCTION(playValue, source_t idx)
 }
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 void playCustomFunctionFile(const CustomFunctionData * sd, uint8_t id)
 {
   if (sd->play.name[0] != '\0') {
@@ -449,7 +449,7 @@ void evalFunctions()
           }
 #endif
 
-#if defined(CPUARM) && defined(SDCARD)
+#if (defined(CPUARM) || defined(CPUESP32)) && defined(SDCARD)
           case FUNC_PLAY_SOUND:
           case FUNC_PLAY_TRACK:
           case FUNC_PLAY_VALUE:

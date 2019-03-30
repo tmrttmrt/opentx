@@ -75,7 +75,7 @@ void menusTask(void * pvParameters)
     
     ESP_LOGI(TAG,"Starting menusTask.");
     opentxInit();
-    
+
     xLastWakeTime = xTaskGetTickCount ();
     while (1){
         vTaskDelayUntil( &xLastWakeTime, xTimeIncrement );
@@ -186,7 +186,7 @@ void tasksStart()
     }
     ret=xTaskCreatePinnedToCore( menusTask, "menusTask", MENUS_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -9, &xMenusTaskHandle, MENU_TASK_CORE );
     configASSERT( xMenusTaskHandle );
-    
+
     ret=xTaskCreatePinnedToCore( mixerTask, "mixerTask", MIXER_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -6, &xMixerTaskHandle, MIXER_TASK_CORE );
     configASSERT( xMixerTaskHandle );
     
@@ -281,9 +281,15 @@ int main();
 
 extern "C"   void app_main(){
     main();
+/*    initFS();
+    mountSDCard();
+    initWiFi();
+    startWiFi(g_eeGeneral.ssid,g_eeGeneral.passwd,g_eeGeneral.ftppass);
+*/    
     TaskHandle_t tasks[]={xMenusTaskHandle,xMixerTaskHandle,xAudioTaskHandle,xPer10msTaskHandle,xEncTaskHandle};
     uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
     while(1){
+//        isWiFiStarted();
         ESP_LOGD(TAG,"s_pulses_paused: %d",s_pulses_paused);
         for(uint8_t i=0; i< nTasks; i++){
             ESP_LOGD(TAG,"Min stack: %s: %d",pcTaskGetTaskName(tasks[i]),uxTaskGetStackHighWaterMark(tasks[i]));
@@ -291,6 +297,6 @@ extern "C"   void app_main(){
         ESP_LOGD(TAG,"maxMixerDuration %d",maxMixerDuration);
 //        ESP_LOGI(TAG,"last 10ms task duration %d",testDuration);
         
-        vTaskDelay(1000/portTICK_PERIOD_MS);
+        vTaskDelay(100/portTICK_PERIOD_MS);
     };
 }

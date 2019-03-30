@@ -32,6 +32,13 @@
 #endif 
 #if defined(CPUESP32)
 #include "esp_attr.h"
+#include "sdkconfig.h"
+#if defined(SDCARD)
+#include "esp_vfs.h"
+#include "esp_vfs_fat.h"
+#define HASASSERT
+#define DIR FF_DIR
+#endif
 #else
 #define IRAM_ATTR
 #define DRAM_ATTR
@@ -1565,7 +1572,7 @@ extern union ReusableBuffer reusableBuffer;
 
 void checkFlashOnBeep();
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 uint8_t zlen(const char *str, uint8_t size);
 bool zexist(const char *str, uint8_t size);
 unsigned int effectiveLen(const char * str, unsigned int size);

@@ -30,7 +30,7 @@ void ConvertModel(int id, int version);
 uint8_t eeFindEmptyModel(uint8_t id, bool down);
 void selectModel(uint8_t sub);
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   extern ModelHeader modelHeaders[MAX_MODELS];
   void eeLoadModelHeader(uint8_t id, ModelHeader *header);
   void eeLoadModelHeaders();

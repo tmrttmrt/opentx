@@ -753,6 +753,9 @@ extern const pm_char STR_RESET_BTN[];
   extern const pm_char STR_LOGS_EXT[];
   extern const pm_char STR_MODELS_PATH[];
   extern const pm_char STR_MODELS_EXT[];
+#if defined(CPUESP32)
+  extern const pm_char STR_OUT_OF_MEM[];
+#endif   
   #define STR_UPDATE_LIST STR_DELAYDOWN
 #endif
 
@@ -846,7 +849,7 @@ extern const pm_char STR_CONFIRMRESET[];
 extern const pm_char STR_TOO_MANY_LUA_SCRIPTS[];
 extern const pm_char STR_BLCOLOR[];
 
-#if defined(CPUARM) && defined(VOICE)
+#if (defined(CPUARM) || defined(CPUESP32)) && defined(VOICE)
   struct LanguagePack {
     const char * id;
     const char * name;

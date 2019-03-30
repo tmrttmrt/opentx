@@ -276,7 +276,22 @@ PACK(struct CustomFunctionData {
   });
   uint8_t active;
 });
-#elif defined(CPUM2560) || defined(CPUESP32)
+#elif defined(CPUESP32)
+PACK(struct CustomFunctionData {
+  int8_t  swtch;
+  uint8_t func;
+  PACK(union {
+    NOBACKUP(PACK(struct {
+      char name[LEN_FUNCTION_NAME];
+    }) play);
+  });
+  uint8_t mode:2;
+  uint8_t param:4;
+  uint8_t active:1;
+  uint8_t spare:1;
+  uint8_t value;
+});
+#elif defined(CPUM2560)
 PACK(struct CustomFunctionData {
   int8_t  swtch;
   uint8_t func;
@@ -923,6 +938,7 @@ PACK(struct TrainerData {
     NOBACKUP(int8_t   wavVolume:4); \
     NOBACKUP(int8_t   varioVolume:4); \
     NOBACKUP(int8_t   backgroundVolume:4); \
+    CustomFunctionData customFn[MAX_SPECIAL_FUNCTIONS];\
     NOBACKUP(char passwd[18]);\
     NOBACKUP(char ssid[18]);\
     NOBACKUP(char ftppass[18]);
@@ -1144,7 +1160,7 @@ static inline void check_struct()
   CHKSIZE(MixData, 10);
   CHKSIZE(ExpoData, 5);
   CHKSIZE(LimitData, 5);
-  CHKSIZE(CustomFunctionData, 4);
+  CHKSIZE(CustomFunctionData, 10);
   CHKSIZE(FlightModeData, 30);
   CHKSIZE(TimerData, 6);
   CHKSIZE(SwashRingData, 3);

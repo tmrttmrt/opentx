@@ -895,7 +895,7 @@ void AudioQueue::playFile(const char * filename, uint8_t flags, uint8_t id)
     return;
   }
 
-  CoEnterMutexSection(xAudioSem);
+  xSemaphoreTake(xAudioSem, portMAX_DELAY);
 
   if (flags & PLAY_BACKGROUND) {
     backgroundContext.clear();
@@ -905,7 +905,7 @@ void AudioQueue::playFile(const char * filename, uint8_t flags, uint8_t id)
     fragmentsFifo.push(AudioFragment(filename, flags & 0x0f, id));
   }
 
-  CoLeaveMutexSection(xAudioSem);
+  xSemaphoreGive(xAudioSem);
 }
 
 void AudioQueue::stopPlay(uint8_t id)
@@ -918,12 +918,12 @@ void AudioQueue::stopPlay(uint8_t id)
   return;
 #endif
 
-  CoEnterMutexSection(xAudioSem);
+  xSemaphoreTake(xAudioSem, portMAX_DELAY);
 
   fragmentsFifo.removePromptById(id);
   backgroundContext.stop(id);
 
-  CoLeaveMutexSection(xAudioSem);
+  xSemaphoreGive(xAudioSem);
 }
 
 void AudioQueue::stopSD()

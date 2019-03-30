@@ -20,6 +20,7 @@
 
 #include <stdint.h>
 #include "opentx.h"
+#if !defined(CPUESP32)
 #include "diskio.h"
 
 bool sdCardFormat()
@@ -52,6 +53,7 @@ bool sdCardFormat()
       return false;
   }
 }
+#endif
 
 const char * sdCheckAndCreateDirectory(const char * path)
 {
@@ -490,8 +492,8 @@ const char * sdCopyFile(const char * srcFilename, const char * srcDir, const cha
 }
 #endif // defined(CPUARM) && defined(SDCARD)
 
-
-#if !defined(SIMU) || defined(SIMU_DISKIO)
+#if !defined(CPUESP32)
+#if (!defined(SIMU) || defined(SIMU_DISKIO))
 uint32_t sdGetNoSectors()
 {
   static DWORD noSectors = 0;
@@ -534,3 +536,4 @@ uint32_t sdGetFreeSectors()
 }
 
 #endif  // #if !defined(SIMU) || defined(SIMU_DISKIO)
+#endif //#if !defined(CPUESP32)
