@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <errno.h>
 #include "opentx.h"
+#undef DIR
 
 static const char *TAG = "sdcard.cpp";
 
@@ -40,11 +41,11 @@ const char * sdCheckAndCreateDirectory(const char * path)
 
 bool isFileAvailable(const char * path, bool exclDir)
 {
+  struct stat st;
   if (exclDir) {
-    FILINFO fno;
-    return (f_stat(path, &fno) == FR_OK && !(fno.fattrib & AM_DIR));
+    return (stat(path, &st) == 0 && !(S_ISDIR(st.st_mode)));
   }
-  return f_stat(path, 0) == FR_OK;
+  return stat(path, &st) == 0;
 }
 
 /**
@@ -220,8 +221,8 @@ bool isExtensionMatching(const char * extension, const char * pattern, char * ma
 bool sdListFiles(const char * path, const char * extension, const uint8_t maxlen, const char * selection, uint8_t flags)
 {
   static uint16_t lastpopupMenuOffset = 0;
-  FILINFO fno;
-  DIR dir;
+  DIR *pdir;
+  struct dirent *de;
   const char * fnExt;
   uint8_t fnLen, extLen;
   char tmpExt[LEN_FILE_EXTENSION_MAX+1] = "\0";
@@ -266,8 +267,8 @@ bool sdListFiles(const char * path, const char * extension, const uint8_t maxlen
   popupMenuNoItems = 0;
   POPUP_MENU_SET_BSS_FLAG();
 
-  FRESULT res = f_opendir(&dir, path);
-  if (res == FR_OK) {
+  pdir=opendir(path);
+  if (pdir != 0) {
 
     if (flags & LIST_NONE_SD_FILE) {
       popupMenuNoItems++;
@@ -283,24 +284,24 @@ bool sdListFiles(const char * path, const char * extension, const uint8_t maxlen
     }
 
     for (;;) {
-      res = f_readdir(&dir, &fno);                   /* Read a directory item */
-      if (res != FR_OK || fno.fname[0] == 0) break;  /* Break on error or end of dir */
-      if (fno.fattrib & AM_DIR) continue;            /* Skip subfolders */
-      if (fno.fattrib & AM_HID) continue;            /* Skip hidden files */
-      if (fno.fattrib & AM_SYS) continue;            /* Skip system files */
+      de=readdir(pdir);                   /* Read a directory item */
+      if (NULL == de) break;  /* Break on error or end of dir */
+      if (DT_DIR == de->d_type) continue;            /* Skip subfolders */
+//      if (fno.fattrib & AM_HID) continue;            /* Skip hidden files */
+//      if (fno.fattrib & AM_SYS) continue;            /* Skip system files */
 
-      fnExt = getFileExtension(fno.fname, 0, 0, &fnLen, &extLen);
+      fnExt = getFileExtension(de->d_name, 0, 0, &fnLen, &extLen);
       fnLen -= extLen;
 
       espLogI("listSdFiles(%s, %s, %u, %s, %u): fn='%s'; fnExt='%s'; match=%d\n",
-           path, extension, maxlen, (selection ? selection : "nul"), flags, fno.fname, (fnExt ? fnExt : "nul"), (fnExt && isExtensionMatching(fnExt, extension)));
+           path, extension, maxlen, (selection ? selection : "nul"), flags, de->d_name, (fnExt ? fnExt : "nul"), (fnExt && isExtensionMatching(fnExt, extension)));
       // file validation checks
       if (!fnLen || fnLen > maxlen || (                                              // wrong size
             fnExt && extension && (                                                  // extension-based checks follow...
               !isExtensionMatching(fnExt, extension) || (                            // wrong extension
                 !(flags & LIST_SD_FILE_EXT) &&                                       // only if we want unique file names...
                 strcasecmp(fnExt, getFileExtension(extension)) &&                    // possible duplicate file name...
-                isFilePatternAvailable(path, fno.fname, extension, true, tmpExt) &&  // find the first file from extensions list...
+                isFilePatternAvailable(path, de->d_name, extension, true, tmpExt) &&  // find the first file from extensions list...
                 strncasecmp(fnExt, tmpExt, LEN_FILE_EXTENSION_MAX)                   // found file doesn't match, this is a duplicate
               )
             )
@@ -312,20 +313,20 @@ bool sdListFiles(const char * path, const char * extension, const uint8_t maxlen
       popupMenuNoItems++;
 
       if (!(flags & LIST_SD_FILE_EXT)) {
-        fno.fname[fnLen] = '\0';  // strip extension
+        de->d_name[fnLen] = '\0';  // strip extension
       }
 
       if (popupMenuOffset == 0) {
-        if (selection && strncasecmp(fno.fname, selection, maxlen) < 0) {
+        if (selection && strncasecmp(de->d_name, selection, maxlen) < 0) {
           lastpopupMenuOffset++;
         }
         else {
           for (uint8_t i=0; i<MENU_MAX_DISPLAY_LINES; i++) {
             char * line = reusableBuffer.modelsel.menu_bss[i];
-            if (line[0] == '\0' || strcasecmp(fno.fname, line) < 0) {
+            if (line[0] == '\0' || strcasecmp(de->d_name, line) < 0) {
               if (i < MENU_MAX_DISPLAY_LINES-1) memmove(reusableBuffer.modelsel.menu_bss[i+1], line, sizeof(reusableBuffer.modelsel.menu_bss[i]) * (MENU_MAX_DISPLAY_LINES-1-i));
               memset(line, 0, MENU_LINE_LENGTH);
-              strcpy(line, fno.fname);
+              strcpy(line, de->d_name);
               break;
             }
           }
@@ -338,10 +339,10 @@ bool sdListFiles(const char * path, const char * extension, const uint8_t maxlen
       else if (lastpopupMenuOffset == 0xffff) {
         for (int i=MENU_MAX_DISPLAY_LINES-1; i>=0; i--) {
           char * line = reusableBuffer.modelsel.menu_bss[i];
-          if (line[0] == '\0' || strcasecmp(fno.fname, line) > 0) {
+          if (line[0] == '\0' || strcasecmp(de->d_name, line) > 0) {
             if (i > 0) memmove(reusableBuffer.modelsel.menu_bss[0], reusableBuffer.modelsel.menu_bss[1], sizeof(reusableBuffer.modelsel.menu_bss[i]) * i);
             memset(line, 0, MENU_LINE_LENGTH);
-            strcpy(line, fno.fname);
+            strcpy(line, de->d_name);
             break;
           }
         }
@@ -350,19 +351,19 @@ bool sdListFiles(const char * path, const char * extension, const uint8_t maxlen
         }
       }
       else if (popupMenuOffset > lastpopupMenuOffset) {
-        if (strcasecmp(fno.fname, reusableBuffer.modelsel.menu_bss[MENU_MAX_DISPLAY_LINES-2]) > 0 && strcasecmp(fno.fname, reusableBuffer.modelsel.menu_bss[MENU_MAX_DISPLAY_LINES-1]) < 0) {
+        if (strcasecmp(de->d_name, reusableBuffer.modelsel.menu_bss[MENU_MAX_DISPLAY_LINES-2]) > 0 && strcasecmp(de->d_name, reusableBuffer.modelsel.menu_bss[MENU_MAX_DISPLAY_LINES-1]) < 0) {
           memset(reusableBuffer.modelsel.menu_bss[MENU_MAX_DISPLAY_LINES-1], 0, MENU_LINE_LENGTH);
-          strcpy(reusableBuffer.modelsel.menu_bss[MENU_MAX_DISPLAY_LINES-1], fno.fname);
+          strcpy(reusableBuffer.modelsel.menu_bss[MENU_MAX_DISPLAY_LINES-1], de->d_name);
         }
       }
       else {
-        if (strcasecmp(fno.fname, reusableBuffer.modelsel.menu_bss[1]) < 0 && strcasecmp(fno.fname, reusableBuffer.modelsel.menu_bss[0]) > 0) {
+        if (strcasecmp(de->d_name, reusableBuffer.modelsel.menu_bss[1]) < 0 && strcasecmp(de->d_name, reusableBuffer.modelsel.menu_bss[0]) > 0) {
           memset(reusableBuffer.modelsel.menu_bss[0], 0, MENU_LINE_LENGTH);
-          strcpy(reusableBuffer.modelsel.menu_bss[0], fno.fname);
+          strcpy(reusableBuffer.modelsel.menu_bss[0], de->d_name);
         }
       }
     }
-    f_closedir(&dir);
+    closedir(pdir);
   }
 
   if (popupMenuOffset > 0)
@@ -383,6 +384,7 @@ bool isCwdAtRoot()
   return false;
 }
 
+#define DIR FF_DIR
 /*
   Wrapper around the f_readdir() function which
   also returns ".." entry for sub-dirs. (FatFS 0.12 does

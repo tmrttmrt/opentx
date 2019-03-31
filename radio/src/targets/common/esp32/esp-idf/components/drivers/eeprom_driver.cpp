@@ -18,9 +18,9 @@ const char * const eepromDname = "/flash/eeprom.dir";
 const char * const eeGeneralName = "eeGeneral.bin";
 static const char *TAG = "eeprom_driver.cpp";
 //DRAM_ATTR uint8_t eeprom[EEPROM_SIZE];
-char fname[CONFIG_FATFS_MAX_LFN];
 
 char * makeEeFPath(const char *fn){
+    static char fname[CONFIG_FATFS_MAX_LFN];
     strcpy(fname,eepromDname);
     strcat(fname,"/");
     strcat(fname,fn);
@@ -164,8 +164,13 @@ bool eeCopyModel(char * dpath, uint8_t src){
 
 bool eeCopyModel(uint8_t dst, uint8_t src){
     ESP_LOGI(TAG,"eeCopyModel(%d, %d).", dst, src);
-    char * fn=makeModPath(dst);
-    return eeCopyModel(fn, src);
+    char  fn[CONFIG_FATFS_MAX_LFN];
+    strcpy(fn,makeModPath(dst));
+    if(eeCopyModel(fn, src)){
+        eeLoadModelHeader(dst, &modelHeaders[dst]);
+        return true;
+    }
+    return false;
 }
 
 
@@ -186,11 +191,15 @@ void eeSwapModels(uint8_t id1, uint8_t id2){
     if(eeModelExists(id2)){
         if(0!=rename(fn2, fn1)){
             ESP_LOGE(TAG,"Failed to rename '%s' to '%s'.", fn2, fn1);
-        } 
+        } else {
+            eeLoadModelHeader(id1, &modelHeaders[id1]);
+        }
     }
     if(eeModelExists(MAX_MODELS+1)){
         if(0!=rename(fntmp,fn2)){
             ESP_LOGE(TAG,"Failed to rename '%s' to '%s'.", fntmp, fn2);
+        } else {
+            eeLoadModelHeader(id2, &modelHeaders[id2]);
         }
     }
     free(fn1);
@@ -372,7 +381,9 @@ const pm_char * eeRestoreModel(uint8_t i_fileDst, char *model_name)
     if (eeModelExists(i_fileDst)) {
         eeDeleteModel(i_fileDst);
     }
-    
+    if(0 == eeCopyModel(i_fileDst, buf)){
+        return STR_SDCARD_ERROR;
+    }
     eeLoadModelHeader(i_fileDst, &modelHeaders[i_fileDst]);
 
 #if defined(EEPROM_CONVERSIONS)
