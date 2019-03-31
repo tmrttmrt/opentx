@@ -19,57 +19,24 @@
  */
 
 #include <stdint.h>
+#include <errno.h>
 #include "opentx.h"
-#include "diskio.h"
 
-bool sdCardFormat()
-{
-  BYTE work[_MAX_SS];
-  FRESULT res = f_mkfs("", FM_FAT32, 0, work, sizeof(work));
-  switch(res) {
-    case FR_OK :
-      return true;
-    case FR_DISK_ERR:
-      POPUP_WARNING("Format error");
-      return false;
-    case FR_NOT_READY:
-      POPUP_WARNING("SDCard not ready");
-      return false;
-    case FR_WRITE_PROTECTED:
-      POPUP_WARNING("SDCard write protected");
-      return false;
-    case FR_INVALID_PARAMETER:
-      POPUP_WARNING("Format param invalid");
-      return false;
-    case FR_INVALID_DRIVE:
-      POPUP_WARNING("Invalid drive");
-      return false;
-    case FR_MKFS_ABORTED:
-      POPUP_WARNING("Format aborted");
-      return false;
-    default:
-      POPUP_WARNING(STR_SDCARD_ERROR);
-      return false;
-  }
+static const char *TAG = "sdcard.cpp";
+
+bool sdCardFormat(){
+    return false;
 }
 
 const char * sdCheckAndCreateDirectory(const char * path)
 {
-  DIR archiveFolder;
-
-  FRESULT result = f_opendir(&archiveFolder, path);
-  if (result != FR_OK) {
-    if (result == FR_NO_PATH)
-      result = f_mkdir(path);
-    if (result != FR_OK)
-      return SDCARD_ERROR(result);
-  }
-  else {
-    f_closedir(&archiveFolder);
-  }
-
-  return NULL;
+    if(mkdir(path,0777) && errno != EEXIST){
+        ESP_LOGE(TAG,"Failed to create directory: '%s'.", path);
+        return STR_SDCARD_ERROR;
+    }
+    return NULL;
 }
+
 
 bool isFileAvailable(const char * path, bool exclDir)
 {
@@ -325,8 +292,8 @@ bool sdListFiles(const char * path, const char * extension, const uint8_t maxlen
       fnExt = getFileExtension(fno.fname, 0, 0, &fnLen, &extLen);
       fnLen -= extLen;
 
-//      TRACE_DEBUG("listSdFiles(%s, %s, %u, %s, %u): fn='%s'; fnExt='%s'; match=%d\n",
-//           path, extension, maxlen, (selection ? selection : "nul"), flags, fno.fname, (fnExt ? fnExt : "nul"), (fnExt && isExtensionMatching(fnExt, extension)));
+      espLogI("listSdFiles(%s, %s, %u, %s, %u): fn='%s'; fnExt='%s'; match=%d\n",
+           path, extension, maxlen, (selection ? selection : "nul"), flags, fno.fname, (fnExt ? fnExt : "nul"), (fnExt && isExtensionMatching(fnExt, extension)));
       // file validation checks
       if (!fnLen || fnLen > maxlen || (                                              // wrong size
             fnExt && extension && (                                                  // extension-based checks follow...
@@ -490,8 +457,8 @@ const char * sdCopyFile(const char * srcFilename, const char * srcDir, const cha
 }
 #endif // defined(CPUARM) && defined(SDCARD)
 
-
-#if !defined(SIMU) || defined(SIMU_DISKIO)
+#if !defined(CPUESP32)
+#if (!defined(SIMU) || defined(SIMU_DISKIO))
 uint32_t sdGetNoSectors()
 {
   static DWORD noSectors = 0;
@@ -534,3 +501,4 @@ uint32_t sdGetFreeSectors()
 }
 
 #endif  // #if !defined(SIMU) || defined(SIMU_DISKIO)
+#endif //#if !defined(CPUESP32)

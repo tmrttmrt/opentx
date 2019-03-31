@@ -36,15 +36,26 @@ char * makeModPath(uint8_t index){
 }
 
 size_t fsWriteModelData(uint8_t index, uint8_t *buff, size_t size){
-    ESP_LOGI(TAG,"Storing model %d.", index);
+    ESP_LOGI(TAG,"fsWriteModelData: model %d.", index);
     char * fn=makeModPath(index);
     FILE * fp = fopen ( fn, "wb" );
     if (NULL==fp) { /* Check if the file has been opened */
         ESP_LOGE(TAG,"Failed to open '%s' for writing.", fn);
         return 0;
     }
+    char head[8];
+    *(uint32_t*)&head[0] = OTX_FOURCC;
+    head[4] = g_eeGeneral.version;
+    head[5] = 'M';
+    *(uint16_t*)&head[6] = size;
+    if(1!=fwrite(head, 8, 1,fp)){
+        fclose(fp);
+        ESP_LOGE(TAG,"Failed to write model header to '%s'.", fn);
+        return 0;
+    }
     if(1!=fwrite(buff, size, 1,fp)){
-        ESP_LOGE(TAG,"Failed to write model data to '%s' .", fn);
+        fclose(fp);
+        ESP_LOGE(TAG,"Failed to write model data to '%s'.", fn);
         return 0;
     }
     fclose(fp);
@@ -52,6 +63,7 @@ size_t fsWriteModelData(uint8_t index, uint8_t *buff, size_t size){
 }
 
 void eeWriteModelData(uint8_t index){
+    ESP_LOGI(TAG,"Storing model %d.", index);
     fsWriteModelData(index, (uint8_t*)&g_model, sizeof(g_model));
 }
 
@@ -107,19 +119,17 @@ bool eeModelExists(uint8_t id){
     return false;
 }
 
-bool eeCopyModel(uint8_t dst, uint8_t src){
-    ESP_LOGI(TAG,"eeCopyModel(%d, %d).", dst, src);
-    char * fn=makeModPath(src);
-    FILE * fps = fopen ( fn, "rb" );
+bool eeCopyModel(char * dpath, char * spath){
+    ESP_LOGI(TAG,"eeCopyModel(%s, %s).", dpath, spath);
+    FILE * fps = fopen ( spath, "rb" );
     bool ret=true;
     if (NULL==fps) { /* Check if the file has been opened */
-        ESP_LOGE(TAG,"Failed to open '%s' for read.", fn);
+        ESP_LOGE(TAG,"Failed to open '%s' for read.", spath);
         return false;
     }
-    fn=makeModPath(dst);
-    FILE * fpd = fopen ( fn, "wb" );
+    FILE * fpd = fopen ( dpath, "wb" );
     if (NULL==fpd) { /* Check if the file has been opened */
-        ESP_LOGE(TAG,"Failed to open '%s' for write.", fn);
+        ESP_LOGE(TAG,"Failed to open '%s' for write.", dpath);
         ESP_LOGE(TAG,"ferr: %d.", ferror(fpd));
         ESP_LOGE(TAG,"feof: %d.", feof(fpd));
         fclose(fps);
@@ -129,7 +139,7 @@ bool eeCopyModel(uint8_t dst, uint8_t src){
     size_t br;
     while(0<(br=fread(buff, 1 ,sizeof(buff) ,fps))){
         if(br!=fwrite(buff, 1, br, fpd)){
-            ESP_LOGE(TAG,"Failed to write %d bytes to '%s' .", br, fn);
+            ESP_LOGE(TAG,"Failed to write %d bytes to '%s' .", br, dpath);
             ret=false;
             break;
         }
@@ -138,6 +148,26 @@ bool eeCopyModel(uint8_t dst, uint8_t src){
     fclose(fpd);
     return ret;
 }
+
+bool eeCopyModel(uint8_t dst, char *spath){
+    ESP_LOGI(TAG,"eeCopyModel(%d, %s).", dst, spath);
+    char * fn=makeModPath(dst);
+    return eeCopyModel( fn, spath);
+
+}
+
+bool eeCopyModel(char * dpath, uint8_t src){
+    ESP_LOGI(TAG,"eeCopyModel(%s, %d).", dpath, src);
+    char * fn=makeModPath(src);
+    return eeCopyModel(dpath, fn);
+}
+
+bool eeCopyModel(uint8_t dst, uint8_t src){
+    ESP_LOGI(TAG,"eeCopyModel(%d, %d).", dst, src);
+    char * fn=makeModPath(dst);
+    return eeCopyModel(fn, src);
+}
+
 
 void eeSwapModels(uint8_t id1, uint8_t id2){
     ESP_LOGI(TAG,"eeSwapModels(%d, %d).", id1, id2);
@@ -168,39 +198,46 @@ void eeSwapModels(uint8_t id1, uint8_t id2){
     free(fntmp);
 }
 
-void eeLoadModelName(uint8_t id, char *name){
-    ESP_LOGI(TAG,"Load model %d.", id );
-    memclear(name, sizeof(g_model.header.name));
-    if (id < MAX_MODELS) {
-        char * fn=makeModPath(id);
-        FILE * fp = fopen ( fn, "rb" );
-        if (NULL==fp) { /* Check if the file has been opened */
-            ESP_LOGE(TAG,"Failed to open '%s' .", fn);
-            return;
-        }
-        if(1!=fread((uint8_t*)name, sizeof(g_model.header.name),1,fp)){
-            ESP_LOGE(TAG,"Failed to read model name from '%s' .", fn);
-        }
-        fclose(fp);
-    }
-}
-
-
-size_t fsLoadModelData(uint8_t index, uint8_t *buff, size_t size){
+size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size){
     uint16_t ret=size;
-    ESP_LOGI(TAG,"Load model %d data.", index );
-    char * fn=makeModPath(index);
-    FILE * fp = fopen ( fn, "rb" );
+    ESP_LOGI(TAG,"Load model data from '%s'.", mpath );
+    FILE * fp = fopen ( mpath, "rb" );
     if (NULL==fp) { /* Check if the file has been opened */
-        ESP_LOGE(TAG,"Failed to open '%s'.", fn);
+        ESP_LOGE(TAG,"Failed to open '%s'.", mpath);
+        return 0;
+    }
+    char head[8];
+    if(1!=fread((uint8_t*)head, 8,1,fp)){
+        fclose(fp);
+        ESP_LOGE(TAG,"Failed to read model header from '%s'.", mpath);
+        return 0;
+    }
+    uint8_t version = (uint8_t)head[4];
+    if ((*(uint32_t*)&head[0] != OTX_FOURCC && *(uint32_t*)&head[0] != O9X_FOURCC) || version < FIRST_CONV_EEPROM_VER || version > EEPROM_VER || head[5] != 'M') {
+        fclose(fp);
+        ESP_LOGE(TAG,"Incompatible model header from '%s'.", mpath);
         return 0;
     }
     if(1!=fread((uint8_t*)buff, size,1,fp)){
-        ESP_LOGE(TAG,"Failed to read model data from '%s'.", fn);
+        ESP_LOGE(TAG,"Failed to read model data from '%s'.", mpath);
         ret=0;
     }
     fclose(fp);
     return ret;
+}
+
+size_t fsLoadModelData(uint8_t index, uint8_t *buff, size_t size){
+    ESP_LOGI(TAG,"Load model %d data.", index );
+    char * fn=makeModPath(index);
+    return fsLoadModelData(fn, buff, size); 
+}
+
+void eeLoadModelName(uint8_t id, char *name){
+    ESP_LOGI(TAG,"Load model %d.", id );
+    memclear(name, sizeof(g_model.header.name));
+    if (id < MAX_MODELS) {
+        fsLoadModelData(id,(uint8_t *) name, sizeof(g_model.header.name));
+    }
 }
 
 uint16_t eeLoadModelData(uint8_t index){
@@ -281,3 +318,71 @@ bool eepromOpen(){
     return false;
 }
 
+#if defined(SDCARD)
+
+const pm_char * eeBackupModel(uint8_t i_fileSrc)
+{
+    char * buf = reusableBuffer.modelsel.mainname;
+    FIL archiveFile;
+    UINT written;
+    ESP_LOGI(TAG, "eeBackupModel:i_fileSrc: %d",(int) i_fileSrc);
+    storageCheck(true);
+    if (!sdMounted()) {
+        return STR_NO_SDCARD;
+    }
+
+    // check and create folder here
+    strcpy(buf, STR_MODELS_PATH);
+    ESP_LOGI(TAG, "eeBackupModel:buf: '%s'", buf);
+    const char * error = sdCheckAndCreateDirectory(buf);
+    if (error) {
+        return error;
+    }
+    buf[sizeof(MODELS_PATH)-1] = '/';
+    strcpy(strcat_modelname(&buf[sizeof(MODELS_PATH)], i_fileSrc), STR_MODELS_EXT);
+    ESP_LOGI(TAG, "eeBackupModel:buf: '%s'", buf);
+    if(!eeCopyModel(buf, i_fileSrc)){
+        return STR_SDCARD_ERROR;
+    }
+    return NULL;
+}
+
+const pm_char * eeRestoreModel(uint8_t i_fileDst, char *model_name)
+{
+    char * buf = reusableBuffer.modelsel.mainname;
+    FIL restoreFile;
+    UINT read;
+
+    storageCheck(true);
+
+    if (!sdMounted()) {
+        return STR_NO_SDCARD;
+    }
+
+    strcpy(buf, STR_MODELS_PATH);
+    buf[sizeof(MODELS_PATH)-1] = '/';
+    strcpy(&buf[sizeof(MODELS_PATH)], model_name);
+    strcpy(&buf[strlen(buf)], STR_MODELS_EXT);
+
+    uint8_t tmp;
+    if(0==fsLoadModelData(buf, &tmp, 1)){
+        return STR_INCOMPATIBLE;
+    }
+
+    if (eeModelExists(i_fileDst)) {
+        eeDeleteModel(i_fileDst);
+    }
+    
+    eeLoadModelHeader(i_fileDst, &modelHeaders[i_fileDst]);
+
+#if defined(EEPROM_CONVERSIONS)
+    if (version < EEPROM_VER) {
+        ConvertModel(i_fileDst, version);
+        eeLoadModel(g_eeGeneral.currModel);
+    }
+#endif
+
+    return NULL;
+}
+
+#endif

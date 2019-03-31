@@ -30,7 +30,7 @@ else()
 endif()
 if(SDCARD)
   add_definitions(-DSDCARD -DVOICE)
-  set(SRC ${SRC} sdcard.cpp rtc.cpp )
+  set(SRC ${SRC} rtc.cpp )
 #  set(SRC ${SRC} sdcard.cpp rtc.cpp logs.cpp)
 endif()
 

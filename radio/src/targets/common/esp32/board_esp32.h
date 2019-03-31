@@ -8,11 +8,14 @@ void espLogI(const char * format, ...);
 #define eeFlush()
 #define DISPLAY_PROGRESS_BAR(x)
 
+size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size);
 size_t fsLoadModelData(uint8_t index, uint8_t *buff, size_t size);
 size_t fsWriteModelData(uint8_t index, uint8_t *buff, size_t size);
 bool eepromOpen();
 bool eeLoadGeneral();
 void eeDeleteModel(uint8_t index);
+bool eeCopyModel(char * dpath, uint8_t src);
+bool eeCopyModel(uint8_t dst, char *spath);
 bool eeCopyModel(uint8_t dst, uint8_t src);
 void eeSwapModels(uint8_t id1, uint8_t id2);
 uint16_t eeLoadModelData(uint8_t index);
