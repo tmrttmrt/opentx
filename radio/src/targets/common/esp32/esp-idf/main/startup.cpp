@@ -17,7 +17,7 @@
 
 
 
-#define MENUS_STACK_SIZE       0xA00
+#define MENUS_STACK_SIZE       0xB00
 #define MIXER_STACK_SIZE       0x800
 #define AUDIO_STACK_SIZE       0x800
 #define AUDIO_PLAY_STACK_SIZE  0xA00

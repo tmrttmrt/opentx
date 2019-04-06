@@ -20,10 +20,12 @@
 
 #include <stdint.h>
 #include <errno.h>
+#include "esp_log.h"
+#define HASASSERT
 #include "opentx.h"
-#undef DIR
 
 static const char *TAG = "sdcard.cpp";
+
 
 bool sdCardFormat(){
     return false;
@@ -378,32 +380,10 @@ bool sdListFiles(const char * path, const char * extension, const uint8_t maxlen
 bool isCwdAtRoot()
 {
   char path[10];
-  if (f_getcwd(path, sizeof(path)-1) == FR_OK) {
+  if (f_getcwd(path, sizeof(path)-1) != NULL) {
     return (strcasecmp("/", path) == 0);
   }
   return false;
-}
-
-#define DIR FF_DIR
-/*
-  Wrapper around the f_readdir() function which
-  also returns ".." entry for sub-dirs. (FatFS 0.12 does
-  not return ".", ".." dirs anymore)
-*/
-FRESULT sdReadDir(DIR * dir, FILINFO * fno, bool & firstTime)
-{
-  FRESULT res;
-  if (firstTime && !isCwdAtRoot()) {
-    // fake parent directory entry
-    strcpy(fno->fname, "..");
-    fno->fattrib = AM_DIR;
-    res = FR_OK;
-  }
-  else {
-    res = f_readdir(dir, fno);                   /* Read a directory item */
-  }
-  firstTime = false;
-  return res;
 }
 
 #if defined(CPUARM) && defined(SDCARD)
@@ -458,49 +438,3 @@ const char * sdCopyFile(const char * srcFilename, const char * srcDir, const cha
   return sdCopyFile(srcPath, destPath);
 }
 #endif // defined(CPUARM) && defined(SDCARD)
-
-#if !defined(CPUESP32)
-#if (!defined(SIMU) || defined(SIMU_DISKIO))
-uint32_t sdGetNoSectors()
-{
-  static DWORD noSectors = 0;
-  if (noSectors == 0 ) {
-    disk_ioctl(0, GET_SECTOR_COUNT, &noSectors);
-  }
-  return noSectors;
-}
-
-uint32_t sdGetSize()
-{
-  return (sdGetNoSectors() / 1000000) * BLOCK_SIZE;
-}
-
-uint32_t sdGetFreeSectors()
-{
-  DWORD nofree;
-  FATFS * fat;
-  if (f_getfree("", &nofree, &fat) != FR_OK) {
-    return 0;
-  }
-  return nofree * fat->csize;
-}
-
-#else  // #if !defined(SIMU) || defined(SIMU_DISKIO)
-
-uint32_t sdGetNoSectors()
-{
-  return 0;
-}
-
-uint32_t sdGetSize()
-{
-  return 0;
-}
-
-uint32_t sdGetFreeSectors()
-{
-  return 10;
-}
-
-#endif  // #if !defined(SIMU) || defined(SIMU_DISKIO)
-#endif //#if !defined(CPUESP32)

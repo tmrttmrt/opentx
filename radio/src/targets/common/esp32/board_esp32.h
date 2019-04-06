@@ -1,6 +1,6 @@
 #ifndef _BOARD_ESP32_H_
 #define _BOARD_ESP32_H_
-
+#include "esp-idf/components/drivers/fs_wrappers.h"
 #define strcpy_P strcpy
 
 void espLogI(const char * format, ...);
@@ -36,7 +36,6 @@ uint32_t sdGetSpeed(void);
 uint32_t sdMounted(void);
 const char * eeBackupModel(uint8_t i_fileSrc);
 const char * eeRestoreModel(uint8_t i_fileDst, char *model_name);
-
 #endif
 
 

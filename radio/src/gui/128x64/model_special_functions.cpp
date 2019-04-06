@@ -145,7 +145,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
 {
   int8_t sub = menuVerticalPosition - HEADER_LINE;
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   uint8_t eeFlags = (functions == g_model.customFn) ? EE_MODEL : EE_GENERAL;
 #elif !defined(CPUM64) || defined(AUTOSWITCH)
   uint8_t eeFlags = EE_MODEL;
@@ -193,7 +193,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
       uint8_t active = (attr && (s_editMode>0 || p1valdiff));
       switch (j) {
         case 0:
-#if defined(CPUARM)
+#if defined(CPUARM) 
           if (sub==k && menuHorizontalPosition < 1 && CFN_SWITCH(cfn) == SWSRC_NONE) {
             drawSwitch(MODEL_SPECIAL_FUNC_1ST_COLUMN, y, CFN_SWITCH(cfn), attr | INVERS | ((functionsContext->activeSwitches & ((MASK_CFN_TYPE)1 << k)) ? BOLD : 0));
             if (active) CHECK_INCDEC_SWITCH(event, CFN_SWITCH(cfn), SWSRC_FIRST, SWSRC_LAST, eeFlags, isSwitchAvailableInCustomFunctions);
@@ -206,7 +206,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
           drawSwitch(MODEL_SPECIAL_FUNC_1ST_COLUMN, y, CFN_SWITCH(cfn), attr | ((functionsContext->activeSwitches & ((MASK_CFN_TYPE)1 << k)) ? BOLD : 0));
           if (active || AUTOSWITCH_ENTER_LONG()) CHECK_INCDEC_SWITCH(event, CFN_SWITCH(cfn), SWSRC_FIRST, SWSRC_LAST, eeFlags, isSwitchAvailableInCustomFunctions);
 #endif //CPUARM
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
           if (func == FUNC_OVERRIDE_CHANNEL && functions != g_model.customFn) {
             func = CFN_FUNC(cfn) = func+1;
           }
@@ -244,7 +244,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
 #endif
           if (func == FUNC_TRAINER) {
             maxParam = 4;
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
             drawSource(MODEL_SPECIAL_FUNC_3RD_COLUMN, y, CFN_CH_INDEX(cfn)==0 ? 0 : MIXSRC_Rud+CFN_CH_INDEX(cfn)-1, attr);
 #else
             drawSource(MODEL_SPECIAL_FUNC_3RD_COLUMN, y, MIXSRC_Rud+CFN_CH_INDEX(cfn)-1, attr);
@@ -254,7 +254,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
           else if (func == FUNC_ADJUST_GVAR) {
             maxParam = MAX_GVARS-1;
             drawStringWithIndex(lcdNextPos, y, STR_GV, CFN_GVAR_INDEX(cfn)+1, attr);
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
             if (active) CFN_GVAR_INDEX(cfn) = checkIncDec(event, CFN_GVAR_INDEX(cfn), 0, maxParam, eeFlags);
 #else
             if (active) CHECK_INCDEC_MODELVAR_ZERO(event, CFN_GVAR_INDEX(cfn), maxParam);
@@ -262,7 +262,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
             break;
           }
 #endif // GVARS
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
           else if (func == FUNC_SET_TIMER) {
             maxParam = MAX_TIMERS-1;
             lcdDrawTextAtIndex(lcdNextPos, y, STR_VFSWRESET, CFN_TIMER_INDEX(cfn), attr);
@@ -281,7 +281,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
         {
           INCDEC_DECLARE_VARS(eeFlags);
           int16_t val_displayed = CFN_PARAM(cfn);
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
           int16_t val_min = 0;
           int16_t val_max = 255;
 #else
@@ -299,6 +299,8 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
               TelemetrySensor * sensor = & g_model.telemetrySensors[param-FUNC_RESET_PARAM_FIRST_TELEM];
               lcdDrawSizedText(MODEL_SPECIAL_FUNC_3RD_COLUMN, y, sensor->label, TELEM_LABEL_LEN, attr|ZCHAR);
             }
+#endif
+#if defined (CPUARM) || defined(CPUESP32)
             if (active) INCDEC_ENABLE_CHECK(functionsContext == &globalFunctionsContext ? isSourceAvailableInGlobalResetSpecialFunction : isSourceAvailableInResetSpecialFunction);
 #else
             val_max = FUNC_RESET_PARAM_LAST;
@@ -428,7 +430,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
             switch (CFN_GVAR_MODE(cfn)) {
               case FUNC_ADJUST_GVAR_CONSTANT:
                 val_displayed = (int16_t)CFN_PARAM(cfn);
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
                 getMixSrcRange(CFN_GVAR_INDEX(cfn) + MIXSRC_FIRST_GVAR, val_min, val_max);
                 drawGVarValue(MODEL_SPECIAL_FUNC_3RD_COLUMN, y, CFN_GVAR_INDEX(cfn), val_displayed, attr|LEFT);
 #else
@@ -449,7 +451,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
                 drawStringWithIndex(MODEL_SPECIAL_FUNC_3RD_COLUMN, y, STR_GV, val_displayed+1, attr);
                 break;
               default: // FUNC_ADJUST_GVAR_INC
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
                 getMixSrcRange(CFN_GVAR_INDEX(cfn) + MIXSRC_FIRST_GVAR, val_min, val_max);
                 lcdDrawText(MODEL_SPECIAL_FUNC_3RD_COLUMN, y, (val_displayed < 0 ? "-= " : "+= "), attr);
                 drawGVarValue(lcdNextPos, y, CFN_GVAR_INDEX(cfn), abs(val_displayed), attr|LEFT);
@@ -465,7 +467,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
               s_editMode = !s_editMode;
               active = true;
               CFN_GVAR_MODE(cfn) += 1;
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
               CFN_GVAR_MODE(cfn) &= 0x03;
 #endif
               val_displayed = 0;
@@ -502,7 +504,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
         case 4:
           if (HAS_ENABLE_PARAM(func)) {
             drawCheckBox(MODEL_SPECIAL_FUNC_4TH_COLUMN_ONOFF, y, CFN_ACTIVE(cfn), attr);
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
             if (active) CFN_ACTIVE(cfn) = checkIncDec(event, CFN_ACTIVE(cfn), 0, 1, eeFlags);
 #else
             if (active) CHECK_INCDEC_MODELVAR_ZERO(event, CFN_ACTIVE(cfn), 1);
@@ -512,7 +514,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
             if (CFN_PLAY_REPEAT(cfn) == 0) {
               lcdDrawChar(MODEL_SPECIAL_FUNC_4TH_COLUMN_ONOFF+3, y, '-', attr);
             }
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
             else if (CFN_PLAY_REPEAT(cfn) == CFN_PLAY_REPEAT_NOSTART) {
               lcdDrawText(MODEL_SPECIAL_FUNC_4TH_COLUMN_ONOFF+1, y, "!-", attr);
             }
@@ -520,7 +522,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
             else {
               lcdDrawNumber(MODEL_SPECIAL_FUNC_4TH_COLUMN+2+FW, y, CFN_PLAY_REPEAT(cfn)*CFN_PLAY_REPEAT_MUL, RIGHT | attr);
             }
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
             if (active) CFN_PLAY_REPEAT(cfn) = checkIncDec(event, CFN_PLAY_REPEAT(cfn)==CFN_PLAY_REPEAT_NOSTART?-1:CFN_PLAY_REPEAT(cfn), -1, 60/CFN_PLAY_REPEAT_MUL, eeFlags);
 #else
             if (active) CHECK_INCDEC_MODELVAR_ZERO(event, CFN_PLAY_REPEAT(cfn), 60/CFN_PLAY_REPEAT_MUL);

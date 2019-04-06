@@ -118,6 +118,9 @@
   #define TIMEBLINK                    0x1000
   #define TIMEHOUR                     0x2000
   #define STREXPANDED                  0x4000
+#elif defined(CPUESP32)
+  #define TIMEHOUR                     0x2000
+  #define STREXPANDED                  0x4000
 #else
   #define STREXPANDED                  0x00
 #endif

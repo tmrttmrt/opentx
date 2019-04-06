@@ -34,10 +34,16 @@
 #include "esp_attr.h"
 #include "sdkconfig.h"
 #if defined(SDCARD)
-#include "esp_vfs.h"
-#include "esp_vfs_fat.h"
-#define HASASSERT
-#define DIR FF_DIR
+#include <stdio.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <fcntl.h>
+#include <errno.h>
+#define f_getcwd(lfn, _MAX_LFN) wr_getcwd(lfn, _MAX_LFN)
+#define f_unlink(lfn) unlink(lfn)
+#define f_chdir(lfn) wr_chdir(lfn)
+#define f_rename(old, new) rename(old, new)
+#define TCHAR char
 #endif
 #else
 #define IRAM_ATTR
@@ -1070,7 +1076,7 @@ extern uint16_t           BandGap;
 
 int expo(int x, int k);
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined (CPUESP32)
 inline void getMixSrcRange(const int source, int16_t & valMin, int16_t & valMax, LcdFlags * flags = 0)
 {
   if (source >= MIXSRC_FIRST_TRIM && source <= MIXSRC_LAST_TRIM) {

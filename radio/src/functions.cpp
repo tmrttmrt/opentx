@@ -224,7 +224,7 @@ void playCustomFunctionFile(const CustomFunctionData * sd, uint8_t id)
 }
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 bool isRepeatDelayElapsed(const CustomFunctionData * functions, CustomFunctionsContext & functionsContext, uint8_t index)
 {
   const CustomFunctionData * cfn = &functions[index];

@@ -115,7 +115,7 @@ void display5posSlider(coord_t x, coord_t y, uint8_t value, uint8_t attr)
 #endif
 
 
-#if defined(GVARS) && defined(CPUARM)
+#if defined(GVARS) && (defined(CPUARM) || defined(CPUESP32))
 void drawGVarValue(coord_t x, coord_t y, uint8_t gvar, gvar_t value, LcdFlags flags)
 {
   uint8_t prec = g_model.gvars[gvar].prec;

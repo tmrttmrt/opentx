@@ -901,6 +901,14 @@ enum MixSources {
   MIXSRC_TIMER3,                            LUA_EXPORT("timer3", "Timer 3 value [seconds]")
   MIXSRC_LAST_TIMER = MIXSRC_TIMER3,
 #endif
+#if defined(CPUESP32)
+  MIXSRC_TX_VOLTAGE,                        LUA_EXPORT("tx-voltage", "Transmitter battery voltage [volts]")
+  MIXSRC_TX_TIME,                           LUA_EXPORT("clock", "RTC clock [minutes from midnight]")
+  MIXSRC_FIRST_TIMER,
+  MIXSRC_TIMER1 = MIXSRC_FIRST_TIMER,       LUA_EXPORT("timer1", "Timer 1 value [seconds]")
+  MIXSRC_TIMER2,                            LUA_EXPORT("timer2", "Timer 2 value [seconds]")
+  MIXSRC_LAST_TIMER = MIXSRC_TIMER2,
+#endif
 
   MIXSRC_FIRST_TELEM,
 #if defined(CPUARM)
@@ -929,7 +937,7 @@ enum Functions {
   FUNC_TRAINER,
   FUNC_INSTANT_TRIM,
   FUNC_RESET,
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   FUNC_SET_TIMER,
 #endif
   FUNC_ADJUST_GVAR,

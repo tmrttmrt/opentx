@@ -95,8 +95,10 @@ const char RADIO_SETTINGS_PATH[] = RADIO_PATH "/radio.bin";
   filename[sizeof(path)+sizeof(var)] = '\0'; \
   strcat(&filename[sizeof(path)], ext)
 
+#if !defined(CPUESP32)
 extern FATFS g_FATFS_Obj;
 extern FIL g_oLogFile;
+#endif
 
 extern uint8_t logDelay;
 void logsInit();
@@ -109,7 +111,7 @@ uint32_t sdGetSize();
 uint32_t sdGetFreeSectors();
 const char * sdCheckAndCreateDirectory(const char * path);
 
-#if !defined(BOOT)
+#if !defined(BOOT) && !defined(CPUESP32)
 inline const pm_char * SDCARD_ERROR(FRESULT result)
 {
   if (result == FR_NOT_READY)
@@ -164,6 +166,7 @@ const char * sdCopyFile(const char * srcFilename, const char * srcDir, const cha
 bool sdListFiles(const char * path, const char * extension, const uint8_t maxlen, const char * selection, uint8_t flags=0);
 
 bool isCwdAtRoot();
+#if !defined(CPUESP32)
 FRESULT sdReadDir(DIR * dir, FILINFO * fno, bool & firstTime);
-
+#endif
 #endif // _SDCARD_H_

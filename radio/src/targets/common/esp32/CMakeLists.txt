@@ -34,6 +34,12 @@ if(SDCARD)
 #  set(SRC ${SRC} sdcard.cpp rtc.cpp logs.cpp)
 endif()
 
+if(GVARS)
+  set(GUI_SRC
+    ${GUI_SRC}
+    ${GVAR_SCREEN}
+    )
+endif()
 
 if(GRAPHICS)
   add_definitions(-DGRAPHICS)

@@ -259,33 +259,33 @@ void referenceSystemAudioFiles()
 {
   static_assert(sizeof(audioFilenames)==AU_SPECIAL_SOUND_FIRST*sizeof(char *), "Invalid audioFilenames size");
   char path[AUDIO_FILENAME_MAXLEN+1];
-  FILINFO fno;
-  DIR dir;
+  struct dirent *de;
+  DIR *dir;
 
   sdAvailableSystemAudioFiles.reset();
 
   char * filename = strAppendSystemAudioPath(path);
   *(filename-1) = '\0';
 
-  FRESULT res = f_opendir(&dir, path);        /* Open the directory */
-  if (res == FR_OK) {
+  dir = opendir(path);        /* Open the directory */
+  if (NULL != dir) {
     for (;;) {
-      res = f_readdir(&dir, &fno);                   /* Read a directory item */
-      if (res != FR_OK || fno.fname[0] == 0) break;  /* Break on error or end of dir */
-      uint8_t len = strlen(fno.fname);
+      de = readdir(dir);                   /* Read a directory item */
+      if (NULL == de) break;  /* Break on error or end of dir */
+      uint8_t len = strlen(de->d_name);
 
       // Eliminates directories / non wav files
-      if (len < 5 || strcasecmp(fno.fname+len-4, SOUNDS_EXT) || (fno.fattrib & AM_DIR)) continue;
+      if (len < 5 || strcasecmp(de->d_name+len-4, SOUNDS_EXT) || (de->d_type != DT_REG)) continue;
 
       for (int i=0; i<AU_SPECIAL_SOUND_FIRST; i++) {
         getSystemAudioFile(path, i);
-        if (!strcasecmp(filename, fno.fname)) {
+        if (!strcasecmp(filename, de->d_name)) {
           sdAvailableSystemAudioFiles.setBit(i);
           break;
         }
       }
     }
-    f_closedir(&dir);
+    closedir(dir);
   }
 }
 
@@ -364,8 +364,8 @@ void getLogicalSwitchAudioFile(char * filename, int index, unsigned int event)
 void referenceModelAudioFiles()
 {
   char path[AUDIO_FILENAME_MAXLEN+1];
-  FILINFO fno;
-  DIR dir;
+  struct dirent *de;
+  DIR *dir;
 
   sdAvailablePhaseAudioFiles.reset();
   sdAvailableSwitchAudioFiles.reset();
@@ -374,24 +374,24 @@ void referenceModelAudioFiles()
   char * filename = getModelAudioPath(path);
   *(filename-1) = '\0';
 
-  FRESULT res = f_opendir(&dir, path);        /* Open the directory */
-  if (res == FR_OK) {
+  dir = opendir(path);        /* Open the directory */
+  if (NULL!=dir) {
     for (;;) {
-      res = f_readdir(&dir, &fno);                   /* Read a directory item */
-      if (res != FR_OK || fno.fname[0] == 0) break;  /* Break on error or end of dir */
-      uint8_t len = strlen(fno.fname);
+      de = readdir(dir);                   /* Read a directory item */
+      if (NULL == de) break;  /* Break on error or end of dir */
+      uint8_t len = strlen(de->d_name);
       bool found = false;
 
       // Eliminates directories / non wav files
-      if (len < 5 || strcasecmp(fno.fname+len-4, SOUNDS_EXT) || (fno.fattrib & AM_DIR)) continue;
-      TRACE("referenceModelAudioFiles(): using file: %s", fno.fname);
+      if (len < 5 || strcasecmp(de->d_name+len-4, SOUNDS_EXT) || (de->d_type != DT_REG)) continue;
+      TRACE("referenceModelAudioFiles(): using file: %s", de->d_name);
 
       // Phases Audio Files <phasename>-[on|off].wav
       for (int i=0; i<MAX_FLIGHT_MODES && !found; i++) {
         for (int event=0; event<2; event++) {
           getPhaseAudioFile(path, i, event);
-          // TRACE("referenceModelAudioFiles(): searching for %s in %s", filename, fno.fname);
-          if (!strcasecmp(filename, fno.fname)) {
+          // TRACE("referenceModelAudioFiles(): searching for %s in %s", filename, de->d_name);
+          if (!strcasecmp(filename, de->d_name)) {
             sdAvailablePhaseAudioFiles.setBit(INDEX_PHASE_AUDIO_FILE(i, event));
             found = true;
             TRACE("\tfound: %s", filename);
@@ -403,8 +403,8 @@ void referenceModelAudioFiles()
       // Switches Audio Files <switchname>-[up|mid|down].wav
       for (int i=SWSRC_FIRST_SWITCH; i<=SWSRC_LAST_SWITCH+NUM_XPOTS*XPOTS_MULTIPOS_COUNT && !found; i++) {
         getSwitchAudioFile(path, i);
-        // TRACE("referenceModelAudioFiles(): searching for %s in %s (%d)", path, fno.fname, i);
-        if (!strcasecmp(filename, fno.fname)) {
+        // TRACE("referenceModelAudioFiles(): searching for %s in %s (%d)", path, de->d_name, i);
+        if (!strcasecmp(filename, de->d_name)) {
           sdAvailableSwitchAudioFiles.setBit(i-SWSRC_FIRST_SWITCH);
           found = true;
           TRACE("\tfound: %s", filename);
@@ -415,8 +415,8 @@ void referenceModelAudioFiles()
       for (int i=0; i<MAX_LOGICAL_SWITCHES && !found; i++) {
         for (int event=0; event<2; event++) {
           getLogicalSwitchAudioFile(path, i, event);
-          // TRACE("referenceModelAudioFiles(): searching for %s in %s", filename, fno.fname);
-          if (!strcasecmp(filename, fno.fname)) {
+          // TRACE("referenceModelAudioFiles(): searching for %s in %s", filename, de->d_name);
+          if (!strcasecmp(filename, de->d_name)) {
             sdAvailableLogicalSwitchAudioFiles.setBit(INDEX_LOGICAL_SWITCH_AUDIO_FILE(i, event));
             found = true;
             TRACE("\tfound: %s", filename);
@@ -425,7 +425,7 @@ void referenceModelAudioFiles()
         }
       }
     }
-    f_closedir(&dir);
+    closedir(dir);
   }
 }
 
@@ -545,18 +545,17 @@ uint8_t wavBuffer[AUDIO_BUFFER_SIZE*2];
 
 int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
 {
-  FRESULT result = FR_OK;
-  UINT read = 0;
+  ssize_t rb = 0;
 
   if (fragment.file[1]) {
-    result = f_open(&state.file, fragment.file, FA_OPEN_EXISTING | FA_READ);
+    state.fd = open(fragment.file, O_RDONLY);
     fragment.file[1] = 0;
-    if (result == FR_OK) {
-      result = f_read(&state.file, wavBuffer, RIFF_CHUNK_SIZE+8, &read);
-      if (result == FR_OK && read == RIFF_CHUNK_SIZE+8 && !memcmp(wavBuffer, "RIFF", 4) && !memcmp(wavBuffer+8, "WAVEfmt ", 8)) {
+    if ( -1 != state.fd) {
+      rb = read(state.fd, wavBuffer, RIFF_CHUNK_SIZE+8);
+      if (rb != -1 && rb == RIFF_CHUNK_SIZE+8 && !memcmp(wavBuffer, "RIFF", 4) && !memcmp(wavBuffer+8, "WAVEfmt ", 8)) {
         uint32_t size = *((uint32_t *)(wavBuffer+16));
-        result = (size < 256 ? f_read(&state.file, wavBuffer, size+8, &read) : FR_DENIED);
-        if (result == FR_OK && read == size+8) {
+        rb = (size < 256 ? read(state.fd, wavBuffer, size+8) : -1);
+        if (rb == size+8) {
           state.codec = ((uint16_t *)wavBuffer)[0];
           state.freq = ((uint16_t *)wavBuffer)[2];
           uint32_t *wavSamplesPtr = (uint32_t *)(wavBuffer + size);
@@ -564,63 +563,61 @@ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
           if (state.freq != 0 && state.freq * (AUDIO_SAMPLE_RATE / state.freq) == AUDIO_SAMPLE_RATE) {
             state.resampleRatio = (AUDIO_SAMPLE_RATE / state.freq);
             state.readSize = (state.codec == CODEC_ID_PCM_S16LE ? 2*AUDIO_BUFFER_SIZE : AUDIO_BUFFER_SIZE) / state.resampleRatio;
+          } else {
+              rb=-1;
           }
-          else {
-            result = FR_DENIED;
-          }
-          while (result == FR_OK && memcmp(wavSamplesPtr, "data", 4) != 0) {
-            result = f_lseek(&state.file, f_tell(&state.file)+size);
-            if (result == FR_OK) {
-              result = f_read(&state.file, wavBuffer, 8, &read);
-              if (read != 8) result = FR_DENIED;
+          off_t pos=rb;
+          while (pos != -1 && memcmp(wavSamplesPtr, "data", 4) != 0) {
+            pos=lseek(state.fd,size,SEEK_CUR);
+            if (pos != -1) {
+              rb = read(state.fd, wavBuffer, 8);
+              if (rb != 8) pos = -1;
               wavSamplesPtr = (uint32_t *)wavBuffer;
               size = wavSamplesPtr[1];
             }
           }
           state.size = size;
-        }
-        else {
-          result = FR_DENIED;
+        } else {
+            rb = -1;
         }
       }
-      else {
-        result = FR_DENIED;
-      }
+    } else {
+        rb = -1;
     }
   }
 
-  if (result == FR_OK) {
-    read = 0;
-    result = f_read(&state.file, wavBuffer, state.readSize, &read);
-    if (result == FR_OK) {
-      if (read > state.size) {
-        read = state.size;
+  if (rb != -1) {
+    rb = 0;
+    rb = read(state.fd, wavBuffer, state.readSize);
+    if (rb != -1) {
+      if (rb > state.size) {
+        rb = state.size;
       }
-      state.size -= read;
+      state.size -= rb;
 
-      if (read != state.readSize) {
-        f_close(&state.file);
+      if (rb != state.readSize) {
+        close(state.fd);
         fragment.clear();
       }
 
       audio_data_t * samples = buffer->data;
       if (state.codec == CODEC_ID_PCM_S16LE) {
-        read /= 2;
-        for (uint32_t i=0; i<read; i++) {
+        rb /= 2;
+        for (uint32_t i=0; i<rb; i++) {
           for (uint8_t j=0; j<state.resampleRatio; j++) {
             mixSample(samples++, ((int16_t *)wavBuffer)[i], fade+2-volume);
           }
         }
       }
       else if (state.codec == CODEC_ID_PCM_ALAW) {
-        for (uint32_t i=0; i<read; i++) {
+        for (uint32_t i=0; i<rb; i++) {
           for (uint8_t j=0; j<state.resampleRatio; j++) {
             mixSample(samples++, alawTable[wavBuffer[i]], fade+2-volume);
           }
         }
       }
       else if (state.codec == CODEC_ID_PCM_MULAW) {
-        for (uint32_t i=0; i<read; i++) {
+        for (uint32_t i=0; i<rb; i++) {
           for (uint8_t j=0; j<state.resampleRatio; j++) {
             mixSample(samples++, ulawTable[wavBuffer[i]], fade+2-volume);
           }
@@ -631,7 +628,7 @@ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
     }
   }
 
-  if (result != FR_OK) {
+  if (rb == -1) {
     clear();
   }
   return 0;

@@ -32,7 +32,7 @@
   #define CASE_EVT_ROTARY_RIGHT
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 typedef bool (*IsValueAvailable)(int);
 
 int circularIncDec(int current, int inc, int min, int max, IsValueAvailable isValueAvailable=NULL);
@@ -100,6 +100,10 @@ void drawGPSSensorValue(coord_t x, coord_t y, TelemetryItem & telemetryItem, Lcd
 void drawSensorCustomValue(coord_t x, coord_t y, uint8_t sensor, int32_t value, LcdFlags flags=0);
 void drawSourceCustomValue(coord_t x, coord_t y, source_t channel, int32_t val, LcdFlags flags=0);
 void drawSourceValue(coord_t x, coord_t y, source_t channel, LcdFlags flags=0);
+#endif
+
+#if defined(CPUESP32)
+void drawValueWithUnit(coord_t x, coord_t y, lcdint_t val, uint8_t unit, LcdFlags att);
 #endif
 
 void drawCurve(coord_t offset=0);

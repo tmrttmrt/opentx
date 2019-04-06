@@ -219,7 +219,8 @@ char * getCurveString(char * dest, int idx)
 
   return dest;
 }
-
+#endif
+#if (defined(CPUARM) || defined(CPUESP32)) && !defined(BOOT)
 char * getGVarString(char * dest, int idx)
 {
   char * s = dest;
@@ -235,7 +236,8 @@ char * getGVarString(char * dest, int idx)
 
   return dest;
 }
-
+#endif
+#if defined(CPUARM) && !defined(BOOT)
 char * getSwitchString(char * dest, swsrc_t idx)
 {
   if (idx == SWSRC_NONE) {
