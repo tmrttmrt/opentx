@@ -272,7 +272,7 @@
   #define IS_SLAVE_TRAINER()           (g_model.trainerMode == TRAINER_MODE_SLAVE)
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   #define MASTER_VOLUME
 #endif
 
@@ -1105,6 +1105,7 @@ inline void getMixSrcRange(const int source, int16_t & valMin, int16_t & valMax,
       *flags |= PREC1;
   }
 #endif
+#if !defined(CPUESP32)
   else if (source == MIXSRC_TX_VOLTAGE) {
     valMax =  255;
     valMin = 0;
@@ -1121,6 +1122,7 @@ inline void getMixSrcRange(const int source, int16_t & valMin, int16_t & valMax,
     if (flags)
       *flags |= TIMEHOUR;
   }
+#endif
   else {
     valMax = 30000;
     valMin = -valMax;
@@ -1309,7 +1311,7 @@ enum FunctionsActive {
 #define VARIO_REPEAT_ZERO      500/*ms*/
 #define VARIO_REPEAT_MAX       80/*ms*/
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 extern CustomFunctionsContext modelFunctionsContext;
 extern CustomFunctionsContext globalFunctionsContext;
 inline bool isFunctionActive(uint8_t func)
@@ -1476,11 +1478,11 @@ void setMFP();
 void clearMFP();
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 extern uint8_t requiredSpeakerVolume;
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 enum MainRequest {
   REQUEST_SCREENSHOT,
   REQUEST_FLIGHT_RESET,

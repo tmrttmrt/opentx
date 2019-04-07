@@ -61,8 +61,8 @@ typedef enum {
 #define FTP_CMD_TIMEOUT_MS      (FTPSERVER_TIMEOUT*1000)
 
 extern const char *FTP_TAG;
-extern char ftp_user[FTP_USER_PASS_LEN_MAX + 1];
-extern char ftp_pass[FTP_USER_PASS_LEN_MAX + 1];
+extern char ftp_user[];
+extern char ftp_pass[];
 extern uint32_t ftp_stack_size;
 extern QueueHandle_t ftp_mutex;
 extern int ftp_buff_size;

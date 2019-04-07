@@ -332,8 +332,6 @@ bool eepromOpen(){
 const pm_char * eeBackupModel(uint8_t i_fileSrc)
 {
     char * buf = reusableBuffer.modelsel.mainname;
-    FIL archiveFile;
-    UINT written;
     ESP_LOGI(TAG, "eeBackupModel:i_fileSrc: %d",(int) i_fileSrc);
     storageCheck(true);
     if (!sdMounted()) {
@@ -359,9 +357,6 @@ const pm_char * eeBackupModel(uint8_t i_fileSrc)
 const pm_char * eeRestoreModel(uint8_t i_fileDst, char *model_name)
 {
     char * buf = reusableBuffer.modelsel.mainname;
-    FIL restoreFile;
-    UINT read;
-
     storageCheck(true);
 
     if (!sdMounted()) {

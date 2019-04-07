@@ -901,15 +901,6 @@ enum MixSources {
   MIXSRC_TIMER3,                            LUA_EXPORT("timer3", "Timer 3 value [seconds]")
   MIXSRC_LAST_TIMER = MIXSRC_TIMER3,
 #endif
-#if defined(CPUESP32)
-  MIXSRC_TX_VOLTAGE,                        LUA_EXPORT("tx-voltage", "Transmitter battery voltage [volts]")
-  MIXSRC_TX_TIME,                           LUA_EXPORT("clock", "RTC clock [minutes from midnight]")
-  MIXSRC_FIRST_TIMER,
-  MIXSRC_TIMER1 = MIXSRC_FIRST_TIMER,       LUA_EXPORT("timer1", "Timer 1 value [seconds]")
-  MIXSRC_TIMER2,                            LUA_EXPORT("timer2", "Timer 2 value [seconds]")
-  MIXSRC_LAST_TIMER = MIXSRC_TIMER2,
-#endif
-
   MIXSRC_FIRST_TELEM,
 #if defined(CPUARM)
   MIXSRC_LAST_TELEM = MIXSRC_FIRST_TELEM+3*MAX_TELEMETRY_SENSORS-1
@@ -937,7 +928,7 @@ enum Functions {
   FUNC_TRAINER,
   FUNC_INSTANT_TRIM,
   FUNC_RESET,
-#if defined(CPUARM) || defined(CPUESP32)
+#if defined(CPUARM)
   FUNC_SET_TIMER,
 #endif
   FUNC_ADJUST_GVAR,
@@ -954,7 +945,7 @@ enum Functions {
   FUNC_FIRST_WITHOUT_ENABLE,
   FUNC_PLAY_SOUND = FUNC_FIRST_WITHOUT_ENABLE,
   FUNC_PLAY_TRACK,
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
   FUNC_PLAY_BOTH,
 #endif
   FUNC_PLAY_VALUE,
@@ -962,6 +953,8 @@ enum Functions {
   FUNC_RESERVE4,
   FUNC_PLAY_SCRIPT,
   FUNC_RESERVE5,
+#endif
+#if defined(CPUARM) || defined(CPUESP32)
   FUNC_BACKGND_MUSIC,
   FUNC_BACKGND_MUSIC_PAUSE,
 #endif

@@ -82,15 +82,24 @@ uint8_t switchState(uint8_t index);
 #define LCD_CONTRAST_MIN               10
 #define LCD_CONTRAST_MAX               45
 #define LCD_CONTRAST_DEFAULT           25
+#define PIN_NUM_MISO -1
+#define PIN_NUM_MOSI GPIO_NUM_12
+#define PIN_NUM_CLK  GPIO_NUM_14
+#define PIN_NUM_CS   GPIO_NUM_13
+#define PIN_NUM_DC   GPIO_NUM_27
+#define PIN_NUM_RST  GPIO_NUM_0
+#define PIN_NUM_BCKL GPIO_NUM_2
 void lcdRefresh(void);
 #define lcdRefreshWait()
 void lcdSetRefVolt(unsigned char val);
 void lcdSetContrast(void);
 void lcdInit(void);
 #define lcdOff()
+#define LCD_LOCK()
+#define LCD_UNLOCK()
 
 // DBLKeys driver
-#define KEYS_PRESSED()            0//(~PINL)
+#define KEYS_PRESSED()            0
 
 // Power driver (none)
 #define pwrCheck()                 (e_power_on)
@@ -189,7 +198,6 @@ enum CalibratedAnalogs {
 #define speakerOff()              
 #define VOLUME_LEVEL_MAX  23
 #define VOLUME_LEVEL_DEF  12
-#define setScaledVolume(v)
 #endif
 
 // Battery driver

@@ -30,18 +30,6 @@
 #define HASASSERT
 #include "opentx.h"
 
-#define LCD_LOCK()
-#define LCD_UNLOCK()
-
-#define PIN_NUM_MISO -1
-#define PIN_NUM_MOSI GPIO_NUM_12
-#define PIN_NUM_CLK  GPIO_NUM_14
-#define PIN_NUM_CS   GPIO_NUM_13
-
-#define PIN_NUM_DC   GPIO_NUM_27
-#define PIN_NUM_RST  GPIO_NUM_0
-#define PIN_NUM_BCKL GPIO_NUM_2
-
 static const char *TAG = "lcd_driver.cpp";
 spi_device_handle_t spi;
 

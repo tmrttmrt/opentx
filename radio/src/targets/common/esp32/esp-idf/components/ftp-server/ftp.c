@@ -180,7 +180,6 @@ typedef enum {
 
 static uint8_t ftp_stop = 0;
 char ftp_user[FTP_USER_PASS_LEN_MAX + 1] = "opentx";
-char ftp_pass[FTP_USER_PASS_LEN_MAX + 1] = "opentx";
 
 /******************************************************************************
  DECLARE PRIVATE DATA

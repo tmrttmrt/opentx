@@ -273,7 +273,7 @@ void menuRadioSetup(event_t event)
           CHECK_INCDEC_GENVAR(event, b, 0, VOLUME_LEVEL_MAX);
           if (checkIncDec_Ret) {
             g_eeGeneral.speakerVolume = (int8_t)b-VOLUME_LEVEL_DEF;
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
             setScaledVolume(b);
 #endif
           }

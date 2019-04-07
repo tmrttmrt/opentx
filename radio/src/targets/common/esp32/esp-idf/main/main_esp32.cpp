@@ -27,6 +27,15 @@ static const char *TAG = "main_esp32.cpp";
 
 void checkBattery();
 uint8_t checkTrim(event_t event);
+uint8_t mainRequestFlags = 0;
+uint8_t requiredSpeakerVolume = 255;
+
+void checkSpeakerVolume()
+{
+  if (currentSpeakerVolume != requiredSpeakerVolume) {
+    currentSpeakerVolume = requiredSpeakerVolume;
+  }
+}
 
 void perMain()
 {
@@ -39,7 +48,7 @@ void perMain()
 #else
   #define IS_LCD_REFRESH_ALLOWED()       (1)
 #endif
-
+  checkSpeakerVolume();
 
 #if defined(MODULE_ALWAYS_SEND_PULSES)
   if (startupWarningState < STARTUP_WARNING_DONE) {
@@ -62,7 +71,7 @@ if (TIME_TO_WRITE()){
 }
 
 #if defined(SDCARD)
-//  sdMountPoll();
+  sdMountPoll();
   logsWrite();
 #endif
 
@@ -71,6 +80,13 @@ if (TIME_TO_WRITE()){
   evt = checkTrim(evt);
 
   if (evt && (g_eeGeneral.backlightMode & e_backlight_mode_keys)) backlightOn(); // on keypress turn the light on
+  
+  if (mainRequestFlags & (1 << REQUEST_FLIGHT_RESET)) {
+    TRACE("Executing requested Flight Reset");
+    flightReset();
+    mainRequestFlags &= ~(1 << REQUEST_FLIGHT_RESET);
+  }
+  
   doLoopCommonActions();
 
 #if defined(TELEMETRY_FRSKY) || defined(TELEMETRY_MAVLINK)

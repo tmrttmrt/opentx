@@ -702,6 +702,11 @@ const pm_char STR_R9MFLEXWARN2[] PROGMEM = TR_R9MFLEXWARN2;
   const pm_char STR_MULTI_RFPOWER[] PROGMEM = TR_MULTI_RFPOWER;
 #endif
 
+#if defined(CPUESP32)
+  const pm_char STR_UNIT[] PROGMEM = TR_UNIT;
+  const pm_char STR_PRECISION[] PROGMEM = TR_PRECISION;
+#endif
+
 #if defined(CPUARM)
   const pm_char STR_BYTES[] PROGMEM = TR_BYTES;
   const pm_char STR_ANTENNAPROBLEM[] PROGMEM = TR_ANTENNAPROBLEM;
@@ -752,6 +757,12 @@ const pm_char STR_R9MFLEXWARN2[] PROGMEM = TR_R9MFLEXWARN2;
   const pm_char STR_MENU_OTHER[] PROGMEM = TR_MENU_OTHER;
   const pm_char STR_MENU_INVERT[] PROGMEM = TR_MENU_INVERT;
   const pm_char STR_JITTER_FILTER[] PROGMEM = TR_JITTER_FILTER;
+#endif
+
+#if defined(CPUESP32)
+  const pm_char STR_POPUP[] PROGMEM = TR_POPUP;
+  const pm_char STR_MIN[] PROGMEM = TR_MIN;
+  const pm_char STR_MAX[] PROGMEM = TR_MAX;
 #endif
 
 #if MENUS_LOCK == 1

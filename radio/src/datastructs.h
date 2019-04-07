@@ -30,9 +30,15 @@
 #if defined(CPUARM)
   #define ARM_FIELD(x)                 x;
   #define AVR_FIELD(x)
+  #define ESP32_FIELD(x)
+#elif defined(CPUESP32)
+  #define ARM_FIELD(x)
+  #define AVR_FIELD(x)                 x;
+  #define ESP32_FIELD(x)                 x;
 #else
   #define ARM_FIELD(x)
   #define AVR_FIELD(x)                 x;
+  #define ESP32_FIELD(x)
 #endif
 
 #if defined(PCBSTD)
@@ -364,6 +370,16 @@ PACK(struct FlightModeData {
   uint8_t fadeIn:4;
   uint8_t fadeOut:4;
   FLIGHT_MODE_ROTARY_ENCODERS_FIELD
+  gvar_t gvars[MAX_GVARS];
+});
+#elif defined(CPUESP32)
+PACK(struct FlightModeData {
+  int8_t trim[NUM_STICKS];
+  int8_t trim_ext;    // 2 extra bits per trim (10bits)
+  int8_t swtch;       // swtch of phase[0] is not used
+  NOBACKUP(char name[LEN_FLIGHT_MODE_NAME]);
+  uint8_t fadeIn:4;
+  uint8_t fadeOut:4;
   gvar_t gvars[MAX_GVARS];
 });
 #else
@@ -828,6 +844,7 @@ PACK(struct ModelData {
   uint8_t   thrTrim:1;            // Enable Throttle Trim
   AVR_FIELD(int8_t    ppmNCH:4)
   ARM_FIELD(uint8_t   noGlobalFunctions:1)
+  ESP32_FIELD(uint8_t   noGlobalFunctions:1)
   ARM_FIELD(uint8_t   displayTrims:2)
   ARM_FIELD(uint8_t   ignoreSensorIds:1)
   int8_t    trimInc:3;            // Trim Increments

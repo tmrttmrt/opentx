@@ -22,6 +22,8 @@ set(GUI_SRC ${GUI_SRC}
     radio_hardware_esp32.cpp
 )
 
+set(GVAR_SCREEN model_gvars.cpp)
+
 if(AUDIO)
   add_definitions(-DAUDIO)
   set(BUZZER OFF)

@@ -295,7 +295,7 @@ bool sdListFiles(const char * path, const char * extension, const uint8_t maxlen
       fnExt = getFileExtension(de->d_name, 0, 0, &fnLen, &extLen);
       fnLen -= extLen;
 
-      espLogI("listSdFiles(%s, %s, %u, %s, %u): fn='%s'; fnExt='%s'; match=%d\n",
+      ESP_LOGD(TAG,"listSdFiles(%s, %s, %u, %s, %u): fn='%s'; fnExt='%s'; match=%d\n",
            path, extension, maxlen, (selection ? selection : "nul"), flags, de->d_name, (fnExt ? fnExt : "nul"), (fnExt && isExtensionMatching(fnExt, extension)));
       // file validation checks
       if (!fnLen || fnLen > maxlen || (                                              // wrong size

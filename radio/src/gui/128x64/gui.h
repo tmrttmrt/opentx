@@ -92,13 +92,13 @@ extern int8_t s_editMode;       // global editmode
 #define INCDEC_REP10                   0x40
 #define NO_DBLKEYS                     0x80
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   #define INCDEC_DECLARE_VARS(f)       uint8_t incdecFlag = (f); IsValueAvailable isValueAvailable = NULL
   #define INCDEC_SET_FLAG(f)           incdecFlag = (f)
   #define INCDEC_ENABLE_CHECK(fn)      isValueAvailable = fn
   #define CHECK_INCDEC_PARAM(event, var, min, max) checkIncDec(event, var, min, max, incdecFlag, isValueAvailable)
 #elif defined(CPUM64)
-#define INCDEC_DECLARE_VARS(f)
+  #define INCDEC_DECLARE_VARS(f)
   #define INCDEC_SET_FLAG(f)
   #define INCDEC_ENABLE_CHECK(fn)
   #define CHECK_INCDEC_PARAM(event, var, min, max) checkIncDec(event, var, min, max, EE_MODEL)
@@ -178,7 +178,7 @@ int8_t checkIncDecGen(event_t event, int8_t i_val, int8_t i_min, int8_t i_max);
     CHECK_INCDEC_MODELVAR_ZERO(event, var, max)
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 #define AUTOSWITCH_ENTER_LONG() (attr && event==EVT_KEY_LONG(KEY_ENTER))
   #define CHECK_INCDEC_SWITCH(event, var, min, max, flags, available) \
     var = checkIncDec(event, var, min, max, (flags)|INCDEC_SWITCH, available)

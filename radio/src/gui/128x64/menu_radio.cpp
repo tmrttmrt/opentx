@@ -20,7 +20,7 @@
 
 #include "opentx.h"
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 void menuRadioSpecialFunctions(event_t event)
 {
 #if defined(PCBTARANIS)

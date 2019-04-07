@@ -394,6 +394,12 @@ if(GUI)
       gui/gui_common_arm.cpp
       )
   endif()
+  if(ARCH STREQUAL ESP32)
+    set(SRC
+      ${SRC}
+      gui/gui_common_esp32.cpp
+      )
+  endif()
 endif()
 
 foreach(FILE ${TARGET_SRC})

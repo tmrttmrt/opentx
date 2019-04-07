@@ -72,6 +72,7 @@ enum MenuModelSetupItems {
 #endif
   ITEM_MODEL_BEEP_CENTER,
   CASE_CPUARM(ITEM_MODEL_USE_GLOBAL_FUNCTIONS)
+  CASE_CPUESP32(ITEM_MODEL_USE_GLOBAL_FUNCTIONS)
 #if defined(PCBTARANIS)
   ITEM_MODEL_INTERNAL_MODULE_LABEL,
   ITEM_MODEL_INTERNAL_MODULE_MODE,
@@ -796,7 +797,7 @@ void menuModelSetup(event_t event)
         }
         break;
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
       case ITEM_MODEL_USE_GLOBAL_FUNCTIONS:
         lcdDrawTextAlignedLeft(y, STR_USE_GLOBAL_FUNCS);
         drawCheckBox(MODEL_SETUP_2ND_COLUMN, y, !g_model.noGlobalFunctions, attr);

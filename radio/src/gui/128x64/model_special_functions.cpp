@@ -193,7 +193,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
       uint8_t active = (attr && (s_editMode>0 || p1valdiff));
       switch (j) {
         case 0:
-#if defined(CPUARM) 
+#if defined(CPUARM) || defined(CPUESP32)
           if (sub==k && menuHorizontalPosition < 1 && CFN_SWITCH(cfn) == SWSRC_NONE) {
             drawSwitch(MODEL_SPECIAL_FUNC_1ST_COLUMN, y, CFN_SWITCH(cfn), attr | INVERS | ((functionsContext->activeSwitches & ((MASK_CFN_TYPE)1 << k)) ? BOLD : 0));
             if (active) CHECK_INCDEC_SWITCH(event, CFN_SWITCH(cfn), SWSRC_FIRST, SWSRC_LAST, eeFlags, isSwitchAvailableInCustomFunctions);
@@ -217,7 +217,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
           if (CFN_SWITCH(cfn)) {
             lcdDrawTextAtIndex(MODEL_SPECIAL_FUNC_2ND_COLUMN, y, STR_VFSWFUNC, func, attr);
             if (active) {
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
               CFN_FUNC(cfn) = checkIncDec(event, CFN_FUNC(cfn), 0, FUNC_MAX-1, eeFlags, isAssignableFunctionAvailable);
 #else
               CHECK_INCDEC_MODELVAR_ZERO(event, CFN_FUNC(cfn), FUNC_MAX-1);
@@ -244,7 +244,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
 #endif
           if (func == FUNC_TRAINER) {
             maxParam = 4;
-#if defined(CPUARM) || defined(CPUESP32)
+#if defined(CPUARM) 
             drawSource(MODEL_SPECIAL_FUNC_3RD_COLUMN, y, CFN_CH_INDEX(cfn)==0 ? 0 : MIXSRC_Rud+CFN_CH_INDEX(cfn)-1, attr);
 #else
             drawSource(MODEL_SPECIAL_FUNC_3RD_COLUMN, y, MIXSRC_Rud+CFN_CH_INDEX(cfn)-1, attr);
@@ -262,7 +262,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
             break;
           }
 #endif // GVARS
-#if defined(CPUARM) || defined(CPUESP32)
+#if defined(CPUARM) 
           else if (func == FUNC_SET_TIMER) {
             maxParam = MAX_TIMERS-1;
             lcdDrawTextAtIndex(lcdNextPos, y, STR_VFSWRESET, CFN_TIMER_INDEX(cfn), attr);
@@ -300,7 +300,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
               lcdDrawSizedText(MODEL_SPECIAL_FUNC_3RD_COLUMN, y, sensor->label, TELEM_LABEL_LEN, attr|ZCHAR);
             }
 #endif
-#if defined (CPUARM) || defined(CPUESP32)
+#if defined (CPUARM)
             if (active) INCDEC_ENABLE_CHECK(functionsContext == &globalFunctionsContext ? isSourceAvailableInGlobalResetSpecialFunction : isSourceAvailableInResetSpecialFunction);
 #else
             val_max = FUNC_RESET_PARAM_LAST;

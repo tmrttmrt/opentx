@@ -7,6 +7,7 @@ void espLogI(const char * format, ...);
 
 #define eeFlush()
 #define DISPLAY_PROGRESS_BAR(x)
+#define SOFTWARE_VOLUME
 
 size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size);
 size_t fsLoadModelData(uint8_t index, uint8_t *buff, size_t size);
@@ -34,6 +35,7 @@ void sdInit(void);
 uint32_t sdIsHC(void);
 uint32_t sdGetSpeed(void);
 uint32_t sdMounted(void);
+void sdMountPoll();
 const char * eeBackupModel(uint8_t i_fileSrc);
 const char * eeRestoreModel(uint8_t i_fileDst, char *model_name);
 #endif

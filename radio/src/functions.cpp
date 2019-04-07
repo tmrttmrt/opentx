@@ -22,7 +22,7 @@
 
 CustomFunctionsContext modelFunctionsContext = { 0 };
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 CustomFunctionsContext globalFunctionsContext = { 0 };
 #endif
 
@@ -245,12 +245,12 @@ bool isRepeatDelayElapsed(const CustomFunctionData * functions, CustomFunctionsC
 #define isRepeatDelayElapsed(...) true
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 #define VOLUME_HYSTERESIS 10            // how much must a input value change to actually be considered for new volume setting
 getvalue_t requiredSpeakerVolumeRawLast = 1024 + 1; //initial value must be outside normal range
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 void evalFunctions(const CustomFunctionData * functions, CustomFunctionsContext & functionsContext)
 #else
 #define functions g_model.customFn
@@ -261,7 +261,7 @@ void evalFunctions()
   MASK_FUNC_TYPE newActiveFunctions  = 0;
   MASK_CFN_TYPE  newActiveSwitches = 0;
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   uint8_t playFirstIndex = (functions == g_model.customFn ? 1 : 1+MAX_SPECIAL_FUNCTIONS);
   #define PLAY_INDEX   (i+playFirstIndex)
 #else
@@ -309,7 +309,7 @@ void evalFunctions()
             safetyCh[CFN_CH_INDEX(cfn)] = CFN_PARAM(cfn);
             break;
 #endif
-
+#if !defined(CPUESP32)
           case FUNC_TRAINER:
           {
             uint8_t mask = 0x0f;
@@ -319,7 +319,7 @@ void evalFunctions()
             newActiveFunctions |= mask;
             break;
           }
-
+#endif
           case FUNC_INSTANT_TRIM:
             newActiveFunctions |= (1 << FUNCTION_INSTANT_TRIM);
             if (!isFunctionActive(FUNCTION_INSTANT_TRIM)) {
@@ -340,7 +340,7 @@ void evalFunctions()
                 break;
               case FUNC_RESET_FLIGHT:
               	if (!(functionsContext.activeSwitches & switch_mask)) {
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
                   mainRequestFlags |= (1 << REQUEST_FLIGHT_RESET);     // on systems with threads flightReset() must not be called from the mixers thread!
 #else
                   flightReset();
@@ -493,7 +493,7 @@ void evalFunctions()
             newActiveFunctions |= (1 << FUNCTION_BACKGND_MUSIC_PAUSE);
             break;
 
-#elif defined(VOICE)
+#elif defined(VOICE) && !defined(CPUESP32)
           case FUNC_PLAY_SOUND:
           case FUNC_PLAY_TRACK:
           case FUNC_PLAY_BOTH:
@@ -543,7 +543,7 @@ void evalFunctions()
             break;
 #endif
 
-#if defined(HAPTIC) && !defined(CPUARM)
+#if defined(HAPTIC) && !defined(CPUARM) 
           case FUNC_HAPTIC:
           {
             tmr10ms_t tmr10ms = get_tmr10ms();

@@ -17,7 +17,7 @@
 
 
 
-#define MENUS_STACK_SIZE       0xB00
+#define MENUS_STACK_SIZE       0xC00
 #define MIXER_STACK_SIZE       0x800
 #define AUDIO_STACK_SIZE       0x800
 #define AUDIO_PLAY_STACK_SIZE  0xA00
@@ -27,7 +27,6 @@
 #define MENU_TASK_CORE 0
 #define MIXER_TASK_CORE 1
 #define AUDIO_TASK_CORE 0
-#define AUDIO_PLAY_TASK_CORE 1
 #define PER10MS_TASK_CORE 0
 #define ENC_TASK_CORE 0
 
@@ -265,8 +264,6 @@ void timer10msInit(){
 
 void espLogI(const char * format, ...){
     va_list arglist;
-    #define PRINTF_BUFFER_SIZE 255
-    char tmp[PRINTF_BUFFER_SIZE];
     va_start(arglist, format);
     vprintf( format, arglist);
     va_end(arglist);    

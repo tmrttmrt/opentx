@@ -21,8 +21,9 @@ extern "C"{
 
 static const char *TAG = "initWiFi.cpp";
 TaskHandle_t wifiTaskHandle = NULL;
-static char ssid[sizeof(g_eeGeneral.ssid)];
-static char passwd[sizeof(g_eeGeneral.passwd)];
+static char ssid[sizeof(g_eeGeneral.ssid)+1];
+static char passwd[sizeof(g_eeGeneral.passwd)+1];
+char ftp_pass[FTP_USER_PASS_LEN_MAX > sizeof(g_eeGeneral.ftppass) ? FTP_USER_PASS_LEN_MAX +1 : sizeof(g_eeGeneral.ftppass)+1] = "opentx";
 SemaphoreHandle_t wifi_mutex = NULL;
 
 

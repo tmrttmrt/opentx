@@ -143,5 +143,16 @@ void logsClose(){
 void logsWrite(){
 }
 
+void sdMountPoll()
+{
+  static uint8_t mountTimer;
+  if (mountTimer-- == 0) {
+    mountTimer = 100;
+    if (!sdMounted()) {
+        //to do
+    }
+  }
+}
+
 #endif
 

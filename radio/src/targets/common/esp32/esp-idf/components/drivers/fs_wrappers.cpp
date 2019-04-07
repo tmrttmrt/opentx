@@ -12,7 +12,7 @@ static const char *SL = "/";
 static char cpath[CONFIG_FATFS_MAX_LFN+1]="/";
 
 int wr_chdir(const char *path){
-    ESP_LOGI(TAG, "wr_chdir(\"%s\"), cpath: \"%s\"",path,cpath);
+    ESP_LOGD(TAG, "wr_chdir(\"%s\"), cpath: \"%s\"",path,cpath);
     if (!path) {
         errno = EFAULT;
         return -1;
@@ -54,11 +54,10 @@ int wr_chdir(const char *path){
             strcat(bp,pt);
         }
         pt = strtok(NULL,SL);
-        ESP_LOGI(TAG,"np: '%s', pt: %x",np,(uint32_t)pt);
     }
     if(0==*bp){
         strcpy(cpath,SL);
-        ESP_LOGI(TAG,"cpath: '%s'",cpath);
+        ESP_LOGD(TAG,"cpath: '%s'",cpath);
         return 0;
     }
     struct stat statb;
@@ -69,7 +68,7 @@ int wr_chdir(const char *path){
     }
 //    strcat(bp,SL);
     strcpy(cpath,bp);
-    ESP_LOGI(TAG,"cpath: '%s'",cpath);
+    ESP_LOGD(TAG,"cpath: '%s'",cpath);
     return 0;
 }
 
