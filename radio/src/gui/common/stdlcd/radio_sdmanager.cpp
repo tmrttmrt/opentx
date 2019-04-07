@@ -120,7 +120,7 @@ void onSdManagerMenu(const char * result)
     showStatusLine();
     REFRESH_FILES();
   }
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   else if (result == STR_PLAY_FILE) {
     getSelectionFullPath(lfn);
     audioQueue.stopAll();
@@ -176,7 +176,7 @@ void menuRadioSdManager(event_t _event)
 #if defined(PCBSKY9X)
     Card_state = SD_ST_DATA;
 #endif
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
     audioQueue.stopSD();
 #endif
     if(sdCardFormat()) {
@@ -258,7 +258,7 @@ void menuRadioSdManager(event_t _event)
         if (!strcmp(line, "..")) {
           break; // no menu for parent dir
         }
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
         const char * ext = getFileExtension(line);
         if (ext) {
           if (!strcasecmp(ext, SOUNDS_EXT)) {
@@ -313,8 +313,13 @@ void menuRadioSdManager(event_t _event)
   }
 
   if (reusableBuffer.sdmanager.offset != menuVerticalOffset) {
+#if defined(CPUESP32)
+    struct dirent *de;
+    WR_DIR *dir;
+#else
     FILINFO fno;
     DIR dir;
+#endif
 
     if (menuVerticalOffset == 0) {
       reusableBuffer.sdmanager.offset = 0;
@@ -336,6 +341,63 @@ void menuRadioSdManager(event_t _event)
 
     reusableBuffer.sdmanager.count = 0;
 
+#if defined(CPUESP32)
+    dir = wr_opendir(".");
+    if(NULL!=dir) {
+      bool firstTime = true;
+      struct dirent deup;
+      for (;;) {
+        de = wr_readdir(dir);
+        if (NULL == de) break;              /* Break on error or end of dir */
+        if (strlen(de->d_name) > SD_SCREEN_FILE_LENGTH) continue;
+        if (de->d_name[0] == '.' && de->d_name[1] != '.') continue;  /* Ignore UNIX hidden files, but not .. */
+
+        reusableBuffer.sdmanager.count++;
+
+        bool isfile = (DT_REG == de->d_type);
+
+        if (menuVerticalOffset == 0) {
+          for (uint8_t i=0; i<NUM_BODY_LINES; i++) {
+            char * line = reusableBuffer.sdmanager.lines[i];
+            if (line[0] == '\0' || isFilenameLower(isfile, de->d_name, line)) {
+              if (i < NUM_BODY_LINES-1) memmove(reusableBuffer.sdmanager.lines[i+1], line, sizeof(reusableBuffer.sdmanager.lines[i]) * (NUM_BODY_LINES-1-i));
+              memset(line, 0, sizeof(reusableBuffer.sdmanager.lines[0]));
+              strcpy(line, de->d_name);
+              NODE_TYPE(line) = isfile;
+              break;
+            }
+          }
+        }
+        else if (reusableBuffer.sdmanager.offset == menuVerticalOffset) {
+          for (int8_t i=NUM_BODY_LINES-1; i>=0; i--) {
+            char * line = reusableBuffer.sdmanager.lines[i];
+            if (line[0] == '\0' || isFilenameGreater(isfile, de->d_name, line)) {
+              if (i > 0) memmove(reusableBuffer.sdmanager.lines[0], reusableBuffer.sdmanager.lines[1], sizeof(reusableBuffer.sdmanager.lines[0]) * i);
+              memset(line, 0, sizeof(reusableBuffer.sdmanager.lines[0]));
+              strcpy(line, de->d_name);
+              NODE_TYPE(line) = isfile;
+              break;
+            }
+          }
+        }
+        else if (menuVerticalOffset > reusableBuffer.sdmanager.offset) {
+          if (isFilenameGreater(isfile, de->d_name, reusableBuffer.sdmanager.lines[NUM_BODY_LINES-2]) && isFilenameLower(isfile, de->d_name, reusableBuffer.sdmanager.lines[NUM_BODY_LINES-1])) {
+            memset(reusableBuffer.sdmanager.lines[NUM_BODY_LINES-1], 0, sizeof(reusableBuffer.sdmanager.lines[0]));
+            strcpy(reusableBuffer.sdmanager.lines[NUM_BODY_LINES-1], de->d_name);
+            NODE_TYPE(reusableBuffer.sdmanager.lines[NUM_BODY_LINES-1]) = isfile;
+          }
+        }
+        else {
+          if (isFilenameLower(isfile, de->d_name, reusableBuffer.sdmanager.lines[1]) && isFilenameGreater(isfile, de->d_name, reusableBuffer.sdmanager.lines[0])) {
+            memset(reusableBuffer.sdmanager.lines[0], 0, sizeof(reusableBuffer.sdmanager.lines[0]));
+            strcpy(reusableBuffer.sdmanager.lines[0], de->d_name);
+            NODE_TYPE(reusableBuffer.sdmanager.lines[0]) = isfile;
+          }
+        }
+      }
+      wr_closedir(dir);
+    }
+#else
     FRESULT res = f_opendir(&dir, "."); // Open the directory
     if (res == FR_OK) {
       bool firstTime = true;
@@ -391,6 +453,7 @@ void menuRadioSdManager(event_t _event)
       }
       f_closedir(&dir);
     }
+#endif
   }
 
   reusableBuffer.sdmanager.offset = menuVerticalOffset;
@@ -404,7 +467,7 @@ void menuRadioSdManager(event_t _event)
       if (IS_DIRECTORY(reusableBuffer.sdmanager.lines[i])) {
         lcdDrawChar(0, y, '[', s_editMode == EDIT_MODIFY_STRING ? 0 : attr);
       }
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
       if (s_editMode == EDIT_MODIFY_STRING && attr) {
         uint8_t extlen, efflen;
         const char * ext = getFileExtension(reusableBuffer.sdmanager.originalName, 0, 0, NULL, &extlen);

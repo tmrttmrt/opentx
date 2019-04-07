@@ -77,11 +77,13 @@ enum MenuRadioIndexes
   MENU_RADIO_SETUP,
   CASE_SDCARD(MENU_RADIO_SD_MANAGER)
   CASE_CPUARM(MENU_RADIO_SPECIAL_FUNCTIONS)
+  CASE_CPUESP32(MENU_RADIO_SPECIAL_FUNCTIONS)
   MENU_RADIO_TRAINER,
   MENU_RADIO_VERSION,
   MENU_RADIO_SWITCHES_TEST,
   MENU_RADIO_ANALOGS_TEST,
   CASE_CPUARM(MENU_RADIO_HARDWARE)
+  CASE_CPUESP32(MENU_RADIO_HARDWARE)
   MENU_RADIO_CALIBRATION,
   MENU_RADIO_PAGES_COUNT
 };
@@ -100,11 +102,13 @@ static const MenuHandlerFunc menuTabGeneral[] PROGMEM = {
   menuRadioSetup,
   CASE_SDCARD(menuRadioSdManager)
   CASE_CPUARM(menuRadioSpecialFunctions)
+  CASE_CPUESP32(menuRadioSpecialFunctions)
   menuRadioTrainer,
   menuRadioVersion,
   menuRadioDiagKeys,
   menuRadioDiagAnalogs,
   CASE_CPUARM(menuRadioHardware)
+  CASE_CPUESP32(menuRadioHardware)
   menuRadioCalibration
 };
 

@@ -506,7 +506,7 @@
 #if defined(PCBSKY9X)
   #define TR_ROTARY_ENCODERS   "REa\0"
   #define TR_ROTENC_SWITCHES   "REa"
-#elif defined(PCBGRUVIN9X) || defined(PCBMEGA2560)
+#elif defined(PCBGRUVIN9X) || defined(PCBMEGA2560) || defined(PCBESP_WROOM_32)
   #define TR_ROTARY_ENCODERS   "REa\0""REb\0"
   #define TR_ROTENC_SWITCHES   "REa""REb"
 #else
@@ -1367,3 +1367,5 @@
 #define ZSTR_GASSUIT_RES_PERC  "GRPc"
 #define ZSTR_GASSUIT_MAX_FLOW  "GMFl"
 #define ZSTR_GASSUIT_AVG_FLOW  "GAFl"
+#define ZSTR_SBEC_VOLTAGE      "BecV"
+#define ZSTR_SBEC_CURRENT      "BecA"

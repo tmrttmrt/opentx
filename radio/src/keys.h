@@ -112,6 +112,10 @@ void killEvents(event_t event);
   bool clearKeyEvents();
   event_t getEvent(bool trim=false);
   bool keyDown();
+#elif defined(CPUESP32)
+  void clearKeyEvents();
+  event_t getEvent();
+  bool keyDown();
 #else
   void clearKeyEvents();
   event_t getEvent();

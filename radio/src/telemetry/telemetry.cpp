@@ -96,7 +96,7 @@ void telemetryWakeup()
   }
 #endif
 
-#if defined(STM32)
+#if defined(STM32) || defined(CPUESP32)
   uint8_t data;
   if (telemetryGetByte(&data)) {
     LOG_TELEMETRY_WRITE_START();

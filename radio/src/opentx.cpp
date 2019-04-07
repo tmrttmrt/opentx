@@ -20,8 +20,8 @@
 
 #include "opentx.h"
 
-RadioData  g_eeGeneral;
-ModelData  g_model;
+DRAM_ATTR RadioData  g_eeGeneral;
+DRAM_ATTR ModelData  g_model;
 
 #if defined(SDCARD)
 Clipboard clipboard;
@@ -37,9 +37,10 @@ uint8_t unexpectedShutdown = 0;
 
 /* AVR: mixer duration in 1/16ms */
 /* ARM: mixer duration in 0.5us */
+/* ESP32: mixer duration in us */
 uint16_t maxMixerDuration;
 
-#if defined(AUDIO) && !defined(CPUARM)
+#if defined(AUDIO) && !defined(CPUARM) && !defined(CPUESP32)
 audioQueue  audio;
 #endif
 
@@ -218,7 +219,7 @@ MixData *mixAddress(uint8_t idx)
   return &g_model.mixData[idx];
 }
 
-LimitData *limitAddress(uint8_t idx)
+LimitData IRAM_ATTR *limitAddress(uint8_t idx)
 {
   return &g_model.limitData[idx];
 }
@@ -974,7 +975,7 @@ void doSplash()
     backlightOn();
     drawSplash();
 
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
     AUDIO_HELLO();
 #endif
 
@@ -1487,7 +1488,7 @@ uint8_t checkTrim(event_t event)
 }
 
 #if !defined(SIMU)
-uint16_t s_anaFilt[NUM_ANALOGS];
+volatile uint16_t s_anaFilt[NUM_ANALOGS];
 #endif
 
 #if defined(SIMU)
@@ -1758,7 +1759,7 @@ void doMixerCalculations()
     Current_max = Current_analogue ;
 #endif
 
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
   adcPrepareBandgap();
 #endif
 
@@ -1766,7 +1767,7 @@ void doMixerCalculations()
   evalMixes(tick10ms);
   DEBUG_TIMER_STOP(debugTimerEvalMixes);
 
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
   // Bandgap has had plenty of time to settle...
   getADC_bandgap();
 #endif
@@ -2081,11 +2082,11 @@ void opentxResume()
 
   opentxStart(false);
 
-#if defined(CPUARM)
+#if defined(CPUARM) 
   referenceSystemAudioFiles();
 #endif
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
   if (!g_eeGeneral.unexpectedShutdown) {
     g_eeGeneral.unexpectedShutdown = 1;
     storageDirty(EE_GENERAL);
@@ -2163,7 +2164,7 @@ uint8_t getSticksNavigationEvent()
 }
 #endif
 
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
 void checkBattery()
 {
   static uint8_t counter = 0;
@@ -2221,7 +2222,7 @@ void checkBattery()
 #endif // #if !defined(CPUARM)
 
 
-#if !defined(SIMU) && !defined(CPUARM)
+#if !defined(SIMU) && !defined(CPUARM) && !defined(CPUESP32)
 
 volatile uint8_t g_tmr16KHz; //continuous timer 16ms (16MHz/1024/256) -- 8-bit counter overflow
 ISR(TIMER_16KHZ_VECT, ISR_NOBLOCK)
@@ -2320,7 +2321,7 @@ FORCEINLINE void DSM2_USART_vect()
 }
 #endif
 
-#if !defined(SIMU) && !defined(CPUARM)
+#if !defined(SIMU) && !defined(CPUARM) && !defined(CPUESP32)
 
 #if defined(TELEMETRY_FRSKY)
 
@@ -2504,7 +2505,7 @@ void moveTrimsToOffsets() // copy state of 3 primary to subtrim
 uint8_t rotencSpeed;
 #endif
 
-#if !defined(CPUARM) && !defined(SIMU)
+#if !defined(CPUARM) && !defined(SIMU) && !defined(CPUESP32)
 extern unsigned char __bss_end ;
 #define STACKPTR     _SFR_IO16(0x3D)
 void stackPaint()
@@ -2647,6 +2648,12 @@ void opentxInit(OPENTX_INIT_ARGS)
   BACKLIGHT_ENABLE();
 #endif
 
+#if defined(CPUESP32)
+  referenceSystemAudioFiles();
+  audioQueue.start();
+  BACKLIGHT_ENABLE();
+#endif
+
 #if defined(PCBSKY9X)
   // Set ADC gains here
   setSticksGain(g_eeGeneral.sticksGain);
@@ -2670,7 +2677,7 @@ void opentxInit(OPENTX_INIT_ARGS)
     opentxStart();
   }
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
 	// TODO Horus does not need this
   if (!g_eeGeneral.unexpectedShutdown) {
     g_eeGeneral.unexpectedShutdown = 1;
@@ -2687,7 +2694,7 @@ void opentxInit(OPENTX_INIT_ARGS)
   init_trainer_capture();
 #endif
 
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
   doMixerCalculations();
 #endif
 
@@ -2727,12 +2734,12 @@ int main()
   bluetoothInit(BLUETOOTH_DEFAULT_BAUDRATE);   //BT is turn on for a brief period to differentiate X7 and X7S
 #endif
 
-#if defined(GUI) && !defined(PCBTARANIS) && !defined(PCBHORUS)
+#if defined(GUI) && !defined(PCBTARANIS) && !defined(PCBHORUS) && !defined(PCBESP_WROOM_32)
   // TODO remove this
   lcdInit();
 #endif
 
-#if !defined(SIMU)
+#if !defined(SIMU) && !defined(CPUESP32)
   stackPaint();
 #endif
 
@@ -2786,12 +2793,16 @@ int main()
   }
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   tasksStart();
 #else
   opentxInit(mcusr);
 #if defined(CPUM2560)
   uint8_t shutdown_state = 0;
+#endif
+
+#if defined(CPUESP32)
+    return 0; //return to app_main() 
 #endif
 
   while (1) {

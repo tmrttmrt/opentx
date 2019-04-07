@@ -635,7 +635,7 @@ void evalInputs(uint8_t mode)
   evalTrims(); // when no virtual inputs, the trims need the anas array calculated above (when throttle trim enabled)
 
   if (mode == e_perout_mode_normal) {
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
     anaCenter &= g_model.beepANACenter;
     if (((bpanaCenter ^ anaCenter) & anaCenter)) AUDIO_POT_MIDDLE();
 #endif
@@ -1190,7 +1190,7 @@ void evalMixes(uint8_t tick10ms)
     requiredSpeakerVolume = g_eeGeneral.speakerVolume + VOLUME_LEVEL_DEF;
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
     if (!g_model.noGlobalFunctions) {
       evalFunctions(g_eeGeneral.customFn, globalFunctionsContext);
     }
@@ -1221,6 +1221,9 @@ void evalMixes(uint8_t tick10ms)
     channelOutputs[i] = value;  // copy consistent word to int-level
     sei();
   }
+#if defined(CPUESP32)
+  sendToPulses();
+#endif
 
   if (tick10ms && flightModesFade) {
     uint16_t tick_delta = delta * tick10ms;

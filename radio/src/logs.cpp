@@ -19,9 +19,17 @@
  */
 
 #include "opentx.h"
+#if defined(CPUESP32)
+#include <stdio.h>
+FILE *g_oLogFile;
+#define FRESULT uint16_t
+#define f_puts(s, fd) fputs(s, *(fd))
+#define f_printf(fd, ...) fprintf(*(fd), __VA_ARGS__)
+#else
 #include "ff.h"
 
 FIL g_oLogFile __DMA;
+#endif
 const pm_char * g_logError = NULL;
 uint8_t logDelay;
 
@@ -98,15 +106,23 @@ const pm_char * logsOpen()
 #endif
 
   strcpy_P(tmp, STR_LOGS_EXT);
-
+#if defined(CPUESP32)
+  g_oLogFile=fopen(filename,"a");
+  if(NULL==g_oLogFile){
+      return STR_SDCARD_ERROR;
+  }
+  if(0L == ftell(g_oLogFile)) {
+      writeHeader();
+  }
+#else
   result = f_open(&g_oLogFile, filename, FA_OPEN_ALWAYS | FA_WRITE | FA_OPEN_APPEND);
   if (result != FR_OK) {
     return SDCARD_ERROR(result);
   }
-
   if (f_size(&g_oLogFile) == 0) {
     writeHeader();
   }
+#endif
 
   return NULL;
 }
@@ -116,10 +132,15 @@ tmr10ms_t lastLogTime = 0;
 void logsClose()
 {
   if (sdMounted()) {
+#if defined(CPUESP32)
+    fclose(g_oLogFile);
+    g_oLogFile = NULL;
+#else
     if (f_close(&g_oLogFile) != FR_OK) {
       // close failed, forget file
       g_oLogFile.obj.fs = 0;
     }
+#endif
     lastLogTime = 0;
   }
 }
@@ -198,6 +219,8 @@ void writeHeader()
   #define STR_SWITCHES_LOG_HEADER  "SA,SB,SC,SD,SE,SF,SG,SH"
 #endif
   f_puts(STR_SWITCHES_LOG_HEADER ",LSW,", &g_oLogFile);
+#elif defined(PCBESP_WROOM_32)  
+  f_puts("Rud,Ele,Thr,Ail,P1,P2,THR,RUD,ELE,3POS,AIL,GEA,TRN,", &g_oLogFile);
 #else
   f_puts("Rud,Ele,Thr,Ail,P1,P2,P3,THR,RUD,ELE,3POS,AIL,GEA,TRN,", &g_oLogFile);
 #endif
@@ -223,7 +246,11 @@ void logsWrite()
     if (lastLogTime == 0 || (tmr10ms_t)(tmr10ms - lastLogTime) >= (tmr10ms_t)logDelay*10) {
       lastLogTime = tmr10ms;
 
+#if defined(CPUESP32)
+      if (!g_oLogFile) {
+#else
       if (!g_oLogFile.obj.fs) {
+#endif
         const pm_char * result = logsOpen();
         if (result != NULL) {
           if (result != error_displayed) {
@@ -400,7 +427,11 @@ void logsWrite()
   }
   else {
     error_displayed = NULL;
+#if defined(CPUESP32)
+    if(g_oLogFile) {
+#else
     if (g_oLogFile.obj.fs) {
+#endif
       logsClose();
     }
   }

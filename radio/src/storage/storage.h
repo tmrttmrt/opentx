@@ -58,6 +58,8 @@ void postModelLoad(bool alarms);
 #if defined(EEPROM_RLC)
 #include "eeprom_common.h"
 #include "eeprom_rlc.h"
+#elif defined(SPIFLASH)
+#include "eeprom_common.h"
 #elif defined(EEPROM)
 #include "eeprom_common.h"
 #include "eeprom_raw.h"

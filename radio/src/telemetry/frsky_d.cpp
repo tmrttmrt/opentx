@@ -311,7 +311,11 @@ void frskySendPacket(uint8_t type, uint8_t value, uint8_t p1, uint8_t p2)
 
   frskyTxBufferCount = ptr - &frskyTxBuffer[0];
 #if !defined(SIMU)
+#if defined(CPUESP32)
+    telemetryTransmitBuffer(frskyTxBuffer,frskyTxBufferCount);
+#elif
   telemetryTransmitBuffer();
+#endif
 #endif
 }
 

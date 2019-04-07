@@ -97,7 +97,7 @@ TEST(Timers, timerGreaterThan9hours)
 }
 #endif // #if defined(CPUARM)
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
 TEST(Timers, saveRestoreTimers)
 {
   g_model.timers[0].persistent = 1;

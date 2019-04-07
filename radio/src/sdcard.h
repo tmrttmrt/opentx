@@ -21,13 +21,16 @@
 #ifndef _SDCARD_H_
 #define _SDCARD_H_
 
-#if !defined(SIMU)
+#if !defined(SIMU) && !defined(CPUESP32)
 #include "ff.h"
 #endif
 
 #include "opentx.h"
-
+#if defined(CPUESP32) 
+#define ROOT_PATH           SD_PATH "/"
+#else
 #define ROOT_PATH           "/"
+#endif
 #define MODELS_PATH         ROOT_PATH "MODELS"      // no trailing slash = important
 #define RADIO_PATH          ROOT_PATH "RADIO"       // no trailing slash = important
 #define LOGS_PATH           ROOT_PATH "LOGS"
@@ -92,8 +95,10 @@ const char RADIO_SETTINGS_PATH[] = RADIO_PATH "/radio.bin";
   filename[sizeof(path)+sizeof(var)] = '\0'; \
   strcat(&filename[sizeof(path)], ext)
 
+#if !defined(CPUESP32)
 extern FATFS g_FATFS_Obj;
 extern FIL g_oLogFile;
+#endif
 
 extern uint8_t logDelay;
 void logsInit();
@@ -106,7 +111,7 @@ uint32_t sdGetSize();
 uint32_t sdGetFreeSectors();
 const char * sdCheckAndCreateDirectory(const char * path);
 
-#if !defined(BOOT)
+#if !defined(BOOT) && !defined(CPUESP32)
 inline const pm_char * SDCARD_ERROR(FRESULT result)
 {
   if (result == FR_NOT_READY)
@@ -144,6 +149,9 @@ const char * getFileExtension(const char * filename, uint8_t size=0, uint8_t ext
 #elif defined(PCBGRUVIN9X) || defined(PCBMEGA2560)
   #define OTX_FOURCC 0x3178746F // otx for gruvin9x/MEGA2560
   #define O9X_FOURCC 0x3178396F // o9x for gruvin9x/MEGA2560
+#elif defined(PCBESP_WROOM_32)
+  #define OTX_FOURCC 0x3878746F // otx for ESP32
+  #define O9X_FOURCC 0x3878396F // o9x for ESP32  
 #endif
 
 bool isFileAvailable(const char * filename, bool exclDir = false);
@@ -158,6 +166,7 @@ const char * sdCopyFile(const char * srcFilename, const char * srcDir, const cha
 bool sdListFiles(const char * path, const char * extension, const uint8_t maxlen, const char * selection, uint8_t flags=0);
 
 bool isCwdAtRoot();
+#if !defined(CPUESP32)
 FRESULT sdReadDir(DIR * dir, FILINFO * fno, bool & firstTime);
-
+#endif
 #endif // _SDCARD_H_

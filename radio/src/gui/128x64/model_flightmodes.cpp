@@ -202,7 +202,7 @@ void menuModelFlightModeOne(event_t event)
         if (attr && posHorz > 0 && s_currIdx==0) posHorz++;
 
         drawStringWithIndex(INDENT_WIDTH, y, STR_GV, idx+1, posHorz==0 ? attr : 0);
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
         lcdDrawSizedText(4*FW, y,g_model.gvars[idx].name, LEN_GVAR_NAME, ZCHAR);
         if (attr && editMode>0 && posHorz==0) {
           s_currIdx = sub - ITEM_MODEL_FLIGHT_MODE_GV1;
@@ -328,7 +328,7 @@ void menuModelFlightModesAll(event_t event)
         drawShortTrimMode((9+LEN_FLIGHT_MODE_NAME+t)*FW+TRIMS_OFS, y, i, t, 0);
       }
 #endif
-#if defined(CPUM2560)
+#if defined(CPUM2560) || defined(CPUESP32)
       for (uint8_t t=0; t<NUM_ROTARY_ENCODERS; t++) {
         putsRotaryEncoderMode((13+LEN_FLIGHT_MODE_NAME+t)*FW+TRIMS_OFS+ROTARY_ENC_OFS, y, i, t, 0);
       }

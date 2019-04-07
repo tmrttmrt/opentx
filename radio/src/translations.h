@@ -94,6 +94,8 @@
   #define TR_VTRAINERMODES     TR_VTRAINER_MASTER_JACK TR_VTRAINER_SLAVE_JACK TR_VTRAINER_MASTER_SBUS_MODULE TR_VTRAINER_MASTER_CPPM_MODULE TR_VTRAINER_MASTER_BATTERY
 #elif defined(CPUARM)
   #define TR_VTRAINERMODES     TR_VTRAINER_MASTER_JACK TR_VTRAINER_SLAVE_JACK TR_VTRAINER_MASTER_CPPM_MODULE TR_VTRAINER_MASTER_BATTERY
+#elif defined(CPUESP32)
+  #define TR_VTRAINERMODES TR_VTRAINER_NONE
 #endif
 
 #if (LCD_W == 212)
@@ -196,7 +198,7 @@ extern const pm_char STR_OPEN9X[];
   #define OFS_VTMRMODES           (OFS_VSRCRAW + sizeof(TR_VSRCRAW))
 #endif
 #define OFS_DATETIME            (OFS_VTMRMODES + sizeof(TR_VTMRMODES))
-#if defined(CPUM2560) || defined(CPUARM)
+#if defined(CPUM2560) || defined(CPUARM) || defined(CPUESP32)
   #define OFS_VPERSISTENT       (OFS_DATETIME + sizeof(TR_DATETIME))
   #define OFS_VLCD              (OFS_VPERSISTENT + sizeof(TR_VPERSISTENT))
 #else
@@ -218,7 +220,7 @@ extern const pm_char STR_OPEN9X[];
   #define OFS_VFAILSAFE         (OFS_COUNTRYCODES)
   #define OFS_VTRAINERMODES     (OFS_VFAILSAFE)
 #endif
-#if defined(CPUARM)
+#if defined(CPUARM) 
   #define OFS_TARANIS_PROTOCOLS        (OFS_VTRAINERMODES + sizeof(TR_VTRAINERMODES))
   #define OFS_R9M_REGION                (OFS_TARANIS_PROTOCOLS + sizeof(TR_TARANIS_PROTOCOLS))
   #define OFS_R9M_FCC_POWER_VALUES     (OFS_R9M_REGION + sizeof(TR_R9M_REGION))
@@ -244,8 +246,27 @@ extern const pm_char STR_OPEN9X[];
   #define OFS_VANTENNATYPES     (OFS_VCELLINDEX + sizeof(TR_VCELLINDEX))
 #endif
   #define OFS_MAVLINK_BAUDS     (OFS_VANTENNATYPES + sizeof(TR_VANTENNATYPES))
-#else
+#elif !defined(CPUESP32)
   #define OFS_MAVLINK_BAUDS	(OFS_VTRAINERMODES)
+#endif
+#if defined(CPUESP32)
+#if defined(MULTIMODULE)
+  #define OFS_MULTI_PROTOCOLS   (OFS_VTRAINERMODES + sizeof(TR_VTRAINERMODES))
+  #define OFS_CURVE_TYPES           (OFS_MULTI_PROTOCOLS + sizeof(TR_MULTI_PROTOCOLS))
+#else
+  #define OFS_CURVE_TYPES           (OFS_VTRAINERMODES + sizeof(TR_VTRAINERMODES))
+#endif
+  #define OFS_VSENSORTYPES      (OFS_CURVE_TYPES + sizeof(TR_CURVE_TYPES))
+  #define OFS_VFORMULAS         (OFS_VSENSORTYPES + sizeof(TR_VSENSORTYPES))
+  #define OFS_VPREC             (OFS_VFORMULAS + sizeof(TR_VFORMULAS))
+  #define OFS_VCELLINDEX        (OFS_VPREC + sizeof(TR_VPREC))
+#if defined(BLUETOOTH)
+  #define OFS_BLUETOOTH_MODES   (OFS_VCELLINDEX + sizeof(TR_VCELLINDEX))
+  #define OFS_VANTENNATYPES     (OFS_BLUETOOTH_MODES + sizeof(TR_BLUETOOTH_MODES))
+#else
+  #define OFS_VANTENNATYPES     (OFS_VCELLINDEX + sizeof(TR_VCELLINDEX))
+#endif
+  #define OFS_MAVLINK_BAUDS     (OFS_VANTENNATYPES + sizeof(TR_VANTENNATYPES))
 #endif
 #if defined(TELEMETRY_MAVLINK)
   #define OFS_MAVLINK_AC_MODES	(OFS_MAVLINK_BAUDS + sizeof(TR_MAVLINK_BAUDS))
@@ -330,7 +351,7 @@ extern const pm_char STR_OPEN9X[];
   #define STR_VRENCODERS        (STR_OPEN9X + OFS_VRENCODERS)
 #endif
 
-#if defined(CPUM2560) || defined(CPUARM)
+#if defined(CPUM2560) || defined(CPUARM) || defined(CPUESP32)
   #define STR_DATETIME          (STR_OPEN9X + OFS_DATETIME)
   #define STR_VPERSISTENT       (STR_OPEN9X + OFS_VPERSISTENT)
 #endif
@@ -366,6 +387,9 @@ extern const pm_char STR_OPEN9X[];
   #define STR_VPREC             (STR_OPEN9X + OFS_VPREC)
   #define STR_VCELLINDEX        (STR_OPEN9X + OFS_VCELLINDEX)
   #define STR_VANTENNATYPES     (STR_OPEN9X + OFS_VANTENNATYPES)
+#endif
+#if defined(CPUESP32)
+    #define STR_VPREC             (STR_OPEN9X + OFS_VPREC)
 #endif
 
 #if defined(BLUETOOTH)
@@ -668,7 +692,7 @@ extern const pm_char STR_LATITUDE[];
 extern const pm_char STR_LONGITUDE[];
 #endif
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
 extern const pm_char STR_SHUTDOWN[];
 extern const pm_char STR_SAVEMODEL[];
 #endif
@@ -693,6 +717,12 @@ extern const pm_char STR_BEEP_VOLUME[];
 extern const pm_char STR_WAV_VOLUME[];
 extern const pm_char STR_BG_VOLUME[];
 extern const pm_char STR_PERSISTENT_MAH[];
+#endif
+
+#if defined(CPUESP32)
+extern const pm_char STR_BEEP_VOLUME[];
+extern const pm_char STR_WAV_VOLUME[];
+extern const pm_char STR_BG_VOLUME[];
 #endif
 
 #if defined(PCBSKY9X)
@@ -747,6 +777,9 @@ extern const pm_char STR_RESET_BTN[];
   extern const pm_char STR_LOGS_EXT[];
   extern const pm_char STR_MODELS_PATH[];
   extern const pm_char STR_MODELS_EXT[];
+#if defined(CPUESP32)
+  extern const pm_char STR_OUT_OF_MEM[];
+#endif   
   #define STR_UPDATE_LIST STR_DELAYDOWN
 #endif
 
@@ -840,7 +873,7 @@ extern const pm_char STR_CONFIRMRESET[];
 extern const pm_char STR_TOO_MANY_LUA_SCRIPTS[];
 extern const pm_char STR_BLCOLOR[];
 
-#if defined(CPUARM) && defined(VOICE)
+#if (defined(CPUARM) || defined(CPUESP32)) && defined(VOICE)
   struct LanguagePack {
     const char * id;
     const char * name;
@@ -1001,6 +1034,14 @@ extern const pm_char STR_R9MFLEXWARN2[];
   extern const pm_char STR_MAIN_COLOR[];
   extern const pm_char STR_TEXT_VIEWER[];
   extern const pm_char STR_MULTI_RFPOWER[];
+#endif
+
+#if defined(CPUESP32)
+  extern const pm_char STR_UNIT[] PROGMEM;
+  extern const pm_char STR_PRECISION[];
+  extern const pm_char STR_MIN[];
+  extern const pm_char STR_MAX[];
+  extern const pm_char STR_POPUP[];
 #endif
 
 #if defined(CPUARM)

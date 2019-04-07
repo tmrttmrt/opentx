@@ -44,7 +44,7 @@ char idx2char(int8_t idx)
   return ' ';
 }
 
-#if defined(CPUARM) || defined(SIMU)
+#if defined(CPUARM) || defined(SIMU) || defined(CPUESP32) 
 int8_t char2idx(char c)
 {
   if (c == '_') return 37;
@@ -80,7 +80,7 @@ int zchar2str(char * dest, const char * src, int size)
 }
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 unsigned int effectiveLen(const char * str, unsigned int size)
 {
   while (size > 0) {
@@ -153,11 +153,16 @@ char * getStringAtIndex(char * dest, const char * s, int idx)
   dest[len] = '\0';
   return dest;
 }
+#endif 
 
+#if (defined(CPUARM) || defined(CPUESP32)) && !defined(BOOT)
 char * strAppendStringWithIndex(char * dest, const char * s, int idx)
 {
   return strAppendUnsigned(strAppend(dest, s), abs(idx));
 }
+#endif
+
+#if defined(CPUARM) && !defined(BOOT)
 
 char * getTimerString(char * dest, putstime_t tme, uint8_t hours)
 {
@@ -213,7 +218,8 @@ char * getCurveString(char * dest, int idx)
 
   return dest;
 }
-
+#endif
+#if (defined(CPUARM) || defined(CPUESP32)) && !defined(BOOT)
 char * getGVarString(char * dest, int idx)
 {
   char * s = dest;
@@ -229,7 +235,8 @@ char * getGVarString(char * dest, int idx)
 
   return dest;
 }
-
+#endif
+#if defined(CPUARM) && !defined(BOOT)
 char * getSwitchString(char * dest, swsrc_t idx)
 {
   if (idx == SWSRC_NONE) {

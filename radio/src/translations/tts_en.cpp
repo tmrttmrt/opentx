@@ -50,7 +50,7 @@ enum EnglishPrompts {
 
 #if defined(VOICE)
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   #define EN_PUSH_UNIT_PROMPT(u, p) en_pushUnitPrompt((u), (p), id)
 #else
   #define EN_PUSH_UNIT_PROMPT(u, p) pushUnitPrompt((u), (p))
@@ -58,7 +58,7 @@ enum EnglishPrompts {
 
 I18N_PLAY_FUNCTION(en, pushUnitPrompt, uint8_t unitprompt, int16_t number)
 {
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   if (number == 1)
     PUSH_UNIT_PROMPT(unitprompt, 0);
   else
@@ -79,7 +79,7 @@ I18N_PLAY_FUNCTION(en, playNumber, getvalue_t number, uint8_t unit, uint8_t att)
     number = -number;
   }
 
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
   if (unit) {
     unit--;
     convertUnit(number, unit);
@@ -97,7 +97,7 @@ I18N_PLAY_FUNCTION(en, playNumber, getvalue_t number, uint8_t unit, uint8_t att)
 
   int8_t mode = MODE(att);
   if (mode > 0) {
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
     if (mode == 2) {
       number /= 10;
     }

@@ -878,7 +878,7 @@ void menuModelTelemetryFrsky(event_t event)
 #endif
 #endif
 
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
       case ITEM_TELEMETRY_SCREEN_LABEL1:
       case ITEM_TELEMETRY_SCREEN_LABEL2:
       {

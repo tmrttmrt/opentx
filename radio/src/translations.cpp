@@ -90,7 +90,7 @@ const pm_char STR_OPEN9X[] PROGMEM =
     ISTR(INPUTNAMES)
 #endif
     ISTR(VTMRMODES)
-#if defined(CPUM2560) || defined(CPUARM)
+#if defined(CPUM2560) || defined(CPUARM) || defined(CPUESP32)
     ISTR(DATETIME)
     ISTR(VPERSISTENT)
 #endif
@@ -335,7 +335,7 @@ const pm_char STR_STORAGE_FORMAT[] PROGMEM = TR_STORAGE_FORMAT;
 const pm_char STR_FAS_OFFSET[] PROGMEM = TR_FAS_OFFSET;
 #endif
 
-#if defined(CPUM2560) || defined(CPUARM)
+#if defined(CPUM2560) || defined(CPUARM) || defined(CPUESP32)
 const pm_char STR_MENUDATEANDTIME[] PROGMEM = TR_MENUDATEANDTIME;
 #endif
 
@@ -418,7 +418,7 @@ const pm_char STR_LATITUDE[] PROGMEM = TR_LATITUDE;
 const pm_char STR_LONGITUDE[] PROGMEM = TR_LONGITUDE;
 #endif
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
 const pm_char STR_SHUTDOWN[] PROGMEM = TR_SHUTDOWN;
 const pm_char STR_SAVEMODEL[] PROGMEM = TR_SAVEMODEL;
 #endif
@@ -444,6 +444,13 @@ const pm_char STR_WAV_VOLUME[] PROGMEM = INDENT TR_WAV_VOLUME;
 const pm_char STR_BG_VOLUME[] PROGMEM = INDENT TR_BG_VOLUME;
 const pm_char STR_PERSISTENT_MAH[] PROGMEM = TR_PERSISTENT_MAH;
 #endif
+
+#if defined(CPUESP32)
+const pm_char STR_BEEP_VOLUME[] PROGMEM = INDENT TR_BEEP_VOLUME;
+const pm_char STR_WAV_VOLUME[] PROGMEM = INDENT TR_WAV_VOLUME;
+const pm_char STR_BG_VOLUME[] PROGMEM = INDENT TR_BG_VOLUME;
+#endif
+
 
 #if defined(NAVIGATION_MENUS)
 const pm_char STR_SELECT_MODEL[] PROGMEM = TR_SELECT_MODEL;
@@ -514,6 +521,9 @@ const pm_char STR_LOGS_PATH[] PROGMEM = LOGS_PATH;
 const pm_char STR_LOGS_EXT[] PROGMEM = LOGS_EXT;
 const pm_char STR_MODELS_PATH[] PROGMEM = MODELS_PATH;
 const pm_char STR_MODELS_EXT[] PROGMEM = MODELS_EXT;
+#if defined(CPUESP32)
+const pm_char STR_OUT_OF_MEM[] PROGMEM = TR_OUT_OF_MEM;
+#endif  
 #endif
 
 const pm_char STR_CAT_NOT_EMPTY[] PROGMEM = TR_CAT_NOT_EMPTY;
@@ -692,6 +702,11 @@ const pm_char STR_R9MFLEXWARN2[] PROGMEM = TR_R9MFLEXWARN2;
   const pm_char STR_MULTI_RFPOWER[] PROGMEM = TR_MULTI_RFPOWER;
 #endif
 
+#if defined(CPUESP32)
+  const pm_char STR_UNIT[] PROGMEM = TR_UNIT;
+  const pm_char STR_PRECISION[] PROGMEM = TR_PRECISION;
+#endif
+
 #if defined(CPUARM)
   const pm_char STR_BYTES[] PROGMEM = TR_BYTES;
   const pm_char STR_ANTENNAPROBLEM[] PROGMEM = TR_ANTENNAPROBLEM;
@@ -742,6 +757,12 @@ const pm_char STR_R9MFLEXWARN2[] PROGMEM = TR_R9MFLEXWARN2;
   const pm_char STR_MENU_OTHER[] PROGMEM = TR_MENU_OTHER;
   const pm_char STR_MENU_INVERT[] PROGMEM = TR_MENU_INVERT;
   const pm_char STR_JITTER_FILTER[] PROGMEM = TR_JITTER_FILTER;
+#endif
+
+#if defined(CPUESP32)
+  const pm_char STR_POPUP[] PROGMEM = TR_POPUP;
+  const pm_char STR_MIN[] PROGMEM = TR_MIN;
+  const pm_char STR_MAX[] PROGMEM = TR_MAX;
 #endif
 
 #if MENUS_LOCK == 1

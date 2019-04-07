@@ -72,6 +72,7 @@ enum MenuModelSetupItems {
 #endif
   ITEM_MODEL_BEEP_CENTER,
   CASE_CPUARM(ITEM_MODEL_USE_GLOBAL_FUNCTIONS)
+  CASE_CPUESP32(ITEM_MODEL_USE_GLOBAL_FUNCTIONS)
 #if defined(PCBTARANIS)
   ITEM_MODEL_INTERNAL_MODULE_LABEL,
   ITEM_MODEL_INTERNAL_MODULE_MODE,
@@ -109,7 +110,7 @@ enum MenuModelSetupItems {
   ITEM_MODEL_PPM1_PROTOCOL,
   ITEM_MODEL_PPM1_PARAMS,
 #endif
-  ITEM_MODEL_EXTERNAL_MODULE_FAILSAFE,
+  CASE_CPUARM(ITEM_MODEL_EXTERNAL_MODULE_FAILSAFE)
 #if defined(PCBX7)
   ITEM_MODEL_TRAINER_LABEL,
   ITEM_MODEL_TRAINER_MODE,
@@ -319,7 +320,7 @@ void menuModelSetup(event_t event)
   MENU_TAB({ HEADER_LINE_COLUMNS 0, 2, CASE_PERSISTENT_TIMERS(0) 0, 0, 2, CASE_PERSISTENT_TIMERS(0) 0, 0, 0, 1, 0, 0, 0, 0, 0, NUM_SWITCHES, NUM_STICKS+NUM_POTS+NUM_SLIDERS+NUM_ROTARY_ENCODERS-1, FIELD_PROTOCOL_MAX, 2, CASE_PCBSKY9X(1) CASE_PCBSKY9X(2) });
 #endif
 
-  MENU_CHECK(menuTabModel, MENU_MODEL_SETUP, HEADER_LINE+MODEL_SETUP_MAX_LINES);
+  MENU_CHECK(menuTabModel, MENU_MODEL_SETUP, /*HEADER_LINE+*/MODEL_SETUP_MAX_LINES);
 
 #if defined(CPUARM) && (defined(DSM2) || defined(PXX))
   if (menuEvent) {
@@ -491,7 +492,7 @@ void menuModelSetup(event_t event)
         break;
       }
 
-#if defined(CPUM2560)
+#if defined(CPUM2560) || defined(CPUESP32)
       case ITEM_MODEL_TIMER1_PERSISTENT:
       case ITEM_MODEL_TIMER2_PERSISTENT:
       {
@@ -796,7 +797,7 @@ void menuModelSetup(event_t event)
         }
         break;
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
       case ITEM_MODEL_USE_GLOBAL_FUNCTIONS:
         lcdDrawTextAlignedLeft(y, STR_USE_GLOBAL_FUNCS);
         drawCheckBox(MODEL_SETUP_2ND_COLUMN, y, !g_model.noGlobalFunctions, attr);

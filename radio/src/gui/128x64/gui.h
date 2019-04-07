@@ -92,13 +92,13 @@ extern int8_t s_editMode;       // global editmode
 #define INCDEC_REP10                   0x40
 #define NO_DBLKEYS                     0x80
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   #define INCDEC_DECLARE_VARS(f)       uint8_t incdecFlag = (f); IsValueAvailable isValueAvailable = NULL
   #define INCDEC_SET_FLAG(f)           incdecFlag = (f)
   #define INCDEC_ENABLE_CHECK(fn)      isValueAvailable = fn
   #define CHECK_INCDEC_PARAM(event, var, min, max) checkIncDec(event, var, min, max, incdecFlag, isValueAvailable)
 #elif defined(CPUM64)
-#define INCDEC_DECLARE_VARS(f)
+  #define INCDEC_DECLARE_VARS(f)
   #define INCDEC_SET_FLAG(f)
   #define INCDEC_ENABLE_CHECK(fn)
   #define CHECK_INCDEC_PARAM(event, var, min, max) checkIncDec(event, var, min, max, EE_MODEL)
@@ -113,7 +113,7 @@ extern int8_t s_editMode;       // global editmode
 #define TITLE_ROW      ((uint8_t)-1)
 #define HIDDEN_ROW     ((uint8_t)-2)
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 struct CheckIncDecStops {
   const int count;
   const int stops[];
@@ -178,7 +178,7 @@ int8_t checkIncDecGen(event_t event, int8_t i_val, int8_t i_min, int8_t i_max);
     CHECK_INCDEC_MODELVAR_ZERO(event, var, max)
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
 #define AUTOSWITCH_ENTER_LONG() (attr && event==EVT_KEY_LONG(KEY_ENTER))
   #define CHECK_INCDEC_SWITCH(event, var, min, max, flags, available) \
     var = checkIncDec(event, var, min, max, (flags)|INCDEC_SWITCH, available)
@@ -224,7 +224,7 @@ void check_submenu_simple(event_t event, uint8_t maxrow);
 void title(const pm_char * s);
 #define TITLE(str) title(str)
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   #define MENU_TAB(...) const uint8_t mstate_tab[] = __VA_ARGS__
 #else
   #define MENU_TAB(...) static const pm_uint8_t mstate_tab[] PROGMEM = __VA_ARGS__
@@ -296,13 +296,13 @@ int8_t editSwitch(coord_t x, coord_t y, int8_t value, LcdFlags attr, event_t eve
 
 #define ON_OFF_MENU_ITEM(value, x, y, label, attr, event) value = editCheckBox(value, x, y, label, attr, event)
 
-#if defined(CPUARM) && defined(GVARS)
+#if (defined(CPUARM) || defined(CPUESP32)) && defined(GVARS)
   #define GVAR_MENU_ITEM(x, y, v, min, max, attr, editflags, event) editGVarFieldValue(x, y, v, min, max, attr, editflags, event)
 #else
   #define GVAR_MENU_ITEM(x, y, v, min, max, attr, editflags, event) editGVarFieldValue(x, y, v, min, max, attr, event)
 #endif
 
-#if defined(GVARS) && defined(CPUARM)
+#if defined(GVARS) && (defined(CPUARM) || defined(CPUESP32))
 int16_t editGVarFieldValue(coord_t x, coord_t y, int16_t value, int16_t min, int16_t max, LcdFlags attr, uint8_t editflags, event_t event);
 void drawGVarName(coord_t x, coord_t y, int8_t index, LcdFlags flags=0);
 void drawGVarValue(coord_t x, coord_t y, uint8_t gvar, gvar_t value, LcdFlags flags=0);
@@ -323,6 +323,10 @@ void gvarWeightItem(coord_t x, coord_t y, MixData * md, LcdFlags attr, event_t e
 
 #if defined(CPUARM)
 void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, uint8_t active, LcdFlags attr=ZCHAR);
+#elif defined(CPUESP32)
+void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, uint8_t active, LcdFlags attr=ZCHAR);
+//#define editName(x, y, name, size, event, active) editNameMask(x, y, name, size, false, event, active)
+void editNameMask(coord_t x, coord_t y, char * name, uint8_t size, uint8_t mask, event_t event, uint8_t active);
 #else
 void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, uint8_t active);
 #endif

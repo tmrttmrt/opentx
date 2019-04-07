@@ -1,7 +1,7 @@
 include(CMakeForceCompiler)
 include(Bitmaps)
 
-set(PCB_TYPES X7 XLITE X9D X9D+ X9E X10 X12S 9X 9XR 9X128 9XR128 9X2561 GRUVIN9X MEGA2560 SKY9X 9XRPRO AR9X)
+set(PCB_TYPES X7 XLITE X9D X9D+ X9E X10 X12S 9X 9XR 9X128 9XR128 9X2561 GRUVIN9X MEGA2560 SKY9X 9XRPRO AR9X ESP_WROOM_32)
 set(GUI_LANGUAGES CZ DE EN ES FR IT PT SK SE PL HU NL)
 set(TTS_LANGUAGES CZ DE EN ES FR IT PT SK SE PL HU NL RU)
 
@@ -118,6 +118,8 @@ elseif(PCB STREQUAL GRUVIN9X)
   include(targets/gruvin9x/CMakeLists.txt)
 elseif(PCB STREQUAL MEGA2560)
   include(targets/mega2560/CMakeLists.txt)
+elseif(PCB STREQUAL ESP_WROOM_32)
+  include(targets/esp-wroom-32/CMakeLists.txt)
 else()
   message(FATAL_ERROR "Unknown PCB '${PCB}'")
 endif()
@@ -143,6 +145,8 @@ endif()
 
 if(ARCH STREQUAL ARM)
   include(targets/common/arm/CMakeLists.txt)
+elseif(ARCH STREQUAL ESP32)
+  include(targets/common/esp32/CMakeLists.txt)
 else()
   include(targets/common/avr/CMakeLists.txt)
 endif()
@@ -160,8 +164,11 @@ set(SRC ${SRC} debug.cpp)
 if(${EEPROM} STREQUAL SDCARD)
   set(SRC ${SRC} storage/storage_common.cpp storage/sdcard_raw.cpp storage/modelslist.cpp)
 elseif(${EEPROM} STREQUAL EEPROM_RLC)
-  set(SRC ${SRC} storage/storage_common.cpp storage/eeprom_common.cpp storage/eeprom_rlc.cpp)
+  set(SRC ${SRC} storage/storage_common.cpp storage/eeprom_common.cpp storage/eeprom_rlc.cpp) 
   add_definitions(-DEEPROM -DEEPROM_RLC)
+elseif(${EEPROM} STREQUAL SPIFLASH)
+  set(SRC ${SRC} storage/storage_common.cpp storage/eeprom_common.cpp ) 
+  add_definitions(-DEEPROM -DSPIFLASH )
 else()
   set(SRC ${SRC} storage/storage_common.cpp storage/eeprom_common.cpp storage/eeprom_raw.cpp)
   add_definitions(-DEEPROM -DEEPROM_RAW)
@@ -284,7 +291,7 @@ if(SIMU_DISKIO)
   add_definitions(-DSIMU_DISKIO)
 endif()
 
-if(SDCARD)
+if(SDCARD AND NOT CPU_FAMILY STREQUAL ESP32)
   add_definitions(-DSDCARD)
   include_directories(${FATFS_DIR} ${FATFS_DIR}/option)
   set(SRC ${SRC} sdcard.cpp rtc.cpp logs.cpp)
@@ -385,6 +392,12 @@ if(GUI)
     set(SRC
       ${SRC}
       gui/gui_common_arm.cpp
+      )
+  endif()
+  if(ARCH STREQUAL ESP32)
+    set(SRC
+      ${SRC}
+      gui/gui_common_esp32.cpp
       )
   endif()
 endif()
@@ -536,6 +549,29 @@ if(NOT MSVC)
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         )
     endif()
+  elseif(ARCH STREQUAL ESP32)
+
+    enable_language(ASM)
+    set(CMAKE_C_COMPILER xtensa-esp32-elf-gcc)
+    set(CMAKE_CXX_COMPILER xtensa-esp32-elf-g++)
+    set(CMAKE_ASM_COMPILER xtensa-esp32-elf-as)
+
+    set(CMAKE_SYSTEM_NAME Generic)
+    set(CMAKE_SYSTEM_VERSION 1)
+    set(CMAKE_ASM_COMPILE_OBJECT "<CMAKE_ASM_COMPILER> -o <OBJECT> <SOURCE>")
+
+    set(COMMON_FLAGS "-mlongcalls -fomit-frame-pointer -fverbose-asm -Wa,-ahlms=firmware.lst -O${OPT} -gdwarf-2 -DHSE_VALUE=${HSE_VALUE} -fno-exceptions -fdata-sections -ffunction-sections ${WARNING_FLAGS}")
+    set(COMMON_FLAGS "${COMMON_FLAGS} ${FPU_FLAGS}")
+
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_FLAGS} -Wimplicit")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_FLAGS}")
+
+    # these are in addition to CMAKE_CXX_FLAGS
+    set(CMAKE_EXE_LINKER_FLAGS "-lm -T${RADIO_SRC_DIRECTORY}/${LINKER_SCRIPT} -Wl,-Map=firmware.map,--cref,--no-warn-mismatch,--gc-sections")
+    add_library(otxcore ${SRC} ${FIRMWARE_HEADERS})
+    link_libraries(otxcore -lstdc++)
+    add_dependencies(otxcore ${FIRMWARE_DEPENDENCIES})
+
 
   else()  # AVR
 
@@ -613,6 +649,12 @@ if(NOT MSVC)
 
     add_custom_target(jtag-flash
       COMMAND st-flash --reset write firmware.bin 0x8000000
+      DEPENDS firmware
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      )
+  elseif(CPU_FAMILY STREQUAL ESP32)
+    add_custom_target(flash
+      COMMAND echo not implemented
       DEPENDS firmware
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       )

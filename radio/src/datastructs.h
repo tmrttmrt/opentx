@@ -30,9 +30,15 @@
 #if defined(CPUARM)
   #define ARM_FIELD(x)                 x;
   #define AVR_FIELD(x)
+  #define ESP32_FIELD(x)
+#elif defined(CPUESP32)
+  #define ARM_FIELD(x)
+  #define AVR_FIELD(x)                 x;
+  #define ESP32_FIELD(x)                 x;
 #else
   #define ARM_FIELD(x)
   #define AVR_FIELD(x)                 x;
+  #define ESP32_FIELD(x)
 #endif
 
 #if defined(PCBSTD)
@@ -103,7 +109,7 @@ PACK(struct MixData {
   uint8_t  speedDown;
   NOBACKUP(char name[LEN_EXPOMIX_NAME]);
 });
-#elif defined(CPUM2560) || defined(CPUM2561)
+#elif defined(CPUM2560) || defined(CPUM2561) || defined(CPUESP32)
 PACK(struct MixData {
   uint8_t destCh:4;          // 0, 1..MAX_OUTPUT_CHANNELS
   uint8_t curveMode:1;       // O=curve, 1=differential
@@ -167,7 +173,7 @@ PACK(struct ExpoData {
   int8_t   offset;
   CurveRef curve;
 });
-#elif defined(CPUM2560) || defined(CPUM2561)
+#elif defined(CPUM2560) || defined(CPUM2561) || defined(CPUESP32)
 PACK(struct ExpoData {
   uint8_t mode:2;         // 0=end, 1=pos, 2=neg, 3=both
   uint8_t chn:2;
@@ -276,6 +282,21 @@ PACK(struct CustomFunctionData {
   });
   uint8_t active;
 });
+#elif defined(CPUESP32)
+PACK(struct CustomFunctionData {
+  int8_t  swtch;
+  uint8_t func;
+  PACK(union {
+    NOBACKUP(PACK(struct {
+      char name[LEN_FUNCTION_NAME];
+    }) play);
+  });
+  uint8_t mode:2;
+  uint8_t param:4;
+  uint8_t active:1;
+  uint8_t spare:1;
+  uint8_t value;
+});
 #elif defined(CPUM2560)
 PACK(struct CustomFunctionData {
   int8_t  swtch;
@@ -351,6 +372,16 @@ PACK(struct FlightModeData {
   FLIGHT_MODE_ROTARY_ENCODERS_FIELD
   gvar_t gvars[MAX_GVARS];
 });
+#elif defined(CPUESP32)
+PACK(struct FlightModeData {
+  int8_t trim[NUM_STICKS];
+  int8_t trim_ext;    // 2 extra bits per trim (10bits)
+  int8_t swtch;       // swtch of phase[0] is not used
+  NOBACKUP(char name[LEN_FLIGHT_MODE_NAME]);
+  uint8_t fadeIn:4;
+  uint8_t fadeOut:4;
+  gvar_t gvars[MAX_GVARS];
+});
 #else
 PACK(struct FlightModeData {
   int8_t trim[NUM_STICKS];
@@ -397,7 +428,7 @@ PACK(struct GVarData {
  * Timer structure
  */
 
-#if defined(CPUARM)
+#if defined(CPUARM) 
 PACK(struct TimerData {
   int32_t  mode:9;            // timer trigger source -> off, abs, stk, stk%, sw/!sw, !m_sw/!m_sw
   uint32_t start:23;
@@ -409,7 +440,7 @@ PACK(struct TimerData {
   uint32_t direction:1;
   NOBACKUP(char name[LEN_TIMER_NAME]);
 });
-#elif defined(CPUM2560)
+#elif defined(CPUM2560) || defined(CPUESP32)
 PACK(struct TimerData {
   int8_t   mode;            // timer trigger source -> off, abs, stk, stk%, sw/!sw, !m_sw/!m_sw
   uint16_t start;
@@ -712,7 +743,7 @@ PACK(struct ModuleData {
  * Model structure
  */
 
-#if defined(CPUARM) || defined(CPUM2560)
+#if defined(CPUARM) || defined(CPUM2560) || defined(CPUESP32)
 typedef uint16_t BeepANACenter;
 #else
 typedef uint8_t BeepANACenter;
@@ -813,6 +844,7 @@ PACK(struct ModelData {
   uint8_t   thrTrim:1;            // Enable Throttle Trim
   AVR_FIELD(int8_t    ppmNCH:4)
   ARM_FIELD(uint8_t   noGlobalFunctions:1)
+  ESP32_FIELD(uint8_t   noGlobalFunctions:1)
   ARM_FIELD(uint8_t   displayTrims:2)
   ARM_FIELD(uint8_t   ignoreSensorIds:1)
   int8_t    trimInc:3;            // Trim Increments
@@ -894,7 +926,7 @@ PACK(struct TrainerData {
   #define SPLASH_MODE uint8_t splashMode:1; uint8_t splashSpare:2
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) 
   #define EXTRA_GENERAL_FIELDS_ARM \
     NOBACKUP(uint8_t  backlightBright); \
     NOBACKUP(uint32_t globalTimer); \
@@ -915,6 +947,18 @@ PACK(struct TrainerData {
     NOBACKUP(int8_t   varioRange); \
     NOBACKUP(int8_t   varioRepeat); \
     CustomFunctionData customFn[MAX_SPECIAL_FUNCTIONS];
+#endif
+
+#if defined(CPUESP32)
+  #define EXTRA_GENERAL_FIELDS_ESP32 \
+    NOBACKUP(int8_t   beepVolume:4); \
+    NOBACKUP(int8_t   wavVolume:4); \
+    NOBACKUP(int8_t   varioVolume:4); \
+    NOBACKUP(int8_t   backgroundVolume:4); \
+    CustomFunctionData customFn[MAX_SPECIAL_FUNCTIONS];\
+    NOBACKUP(char passwd[18]);\
+    NOBACKUP(char ssid[18]);\
+    NOBACKUP(char ftppass[18]);
 #endif
 
 #if defined(PCBHORUS)
@@ -964,6 +1008,8 @@ PACK(struct TrainerData {
     char anaNames[NUM_STICKS+NUM_POTS+NUM_SLIDERS][LEN_ANA_NAME];
 #elif defined(CPUARM)
   #define EXTRA_GENERAL_FIELDS  EXTRA_GENERAL_FIELDS_ARM
+#elif defined(CPUESP32)
+  #define EXTRA_GENERAL_FIELDS  EXTRA_GENERAL_FIELDS_ESP32  
 #elif defined(PXX)
   #define EXTRA_GENERAL_FIELDS uint8_t countryCode;
 #else
@@ -1127,6 +1173,19 @@ static inline void check_struct()
   CHKSIZE(FrSkyTelemetryData, 88);
   CHKSIZE(ModelHeader, 12);
   CHKTYPE(CurveData, 4);
+#elif defined(PCBESP_WROOM_32)
+  CHKSIZE(MixData, 10);
+  CHKSIZE(ExpoData, 5);
+  CHKSIZE(LimitData, 5);
+  CHKSIZE(CustomFunctionData, 10);
+  CHKSIZE(FlightModeData, 30);
+  CHKSIZE(TimerData, 6);
+  CHKSIZE(SwashRingData, 3);
+  CHKSIZE(FrSkyBarData, 3);
+  CHKSIZE(FrSkyLineData, 2);
+  CHKSIZE(FrSkyTelemetryData, 43);
+  CHKSIZE(ModelHeader, 11);
+  CHKTYPE(CurveData, 1);
 #else
   // Common for all variants
   CHKSIZE(LimitData, 5);

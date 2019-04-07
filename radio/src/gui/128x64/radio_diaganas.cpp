@@ -73,7 +73,7 @@ void menuRadioDiagAnalogs(event_t event)
   }
 #endif
 
-#if !defined(CPUARM)
+#if !defined(CPUARM) && !defined(CPUESP32)
   // Display raw BandGap result (debug)
   lcdDrawText(64+5, MENU_HEADER_HEIGHT+1+3*FH, STR_BG);
   lcdDrawNumber(64+5+6*FW-3, 1+4*FH, BandGap, RIGHT);

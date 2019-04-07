@@ -86,7 +86,9 @@ enum ModuleFlag
 
 #if defined(CPUARM)
   #include "pulses_arm.h"
-#else
+#elif defined(CPUESP32)
+  #include "pulses_esp32.h"
+#else 
   #include "pulses_avr.h"
 #endif
 
