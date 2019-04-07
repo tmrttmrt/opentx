@@ -82,13 +82,13 @@ uint8_t switchState(uint8_t index);
 #define LCD_CONTRAST_MIN               10
 #define LCD_CONTRAST_MAX               45
 #define LCD_CONTRAST_DEFAULT           25
-#define PIN_NUM_MISO -1
-#define PIN_NUM_MOSI GPIO_NUM_12
-#define PIN_NUM_CLK  GPIO_NUM_14
-#define PIN_NUM_CS   GPIO_NUM_13
-#define PIN_NUM_DC   GPIO_NUM_27
-#define PIN_NUM_RST  GPIO_NUM_0
-#define PIN_NUM_BCKL GPIO_NUM_2
+#define LCD_PIN_NUM_MISO -1
+#define LCD_PIN_NUM_MOSI GPIO_NUM_12
+#define LCD_PIN_NUM_CLK  GPIO_NUM_14
+#define LCD_PIN_NUM_CS   GPIO_NUM_13
+#define LCD_PIN_NUM_DC   GPIO_NUM_27
+#define LCD_PIN_NUM_RST  GPIO_NUM_0
+#define LCD_PIN_NUM_BCKL GPIO_NUM_2
 void lcdRefresh(void);
 #define lcdRefreshWait()
 void lcdSetRefVolt(unsigned char val);
@@ -97,6 +97,12 @@ void lcdInit(void);
 #define lcdOff()
 #define LCD_LOCK()
 #define LCD_UNLOCK()
+
+//SDCARD driver
+#define SD_PIN_NUM_MISO GPIO_NUM_19
+#define SD_PIN_NUM_MOSI GPIO_NUM_5
+#define SD_PIN_NUM_CLK  GPIO_NUM_18
+#define SD_PIN_NUM_CS   GPIO_NUM_4
 
 // DBLKeys driver
 #define KEYS_PRESSED()            0

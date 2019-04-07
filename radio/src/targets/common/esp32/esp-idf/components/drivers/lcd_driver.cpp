@@ -34,21 +34,21 @@ static const char *TAG = "lcd_driver.cpp";
 spi_device_handle_t spi;
 
 void backlightEnable(){
-    gpio_set_level(PIN_NUM_BCKL, BACKLIGHT_ON?1:0);
+    gpio_set_level(LCD_PIN_NUM_BCKL, BACKLIGHT_ON?1:0);
 }
 
 void backlightDisable(){
-    gpio_set_level(PIN_NUM_BCKL, BACKLIGHT_ON?0:1);
+    gpio_set_level(LCD_PIN_NUM_BCKL, BACKLIGHT_ON?0:1);
 }
 
 bool isBacklightEnabled(){
-    return gpio_get_level (PIN_NUM_BCKL)==BACKLIGHT_ON?true:false;
+    return gpio_get_level (LCD_PIN_NUM_BCKL)==BACKLIGHT_ON?true:false;
 }
 
 void lcd_spi_pre_transfer_callback(spi_transaction_t *t)
 {
     int dc=(int)t->user;
-    gpio_set_level(PIN_NUM_DC, dc);
+    gpio_set_level(LCD_PIN_NUM_DC, dc);
 }
 
 void lcdSendCtl(const uint8_t cmd)
@@ -112,9 +112,9 @@ const static pm_uchar lcdInitSequence[] PROGMEM =
 void dispInit()
 {
     LCD_LOCK();
-    gpio_set_level(PIN_NUM_RST, 0);
+    gpio_set_level(LCD_PIN_NUM_RST, 0);
     vTaskDelay(100 / portTICK_RATE_MS);
-    gpio_set_level(PIN_NUM_RST, 1);
+    gpio_set_level(LCD_PIN_NUM_RST, 1);
     vTaskDelay(100 / portTICK_RATE_MS);
 
     for (uint8_t i=0; i<DIM(lcdInitSequence); i++) {
@@ -155,9 +155,9 @@ void lcdInit()
     esp_err_t ret;
     spi_bus_config_t buscfg;
     memset(&buscfg, 0, sizeof(buscfg));
-    buscfg.miso_io_num=PIN_NUM_MISO;
-    buscfg.mosi_io_num=PIN_NUM_MOSI;
-    buscfg.sclk_io_num=PIN_NUM_CLK;
+    buscfg.miso_io_num=LCD_PIN_NUM_MISO;
+    buscfg.mosi_io_num=LCD_PIN_NUM_MOSI;
+    buscfg.sclk_io_num=LCD_PIN_NUM_CLK;
     buscfg.quadwp_io_num=-1;
     buscfg.quadhd_io_num=-1;
     buscfg.max_transfer_sz=LCD_W;
@@ -165,7 +165,7 @@ void lcdInit()
     memset(&devcfg, 0, sizeof(devcfg));
     devcfg.clock_speed_hz=10*1000*1000;           //Clock out at 10 MHz
     devcfg.mode=0;                                //SPI mode 0
-    devcfg.spics_io_num=PIN_NUM_CS;               //CS pin
+    devcfg.spics_io_num=LCD_PIN_NUM_CS;               //CS pin
     devcfg.queue_size=7;                          //We want to be able to queue 7 transactions at a time
     devcfg.pre_cb=lcd_spi_pre_transfer_callback;  //Specify pre-transfer callback to handle D/C line
 
@@ -178,9 +178,9 @@ void lcdInit()
     //Initialize the LCD
     
     //Initialize non-SPI GPIOs
-    gpio_set_direction(PIN_NUM_DC, GPIO_MODE_OUTPUT);
-    gpio_set_direction(PIN_NUM_RST, GPIO_MODE_OUTPUT);
-    gpio_set_direction(PIN_NUM_BCKL, GPIO_MODE_OUTPUT);
+    gpio_set_direction(LCD_PIN_NUM_DC, GPIO_MODE_OUTPUT);
+    gpio_set_direction(LCD_PIN_NUM_RST, GPIO_MODE_OUTPUT);
+    gpio_set_direction(LCD_PIN_NUM_BCKL, GPIO_MODE_OUTPUT);
 
     dispInit();
 }
