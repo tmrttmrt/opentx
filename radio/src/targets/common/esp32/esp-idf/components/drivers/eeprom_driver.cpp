@@ -240,8 +240,10 @@ size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size)
     if ((*(uint32_t*)&head[0] != OTX_FOURCC && *(uint32_t*)&head[0] != O9X_FOURCC) || version < FIRST_CONV_EEPROM_VER || version > EEPROM_VER || head[5] != 'M') {
         fclose(fp);
         ESP_LOGE(TAG,"Incompatible model header from '%s'.", mpath);
+        ESP_LOGI(TAG,"OTX_FOURCC:%x, O9X_FOURCC:%x, version: %d", *(uint32_t*)&head[0],*(uint32_t*)&head[0],version);
         return 0;
     }
+    ESP_LOGI(TAG,"OTX_FOURCC:%x, O9X_FOURCC:%x, version: %d", *(uint32_t*)&head[0],*(uint32_t*)&head[0],version);
     if(1!=fread((uint8_t*)buff, size,1,fp)) {
         ESP_LOGE(TAG,"Failed to read model data from '%s'.", mpath);
         ret=0;
