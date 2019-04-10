@@ -286,11 +286,9 @@ PACK(struct CustomFunctionData {
 PACK(struct CustomFunctionData {
   int8_t  swtch;
   uint8_t func;
-  PACK(union {
-    NOBACKUP(PACK(struct {
+  PACK(struct {
       char name[LEN_FUNCTION_NAME];
-    }) play);
-  });
+   }) play;
   uint8_t mode:2;
   uint8_t param:4;
   uint8_t active:1;
@@ -370,16 +368,6 @@ PACK(struct FlightModeData {
   uint8_t fadeIn:4;
   uint8_t fadeOut:4;
   FLIGHT_MODE_ROTARY_ENCODERS_FIELD
-  gvar_t gvars[MAX_GVARS];
-});
-#elif defined(CPUESP32)
-PACK(struct FlightModeData {
-  int8_t trim[NUM_STICKS];
-  int8_t trim_ext;    // 2 extra bits per trim (10bits)
-  int8_t swtch;       // swtch of phase[0] is not used
-  NOBACKUP(char name[LEN_FLIGHT_MODE_NAME]);
-  uint8_t fadeIn:4;
-  uint8_t fadeOut:4;
   gvar_t gvars[MAX_GVARS];
 });
 #else
@@ -1173,19 +1161,6 @@ static inline void check_struct()
   CHKSIZE(FrSkyTelemetryData, 88);
   CHKSIZE(ModelHeader, 12);
   CHKTYPE(CurveData, 4);
-#elif defined(PCBESP_WROOM_32)
-  CHKSIZE(MixData, 10);
-  CHKSIZE(ExpoData, 5);
-  CHKSIZE(LimitData, 5);
-  CHKSIZE(CustomFunctionData, 10);
-  CHKSIZE(FlightModeData, 30);
-  CHKSIZE(TimerData, 6);
-  CHKSIZE(SwashRingData, 3);
-  CHKSIZE(FrSkyBarData, 3);
-  CHKSIZE(FrSkyLineData, 2);
-  CHKSIZE(FrSkyTelemetryData, 43);
-  CHKSIZE(ModelHeader, 11);
-  CHKTYPE(CurveData, 1);
 #else
   // Common for all variants
   CHKSIZE(LimitData, 5);
@@ -1197,7 +1172,7 @@ static inline void check_struct()
   CHKTYPE(CurveData, 1);
 
   // AVR
-#if defined(CPUM2560) || defined(CPUM2561)
+#if defined(CPUM2560) || defined(CPUM2561) || defined(CPUESP32)
   CHKSIZE(ExpoData, 5);
   CHKSIZE(MixData, 10);
 #else
@@ -1208,6 +1183,8 @@ static inline void check_struct()
 #if defined(CPUM2560)
   CHKSIZE(CustomFunctionData, 4);
   CHKSIZE(TimerData, 6);
+#elif defined(CPUESP32)
+  CHKSIZE(CustomFunctionData, 10);
 #else
   CHKSIZE(CustomFunctionData, 3);
   CHKSIZE(TimerData, 3);
@@ -1216,6 +1193,9 @@ static inline void check_struct()
 #if defined(PCBSTD)
   CHKSIZE(FlightModeData, 13);
   CHKSIZE(RadioData, 84);
+#elif defined(CPUESP32)
+  CHKSIZE(FlightModeData, 30);
+  CHKSIZE(RadioData, 375);
 #else
   CHKSIZE(FlightModeData, 30);
   CHKSIZE(RadioData, 85);

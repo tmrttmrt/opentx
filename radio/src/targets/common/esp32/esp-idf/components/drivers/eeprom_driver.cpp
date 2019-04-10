@@ -14,6 +14,8 @@
 #include "opentx.h"
 #undef DIR
 
+const pm_char * CopyConvertModel_M217(uint8_t i_fileDst, char * path);
+
 const char * const eepromDname = "/flash/eeprom.dir";
 const char * const eeGeneralName = "eeGeneral.bin";
 static const char *TAG = "eeprom_driver.cpp";
@@ -221,7 +223,7 @@ void eeSwapModels(uint8_t id1, uint8_t id2)
     free(fntmp);
 }
 
-size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size)
+size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size,  uint8_t &version)
 {
     uint16_t ret=size;
     ESP_LOGI(TAG,"Load model data from '%s'.", mpath );
@@ -236,19 +238,65 @@ size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size)
         ESP_LOGE(TAG,"Failed to read model header from '%s'.", mpath);
         return 0;
     }
-    uint8_t version = (uint8_t)head[4];
-    if ((*(uint32_t*)&head[0] != OTX_FOURCC && *(uint32_t*)&head[0] != O9X_FOURCC) || version < FIRST_CONV_EEPROM_VER || version > EEPROM_VER || head[5] != 'M') {
+    version = (uint8_t)head[4];
+    if ((*(uint32_t*)&head[0] != OTX_FOURCC && *(uint32_t*)&head[0] != O9X_FOURCC && *(uint32_t*)&head[0] != OTX_FOURCC_MEGA2560&& *(uint32_t*)&head[0] != O9X_FOURCC_MEGA2560) || (version != FIRST_CONV_EEPROM_VER && version != EEPROM_VER) || head[5] != 'M') {
         fclose(fp);
         ESP_LOGE(TAG,"Incompatible model header from '%s'.", mpath);
         ESP_LOGI(TAG,"OTX_FOURCC:%x, O9X_FOURCC:%x, version: %d", *(uint32_t*)&head[0],*(uint32_t*)&head[0],version);
         return 0;
     }
     ESP_LOGI(TAG,"OTX_FOURCC:%x, O9X_FOURCC:%x, version: %d", *(uint32_t*)&head[0],*(uint32_t*)&head[0],version);
-    if(1!=fread((uint8_t*)buff, size,1,fp)) {
-        ESP_LOGE(TAG,"Failed to read model data from '%s'.", mpath);
-        ret=0;
+    if(version == FIRST_CONV_EEPROM_VER){ //RLC encoded!
+        uint8_t m_zeroes   = 0;
+        uint8_t m_bRlc     = 0;
+        uint16_t i = 0;
+        for( ; 1; ) {
+            uint8_t ln = min<uint16_t>(m_zeroes, size-i);
+            memclear(&buff[i], ln);
+            i        += ln;
+            m_zeroes -= ln;
+            if (m_zeroes) break;
+
+            ln = min<uint16_t>(m_bRlc, size-i);
+            
+            uint8_t lr = fread(&buff[i],1, ln,fp);
+            if(lr<ln){
+                if(ferror(fp)){
+                    ret=0;
+                }
+            }
+            i        += lr ;
+            m_bRlc   -= lr;
+            if(m_bRlc) break;
+
+            if (fread(&m_bRlc, 1,1,fp) !=1){// read how many bytes to read
+                if(ferror(fp)){
+                    ret=0;
+                }
+                break; 
+            }
+
+            assert(m_bRlc & 0x7f);
+
+            if (m_bRlc&0x80) { // if contains high byte
+              m_zeroes  =(m_bRlc>>4) & 0x7;
+              m_bRlc    = m_bRlc & 0x0f;
+            }
+            else if(m_bRlc&0x40) {
+              m_zeroes  = m_bRlc & 0x3f;
+              m_bRlc    = 0;
+            }
+        }
+        ret=i;
+    } else {
+        if(1!=fread(buff, size,1,fp)) {
+            ret=0;
+        }
     }
     fclose(fp);
+    if(0==ret){
+        ESP_LOGE(TAG,"Failed to read model data from '%s'.", mpath);
+    }
     return ret;
 }
 
@@ -256,7 +304,8 @@ size_t fsLoadModelData(uint8_t index, uint8_t *buff, size_t size)
 {
     ESP_LOGI(TAG,"Load model %d data.", index );
     char * fn=makeModPath(index);
-    return fsLoadModelData(fn, buff, size);
+    uint8_t version;
+    return fsLoadModelData(fn, buff, size, version);
 }
 
 void eeLoadModelName(uint8_t id, char *name)
@@ -418,25 +467,18 @@ const pm_char * eeRestoreModel(uint8_t i_fileDst, char *model_name)
     strcpy(&buf[strlen(buf)], STR_MODELS_EXT);
 
     uint8_t tmp;
-    if(0==fsLoadModelData(buf, &tmp, 1)) {
+    uint8_t version;
+    if(0==fsLoadModelData(buf, &tmp, 1, version)) {
         return STR_INCOMPATIBLE;
     }
-
-    if (eeModelExists(i_fileDst)) {
-        eeDeleteModel(i_fileDst);
-    }
-    if(0 == eeCopyModel(i_fileDst, buf)) {
-        return STR_SDCARD_ERROR;
+    if( FIRST_CONV_EEPROM_VER == version  ){
+        return CopyConvertModel_M217(i_fileDst, buf);
+    } else {       
+        if(0 == eeCopyModel(i_fileDst, buf)) {
+            return STR_SDCARD_ERROR;
+        }
     }
     eeLoadModelHeader(i_fileDst, &modelHeaders[i_fileDst]);
-
-#if defined(EEPROM_CONVERSIONS)
-    if (version < EEPROM_VER) {
-        ConvertModel(i_fileDst, version);
-        eeLoadModel(g_eeGeneral.currModel);
-    }
-#endif
-
     return NULL;
 }
 

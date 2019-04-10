@@ -29,7 +29,7 @@ void espLogI(const char * format, ...);
 #define DISPLAY_PROGRESS_BAR(x)
 
 
-size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size);
+size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size, uint8_t &version);
 size_t fsLoadModelData(uint8_t index, uint8_t *buff, size_t size);
 size_t fsWriteModelData(uint8_t index, uint8_t *buff, size_t size);
 bool eepromOpen();

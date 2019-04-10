@@ -92,7 +92,7 @@
 #elif defined(CPUESP32)
   #define MAX_MODELS                   30
   #define MAX_OUTPUT_CHANNELS          16 // number of real output channels CH1-CH16
-  #define MAX_FLIGHT_MODES             5
+  #define MAX_FLIGHT_MODES             6
   #define MAX_MIXERS                   32
   #define MAX_EXPOS                    16
   #define MAX_LOGICAL_SWITCHES         12

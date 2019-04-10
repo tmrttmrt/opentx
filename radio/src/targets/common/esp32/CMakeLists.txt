@@ -6,7 +6,6 @@ option(BOLD "Bold font" ON)
 set(TELEMETRY_TYPES NONE MAVLINK ARDUPILOT FRSKY FRSKY_SPORT TELEMETREZ NMEA)
 set(TELEMETRY "NONE" CACHE STRING "Telemetry Type (${TELEMETRY_TYPES})")
 set_property(CACHE TELEMETRY PROPERTY STRINGS ${TELEMETRY_TYPES})
-
 add_definitions(-DLCD_${LCD})
 include_directories(targets/common/esp32 targets/common/esp32/esp-idf/build/include)
 include_directories($ENV{IDF_PATH}/components/esp32/include $ENV{IDF_PATH}/components/soc/include $ENV{IDF_PATH}/components/soc/esp32/include)
