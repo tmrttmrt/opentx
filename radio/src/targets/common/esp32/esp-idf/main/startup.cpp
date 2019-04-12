@@ -86,7 +86,7 @@ void menusTask(void * pvParameters)
 
 #if defined(SIMU)
     if (main_thread_running == 0)
-        break;
+    break;
 #endif
 }
 
@@ -99,30 +99,18 @@ void mixerTask(void * pdata)
 
 #if defined(SIMU)
         if (main_thread_running == 0)
-            return;
+        return;
 #endif
 
 #if defined(SBUS)
         processSbusInput();
 #endif
 
-        vTaskDelay(1);//1 tick
+        xSemaphoreTake( xPPMSem, 20/portTICK_PERIOD_MS); // run at least every 20ms
+        lastRunTime = esp_timer_get_time()/1000;
         //    if (isForcePowerOffRequested()) {
         //      pwrOff();
         //    }
-
-        uint32_t now = esp_timer_get_time()/1000;
-        bool run = false;
-        if ((now - lastRunTime) >= 20) {     // run at least every 20ms
-            run = true;
-        } else if (xSemaphoreTake( xPPMSem, 0 ) == pdTRUE) {
-            run = true;
-        }
-        if (!run) {
-            continue;  // go back to sleep
-        }
-
-        lastRunTime = now;
         if (!s_pulses_paused) {
             int64_t t0 = esp_timer_get_time();
 
@@ -149,7 +137,6 @@ void mixerTask(void * pdata)
 
             t0 = esp_timer_get_time() - t0;
             if (t0 > maxMixerDuration) maxMixerDuration = t0 ;
-            ESP_LOGD(TAG,"maxMixerDuration %d",maxMixerDuration);
         }
     }
 }
@@ -159,9 +146,9 @@ void  per10msTask(void * pdata)
 {
     while(1) {
         xSemaphoreTake(xPer10msSem, portMAX_DELAY);
-//        uint32_t now = esp_timer_get_time();
+        //        uint32_t now = esp_timer_get_time();
         per10ms();
-//        testDuration = (uint16_t)(esp_timer_get_time()-now);
+        //        testDuration = (uint16_t)(esp_timer_get_time()-now);
     }
 }
 
@@ -216,11 +203,11 @@ void IRAM_ATTR timer_group0_isr(void *para)
     we need enable it again, so it is triggered the next time */
     TIMERG0.hw_timer[timer_idx].config.alarm_en = TIMER_ALARM_EN;
 
-//    if(NULL!=xPer10msSem){
+    //    if(NULL!=xPer10msSem){
     BaseType_t mustYield=false;
     xSemaphoreGiveFromISR(xPer10msSem, &mustYield);
     if (mustYield) portYIELD_FROM_ISR();
-//    }
+    //    }
 }
 
 static void tg0_timer_init(timer_idx_t timer_idx)
@@ -244,7 +231,7 @@ static void tg0_timer_init(timer_idx_t timer_idx)
     timer_set_alarm_value(TIMER_GROUP_0, timer_idx, TIMER_BASE_CLK/(16*100)); //100Hz
     timer_enable_intr(TIMER_GROUP_0, timer_idx);
     timer_isr_register(TIMER_GROUP_0, timer_idx, timer_group0_isr,
-                       (void *) timer_idx, ESP_INTR_FLAG_IRAM, NULL);
+    (void *) timer_idx, ESP_INTR_FLAG_IRAM, NULL);
 
     xPer10msSem = xSemaphoreCreateBinary();
     if( xPer10msSem == NULL ) {
@@ -271,8 +258,60 @@ void espLogI(const char * format, ...)
 char g_ssid[sizeof(g_eeGeneral.ssid)];
 char g_passwd[sizeof(g_eeGeneral.passwd)];
 
+#if defined(CONFIG_FREERTOS_USE_TRACE_FACILITY) && defined(CONFIG_FREERTOS_USE_STATS_FORMATTING_FUNCTIONS)
 
+void vTaskGetRunTimeStatsA( )
+{
+    TaskStatus_t *pxTaskStatusArray;
+    volatile UBaseType_t uxArraySize, x;
+    uint32_t ulTotalRunTime, ulStatsAsPercentage;
 
+    // Take a snapshot of the number of tasks in case it changes while this
+    // function is executing.
+    uxArraySize = uxTaskGetNumberOfTasks();
+
+    // Allocate a TaskStatus_t structure for each task.  An array could be
+    // allocated statically at compile time.
+    pxTaskStatusArray = (TaskStatus_t *) pvPortMalloc( uxArraySize * sizeof( TaskStatus_t ) );
+
+    if( pxTaskStatusArray != NULL )
+    {
+        // Generate raw status information about each task.
+        uxArraySize = uxTaskGetSystemState( pxTaskStatusArray, uxArraySize, &ulTotalRunTime );
+
+        // For percentage calculations.
+        ulTotalRunTime /= 100UL;
+
+        // Avoid divide by zero errors.
+        if( ulTotalRunTime > 0 )
+        {
+            // For each populated position in the pxTaskStatusArray array,
+            // format the raw data as human readable ASCII data
+            for( x = 0; x < uxArraySize; x++ )
+            {
+                // What percentage of the total run time has the task used?
+                // This will always be rounded down to the nearest integer.
+                // ulTotalRunTimeDiv100 has already been divided by 100.
+                ulStatsAsPercentage = pxTaskStatusArray[ x ].ulRunTimeCounter / ulTotalRunTime;
+
+                if( ulStatsAsPercentage > 0UL )
+                {
+                    ESP_LOGI(TAG, "stat: %-16s\t%12u\t%u%%", pxTaskStatusArray[ x ].pcTaskName, pxTaskStatusArray[ x ].ulRunTimeCounter, ulStatsAsPercentage );
+                }
+                else
+                {
+                    // If the percentage is zero here then the task has
+                    // consumed less than 1% of the total run time.
+                    ESP_LOGI(TAG, "stat: %-16s\t%12u\t<1%%", pxTaskStatusArray[ x ].pcTaskName, pxTaskStatusArray[ x ].ulRunTimeCounter );
+                }
+            }
+        }
+
+        // The array is no longer needed, free the memory it consumes.
+        vPortFree( pxTaskStatusArray );
+    }
+}
+#endif
 int main();
 
 extern "C"   void app_main()
@@ -286,14 +325,19 @@ extern "C"   void app_main()
     TaskHandle_t tasks[]= {xMenusTaskHandle,xMixerTaskHandle,xAudioTaskHandle,xPer10msTaskHandle,xEncTaskHandle};
     uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
     while(1) {
-//        isWiFiStarted();
+        //        isWiFiStarted();
         ESP_LOGD(TAG,"s_pulses_paused: %d",s_pulses_paused);
         for(uint8_t i=0; i< nTasks; i++) {
             ESP_LOGD(TAG,"Min stack: %s: %d",pcTaskGetTaskName(tasks[i]),uxTaskGetStackHighWaterMark(tasks[i]));
         }
-        ESP_LOGD(TAG,"maxMixerDuration %d",maxMixerDuration);
-//        ESP_LOGI(TAG,"last 10ms task duration %d",testDuration);
+        ESP_LOGI(TAG,"maxMixerDuration: %d us.",maxMixerDuration);
+        //        ESP_LOGI(TAG,"last 10ms task duration %d",testDuration);
+#if defined(CONFIG_FREERTOS_USE_TRACE_FACILITY) && defined(CONFIG_FREERTOS_USE_STATS_FORMATTING_FUNCTIONS)        
+        ESP_LOGI(TAG,"");
+        vTaskGetRunTimeStatsA();
 
-        vTaskDelay(100/portTICK_PERIOD_MS);
+#endif
+
+        vTaskDelay(5000/portTICK_PERIOD_MS);
     };
 }
