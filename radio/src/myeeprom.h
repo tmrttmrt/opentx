@@ -289,7 +289,11 @@ enum CurveRefType {
 // #define MD_SETOFFSET(md, val) md->offset = val
 
 #else
-
+#if  defined(CPUESP32)
+#define GV_RANGE_WEIGHT 500
+#define GV_RANGE_OFFSET 500
+#endif
+    
 // highest bit used for small values in mix 128 --> 8 bit is enough
 #define GV1_SMALL  128
 // highest bit used for large values in mix 256 --> 9 bits is used (8 bits + 1 extra bit from weightMode/offsetMode)

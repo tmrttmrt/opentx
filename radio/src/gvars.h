@@ -63,7 +63,7 @@
   #define GET_GVAR_PREC1(x, ...)       (x*10)
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   #define GV_GET_GV1_VALUE(max)        ((max<=GV_RANGESMALL && min>=GV_RANGESMALL_NEG) ? GV1_SMALL : GV1_LARGE)
   #define GV_INDEX_CALCULATION(x,max)  ((max<=GV_RANGESMALL && min>=GV_RANGESMALL_NEG) ? (uint8_t) x-GV1_SMALL : ((x&(GV1_LARGE*2-1))-GV1_LARGE))
   #define GV_IS_GV_VALUE(x,min,max)    ((max>GV1_SMALL || min<-GV1_SMALL) ? (x>GV_RANGELARGE || x<GV_RANGELARGE_NEG) : (x>max) || (x<min))
@@ -83,7 +83,7 @@
 #define GV_RANGELARGE                  (GV1_LARGE - (RESERVE_RANGE_FOR_GVARS+1))
 #define GV_RANGELARGE_NEG              (-GV1_LARGE + (RESERVE_RANGE_FOR_GVARS+1))
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   // the define GV1_LARGE marks the highest bit value used for this variables
   // because this would give too big numbers for ARM, we limit it further for
   // offset and weight

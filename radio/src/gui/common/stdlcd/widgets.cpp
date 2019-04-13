@@ -186,11 +186,23 @@ void gvarWeightItem(coord_t x, coord_t y, MixData * md, LcdFlags attr, event_t e
   MD_UNION_TO_WEIGHT(weight, md);
 }
 
-#if defined(CPUARM) || defined(CPUESP32)
+#if defined(CPUARM)
 void drawGVarName(coord_t x, coord_t y, int8_t idx, LcdFlags flags)
 {
   char s[8];
   getGVarString(s, idx);
   lcdDrawText(x, y, s, flags);
+}
+#endif
+#if defined(CPUESP32)
+void drawGVarName(coord_t x, coord_t y, int8_t idx, LcdFlags flags)
+{
+  char s[8];
+  getGVarString(s, idx);
+  if(IS_LEFT_ALIGNED(flags)){
+    lcdDrawText(x, y, s, flags);
+  } else {
+    lcdDrawText(x-strlen(s)*FW, y, s, flags);
+  }
 }
 #endif

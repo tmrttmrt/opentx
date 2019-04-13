@@ -92,7 +92,7 @@ extern int8_t s_editMode;       // global editmode
 #define INCDEC_REP10                   0x40
 #define NO_DBLKEYS                     0x80
 
-#if defined(CPUARM) || defined(CPUESP32)
+#if defined(CPUARM) || defined(CPUESP32d)
   #define INCDEC_DECLARE_VARS(f)       uint8_t incdecFlag = (f); IsValueAvailable isValueAvailable = NULL
   #define INCDEC_SET_FLAG(f)           incdecFlag = (f)
   #define INCDEC_ENABLE_CHECK(fn)      isValueAvailable = fn

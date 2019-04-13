@@ -486,7 +486,11 @@ void menuModelMixOne(event_t event)
         }
         else {
           lcdDrawText(COLUMN_X+MIXES_2ND_COLUMN, y, PSTR("Diff"), menuHorizontalPosition==0 ? attr : 0);
+#if defined(CPUESP32)
+          md2->curveParam = GVAR_MENU_ITEM(COLUMN_X+MIXES_2ND_COLUMN+8*FW, y, curveParam, -100, 100, (menuHorizontalPosition==1 ? attr : 0), 0, editMode>0 ? event : 0);
+#else
           md2->curveParam = GVAR_MENU_ITEM(COLUMN_X+MIXES_2ND_COLUMN+5*FW, y, curveParam, -100, 100, LEFT|(menuHorizontalPosition==1 ? attr : 0), 0, editMode>0 ? event : 0);
+#endif
           if (attr && editMode>0 && menuHorizontalPosition==0) {
             int8_t tmp = 0;
             CHECK_INCDEC_MODELVAR(event, tmp, -1, 1);

@@ -128,6 +128,15 @@ const pm_char STR_OPEN9X[] PROGMEM =
 #endif
     ISTR(VANTENNATYPES)
 #endif
+#if defined(CPUESP32)
+#if defined(MULTIMODULE)
+    ISTR(MULTI_PROTOCOLS)
+#endif
+    ISTR(VPREC)
+#if defined(BLUETOOTH)
+    ISTR(BLUETOOTH_MODES)
+#endif
+#endif
 #if defined(TELEMETRY_MAVLINK)
     ISTR(MAVLINK_BAUDS)
     ISTR(MAVLINK_AC_MODES)

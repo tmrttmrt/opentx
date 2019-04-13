@@ -80,6 +80,10 @@
 #define LEFT                           0x00 /* fake */
 #define RIGHT                          0x04 /* align right */
 #define IS_LEFT_ALIGNED(att)           !((att) & RIGHT)
+#elif  defined(CPUESP32)
+#define LEFT                           0x100 /* to avoid collision with ZCHAR */
+#define RIGHT                          0x00 /* fake */
+#define IS_LEFT_ALIGNED(att)           ((att) & LEFT)
 #else
 #define LEFT                           0x80 /* align left */
 #define RIGHT                          0x00 /* fake */
@@ -125,7 +129,7 @@
   #define STREXPANDED                  0x00
 #endif
 
-#if defined(CPUARM)
+#if defined(CPUARM) || defined(CPUESP32)
   typedef uint32_t LcdFlags;
 #else
   typedef uint8_t LcdFlags;

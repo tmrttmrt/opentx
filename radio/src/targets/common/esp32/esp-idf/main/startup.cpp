@@ -255,8 +255,14 @@ void espLogI(const char * format, ...)
     va_end(arglist);
 }
 
-char g_ssid[sizeof(g_eeGeneral.ssid)];
-char g_passwd[sizeof(g_eeGeneral.passwd)];
+char logBuff[50]="\0";
+void espLogPut(const char * format, ...)
+{
+    va_list arglist;
+    va_start(arglist, format);
+    vsnprintf( logBuff,49,format, arglist);
+    va_end(arglist);
+}
 
 #if defined(CONFIG_FREERTOS_USE_TRACE_FACILITY) && defined(CONFIG_FREERTOS_USE_STATS_FORMATTING_FUNCTIONS)
 
@@ -330,7 +336,11 @@ extern "C"   void app_main()
         for(uint8_t i=0; i< nTasks; i++) {
             ESP_LOGD(TAG,"Min stack: %s: %d",pcTaskGetTaskName(tasks[i]),uxTaskGetStackHighWaterMark(tasks[i]));
         }
-        ESP_LOGI(TAG,"maxMixerDuration: %d us.",maxMixerDuration);
+        ESP_LOGD(TAG,"maxMixerDuration: %d us.",maxMixerDuration);
+        if(*logBuff){
+            ESP_LOGI(TAG,"logPut:'%s'",logBuff);
+            *logBuff=0;
+        }
         //        ESP_LOGI(TAG,"last 10ms task duration %d",testDuration);
 #if defined(CONFIG_FREERTOS_USE_TRACE_FACILITY) && defined(CONFIG_FREERTOS_USE_STATS_FORMATTING_FUNCTIONS)        
         ESP_LOGI(TAG,"");
@@ -338,6 +348,6 @@ extern "C"   void app_main()
 
 #endif
 
-        vTaskDelay(5000/portTICK_PERIOD_MS);
+        vTaskDelay(1000/portTICK_PERIOD_MS);
     };
 }

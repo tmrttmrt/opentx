@@ -24,6 +24,7 @@
 #define strcpy_P strcpy
 
 void espLogI(const char * format, ...);
+void espLogPut(const char * format, ...);
 
 #define eeFlush()
 #define DISPLAY_PROGRESS_BAR(x)
