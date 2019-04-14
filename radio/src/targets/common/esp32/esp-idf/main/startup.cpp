@@ -17,12 +17,11 @@
 
 
 
-#define MENUS_STACK_SIZE       0xA00
+#define MENUS_STACK_SIZE       0xC00
 #define MIXER_STACK_SIZE       0x800
-#define AUDIO_STACK_SIZE       0x800
-#define AUDIO_PLAY_STACK_SIZE  0xA00
+#define AUDIO_STACK_SIZE       0x900
 #define PER10MS_STACK_SIZE     0x500
-#define ENC_STACK_SIZE         0x800
+#define ENC_STACK_SIZE         0x700
 #define MENU_TASK_PERIOD_TICKS      50/portTICK_PERIOD_MS    // 50ms
 #define MENU_TASK_CORE 0
 #define MIXER_TASK_CORE 1
@@ -41,6 +40,11 @@ SemaphoreHandle_t xAudioSem = NULL;
 SemaphoreHandle_t xPer10msSem = NULL;
 extern SemaphoreHandle_t xPPMSem;
 //uint16_t testDuration;
+
+uint16_t encStackAvailable()
+{
+    return uxTaskGetStackHighWaterMark(xEncTaskHandle);
+}
 
 uint16_t menusStackAvailable()
 {
@@ -93,8 +97,8 @@ void menusTask(void * pvParameters)
 void mixerTask(void * pdata)
 {
     static uint32_t lastRunTime;
-    s_pulses_paused = true;
     ESP_LOGI(TAG,"Starting mixerTask.\n");
+    startPulses(); //Must start pulses here to run interrupt on MIXER_TASK_CORE = 1. No interupts on core 0 seem available. 
     while(1) {
 
 #if defined(SIMU)
@@ -319,19 +323,16 @@ void vTaskGetRunTimeStatsA( )
 }
 #endif
 int main();
+extern uint32_t testCount;
 
 extern "C"   void app_main()
 {
     main();
-    /*    initFS();
-        mountSDCard();
-        initWiFi();
-        startWiFi(g_eeGeneral.ssid,g_eeGeneral.passwd,g_eeGeneral.ftppass);
-    */
+    
     TaskHandle_t tasks[]= {xMenusTaskHandle,xMixerTaskHandle,xAudioTaskHandle,xPer10msTaskHandle,xEncTaskHandle};
     uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
     while(1) {
-        //        isWiFiStarted();
+//        isWiFiStarted();
         ESP_LOGD(TAG,"s_pulses_paused: %d",s_pulses_paused);
         for(uint8_t i=0; i< nTasks; i++) {
             ESP_LOGD(TAG,"Min stack: %s: %d",pcTaskGetTaskName(tasks[i]),uxTaskGetStackHighWaterMark(tasks[i]));
@@ -341,13 +342,12 @@ extern "C"   void app_main()
             ESP_LOGI(TAG,"logPut:'%s'",logBuff);
             *logBuff=0;
         }
-        //        ESP_LOGI(TAG,"last 10ms task duration %d",testDuration);
+        ESP_LOGD(TAG,"PPM frames count: %d",testCount);
+//        ESP_LOGI(TAG,"last 10ms task duration %d",testDuration);
 #if defined(CONFIG_FREERTOS_USE_TRACE_FACILITY) && defined(CONFIG_FREERTOS_USE_STATS_FORMATTING_FUNCTIONS)        
         ESP_LOGI(TAG,"");
         vTaskGetRunTimeStatsA();
-
 #endif
-
         vTaskDelay(1000/portTICK_PERIOD_MS);
     };
 }

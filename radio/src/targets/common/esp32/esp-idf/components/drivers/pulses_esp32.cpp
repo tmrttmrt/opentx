@@ -36,6 +36,7 @@ static portMUX_TYPE rmt_spinlock = portMUX_INITIALIZER_UNLOCKED;
 QueueHandle_t xPulsesQueue;
 SemaphoreHandle_t xPPMSem = NULL;
 DRAM_ATTR int16_t locChannelOutputs[MAX_OUTPUT_CHANNELS] = {0};
+uint32_t testCount=0;
 
 void IRAM_ATTR setupPulsesPPM()
 {
@@ -86,6 +87,7 @@ void IRAM_ATTR setupPulsesPPM()
     pd->level1 = idleLevel;
     RMT.tx_lim_ch[PPM_OUT_RMT_CHANNEL_0].limit = j; //Send interrupt SETUP_PULSES_DURATION before the end of the PPM packet
     RMT.int_ena.val |= BIT(PPM_OUT_RMT_CHANNEL_0 + 24);
+    testCount++;
     portEXIT_CRITICAL(&rmt_spinlock);
 }
 
@@ -191,6 +193,7 @@ static void IRAM_ATTR rmt_driver_isr_PPM(void* arg)
 
 void resumePulses()
 {
+    ESP_LOGI(TAG, "Resume pulses called. xPulsesQueue:%x",(uint32_t)xPulsesQueue);
     if(xPulsesQueue) {
         s_pulses_paused = false;
         setupPulses();
@@ -202,6 +205,11 @@ void startPulses()
     rmt_config_t config;
 
     xPulsesQueue=xQueueCreate( 1, sizeof( channelOutputs ) );
+    if(NULL == xPulsesQueue){
+        ESP_LOGE(TAG, "Failed to create queue: xPulsesQueue!");
+    } else {
+        ESP_LOGI(TAG, "xPulsesQueue created");
+    }
     memset(&config, 0, sizeof(config));
     config.rmt_mode = RMT_MODE_TX;
     config.channel = PPM_OUT_RMT_CHANNEL_0;
@@ -224,10 +232,14 @@ void startPulses()
     config.clk_div = 40; //2MHz tick
 
     ESP_ERROR_CHECK(rmt_config(&config));
-    rmt_isr_register(rmt_driver_isr_PPM, NULL, ESP_INTR_FLAG_IRAM, &handle );
+    if(ESP_OK != rmt_isr_register(rmt_driver_isr_PPM, NULL, ESP_INTR_FLAG_IRAM, &handle )){
+        ESP_LOGE(TAG, "Failed to register rmt (PPM) interrupt");
+    }
     s_pulses_paused = false;
     setupPulses();
-    rmt_tx_start(PPM_OUT_RMT_CHANNEL_0,true);
+    if(ESP_OK != rmt_tx_start(PPM_OUT_RMT_CHANNEL_0,true)){
+        ESP_LOGE(TAG, "Failed to start PPM pulses!");
+    }
 }
 
 void sendToPulses()

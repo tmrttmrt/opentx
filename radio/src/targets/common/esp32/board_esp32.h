@@ -82,6 +82,7 @@ uint16_t audioStackAvailable();
 uint16_t per10msStackAvailable();
 uint16_t mixerStackAvailable();
 uint16_t menusStackAvailable();
+uint16_t encStackAvailable();
 bool rEncDown(uint8_t mask);
 void sendToPulses();
 void mountSDCard();

@@ -2698,8 +2698,10 @@ void opentxInit(OPENTX_INIT_ARGS)
   doMixerCalculations();
 #endif
 
+#if !defined(CPUESP32)
   startPulses();
-
+#endif
+  
   wdt_enable(WDTO_500MS);
 }
 
