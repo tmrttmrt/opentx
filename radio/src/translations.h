@@ -260,7 +260,7 @@ extern const pm_char STR_OPEN9X[];
   #define OFS_BLUETOOTH_MODES   (OFS_VPREC + sizeof(VPREC))
   #define OFS_MAVLINK_BAUDS     (OFS_BLUETOOTH_MODES + sizeof(TR_BLUETOOTH_MODES))
 #else
-  #define OFS_MAVLINK_BAUDS     (OFS_VPREC + sizeof(VPREC))
+  #define OFS_MAVLINK_BAUDS     (OFS_VPREC + sizeof(TR_VPREC))
 #endif
 #endif
 #if defined(TELEMETRY_MAVLINK)

@@ -1977,4 +1977,6 @@ Text Label 6500 7150 0    50   ~ 0
 AU_AMPL
 Text Notes 5950 6650 0    60   ~ 0
 Audio filter
+Text Notes 5300 5950 0    50   ~ 0
+Power and PPM managment has not been \nimplemented in firmware.\nSD card SPI needs external pull ups (not drawn).
 $EndSCHEMATC

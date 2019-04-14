@@ -654,6 +654,8 @@ void menuMainView(event_t event)
     if (g_model.gvars[gvarLastChanged].unit) {
       lcdDrawText(lcdLastRightPos, 5*FH, "%", BOLD);
     }
+#elif  defined(CPUESP32)
+    lcdDrawNumber(lcdLastRightPos, 5*FH, GVAR_VALUE(gvarLastChanged, getGVarFlightMode(mixerCurrentFlightMode, gvarLastChanged)), LEFT|BOLD);
 #else
     lcdDrawNumber(lcdLastRightPos, 5*FH, GVAR_VALUE(gvarLastChanged, getGVarFlightMode(mixerCurrentFlightMode, gvarLastChanged)), BOLD);
 #endif

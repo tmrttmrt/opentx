@@ -176,6 +176,8 @@
 
 #if defined(CPUARM)
   #define TR_XPPM
+#elif defined(CPUESP32)
+  #define TR_XPPM                      "PPMsim"
 #else
   #define TR_XPPM                      "PPM16\0""PPMsim"
 #endif
