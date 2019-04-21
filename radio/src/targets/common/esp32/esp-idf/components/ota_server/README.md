@@ -24,7 +24,7 @@ In `make menuconfig`,
 
 You have to add small portion of code to integrate OTA capability to your project.
 
-OTA server have to started after ESP32 joined to WiFi network. So you have to
+OTA server has to be started after ESP32 joined to WiFi network. So you have to
 implement event handler (if not yet) and then emit `CONNECTED_BIT` event
 which `ota_server_task` waits for.
 

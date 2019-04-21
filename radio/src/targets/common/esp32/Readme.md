@@ -12,6 +12,7 @@ The project is still in development. The radio firmware has most of the function
 - sdcard support, sound messages work from downloaded Taranis X9 (2.2V0018) SD card
 - import of MEGA2560 exported model files
 - WiFi ftp server to download/upload files
+- OTA firmware update
 - Only English version of translation files (en.h.txt)
 - compiles under MinGW 
 
@@ -27,7 +28,6 @@ This will start also menuconfig where proper serial port needs to chosen, other 
 Todo list:
 
 - translation to other languages
-- OTA
 - integration into Companion through WiFi
 - finding if any concurrency issues will arise due to symmetric multiprocessing architecture (task priorities are an initial guess that probably needs more tunning)
 - Lua
