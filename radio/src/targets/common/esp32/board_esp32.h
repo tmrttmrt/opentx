@@ -33,7 +33,6 @@ void espLogPut(const char * format, ...);
 size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size, uint8_t &version);
 size_t fsLoadModelData(uint8_t index, uint8_t *buff, size_t size);
 size_t fsWriteModelData(uint8_t index, uint8_t *buff, size_t size);
-bool eepromOpen();
 bool eeLoadGeneral();
 void eeDeleteModel(uint8_t index);
 bool eeCopyModel(char * dpath, uint8_t src);
@@ -59,6 +58,7 @@ uint32_t sdMounted(void);
 void sdMountPoll();
 const char * eeBackupModel(uint8_t i_fileSrc);
 const char * eeRestoreModel(uint8_t i_fileDst, char *model_name);
+const char * eeBackupAll();
 #endif
 
 

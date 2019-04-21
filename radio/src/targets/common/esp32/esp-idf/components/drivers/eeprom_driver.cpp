@@ -150,9 +150,9 @@ bool eeModelExists(uint8_t id)
     return false;
 }
 
-bool eeCopyModel(char * dpath, char * spath)
+bool eeCopyFile(char * dpath, char * spath)
 {
-    ESP_LOGI(TAG,"eeCopyModel(%s, %s).", dpath, spath);
+    ESP_LOGI(TAG,"eeCopyFile(%s, %s).", dpath, spath);
     FILE * fps = fopen ( spath, "rb" );
     bool ret=true;
     if (NULL==fps) { /* Check if the file has been opened */
@@ -185,7 +185,7 @@ bool eeCopyModel(uint8_t dst, char *spath)
 {
     ESP_LOGI(TAG,"eeCopyModel(%d, %s).", dst, spath);
     char * fn=makeModPath(dst);
-    return eeCopyModel( fn, spath);
+    return eeCopyFile( fn, spath);
 
 }
 
@@ -193,7 +193,7 @@ bool eeCopyModel(char * dpath, uint8_t src)
 {
     ESP_LOGI(TAG,"eeCopyModel(%s, %d).", dpath, src);
     char * fn=makeModPath(src);
-    return eeCopyModel(dpath, fn);
+    return eeCopyFile(dpath, fn);
 }
 
 bool eeCopyModel(uint8_t dst, uint8_t src)
@@ -387,16 +387,12 @@ bool eeLoadGeneral()
 #endif
 }
 
-void storageFormat()
+void clearDir(const char *path)
 {
     DIR *dp;
     struct dirent *de;
     char fname[CONFIG_FATFS_MAX_LFN];
-    ESP_LOGI(TAG,"storageFormat.");
-    if(mkdir(eepromDname,0777) && errno != EEXIST) {
-        ESP_LOGE(TAG,"Failed to create directory: '%s'.", eepromDname);
-    }
-    dp=opendir(eepromDname);
+    dp=opendir(path);
     if(dp!=0) {
         while(1) {
             de=readdir(dp);
@@ -405,7 +401,7 @@ void storageFormat()
             }
             if (de->d_name[0] == '.' && de->d_name[1] == 0) continue;                           // Ignore . entry
             if (de->d_name[0] == '.' && de->d_name[1] == '.' && de->d_name[2] == 0) continue;   // Ignore .. entry
-            strcpy(fname,eepromDname);
+            strcpy(fname,path);
             strcat(fname,"/");
             strcat(fname,de->d_name);
             unlink(fname);
@@ -415,19 +411,19 @@ void storageFormat()
     }
 }
 
-bool eepromOpen()
+
+void storageFormat()
 {
-    struct stat st;
-    char * fn=makeEeFPath(eeGeneralName);
-    if (stat(fn, &st) == 0) {
-        return true;
+    ESP_LOGI(TAG,"storageFormat.");
+    if(mkdir(eepromDname,0777) && errno != EEXIST) {
+        ESP_LOGE(TAG,"Failed to create directory: '%s'.", eepromDname);
     }
-    return false;
+    clearDir(eepromDname);
 }
 
 void storageReadRadioSettings()
 {
-    if (!eepromOpen() || !eeLoadGeneral()) {
+    if (!eeLoadGeneral()) {
         startWiFi(NULL,NULL,NULL);
         isWiFiStarted(3600*1000);
         storageEraseAll(true);
@@ -446,6 +442,70 @@ void storageReadRadioSettings()
 }
 
 #if defined(SDCARD)
+
+const pm_char * eeBackupAll()
+{
+    char * buf = reusableBuffer.modelsel.mainname;
+    char * tail = &buf[sizeof(BACKUP_PATH)];
+    if (!sdMounted()) {
+        return STR_NO_SDCARD;
+    }
+    // check and create folder here
+    strcpy(buf, STR_BACKUP_PATH);
+    ESP_LOGI(TAG, "eeBackupGeneral:buf: '%s'", buf);
+    const char * error = sdCheckAndCreateDirectory(buf);
+    if (error) {
+        return error;
+    }
+    buf[sizeof(BACKUP_PATH)-1] = '/';
+    strcpy(tail,".idx");
+    uint8_t idx = 0;
+    FILE * fp = fopen ( buf, "rb" );
+    if (NULL!=fp) { 
+        size_t br=fread(&idx, 1,sizeof(idx),fp);
+        fclose(fp);
+        idx = (idx + 1)%4;
+    }
+    sprintf(tail,"eeprom.dir.%1d",idx);
+    error = sdCheckAndCreateDirectory(buf);
+    if (error) {
+        return error;
+    }
+    clearDir(buf);
+    DIR *dp;
+    struct dirent *de;
+    char srcfn[CONFIG_FATFS_MAX_LFN];
+    strcpy(srcfn,eepromDname);
+    strcat(srcfn,"/");
+    char * src = srcfn + strlen(srcfn);
+    strcat(buf,"/");
+    char * dst = buf + strlen(buf);
+    dp=opendir(eepromDname);
+    if(dp!=0) {
+        while(1) {
+            de=readdir(dp);
+            if (de == NULL) {
+                break;
+            }
+            if (de->d_name[0] == '.' && de->d_name[1] == 0) continue;                           // Ignore . entry
+            if (de->d_name[0] == '.' && de->d_name[1] == '.' && de->d_name[2] == 0) continue;   // Ignore .. entry
+            strcpy(src,de->d_name);
+            strcpy(dst,de->d_name);
+            eeCopyFile(buf,srcfn);
+        }
+        closedir(dp);
+        strcpy(tail,".idx");
+        fp = fopen ( buf, "wb" );
+        if (NULL!=fp) { 
+            size_t br=fwrite(&idx, 1,sizeof(idx),fp);
+            fclose(fp);
+        } else {
+            return STR_SDCARD_ERROR;
+        }
+    }
+    return NULL;
+}
+
 
 const pm_char * eeBackupModel(uint8_t i_fileSrc)
 {

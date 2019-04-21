@@ -774,6 +774,7 @@ extern const pm_char STR_RESET_BTN[];
   extern const pm_char STR_MODELS_EXT[];
 #if defined(CPUESP32)
   extern const pm_char STR_OUT_OF_MEM[];
+  extern const pm_char STR_BACKUP_PATH[];
 #endif   
   #define STR_UPDATE_LIST STR_DELAYDOWN
 #endif

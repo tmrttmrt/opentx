@@ -352,7 +352,7 @@ extern uint32_t testCount;
 extern "C"   void app_main()
 {
     main();
-    
+    eeBackupAll();
     TaskHandle_t *tasks[]= {&xMenusTaskHandle,&xMixerTaskHandle,&xAudioTaskHandle,&xPer10msTaskHandle,&xEncTaskHandle,&wifiTaskHandle, &otaTaskHandle};
     uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
     while(1) {

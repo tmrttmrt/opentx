@@ -532,6 +532,7 @@ const pm_char STR_MODELS_PATH[] PROGMEM = MODELS_PATH;
 const pm_char STR_MODELS_EXT[] PROGMEM = MODELS_EXT;
 #if defined(CPUESP32)
 const pm_char STR_OUT_OF_MEM[] PROGMEM = TR_OUT_OF_MEM;
+const pm_char STR_BACKUP_PATH[] PROGMEM = BACKUP_PATH;
 #endif  
 #endif
 
