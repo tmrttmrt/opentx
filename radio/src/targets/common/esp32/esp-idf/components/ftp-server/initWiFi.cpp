@@ -11,16 +11,21 @@
 #define HASASSERT
 #include "opentx.h"
 #include "WiFi.h"
+
 extern "C" {
 #include "ftp.h"
+#include "ota_server.h"
 }
 
 #define FTP_SERVER_TASK_CORE    0
+#define OTA_SERVER_TASK_CORE    1
 #define FTP_SERVER_STACK_SIZE   0x1000
+#define OTA_SERVER_STACK_SIZE   0xE00
 #define STA_CONNECT_TMO 10000
 
 static const char *TAG = "initWiFi.cpp";
 TaskHandle_t wifiTaskHandle = NULL;
+TaskHandle_t otaTaskHandle = NULL;
 static char ssid[sizeof(g_eeGeneral.ssid)+1] = "OpenTX";
 static char passwd[sizeof(g_eeGeneral.passwd)+1] = "";
 char ftp_pass[FTP_USER_PASS_LEN_MAX > sizeof(g_eeGeneral.ftppass) ? FTP_USER_PASS_LEN_MAX +1 : sizeof(g_eeGeneral.ftppass)+1] = "opentx";
@@ -42,16 +47,30 @@ void wifiTask(void *pvParameters)
         wifi_init_softap();
     }
     ftpServerTask(pvParameters);
+    ota_server_stop();
     ESP_LOGI(TAG, "Stopping WiFi ...");
-    ESP_ERROR_CHECK(esp_wifi_stop());
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_stop());
     vTaskDelay(100/ portTICK_PERIOD_MS);
     ESP_LOGI(TAG, "Deinit WiFi ...");
-    ESP_ERROR_CHECK(esp_wifi_deinit());
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_deinit());
     wifiTaskHandle = NULL;
     wifiState=WIFI_IDLE;
     vTaskDelete(NULL);
 }
 
+static void ota_server_task(void * param)
+{
+    while(!(wifiState & WIFI_CONNECTED)){
+        if(wifiState & WIFI_IDLE ){
+            goto exit;
+        }
+        vTaskDelay(100/portTICK_PERIOD_MS);
+    }
+    ota_server_start();
+exit:    
+    otaTaskHandle = NULL;
+    vTaskDelete(NULL);
+}
 
 void startWiFi( char *ssid_zchar, char *passwd_zchar, char* ftppass_zchar)
 {
@@ -65,8 +84,15 @@ void startWiFi( char *ssid_zchar, char *passwd_zchar, char* ftppass_zchar)
         ESP_LOGI(TAG,"passwd: '%s'",passwd);
         ESP_LOGI(TAG,"ftppasswd: '%s'",ftp_pass);
     }
-    BaseType_t ret_bt=xTaskCreatePinnedToCore(  wifiTask, "wifiTask", FTP_SERVER_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX +7, &wifiTaskHandle, FTP_SERVER_TASK_CORE );
+    if( pdPASS != xTaskCreatePinnedToCore( wifiTask, "WiFiTask", FTP_SERVER_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX - 4, &wifiTaskHandle, FTP_SERVER_TASK_CORE )){
+        ESP_LOGE(TAG, "Failed to create task: 'WiFiTask'");
+    }
     configASSERT( wifiTaskHandle );
+    if( pdPASS != xTaskCreatePinnedToCore( ota_server_task, "OTATask", OTA_SERVER_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX - 9, &otaTaskHandle, OTA_SERVER_TASK_CORE )){
+        ESP_LOGE(TAG, "Failed to create task: 'OTATask'");
+    }
+    configASSERT( otaTaskHandle );
+    
 }
 
 

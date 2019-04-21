@@ -35,6 +35,8 @@ TaskHandle_t xMixerTaskHandle = NULL;
 TaskHandle_t xAudioTaskHandle = NULL;
 TaskHandle_t xPer10msTaskHandle = NULL;
 TaskHandle_t xEncTaskHandle = NULL;
+extern TaskHandle_t wifiTaskHandle;
+extern TaskHandle_t otaTaskHandle;
 
 SemaphoreHandle_t xAudioSem = NULL;
 SemaphoreHandle_t xPer10msSem = NULL;
@@ -97,7 +99,7 @@ void menusTask(void * pvParameters)
 void mixerTask(void * pdata)
 {
     static uint32_t lastRunTime;
-    ESP_LOGI(TAG,"Starting mixerTask.\n");
+    ESP_LOGI(TAG,"Starting mixerTask./n");
     startPulses(); //Must start pulses here to run interrupt on MIXER_TASK_CORE = 1. No interupts on core 0 seem available. 
     while(1) {
 
@@ -259,14 +261,16 @@ void espLogI(const char * format, ...)
     va_end(arglist);
 }
 
-char logBuff[50]="\0";
+#define LOGBUFFLEN 50
+char logBuff[LOGBUFFLEN]="\0";
 void espLogPut(const char * format, ...)
 {
     va_list arglist;
     va_start(arglist, format);
-    vsnprintf( logBuff,49,format, arglist);
+    vsnprintf( logBuff,LOGBUFFLEN,format, arglist);
     va_end(arglist);
 }
+
 
 #if defined(CONFIG_FREERTOS_USE_TRACE_FACILITY) && defined(CONFIG_FREERTOS_USE_STATS_FORMATTING_FUNCTIONS)
 
@@ -306,13 +310,13 @@ void vTaskGetRunTimeStatsA( )
 
                 if( ulStatsAsPercentage > 0UL )
                 {
-                    ESP_LOGI(TAG, "stat: %-16s\t%12u\t%u%%", pxTaskStatusArray[ x ].pcTaskName, pxTaskStatusArray[ x ].ulRunTimeCounter, ulStatsAsPercentage );
+                    ESP_LOGI(TAG, "stat: %-16s/t%12u/t%u%%", pxTaskStatusArray[ x ].pcTaskName, pxTaskStatusArray[ x ].ulRunTimeCounter, ulStatsAsPercentage );
                 }
                 else
                 {
                     // If the percentage is zero here then the task has
                     // consumed less than 1% of the total run time.
-                    ESP_LOGI(TAG, "stat: %-16s\t%12u\t<1%%", pxTaskStatusArray[ x ].pcTaskName, pxTaskStatusArray[ x ].ulRunTimeCounter );
+                    ESP_LOGI(TAG, "stat: %-16s/t%12u/t<1%%", pxTaskStatusArray[ x ].pcTaskName, pxTaskStatusArray[ x ].ulRunTimeCounter );
                 }
             }
         }
@@ -329,14 +333,21 @@ extern "C"   void app_main()
 {
     main();
     
-    TaskHandle_t tasks[]= {xMenusTaskHandle,xMixerTaskHandle,xAudioTaskHandle,xPer10msTaskHandle,xEncTaskHandle};
+    TaskHandle_t *tasks[]= {&xMenusTaskHandle,&xMixerTaskHandle,&xAudioTaskHandle,&xPer10msTaskHandle,&xEncTaskHandle,&wifiTaskHandle, &otaTaskHandle};
     uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
     while(1) {
 //        isWiFiStarted();
         ESP_LOGD(TAG,"s_pulses_paused: %d",s_pulses_paused);
+//        ESP_LOGI(TAG,"");
+//        heap_caps_print_heap_info(MALLOC_CAP_INTERNAL);
+#if false
+        ESP_LOGI(TAG,"");
         for(uint8_t i=0; i< nTasks; i++) {
-            ESP_LOGD(TAG,"Min stack: %s: %d",pcTaskGetTaskName(tasks[i]),uxTaskGetStackHighWaterMark(tasks[i]));
+            if( NULL != *tasks[i] ){
+                ESP_LOGI(TAG,"Min stack: %s: %d",pcTaskGetTaskName(*tasks[i]),uxTaskGetStackHighWaterMark(*tasks[i]));
+            }
         }
+#endif
         ESP_LOGD(TAG,"maxMixerDuration: %d us.",maxMixerDuration);
         if(*logBuff){
             ESP_LOGI(TAG,"logPut:'%s'",logBuff);
@@ -348,6 +359,6 @@ extern "C"   void app_main()
         ESP_LOGI(TAG,"");
         vTaskGetRunTimeStatsA();
 #endif
-        vTaskDelay(1000/portTICK_PERIOD_MS);
+        vTaskDelay(2000/portTICK_PERIOD_MS);
     };
 }
