@@ -405,7 +405,7 @@ void clearDir(const char *path)
             strcat(fname,"/");
             strcat(fname,de->d_name);
             unlink(fname);
-            ESP_LOGI(TAG,"unlink '%s'.", fname);
+            ESP_LOGD(TAG,"unlink '%s'.", fname);
         }
         closedir(dp);
     }
@@ -462,11 +462,11 @@ const pm_char * eeBackupAll()
     uint8_t idx = 0;
     FILE * fp = fopen ( buf, "rb" );
     if (NULL!=fp) { 
-        size_t br=fread(&idx, 1,sizeof(idx),fp);
+        fread(&idx, 1,sizeof(idx),fp);
         fclose(fp);
-        idx = (idx + 1)%4;
+        idx++;
     }
-    sprintf(tail,"eeprom.dir.%1d",idx);
+    sprintf(tail,"eeprom.dir.%03d",idx);
     error = sdCheckAndCreateDirectory(buf);
     if (error) {
         return error;
@@ -497,11 +497,14 @@ const pm_char * eeBackupAll()
         strcpy(tail,".idx");
         fp = fopen ( buf, "wb" );
         if (NULL!=fp) { 
-            size_t br=fwrite(&idx, 1,sizeof(idx),fp);
+            fwrite(&idx, 1,sizeof(idx),fp);
             fclose(fp);
         } else {
             return STR_SDCARD_ERROR;
         }
+        sprintf(tail,"eeprom.dir.%03d",idx-5);
+        clearDir(buf);
+        unlink(buf);
     }
     return NULL;
 }

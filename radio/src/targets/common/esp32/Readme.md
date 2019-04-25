@@ -23,6 +23,12 @@ To build radio firmware ESP-IDF environment is needed (only tested on Windows wi
 cd [OpenTX root folder]/firmware/opentx/radio/src/targets/common/esp32/esp-idf
 make flash 
 ```
+OTA firmware upload:
+First enable WiFi on the radio. Radio IP will be shown on LCD upon succesfull connection.
+```
+cd [OpenTX root folder]/firmware/opentx/radio/src/targets/common/esp32/esp-idf
+make ota ESP32_IP=[radio IP]
+```
 This will start also menuconfig where proper serial port needs to chosen, other necessary options are (hopefully) all set in sdkconfig.defaults.
 
 Todo list:
