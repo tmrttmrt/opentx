@@ -37,7 +37,7 @@
 const pm_char * CopyConvertModel_M217(uint8_t i_fileDst, char * path);
 
 const char * const eepromDname = "/flash/eeprom.dir";
-const char * const eeGeneralName = "eeGeneral.bin";
+const char * const eeGeneralName = "radio.bin";
 static const char *TAG = "eeprom_driver.cpp";
 //DRAM_ATTR uint8_t eeprom[EEPROM_SIZE];
 
@@ -100,6 +100,16 @@ void eeWriteGeneral()
     FILE * fp = fopen ( fn, "wb" );
     if (NULL==fp) { /* Check if the file has been opened */
         ESP_LOGE(TAG,"Failed to open ' %s' for writing.", fn);
+        return;
+    }
+        char head[8];
+    *(uint32_t*)&head[0] = OTX_FOURCC;
+    head[4] = g_eeGeneral.version;
+    head[5] = 'R';
+    *(uint16_t*)&head[6] = sizeof(g_eeGeneral);
+    if(1!=fwrite(head, 8, 1,fp)) {
+        fclose(fp);
+        ESP_LOGE(TAG,"Failed to write radio settings header to '%s'.", fn);
         return;
     }
     if (1!=fwrite ((uint8_t*)&g_eeGeneral, sizeof(g_eeGeneral), 1,fp) ) {
@@ -262,10 +272,10 @@ size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size,  uint8_t &versio
     if ((*(uint32_t*)&head[0] != OTX_FOURCC && *(uint32_t*)&head[0] != O9X_FOURCC && *(uint32_t*)&head[0] != OTX_FOURCC_MEGA2560&& *(uint32_t*)&head[0] != O9X_FOURCC_MEGA2560) || (version != FIRST_CONV_EEPROM_VER && version != EEPROM_VER) || head[5] != 'M') {
         fclose(fp);
         ESP_LOGE(TAG,"Incompatible model header from '%s'.", mpath);
-        ESP_LOGI(TAG,"OTX_FOURCC:%x, O9X_FOURCC:%x, version: %d", *(uint32_t*)&head[0],*(uint32_t*)&head[0],version);
+        ESP_LOGI(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0],version);
         return 0;
     }
-    ESP_LOGI(TAG,"OTX_FOURCC:%x, O9X_FOURCC:%x, version: %d", *(uint32_t*)&head[0],*(uint32_t*)&head[0],version);
+    ESP_LOGI(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0], version);
     if(version == FIRST_CONV_EEPROM_VER){ //RLC encoded!
         uint8_t m_zeroes   = 0;
         uint8_t m_bRlc     = 0;
@@ -359,6 +369,20 @@ bool eeLoadGeneral()
         modelDefault(0);
         return true;
     }
+    char head[8];
+    if(1!=fread((uint8_t*)head, 8,1,fp)) {
+        fclose(fp);
+        ESP_LOGE(TAG,"Failed to read radio settings header from '%s'.", fn);
+        return 0;
+    }
+    uint8_t version = (uint8_t)head[4];
+    if ((*(uint32_t*)&head[0] != OTX_FOURCC ) || ( version != EEPROM_VER) || head[5] != 'R') {
+        fclose(fp);
+        ESP_LOGE(TAG,"Incompatible radio settings header from '%s'.", fn);
+        ESP_LOGI(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0],version);
+        return 0;
+    }
+    ESP_LOGI(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0],version);
     if (fread ((uint8_t*)&g_eeGeneral, sizeof(g_eeGeneral), 1,fp) == 1) {
         if(g_eeGeneral.version == EEPROM_VER) {
             fclose(fp);
