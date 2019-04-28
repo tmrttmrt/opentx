@@ -284,6 +284,9 @@ class AppData: protected CompStoreObj
     QString _avrdudeLocation;
     QString _dfuArguments;
     QString _dfuLocation;
+    QString _curlLocation;
+    QString _curlIP;
+    QString _ftpPasswd;
     QString _locale;
     QString _mcu;
     QString _programmer;
@@ -334,6 +337,9 @@ class AppData: protected CompStoreObj
     QString avrdudeLocation();
     QString dfuArguments();
     QString dfuLocation();
+    QString curlLocation();
+    QString curlIP();
+    QString ftpPasswd();
     QString lastFw();
     QString locale();
     QString mcu();
@@ -382,6 +388,9 @@ class AppData: protected CompStoreObj
     void avrdudeLocation (const QString);
     void dfuArguments    (const QString);
     void dfuLocation     (const QString);
+    void curlLocation    (const QString);
+    void curlIP          (const QString);
+    void ftpPasswd       (const QString);
     void lastFw          (const QString);
     void locale          (const QString);
     void mcu             (const QString);

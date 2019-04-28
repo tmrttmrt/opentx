@@ -444,6 +444,9 @@ QString AppData::avrPort()         { return _avrPort;         }
 QString AppData::avrdudeLocation() { return _avrdudeLocation; }
 QString AppData::dfuArguments()    { return _dfuArguments;    }
 QString AppData::dfuLocation()     { return _dfuLocation;     }
+QString AppData::curlLocation()    { return _curlLocation;    }
+QString AppData::curlIP()          { return _curlIP;          }
+QString AppData::ftpPasswd()       { return _ftpPasswd;       }
 QString AppData::locale()          { return _locale;          }
 QString AppData::mcu()             { return _mcu;             }
 QString AppData::programmer()      { return _programmer;      }
@@ -491,6 +494,9 @@ void AppData::avrPort         (const QString     x) { store(x, _avrPort,        
 void AppData::avrdudeLocation (const QString     x) { store(x, _avrdudeLocation, "avrdudeLocation"         );}
 void AppData::dfuArguments    (const QString     x) { store(x, _dfuArguments,    "dfu_arguments"           );}
 void AppData::dfuLocation     (const QString     x) { store(x, _dfuLocation,     "dfu_location"            );}
+void AppData::curlLocation    (const QString     x) { store(x, _curlLocation,    "curl_location"           );}
+void AppData::curlIP          (const QString     x) { store(x, _curlIP,          "curl_IP"                 );}
+void AppData::ftpPasswd       (const QString     x) { store(x, _ftpPasswd,       "ftp_passwd"              );}
 void AppData::locale          (const QString     x) { store(x, _locale,          "locale"                  );}
 void AppData::mcu             (const QString     x) { store(x, _mcu,             "mcu"                     );}
 void AppData::programmer      (const QString     x) { store(x, _programmer,      "programmer"              );}
@@ -573,6 +579,9 @@ void AppData::init()
     getset( _avrdudeLocation, "avrdudeLocation"        ,"" );
     getset( _dfuArguments,    "dfu_arguments"           ,"-a 0" );
     getset( _dfuLocation,     "dfu_location"            ,"" );
+    getset( _curlLocation,    "curl_location"            ,"" );
+    getset( _curlIP,          "curl_IP"               ,"" );
+    getset( _ftpPasswd,       "ftp_paswd"            ,"" );
     getset( _locale,          "locale"                  ,"" );
     getset( _mcu,             "mcu"                     ,"m64" );
     getset( _programmer,      "programmer"              ,"usbasp" );

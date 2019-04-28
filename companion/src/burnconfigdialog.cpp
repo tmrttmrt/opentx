@@ -77,6 +77,23 @@ burnConfigDialog::burnConfigDialog(QWidget *parent) :
       ui->dfu_location->hide();
       ui->dfu_browse->hide();
     }
+    else if (IS_ESP32(board)) {
+      setWindowTitle(tr("CURL Configuration"));
+      ui->avrArgs->hide();
+      ui->avrdude_location->hide();
+      ui->avrdude_port->hide();
+      ui->avrdude_programmer->hide();
+      ui->label_av1->hide();
+      ui->label_av2->hide();
+      ui->label_av4->hide();
+      ui->label_av5->hide();
+      ui->pushButton->hide();
+      ui->pushButton_3->hide();
+      ui->pushButton_4->hide();
+      ui->label_dfu1->hide();
+      ui->dfu_location->hide();
+      ui->dfu_browse->hide();
+    }
     else {
       setWindowTitle(tr("AVRDUDE Configuration"));
       ui->label_sb1->hide();
@@ -122,6 +139,7 @@ void burnConfigDialog::getSettings()
     avrLoc   = g.avrdudeLocation();
     sambaLoc = g.sambaLocation();
     dfuLoc =   g.dfuLocation();
+    curlLoc = g.curlLocation();
 
 #if defined WIN32 || !defined __GNUC__
     if ( avrLoc.isEmpty())

@@ -22,6 +22,7 @@
 #include "appdata.h"
 #include "eeprominterface.h"
 #include "process_flash.h"
+#include "process_dnld.h"
 #include "radionotfound.h"
 #include "burnconfigdialog.h"
 #include "helpers.h"
@@ -38,6 +39,9 @@ QString getRadioInterfaceCmd()
   }
   else if (IS_SKY9X(board)) {
     return bcd.getSAMBA();
+  }
+  else if (IS_ESP32(board)) {
+    return bcd.getCURL();
   }
   else {
     return bcd.getAVRDUDE();
@@ -88,6 +92,18 @@ QStringList getDfuArgs(const QString & cmd, const QString & filename)
   args << "" << cmd % filename;
   return args;
 }
+
+QStringList getCurlArgs(const QString & cmd, const QString & filename)
+{
+  QStringList args;
+  burnConfigDialog bcd;
+
+  args << "ftp://opentx:a@192.168.0.28/flash/eeprom.dir/radio.eesp --output";
+  args << cmd << filename;
+
+  return args;
+}
+
 
 QStringList getSambaArgs(const QString & tcl)
 {
@@ -355,7 +371,12 @@ bool readEeprom(const QString & filename, ProgressWidget * progress)
         return false;
       }
     }
-
+    else if(IS_ESP32(board)){
+        DnldProcess dnldProcess(getRadioInterfaceCmd(), getReadEEpromCmd(filename), progress);
+        if (!dnldProcess.run()) {
+          return false;
+        }
+    }
     if (!IS_STM32(board)) {
       FlashProcess flashProcess(getRadioInterfaceCmd(), getReadEEpromCmd(filename), progress);
       if (!flashProcess.run()) {

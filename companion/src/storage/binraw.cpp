@@ -45,8 +45,8 @@ bool BinRawFormat::load(RadioData & radioData)
   
   QFileInfo finfo(filename);
   for(int modelIndex = 0; modelIndex < getCurrentFirmware()->getCapability(Models); modelIndex++){
-    QFile file(finfo.absolutePath()+QString("/model-%1.bin").arg(modelIndex));
-    if(!file.exists()) break;
+    QFile file(finfo.absolutePath()+QString("/model-%1.ebin").arg(modelIndex));
+    if(!file.exists()) continue;
     if (!file.open(QFile::ReadOnly)) {
       qDebug() << "Unable to open" << filename << file.errorString();
       return false;
@@ -82,13 +82,14 @@ bool BinRawFormat::write(const RadioData & radioData)
   file.close();
   QFileInfo finfo(filename);
   for (size_t m=0; m<numModels; m++) {
-    QFile file(finfo.absolutePath()+QString("/model-%1.bin").arg(m));
+    const ModelData & model = radioData.models[m];
+    if (model.isEmpty()) continue;
+    QFile file(finfo.absolutePath()+QString("/model-%1.ebin").arg(m));
     if (!file.open(QFile::WriteOnly)) {
       qDebug() << "Unable to open" << file.fileName()  << file.errorString();
       return false;
     }
-    const ModelData & model = radioData.models[m];
-    if (model.isEmpty()) continue;
+
     QByteArray modelData;
     writeModelToByteArray(model, modelData);
     if (modelData.size() != file.write(modelData, modelData.size())) {

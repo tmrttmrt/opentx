@@ -62,7 +62,7 @@ TimerPanel::TimerPanel(QWidget *parent, ModelData & model, TimerData & timer, Ge
   ui->countdownBeep->setField(timer.countdownBeep, this);
   ui->countdownBeep->addItem(tr("Silent"), TimerData::COUNTDOWN_SILENT);
   ui->countdownBeep->addItem(tr("Beeps"), TimerData::COUNTDOWN_BEEPS);
-  if (IS_ARM(board) || IS_2560(board)) {
+  if (IS_ARM(board) || IS_2560(board) || IS_ESP32(board)) {
     ui->countdownBeep->addItem(tr("Voice"), TimerData::COUNTDOWN_VOICE);
     ui->countdownBeep->addItem(tr("Haptic"), TimerData::COUNTDOWN_HAPTIC);
   }

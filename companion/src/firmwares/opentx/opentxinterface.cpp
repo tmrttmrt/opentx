@@ -459,7 +459,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case FlightModes:
       if (IS_ARM(board))
         return 9;
-      else if (IS_2560(board))
+      else if (IS_ESP32(board) || IS_2560(board))
         return 6;
       else
         return 5;
@@ -488,7 +488,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
       return 1;
     case GvarsAreNamed:
     case GvarsFlightModes:
-      return ((IS_ARM(board) || IS_2560(board)) ? 1 : 0);
+      return ((IS_ARM(board) || IS_2560(board) || IS_ESP32(board)) ? 1 : 0);
     case Mixes:
       return (IS_ARM(board) ? 64 : 32);
     case OffsetWeight:
@@ -503,11 +503,11 @@ int OpenTxFirmware::getCapability(::Capability capability)
       else
         return 0;
     case PermTimers:
-      return (IS_2560(board) || IS_ARM(board));
+      return (IS_ESP32(board) || IS_2560(board) || IS_ARM(board));
     case CustomFunctions:
       if (IS_ARM(board))
         return 64;
-      else if (IS_2560(board) || board == BOARD_M128)
+      else if (IS_ESP32(board) || IS_2560(board) || board == BOARD_M128)
         return 24;
       else
         return 16;
@@ -541,7 +541,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case VoicesMaxLength:
       return (IS_ARM(board) ? (IS_TARANIS_X9(board) ? 8 : 6) : 0);
     case MultiLangVoice:
-      return (IS_ARM(board) ? 1 : 0);
+      return (IS_ARM(board) || IS_ESP32(board) ? 1 : 0);
     case SoundPitch:
       return 1;
     case Haptic:
@@ -586,7 +586,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case HasCvNames:
       return (IS_ARM(board) ? 1 : 0);
     case Telemetry:
-      if (IS_2560(board) || IS_ARM(board) || id.contains("frsky") || id.contains("telemetrez"))
+      if (IS_ESP32(board) || IS_2560(board) || IS_ARM(board) || id.contains("frsky") || id.contains("telemetrez"))
         return TM_HASTELEMETRY | TM_HASOFFSET | TM_HASWSHH;
       else
         return 0;
@@ -616,7 +616,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case HasVario:
       return 1;
     case HasVarioSink:
-      return ((IS_2560(board) || IS_ARM(board)) ? true : false);
+      return ((IS_ESP32(board) || IS_2560(board) || IS_ARM(board)) ? true : false);
     case HasFailsafe:
       return (IS_ARM(board) ? 32 : 0);
     case NumModules:
@@ -642,7 +642,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case CSFunc:
       return 18;
     case HasSDLogs:
-      return ((IS_2560(board) || IS_ARM(board)) ? true : false);
+      return ((IS_ESP32(board) || IS_2560(board) || IS_ARM(board)) ? true : false);
     case LcdWidth:
       if (IS_HORUS(board))
         return 480;
@@ -899,6 +899,7 @@ EepromLoadErrors OpenTxEepromInterface::checkVersion(unsigned int version)
         return OLD_VERSION;
       }
     case 218:
+    case 219:
       break;
     default:
       return NOT_OPENTX;

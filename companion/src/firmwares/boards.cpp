@@ -323,7 +323,7 @@ const QString Boards::getAnalogInputName(Board::Type board, unsigned index)
 
   index -= getCapability(board, Board::Sticks);
 
-  if (IS_9X(board) || IS_2560(board) || IS_SKY9X(board)) {
+  if (IS_9X(board) || IS_2560(board) || IS_ESP32(board) || IS_SKY9X(board)) {
     const QString pots[] = {
       "P1",
       "P2",

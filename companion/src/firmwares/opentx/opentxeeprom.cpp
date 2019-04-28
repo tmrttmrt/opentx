@@ -2065,7 +2065,7 @@ class CustomFunctionsConversionTable: public ConversionTable {
         }
         addConversion(FuncVario, val++);
         addConversion(FuncPlayHaptic, val++);
-        if (IS_2560(board) || IS_ARM(board) )
+        if (IS_ESP32(board) ||IS_2560(board) || IS_ARM(board) )
           addConversion(FuncLogs, val++);
         addConversion(FuncBacklight, val++);
         if (IS_STM32(board))
@@ -2081,7 +2081,7 @@ class CustomFunctionsConversionTable: public ConversionTable {
         if (version >= 213 && !IS_ARM(board))
           addConversion(FuncPlayBoth, val++);
         addConversion(FuncPlayValue, val++);
-        if (IS_2560(board) || IS_ARM(board) )
+        if (IS_ESP32(board) || IS_2560(board) || IS_ARM(board) )
           addConversion(FuncLogs, val++);
         if (IS_ARM(board))
           addConversion(FuncVolume, val++);

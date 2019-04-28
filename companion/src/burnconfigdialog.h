@@ -42,8 +42,10 @@ public:
     QString getAVRDUDE() {return avrLoc;}
     QString getSAMBA() {return sambaLoc;}
     QString getDFU() {return dfuLoc;}
+    QString getCURL() {return curlLoc;}
     QStringList getAvrdudeArgs();
     QStringList getDFUArgs() {return dfuArgs;}
+    QStringList getCurlArgs(){};
     QString getProgrammer() {return avrProgrammer;}
     QString getMCU() {return avrMCU;}
     QString getArmMCU() {return armMCU;}
@@ -60,6 +62,8 @@ private:
     QString avrLoc;
     QString sambaLoc;
     QString dfuLoc;
+    QString curlLoc;
+    QString curlArgs;
     QStringList avrArgs;
     QString avrProgrammer;
     QString avrMCU;

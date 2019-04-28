@@ -37,7 +37,7 @@
 const pm_char * CopyConvertModel_M217(uint8_t i_fileDst, char * path);
 
 const char * const eepromDname = "/flash/eeprom.dir";
-const char * const eeGeneralName = "radio.bin";
+const char * const eeGeneralName = "radio.eesp";
 static const char *TAG = "eeprom_driver.cpp";
 //DRAM_ATTR uint8_t eeprom[EEPROM_SIZE];
 
@@ -55,7 +55,7 @@ char * makeModPath(uint8_t index)
 #define MOD_FILE_PREFIX "model-"
     char buff[16]=MOD_FILE_PREFIX;
     itoa(index,buff+sizeof(MOD_FILE_PREFIX)-1,10);
-    strcat(buff,".bin");
+    strcat(buff,".ebin");
     return makeEeFPath(buff);
 }
 

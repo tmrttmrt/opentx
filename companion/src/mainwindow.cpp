@@ -151,7 +151,7 @@ MainWindow::MainWindow():
   if (!str.isEmpty()) {
     int fileType = getStorageType(str);
 
-    if (fileType==STORAGE_TYPE_EEPE || fileType==STORAGE_TYPE_EEPM || fileType==STORAGE_TYPE_BIN || fileType==STORAGE_TYPE_OTX) {
+    if (fileType==STORAGE_TYPE_EEPE || fileType==STORAGE_TYPE_EEPM || fileType==STORAGE_TYPE_BIN || fileType==STORAGE_TYPE_OTX || fileType==STORAGE_TYPE_EESP) {
       MdiChild * child = createMdiChild();
       if (child->loadFile(str)) {
         if (!(printing && model >= 0 && (getCurrentFirmware()->getCapability(Models) == 0 || model<getCurrentFirmware()->getCapability(Models)) && !printfilename.isEmpty())) {
