@@ -8,6 +8,7 @@ set(storage_NAMES
   firmwareinterface
   storage
   bineeprom
+  binraw
   eepe
   hexeeprom
   categorized
