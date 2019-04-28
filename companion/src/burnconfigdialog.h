@@ -43,9 +43,11 @@ public:
     QString getSAMBA() {return sambaLoc;}
     QString getDFU() {return dfuLoc;}
     QString getCURL() {return curlLoc;}
+    QString getCurlIP() {return curlIP;}
+    QString getFtpPasswd() {return ftpPasswd;}
     QStringList getAvrdudeArgs();
     QStringList getDFUArgs() {return dfuArgs;}
-    QStringList getCurlArgs(){};
+    QStringList getCurlArgs(){return curlArgs;};
     QString getProgrammer() {return avrProgrammer;}
     QString getMCU() {return avrMCU;}
     QString getArmMCU() {return armMCU;}
@@ -63,7 +65,8 @@ private:
     QString sambaLoc;
     QString dfuLoc;
     QString curlLoc;
-    QString curlArgs;
+    QString curlIP;
+    QString ftpPasswd;
     QStringList avrArgs;
     QString avrProgrammer;
     QString avrMCU;
@@ -71,6 +74,7 @@ private:
     QString avrPort;
     QString sambaPort;
     QStringList dfuArgs;
+    QStringList curlArgs;
 
 private slots:
     void shrink();
@@ -83,9 +87,13 @@ private slots:
     void on_avrdude_mcu_currentIndexChanged(QString );
     void on_avrdude_port_currentIndexChanged(QString );
     void on_samba_location_editingFinished();
+    void on_curl_location_editingFinished();
+    void on_curl_ip_editingFinished();
+    void on_ftp_passwd_editingFinished();
     void on_samba_port_editingFinished();
     void on_arm_mcu_currentIndexChanged(QString );
     void on_sb_browse_clicked();
+    void on_curl_browse_clicked();
     void on_dfu_browse_clicked();
     void on_dfu_location_editingFinished();
     void on_dfuArgs_editingFinished();

@@ -1087,6 +1087,9 @@ void MainWindow::readEeprom()
     tempFile = generateProcessUniqueTempFileName("temp.otx");
   else if (IS_ARM(board))
     tempFile = generateProcessUniqueTempFileName("temp.bin");
+  else if (IS_ESP32(board)){
+    tempFile = generateProcessUniqueTempFileName("temp.eesp");
+  }
   else
     tempFile = generateProcessUniqueTempFileName("temp.hex");
 

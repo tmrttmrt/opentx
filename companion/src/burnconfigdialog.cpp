@@ -59,6 +59,9 @@ burnConfigDialog::burnConfigDialog(QWidget *parent) :
       ui->samba_location->hide();
       ui->samba_port->hide();
       ui->sb_browse->hide();
+      ui->curl_browse->hide();
+      ui->curl_ip->hide();
+      ui->ftp_passwd->hide();
     }
     else if (IS_SKY9X(board)) {
       setWindowTitle(tr("SAM-BA Configuration"));
@@ -76,6 +79,10 @@ burnConfigDialog::burnConfigDialog(QWidget *parent) :
       ui->label_dfu1->hide();
       ui->dfu_location->hide();
       ui->dfu_browse->hide();
+      ui->curl_browse->hide();
+      ui->curl_ip->hide();
+      ui->ftp_passwd->hide();
+
     }
     else if (IS_ESP32(board)) {
       setWindowTitle(tr("CURL Configuration"));
@@ -93,6 +100,13 @@ burnConfigDialog::burnConfigDialog(QWidget *parent) :
       ui->label_dfu1->hide();
       ui->dfu_location->hide();
       ui->dfu_browse->hide();
+      ui->label_sb1->hide();
+      ui->label_sb3->hide();
+      ui->sb_browse->hide();
+      ui->samba_location->hide();
+      ui->samba_port->hide();
+      ui->advCtrChkB->hide();
+      ui->label->hide();
     }
     else {
       setWindowTitle(tr("AVRDUDE Configuration"));
@@ -105,6 +119,9 @@ burnConfigDialog::burnConfigDialog(QWidget *parent) :
       ui->label_dfu2->hide();
       ui->dfu_location->hide();
       ui->dfu_browse->hide();
+      ui->curl_browse->hide();
+      ui->curl_ip->hide();
+      ui->ftp_passwd->hide();
     }
     ui->label_av3->hide();
     ui->avrdude_mcu->hide();
@@ -140,6 +157,8 @@ void burnConfigDialog::getSettings()
     sambaLoc = g.sambaLocation();
     dfuLoc =   g.dfuLocation();
     curlLoc = g.curlLocation();
+    curlIP = g.curlIP();
+    ftpPasswd = g.ftpPasswd();
 
 #if defined WIN32 || !defined __GNUC__
     if ( avrLoc.isEmpty())
@@ -182,6 +201,10 @@ void burnConfigDialog::getSettings()
 
     ui->samba_location->setText(getSAMBA());
     ui->samba_port->setText(getSambaPort());
+    
+    ui->curl_location->setText(getCURL());
+    ui->curl_ip->setText(getCurlIP());
+    ui->ftp_passwd->setText(getFtpPasswd());
 
     ui->dfu_location->setText(getDFU());
     ui->dfuArgs->setText(getDFUArgs().join(" "));
@@ -213,6 +236,9 @@ void burnConfigDialog::putSettings()
     g.sambaPort( sambaPort );
     g.armMcu( armMCU );
     g.dfuLocation( dfuLoc );
+    g.curlLocation(curlLoc);
+    g.curlIP(curlIP);
+    g.ftpPasswd(ftpPasswd);
     g.dfuArguments( dfuArgs.join(" ") );
 }
 
@@ -288,6 +314,20 @@ void burnConfigDialog::on_samba_location_editingFinished()
     sambaLoc = ui->samba_location->text();
 }
 
+void burnConfigDialog::on_curl_location_editingFinished()
+{
+    curlLoc = ui->curl_location->text();
+}
+
+void burnConfigDialog::on_curl_ip_editingFinished()
+{
+    curlIP = ui->curl_ip->text();
+}
+
+void burnConfigDialog::on_ftp_passwd_editingFinished()
+{
+    ftpPasswd = ui->ftp_passwd->text();
+}
 void burnConfigDialog::on_samba_port_editingFinished()
 {
     sambaPort = ui->samba_port->text();
@@ -316,6 +356,16 @@ void burnConfigDialog::on_sb_browse_clicked()
     {
         ui->samba_location->setText(fileName);
         sambaLoc = fileName;
+    }
+}
+
+void burnConfigDialog::on_curl_browse_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Select Location"),ui->curl_location->text());
+    if(!fileName.isEmpty())
+    {
+        ui->curl_location->setText(fileName);
+        curlLoc = fileName;
     }
 }
 
