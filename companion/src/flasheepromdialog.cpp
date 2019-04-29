@@ -48,6 +48,9 @@ radioData(new RadioData())
   if (backupPath.isEmpty() || !QDir(backupPath).exists()) {
     ui->backupBeforeWrite->setEnabled(false);
   }
+  if (IS_ESP32(getCurrentBoard())) {
+    ui->checkFirmwareCompatibility->setEnabled(false);
+  }
 }
 
 FlashEEpromDialog::~FlashEEpromDialog()
@@ -256,10 +259,18 @@ void FlashEEpromDialog::on_burnButton_clicked()
     if (backupPath.isEmpty()) {
       backupPath=g.backupDir();
     }
-    backupFilename = backupPath + "/backup-" + QDateTime().currentDateTime().toString("yyyy-MM-dd-HHmmss") + ".bin";
+    if(IS_ESP32(getCurrentBoard())){
+        backupFilename = backupPath + "/backup-" + QDateTime().currentDateTime().toString("yyyy-MM-dd-HHmmss") + ".edir";
+        QDir dir(backupFilename);
+        dir.mkdir(backupFilename);
+        backupFilename = dir.absoluteFilePath("radio.eesp");
+    }
+    else {
+        backupFilename = backupPath + "/backup-" + QDateTime().currentDateTime().toString("yyyy-MM-dd-HHmmss") + ".bin";
+    }
   }
   else if (ui->checkFirmwareCompatibility->isChecked()) {
-    backupFilename = generateProcessUniqueTempFileName("eeprom.bin");
+        backupFilename = generateProcessUniqueTempFileName("eeprom.bin");
   }
   if (!backupFilename.isEmpty()) {
     if (!readEeprom(backupFilename, progressDialog.progress())) {

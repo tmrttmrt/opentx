@@ -34,9 +34,11 @@ class DnldProcess : public QObject
   Q_OBJECT
 
 public:
-  DnldProcess(const QString &cmd, const QStringList &args, ProgressWidget *progress);
+  enum DnldPhase { READING, WRITING };
+  DnldProcess(const QString &cmd, const QStringList &args, ProgressWidget *progress, enum DnldPhase dnldPhase = READING);
   ~DnldProcess();
   bool run();
+  
 
 signals:
   void finished();
@@ -59,8 +61,8 @@ protected:
   bool hasErrors;
   QString currStdoutLine;
   QString currStderrLine;
-  enum DnldPhase { READING, WRITING };
   DnldPhase dnldPhase;
+  int itemsProcessed;
 #if !__GNUC__
   QTimer *killTimer;
 #endif

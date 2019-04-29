@@ -3272,7 +3272,6 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
   internalField.Append(new BoolField<1>(this, modelData.extendedLimits));
   internalField.Append(new BoolField<1>(this, modelData.extendedTrims));
   internalField.Append(new BoolField<1>(this, modelData.throttleReversed));
-//internalField.Append(new SignedField<8>(this, modelData.moduleData[0].ppm.delay));
   if (!IS_ARM(board) || version < 216) {
     internalField.Append(new ConversionField< SignedField<8> >(this, modelData.moduleData[0].ppm.delay, exportPpmDelay, importPpmDelay));
   }
@@ -3533,7 +3532,7 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
 
 void OpenTxModelData::beforeExport()
 {
-  // qDebug() << QString("before export model") << modelData.name;
+  qDebug() << QString("before export model") << modelData.name;
 
   for (int module=0; module<3; module++) {
     if ((modelData.moduleData[module].protocol >= PULSES_PXX_XJT_X16 && modelData.moduleData[module].protocol <= PULSES_PXX_XJT_LR12) ||

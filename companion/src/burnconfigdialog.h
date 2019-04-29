@@ -47,7 +47,6 @@ public:
     QString getFtpPasswd() {return ftpPasswd;}
     QStringList getAvrdudeArgs();
     QStringList getDFUArgs() {return dfuArgs;}
-    QStringList getCurlArgs(){return curlArgs;};
     QString getProgrammer() {return avrProgrammer;}
     QString getMCU() {return avrMCU;}
     QString getArmMCU() {return armMCU;}
@@ -74,7 +73,6 @@ private:
     QString avrPort;
     QString sambaPort;
     QStringList dfuArgs;
-    QStringList curlArgs;
 
 private slots:
     void shrink();

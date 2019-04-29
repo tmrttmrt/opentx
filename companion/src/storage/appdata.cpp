@@ -581,7 +581,7 @@ void AppData::init()
     getset( _dfuLocation,     "dfu_location"            ,"" );
     getset( _curlLocation,    "curl_location"            ,"" );
     getset( _curlIP,          "curl_IP"               ,"" );
-    getset( _ftpPasswd,       "ftp_paswd"            ,"" );
+    getset( _ftpPasswd,       "ftp_passwd"            ,"" );
     getset( _locale,          "locale"                  ,"" );
     getset( _mcu,             "mcu"                     ,"m64" );
     getset( _programmer,      "programmer"              ,"usbasp" );

@@ -93,13 +93,33 @@ QStringList getDfuArgs(const QString & cmd, const QString & filename)
   return args;
 }
 
-QStringList getCurlArgs(const QString & cmd, const QString & filename)
+QStringList getCurlDnldArgs(const QString & filename)
 {
   QStringList args;
   burnConfigDialog bcd;
 
-  args << "ftp://opentx:a@192.168.0.28/flash/eeprom.dir/radio.eesp --output";
-  args << cmd << filename;
+  QString url =     "ftp://opentx:" + bcd.getFtpPasswd() + "@" + bcd.getCurlIP();
+  args << "-#" << (url + "/flash/eeprom.dir/radio.eesp") << "--output";
+  args << filename;
+  
+  QFileInfo fi(filename);
+  args << (url + "/flash/eeprom.dir/model-[0-29].ebin") << "--output";
+  args << fi.absolutePath() +"/model-#1.ebin";
+
+  return args;
+}
+
+QStringList getCurlUplArgs(const QString & filename)
+{
+  QStringList args;
+  burnConfigDialog bcd;
+
+  args << "-#" << "-T" << filename;
+  QString url =     "ftp://opentx:" + bcd.getFtpPasswd() + "@" + bcd.getCurlIP();
+  QFileInfo fi(filename);
+  args << (url  + "/flash/eeprom.dir/radio.eespt");
+  args << "-T" << fi.absolutePath() +"/model-[0-29].ebin";
+  args << (url  + "/flash/eeprom.dir/");
 
   return args;
 }
@@ -139,7 +159,7 @@ QStringList getReadEEpromCmd(const QString & filename)
     result = getSambaArgs(QString("SERIALFLASH::Init 0\n") + "receive_file {SerialFlash AT25} \"" + filename + "\" 0x0 0x80000 0\n");
   }
   else if (IS_ESP32(eepromInterface->getBoard())){
-    result = getCurlArgs("",filename);
+    result = getCurlDnldArgs(filename);
   }
   else {
     result = getAvrdudeArgs("eeprom:r:", filename);
@@ -156,6 +176,9 @@ QStringList getWriteEEpromCmd(const QString & filename)
   }
   else if (IS_SKY9X(board)) {
     return getSambaArgs(QString("SERIALFLASH::Init 0\n") + "send_file {SerialFlash AT25} \"" + filename + "\" 0x0 0\n");
+  }
+  else if (IS_ESP32(board)){
+    return getCurlUplArgs(filename);
   }
   else {
     return getAvrdudeArgs("eeprom:w:", filename);
@@ -379,6 +402,7 @@ bool readEeprom(const QString & filename, ProgressWidget * progress)
         if (!dnldProcess.run()) {
           return false;
         }
+        return QFileInfo(filename).exists();
     }
     if (!IS_STM32(board)) {
       FlashProcess flashProcess(getRadioInterfaceCmd(), getReadEEpromCmd(filename), progress);
@@ -410,7 +434,10 @@ bool writeEeprom(const QString & filename, ProgressWidget * progress)
       return copyProcess.run();
     }
   }
-
+  if(IS_ESP32(board)){
+    DnldProcess dnldProcess(getRadioInterfaceCmd(), getWriteEEpromCmd(filename), progress, DnldProcess::WRITING);
+    return dnldProcess.run();
+  }
   if (!IS_TARANIS(board)) {
     FlashProcess flashProcess(getRadioInterfaceCmd(), getWriteEEpromCmd(filename), progress);
     return flashProcess.run();

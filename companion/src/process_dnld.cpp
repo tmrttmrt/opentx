@@ -36,13 +36,14 @@
 #include <unistd.h>
 #endif
 
-DnldProcess::DnldProcess(const QString &cmd, const QStringList &args, ProgressWidget *progress):
+DnldProcess::DnldProcess(const QString &cmd, const QStringList &args, ProgressWidget *progress, enum DnldPhase dnldPhase):
 progress(progress),
 cmd(cmd),
 args(args),
 process(new QProcess(this)),
 hasErrors(false),
-dnldPhase(READING)
+dnldPhase(dnldPhase),
+itemsProcessed(0)
 #if !__GNUC__
 , killTimer(NULL)
 #endif
@@ -80,6 +81,9 @@ bool DnldProcess::run()
   process->start(cmd, args);
   loop.exec();
 
+  if (hasErrors) {
+    return false;
+  }
   return true;
 }
 
@@ -88,6 +92,7 @@ void DnldProcess::onStarted()
   progress->lock(true);
   progress->addText(cmd + " " + args.join(" "));
   progress->addSeparator();
+  progress->setMaximum(31);
 }
 
 #if !__GNUC__
@@ -134,74 +139,52 @@ void DnldProcess::onKillTimerElapsed()
 void DnldProcess::analyseStandardOutput(const QString &text)
 {
   currStdoutLine.append(text);
-  if (currStdoutLine.contains("size = ")) {
-    int pos = currStdoutLine.lastIndexOf("size = ");
-    QString temp = currStdoutLine.mid(pos+7);
-    pos = temp.lastIndexOf("\n");
-    int size = temp.left(pos).toInt();
-    progress->setMaximum(size/2048);
-  }
-  if (currStdoutLine.contains("\n")) {
-    int nlPos = currStdoutLine.lastIndexOf("\n");
-    currStdoutLine = currStdoutLine.mid(nlPos+1);
-  }
-  if (!currStdoutLine.isEmpty()) {
-    if (currStdoutLine.at(0) == QChar('.')) {
-      int pos = currStdoutLine.lastIndexOf(".");
-      progress->setValue(pos);
-    }
-    else if (currStdoutLine.startsWith("Starting upload: [")) {
-      int pos = (currStdoutLine.lastIndexOf("#")-19)*100/256;
-      progress->setValue(pos);
-    }
-  }
-
-  if (text.contains("Complete ")) {
-#if !__GNUC__
-    delete killTimer;
-    killTimer = NULL;
-#endif
-    int start = text.indexOf("Complete ");
-    int end = text.indexOf("%");
-    if (start > 0) {
-      start += 9;
-      int value = text.mid(start, end-start).toInt();
-      progress->setValue(value);
-    }
-  }
-
-  if (text.contains("-E-")) {
-    hasErrors = true;
-  }
+  qDebug() << text;
 }
 
 void DnldProcess::analyseStandardError(const QString &text)
 {
   currStderrLine.append(text);
-  if (currStderrLine.contains("#")) {
-    QString avrflashPhase = currStderrLine.left(1).toLower();
-    if (avrflashPhase == "w") {
-      dnldPhase = WRITING;
-      progress->setInfo(tr("Writing..."));
-      progress->setValue(2 * currStderrLine.count("#"));
-    }
-    else if (avrflashPhase == "r") {
-      if (dnldPhase == READING) {
-        progress->setInfo(tr("Reading..."));
-      }
-      progress->setValue(2 * currStderrLine.count("#"));
-    }
-  }
-
-  if (currStderrLine.contains("\n")) {
-    int nlPos = currStderrLine.lastIndexOf("\n");
+  while(currStderrLine.contains("\n")){
+    int nlPos = currStderrLine.indexOf("\n");
+    QString line = currStderrLine.mid(0, nlPos);
+    qDebug() << line;
     currStderrLine = currStderrLine.mid(nlPos+1);
-  }
-
-  if ((text.contains("-E-") && !text.contains("-E- No receive file name")) ||
-       text.contains("No DFU capable USB device found")) {
-    hasErrors = true;
-  }
+    if (line.at(0) == QChar('[')) {
+        QStringList list = line.split(QRegExp("[\\[/]"), QString::SkipEmptyParts);
+        int pos = list.at(0).toInt();
+        progress->setValue(pos + 1);
+    } 
+    else if (line.at(0) == QChar('c')) {
+      QRegularExpression re("curl:\\s+\\((\\d+)\\)");
+      QRegularExpressionMatch match = re.match(line);
+      if (match.hasMatch()) {
+        QString matched = match.captured(1);
+        int errc = matched.toInt();
+        qDebug() << "errno:" << QString::number(errc);
+        if(78 != errc) {
+          hasErrors = true;
+          process->kill();
+        }
+      }
+      else {
+        re.setPattern("curl:.*model-\\d+\\.bin");
+        match = re.match(line);
+        if (match.hasMatch()) {
+            itemsProcessed++;
+            progress->setValue(itemsProcessed);
+        }
+      }
+    } 
+    else if (WRITING == dnldPhase && line.at(0) == QChar('\r')) {
+      QRegularExpression re("\\s*#+\\s*100\\.");
+      QRegularExpressionMatch match = re.match(line);
+      if (match.hasMatch()) {
+        itemsProcessed++;
+        progress->setValue(itemsProcessed);
+      }
+    }
+  } 
 }
 
 void DnldProcess::onReadyReadStandardOutput()
@@ -222,66 +205,24 @@ void DnldProcess::errorWizard()
 {
   QString output = progress->getText();
 
-  if (output.contains("avrdude: Expected signature for")) { // wrong signature
-    int pos = output.indexOf("avrdude: Device signature = ");
-    bool fwexist = false;
-    QString DeviceStr = tr("unknown");
-    QString FwStr = "";
-
-    if (pos > 0) {
-      QString DeviceId = output.mid(pos+28, 8);
-      if (DeviceId=="0x1e9602") {
-        DeviceStr = "Atmega 64";
-        FwStr="\n" + tr("ie: OpenTX for 9X board or OpenTX for 9XR board");
-        fwexist = true;
-      }
-      else if (DeviceId=="0x1e9702") {
-        DeviceStr = "Atmega 128";
-        FwStr="\n" + tr("ie: OpenTX for M128 / 9X board or OpenTX for 9XR board with M128 chip");
-        fwexist = true;
-      }
-      else if (DeviceId=="0x1e9703") {
-        DeviceStr = "Atmega 1280";
-      }
-      else if (DeviceId=="0x1e9704") {
-        DeviceStr = "Atmega 1281";
-      }
-      else if (DeviceId=="0x1e9801") {
-        DeviceStr = "Atmega 2560";
-        FwStr="\n" + tr("ie: OpenTX for Gruvin9X  board");
-        fwexist = true;
-      }
-      else if (DeviceId=="0x1e9802") {
-        DeviceStr = "Atmega 2561";
-      }
-    }
-    if (fwexist==false) {
-      QMessageBox::warning(NULL, "Companion - Tip of the day", tr("Your radio uses a %1 CPU!!!\n\nPlease check advanced burn options to set the correct cpu type.").arg(DeviceStr));
-    }
-    else {
-      Firmware *firmware = getCurrentFirmware();
-      QMessageBox::warning(NULL, "Companion - Tip of the day", tr("Your radio uses a %1 CPU!!!\n\nPlease select an appropriate firmware type to program it.").arg(DeviceStr)+FwStr+tr("\nYou are currently using:\n %1").arg(firmware->getName()));
-    }
-  }
-  else if (output.contains("No DFU capable USB device found")){
-    QMessageBox::warning(NULL, "Companion - Tip of the day", tr("Your radio does not seem connected to USB or the driver is not initialized!!!."));
-  }
+  QMessageBox::warning(NULL, "Companion - Tip of the day", tr("ESP32 test."));
 }
 
 void DnldProcess::onFinished(int code=0)
 {
   progress->addSeparator();
-  if (code==1 && cmd.toLower().contains("sam-ba")) {
-    code = 0;
-  }
-  if (code) {
-    progress->setInfo(tr("Flashing done (exit code = %1)").arg(code));
-    if (cmd.toLower().contains("avrdude") || cmd.toLower().contains("dfu")) {
-      errorWizard();
-    }
-  }
-  else if (hasErrors) {
-    progress->setInfo(tr("Flashing done with errors"));
+  qDebug() << "ret:" << QString::number(code);
+  switch(code){
+    case 78:
+    case 26:
+      if (hasErrors) {
+        progress->setInfo(tr("Failed (exit code = %1)").arg(code));
+        break;
+      }
+      progress->setInfo(tr("Done (exit code = %1)").arg(code));
+      break;
+    default:
+      progress->setInfo(tr("Failed (exit code = %1)").arg(code));
   }
   progress->setValue(progress->maximum());
   progress->lock(false);

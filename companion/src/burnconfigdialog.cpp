@@ -182,6 +182,8 @@ void burnConfigDialog::getSettings()
       sambaLoc = QFileInfo("sam-ba.exe").absoluteFilePath();
     if ( dfuLoc.isEmpty())
       dfuLoc =  QFileInfo("dfu-util.exe").absoluteFilePath();
+    if ( curlLoc.isEmpty())
+      curlLoc =  QFileInfo("curl.exe").absoluteFilePath();
 #elif defined __APPLE__
     if ( avrLoc.isEmpty())
       avrLoc = QFileInfo(QApplication::applicationDirPath() + "/../Resources/avrdude").absoluteFilePath();

@@ -105,7 +105,7 @@ void eeWriteGeneral()
         char head[8];
     *(uint32_t*)&head[0] = OTX_FOURCC;
     head[4] = g_eeGeneral.version;
-    head[5] = 'R';
+    head[5] = 'M';
     *(uint16_t*)&head[6] = sizeof(g_eeGeneral);
     if(1!=fwrite(head, 8, 1,fp)) {
         fclose(fp);
