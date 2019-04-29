@@ -95,8 +95,26 @@ void ProgressWidget::addText(const QString &text, const bool richText)
   cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
   if (richText)
     cursor.insertHtml(text);
-  else
-    cursor.insertText(text);
+  else{
+    if(text.contains("\r")){
+      QString qs = ui->textEdit->toPlainText();
+      QString txt(text);
+      while(txt.contains("\r")){
+        int crPos = txt.indexOf("\r");
+        QString line = txt.mid(0, crPos-1);
+        txt = txt.mid(crPos+1);
+        qs.append(line);
+        qDebug() << "txt:" << txt;
+        qDebug() << "line:" << line;
+        int nlPos = qs.lastIndexOf("\n");
+        qs = qs.mid(0, nlPos+1);
+      }
+      qs.append(txt);
+      ui->textEdit->setPlainText(qs);
+    } else {
+      cursor.insertText(text);
+    }
+  }
 
   if (atEnd) {
     ui->textEdit->verticalScrollBar()->triggerAction(QAbstractSlider::SliderToMaximum);
