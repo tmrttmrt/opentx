@@ -59,9 +59,13 @@ burnConfigDialog::burnConfigDialog(QWidget *parent) :
       ui->samba_location->hide();
       ui->samba_port->hide();
       ui->sb_browse->hide();
+      ui->curl_location->hide();
       ui->curl_browse->hide();
       ui->curl_ip->hide();
       ui->ftp_passwd->hide();
+      ui->label_cu1->hide();
+      ui->label_cu3->hide();
+      ui->label_cu4->hide();
     }
     else if (IS_SKY9X(board)) {
       setWindowTitle(tr("SAM-BA Configuration"));
@@ -79,9 +83,14 @@ burnConfigDialog::burnConfigDialog(QWidget *parent) :
       ui->label_dfu1->hide();
       ui->dfu_location->hide();
       ui->dfu_browse->hide();
+      ui->curl_location->hide();
       ui->curl_browse->hide();
       ui->curl_ip->hide();
       ui->ftp_passwd->hide();
+      ui->label_cu1->hide();
+      ui->label_cu3->hide();
+      ui->label_cu4->hide();
+
 
     }
     else if (IS_ESP32(board)) {
@@ -119,9 +128,15 @@ burnConfigDialog::burnConfigDialog(QWidget *parent) :
       ui->label_dfu2->hide();
       ui->dfu_location->hide();
       ui->dfu_browse->hide();
+      ui->curl_location->hide();
       ui->curl_browse->hide();
       ui->curl_ip->hide();
       ui->ftp_passwd->hide();
+      ui->label_cu1->hide();
+      ui->label_cu3->hide();
+      ui->label_cu4->hide();
+
+
     }
     ui->label_av3->hide();
     ui->avrdude_mcu->hide();
