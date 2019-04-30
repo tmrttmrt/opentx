@@ -27,7 +27,8 @@
 
 ProgressWidget::ProgressWidget(QWidget *parent):
 QWidget(parent),
-ui(new Ui::ProgressWidget)
+ui(new Ui::ProgressWidget),
+crFlag(false)
 {
   ui->setupUi(this);
   ui->info->hide();
@@ -43,6 +44,7 @@ ui(new Ui::ProgressWidget)
   newFont.setPointSize(9);
 #endif
   ui->textEdit->setFont(newFont);
+  ui->textEdit->setOverwriteMode(true);
 }
 
 ProgressWidget::~ProgressWidget()
@@ -96,24 +98,45 @@ void ProgressWidget::addText(const QString &text, const bool richText)
   if (richText)
     cursor.insertHtml(text);
   else{
-    if(text.contains("\r")){
-      QString qs = ui->textEdit->toPlainText();
-      QString txt(text);
-      while(txt.contains("\r")){
-        int crPos = txt.indexOf("\r");
-        QString line = txt.mid(0, crPos-1);
-        txt = txt.mid(crPos+1);
-        qs.append(line);
-        qDebug() << "txt:" << txt;
-        qDebug() << "line:" << line;
-        int nlPos = qs.lastIndexOf("\n");
-        qs = qs.mid(0, nlPos+1);
-      }
-      qs.append(txt);
-      ui->textEdit->setPlainText(qs);
-    } else {
-      cursor.insertText(text);
+    QString qs = ui->textEdit->toPlainText();
+    int cPos = qs.length();
+    if(crFlag){
+      crFlag = false;
+      cPos = qs.lastIndexOf("\n");
+//      cursor.movePosition(QTextCursor::StartOfLine, QTextCursor::MoveAnchor, 1);
     }
+    if(text.contains("\r")){
+      QString txt(text);
+      txt.replace("\r\n", "\n");
+      while(txt.contains("\r")){
+        qDebug() << "txtb:" << txt;
+        int crPos = txt.indexOf("\r");
+        if( crPos > 0){
+            QString line = txt.left(crPos-1);
+//            cursor.insertText(text);
+            qs.truncate(cPos+1);
+            qs.append(line);
+            cPos = qs.lastIndexOf("\n");
+            qDebug() << "line:" << line;
+        }
+        txt = txt.mid(crPos+1);
+//        cursor.movePosition(QTextCursor::StartOfLine, QTextCursor::MoveAnchor, 1);
+        qDebug() << "txta:" << txt;
+      }
+      if( txt.length() > 0){
+//        cursor.insertText(text);
+        qs.truncate(cPos+1);
+        qs.append(txt);
+      }
+      else {
+        crFlag = true;
+      }
+    }
+    else {
+      qs.truncate(cPos+1);
+      qs.append(text);
+    }
+    ui->textEdit->setPlainText(qs);
   }
 
   if (atEnd) {
