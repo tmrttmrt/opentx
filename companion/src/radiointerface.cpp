@@ -117,7 +117,7 @@ QStringList getCurlUplArgs(const QString & filename)
   args << "-#" << "-T" << filename;
   QString url =     "ftp://opentx:" + bcd.getFtpPasswd() + "@" + bcd.getCurlIP();
   QFileInfo fi(filename);
-  args << (url  + "/flash/eeprom.dir/radio.eespt");
+  args << (url  + "/flash/eeprom.dir/radio.eesp");
   args << "-T" << fi.absolutePath() +"/model-[0-29].ebin";
   args << (url  + "/flash/eeprom.dir/");
 

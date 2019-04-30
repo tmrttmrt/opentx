@@ -147,9 +147,10 @@ void DnldProcess::analyseStandardError(const QString &text)
   currStderrLine.append(text);
   while(currStderrLine.contains("\n")){
     int nlPos = currStderrLine.indexOf("\n");
-    QString line = currStderrLine.mid(0, nlPos);
+    QString line = currStderrLine.left(nlPos);
     qDebug() << line;
     currStderrLine = currStderrLine.mid(nlPos+1);
+    if( 0 == nlPos) continue;
     if (line.at(0) == QChar('[')) {
         QStringList list = line.split(QRegExp("[\\[/]"), QString::SkipEmptyParts);
         int pos = list.at(0).toInt();
@@ -162,7 +163,7 @@ void DnldProcess::analyseStandardError(const QString &text)
         QString matched = match.captured(1);
         int errc = matched.toInt();
         qDebug() << "errno:" << QString::number(errc);
-        if(78 != errc) {
+        if(78 != errc && 26 != errc) {
           hasErrors = true;
           process->kill();
         }
@@ -176,8 +177,8 @@ void DnldProcess::analyseStandardError(const QString &text)
         }
       }
     } 
-    else if (WRITING == dnldPhase && line.at(0) == QChar('\r')) {
-      QRegularExpression re("\\s*#+\\s*100\\.");
+    else if (WRITING == dnldPhase && line.at(0) == QChar('#')) {
+      QRegularExpression re("#+\\s*100\\.");
       QRegularExpressionMatch match = re.match(line);
       if (match.hasMatch()) {
         itemsProcessed++;
@@ -198,6 +199,7 @@ void DnldProcess::onReadyReadStandardError()
 {
   QString text = QString(process->readAllStandardError());
   progress->addText(text);
+  text.replace('\r', '\n');
   analyseStandardError(text);
 }
 

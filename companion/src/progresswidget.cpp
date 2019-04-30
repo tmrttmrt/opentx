@@ -44,7 +44,6 @@ crFlag(false)
   newFont.setPointSize(9);
 #endif
   ui->textEdit->setFont(newFont);
-  ui->textEdit->setOverwriteMode(true);
 }
 
 ProgressWidget::~ProgressWidget()
@@ -103,7 +102,6 @@ void ProgressWidget::addText(const QString &text, const bool richText)
     if(crFlag){
       crFlag = false;
       cPos = qs.lastIndexOf("\n");
-//      cursor.movePosition(QTextCursor::StartOfLine, QTextCursor::MoveAnchor, 1);
     }
     if(text.contains("\r")){
       QString txt(text);
@@ -113,18 +111,15 @@ void ProgressWidget::addText(const QString &text, const bool richText)
         int crPos = txt.indexOf("\r");
         if( crPos > 0){
             QString line = txt.left(crPos-1);
-//            cursor.insertText(text);
             qs.truncate(cPos+1);
             qs.append(line);
             cPos = qs.lastIndexOf("\n");
             qDebug() << "line:" << line;
         }
         txt = txt.mid(crPos+1);
-//        cursor.movePosition(QTextCursor::StartOfLine, QTextCursor::MoveAnchor, 1);
         qDebug() << "txta:" << txt;
       }
       if( txt.length() > 0){
-//        cursor.insertText(text);
         qs.truncate(cPos+1);
         qs.append(txt);
       }
