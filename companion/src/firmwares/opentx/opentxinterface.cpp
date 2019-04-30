@@ -1466,13 +1466,13 @@ void registerOpenTxFirmwares()
   registerOpenTxFirmware(firmware);
 
   /* ESP_WROOM_32 board */
-  firmware = new OpenTxFirmware("opentx-esp-wroom-32", QCoreApplication::translate("Firmware", "DIY ESP32 radio"), BOARD_ESP_WROOM_32);
+  firmware = new OpenTxFirmware("opentx-esp_wroom_32", QCoreApplication::translate("Firmware", "DIY ESP32 radio"), BOARD_ESP_WROOM_32);
 //  addOpenTxLcdOptions(firmware);
 //  firmware->addOption("PWR", QCoreApplication::translate("Firmware", "Power management by soft-off circuitry"));
 //  firmware->addOptions(ext_options);
 //  firmware->addOption("PXX", QCoreApplication::translate("Firmware", "Support of FrSky PXX protocol"));
 //  firmware->addOptions(dsm2_options);
-//  firmware->addOption("heli", QCoreApplication::translate("Firmware", "Enable heli menu and cyclic mix support"));
+  firmware->addOption("heli", QCoreApplication::translate("Firmware", "Enable heli menu and cyclic mix support"));
   firmware->addOption("templates", QCoreApplication::translate("Firmware", "Enable TEMPLATES menu"));
 //  firmware->addOption("nofp", QCoreApplication::translate("Firmware", "No flight modes"));
 //  firmware->addOption("nocurves", QCoreApplication::translate("Firmware", "Disable curves menus"));
@@ -1482,17 +1482,17 @@ void registerOpenTxFirmwares()
 //  addOpenTxVoiceOptions(firmware);
 //  firmware->addOption("haptic", QCoreApplication::translate("Firmware", "Used if you have modified your radio with haptic mode"));
   firmware->addOption("ppmca", QCoreApplication::translate("Firmware", "PPM center adjustment in limits"));
-  firmware->addOption("gvars", QCoreApplication::translate("Firmware", "Global variables"), GVARS_VARIANT);
-  firmware->addOption("symlimits", QCoreApplication::translate("Firmware", "Symetrical Limits"));
+//  firmware->addOption("gvars", QCoreApplication::translate("Firmware", "Global variables"), GVARS_VARIANT);
+//  firmware->addOption("symlimits", QCoreApplication::translate("Firmware", "Symetrical Limits"));
 //  firmware->addOption("autosource", QCoreApplication::translate("Firmware", "In model setup menus automatically set source by moving the control"));
 //  firmware->addOption("autoswitch", QCoreApplication::translate("Firmware", "In model setup menus automatically set switch by moving the control"));
 //  firmware->addOption("dblkeys", QCoreApplication::translate("Firmware", "Enable resetting values by pressing up and down at the same time"));
 //  firmware->addOption("nographics", QCoreApplication::translate("Firmware", "No graphical check boxes and sliders"));
-  firmware->addOption("battgraph", QCoreApplication::translate("Firmware", "Battery graph"));
-  firmware->addOption("nobold", QCoreApplication::translate("Firmware", "Don't use bold font for highlighting active items"));
+//  firmware->addOption("battgraph", QCoreApplication::translate("Firmware", "Battery graph"));
+//  firmware->addOption("nobold", QCoreApplication::translate("Firmware", "Don't use bold font for highlighting active items"));
 //  firmware->addOption("pgbar", QCoreApplication::translate("Firmware", "EEprom write Progress bar"));
-  firmware->addOption("imperial", QCoreApplication::translate("Firmware", "Imperial units"));
-  firmware->addOption("sqt5font", QCoreApplication::translate("Firmware", "Use alternative SQT5 font"));
+//  firmware->addOption("imperial", QCoreApplication::translate("Firmware", "Imperial units"));
+//  firmware->addOption("sqt5font", QCoreApplication::translate("Firmware", "Use alternative SQT5 font"));
   addOpenTxCommonOptions(firmware);
   registerOpenTxFirmware(firmware);
 

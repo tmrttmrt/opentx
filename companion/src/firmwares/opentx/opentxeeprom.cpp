@@ -2591,6 +2591,7 @@ class Esp32CustomFunctionField: public TransformedField {
       internalField.Append(new UnsignedField<4>(this, _union_param));
       internalField.Append(new UnsignedField<1>(this, _active));
       internalField.Append(new SpareBitsField<1>(this));
+      internalField.Append(new UnsignedField<8>(this, _param));
     }
 
     virtual void beforeExport()
@@ -2644,7 +2645,7 @@ class Esp32CustomFunctionField: public TransformedField {
         sourcesConversionTable->importValue(_param, (int &)fn.param);
       }
       else if (fn.func == FuncPlaySound || fn.func == FuncPlayPrompt || fn.func == FuncPlayBoth) {
-       memcpy(_play, fn.paramarm, sizeof(_play));
+       memcpy( fn.paramarm, _play, sizeof(_play));
        fn.repeatParam = _union_param * 10;
       }
       qCDebug(eepromImport) << QString("imported %1").arg(internalField.getName());
@@ -3775,7 +3776,7 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
 
   internalField.Append(new UnsignedField<8>(this, generalData.speakerPitch));
 
-  if (IS_ARM(board))
+  if (IS_ARM(board) || IS_ESP32(board))
     internalField.Append(new ConversionField< SignedField<8> >(this, generalData.speakerVolume, -12, 0, 0, 23, "Volume"));
   else
     internalField.Append(new ConversionField< SignedField<8> >(this, generalData.speakerVolume, -7, 0, 0, 7, "Volume"));
@@ -3960,8 +3961,11 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
     for (int i=0; i<MAX_CUSTOM_FUNCTIONS(board, version); i++) {
       internalField.Append(new Esp32CustomFunctionField(this, generalData.customFn[i], board, version, variant));
     }
+    internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.passwd, "WiFi password")); 
+    internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.ssid, "WiFi SSID"));
+    internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.ftppasswd, "ftp password"));
   }
-  }
+}
 
 void OpenTxGeneralData::beforeExport()
 {

@@ -48,6 +48,7 @@
 #define CPN_MAX_KEYS                   32
 #define CPN_MAX_MOUSE_ANALOGS          2
 #define CPN_MAX_ANALOGS                (CPN_MAX_STICKS + CPN_MAX_POTS + CPN_MAX_MOUSE_ANALOGS)
+#define CPN_MAX_STR_FIELD              18
 
 #define CPN_STR_APP_NAME               QCoreApplication::translate("Companion", "OpenTX Companion")
 #define CPN_STR_TTL_INFO               QCoreApplication::translate("Companion", "Information")        // shared Title Case words, eg. for a window title or section heading
