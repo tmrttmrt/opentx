@@ -376,7 +376,7 @@ bool eeLoadGeneral()
         return 0;
     }
     uint8_t version = (uint8_t)head[4];
-    if ((*(uint32_t*)&head[0] != OTX_FOURCC ) || ( version != EEPROM_VER) || head[5] != 'R') {
+    if ((*(uint32_t*)&head[0] != OTX_FOURCC ) || ( version != EEPROM_VER) || head[5] != 'M') {
         fclose(fp);
         ESP_LOGE(TAG,"Incompatible radio settings header from '%s'.", fn);
         ESP_LOGI(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0],version);
