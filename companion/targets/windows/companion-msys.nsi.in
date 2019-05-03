@@ -95,6 +95,8 @@ Section "OpenTX companion" SecDummy
   File "@CMAKE_CURRENT_SOURCE_DIR@\..\targets\windows\avrdude.conf"
   File "@CMAKE_CURRENT_SOURCE_DIR@\..\targets\windows\libusb0.dll"
   File "@CMAKE_CURRENT_SOURCE_DIR@\..\targets\windows\dfu-util.exe"
+  File "@CMAKE_CURRENT_SOURCE_DIR@\..\targets\windows\curl.exe"
+  File "@CMAKE_CURRENT_SOURCE_DIR@\..\targets\windows\libcurl.dll"
    
   CreateDirectory "$INSTDIR\phonon_backend"
   SetOutPath "$INSTDIR\phonon_backend"
@@ -113,6 +115,7 @@ Section "OpenTX companion" SecDummy
   ${registerExtension} "$INSTDIR\companion.exe" ".hex" "HEX_File"
   ${registerExtension} "$INSTDIR\companion.exe" ".companion" "EEPE_File"
   ${registerExtension} "$INSTDIR\companion.exe" ".eepm" "EEPM_File"
+  ${registerExtension} "$INSTDIR\companion.exe" ".eesp" "EESP_File"
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -183,6 +186,7 @@ Section "Uninstall"
   ${unregisterExtension} ".hex" "HEX File"
   ${unregisterExtension} ".eepm" "EEPE File"
   ${unregisterExtension} ".companion" "EEPM File"
+  ${unregisterExtension} ".companion" "EESP File"
   
   !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
     
