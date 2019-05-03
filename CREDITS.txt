@@ -24,6 +24,7 @@ Karl Szmutny
 Michal Hlavinka
 Pat Mackenzie
 Michael Byrne
+Tomaz Mertelj
 
 [Companies and projects who have donated to OpenTX]
 <a href="https://www.frsky-rc.com">FrSky (monthly)</a>
