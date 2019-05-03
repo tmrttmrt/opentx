@@ -832,7 +832,7 @@ PACK(struct ModelData {
   uint8_t   thrTrim:1;            // Enable Throttle Trim
   AVR_FIELD(int8_t    ppmNCH:4)
   ARM_FIELD(uint8_t   noGlobalFunctions:1)
-  ESP32_FIELD(uint8_t   noGlobalFunctions:1)
+  ESP32_FIELD(uint8_t   noGlobalFunctions)
   ARM_FIELD(uint8_t   displayTrims:2)
   ARM_FIELD(uint8_t   ignoreSensorIds:1)
   int8_t    trimInc:3;            // Trim Increments

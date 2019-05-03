@@ -145,6 +145,8 @@
   #define TR_RETA123                   "RETA123a"
 #elif defined(CPUM2560)
   #define TR_RETA123                   "RETA123ab"
+#elif defined(CPUESP32)
+  #define TR_RETA123                   "RETA12ab"  
 #else
   #define TR_RETA123                   "RETA123"
 #endif

@@ -124,8 +124,8 @@ const char * ConvertModel_M217_to_219(ModelData & model)
         for(int i=0; i<MAX_TIMERS;i++){
             newModel.timers[i] = oldModel.timers[i];
         }
-        newModel.protocol = newModel.protocol;
-        newModel.thrTrim = newModel.thrTrim;
+        newModel.protocol = oldModel.protocol;
+        newModel.thrTrim = oldModel.thrTrim;
         newModel.ppmNCH = oldModel.ppmNCH;
         newModel.noGlobalFunctions=true;
         newModel.trimInc = oldModel.trimInc;

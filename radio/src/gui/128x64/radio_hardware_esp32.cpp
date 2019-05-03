@@ -52,7 +52,11 @@ void menuRadioHardware(event_t event)
     switch(k) {
       case ITEM_RADIO_HARDWARE_WIFI:
         {
-            uint8_t val = editCheckBox(isWiFiStarted(),  WIFI_COL, y, "WiFi", attr, event);
+//            uint8_t val = editCheckBox(isWiFiStarted(),  WIFI_COL, y, "WiFi", attr, event);
+            uint8_t val = isWiFiStarted();
+            drawCheckBox(WIFI_COL, y, val, attr);
+            drawFieldLabel(WIFI_COL, y, "WiFi");
+            if (attr & (~RIGHT)) val = checkIncDec(event, val, 0, 1, 0);
             if((bool)val != (bool)isWiFiStarted()){ 
                 if(val){
                     startWiFi(g_eeGeneral.ssid, g_eeGeneral.passwd, g_eeGeneral.ftppass);

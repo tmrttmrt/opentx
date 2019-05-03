@@ -108,7 +108,7 @@ GeneralSettings::GeneralSettings()
     backlightOffBright = 20;
   }
 
-  if (IS_ARM(board)) {
+  if (IS_ARM(board) || IS_ESP32(board)) {
     speakerVolume = 12;
   }
 

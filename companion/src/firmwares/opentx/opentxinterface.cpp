@@ -95,6 +95,8 @@ const char * OpenTxEepromInterface::getName()
       return "OpenTX for FrSky Horus";
     case BOARD_X10:
       return "OpenTX for FrSky X10";
+    case BOARD_ESP_WROOM_32:
+      return "OpenTX for ESP32";
     default:
       return "OpenTX for an unknown board";
   }
@@ -279,6 +281,8 @@ uint8_t OpenTxEepromInterface::getLastDataVersion(Board::Type board)
     case BOARD_MEGA2560:
     case BOARD_M128:
       return 217;
+    case BOARD_ESP_WROOM_32:
+      return 219;
     default:
       return 218;
   }
@@ -426,7 +430,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
         return 60;
       else if (board == BOARD_M128)
         return 30;
-      else if (IS_2560(board))
+      else if (IS_2560(board) || IS_ESP32(board))
         return 30;
       else
         return 16;
@@ -438,7 +442,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case ModelImage:
       return (board == BOARD_TARANIS_X9D || IS_TARANIS_PLUS(board) || IS_HORUS(board));
     case HasBeeper:
-      return (!IS_ARM(board));
+      return (!IS_ARM(board) && !IS_ESP32(board));
     case HasPxxCountry:
       return 1;
     case HasGeneralUnits:
@@ -455,7 +459,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case FlightModes:
       if (IS_ARM(board))
         return 9;
-      else if (IS_2560(board))
+      else if (IS_ESP32(board) || IS_2560(board))
         return 6;
       else
         return 5;
@@ -484,7 +488,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
       return 1;
     case GvarsAreNamed:
     case GvarsFlightModes:
-      return ((IS_ARM(board) || IS_2560(board)) ? 1 : 0);
+      return ((IS_ARM(board) || IS_2560(board) || IS_ESP32(board)) ? 1 : 0);
     case Mixes:
       return (IS_ARM(board) ? 64 : 32);
     case OffsetWeight:
@@ -499,11 +503,11 @@ int OpenTxFirmware::getCapability(::Capability capability)
       else
         return 0;
     case PermTimers:
-      return (IS_2560(board) || IS_ARM(board));
+      return (IS_ESP32(board) || IS_2560(board) || IS_ARM(board));
     case CustomFunctions:
       if (IS_ARM(board))
         return 64;
-      else if (IS_2560(board) || board == BOARD_M128)
+      else if (IS_ESP32(board) || IS_2560(board) || board == BOARD_M128)
         return 24;
       else
         return 16;
@@ -522,7 +526,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case LogicalSwitchesExt:
       return (IS_ARM(board) ? true : false);
     case RotaryEncoders:
-      if (board == BOARD_GRUVIN9X)
+      if (board == BOARD_GRUVIN9X || IS_ESP32(board) || IS_2560(board) )
         return 2;
       else if (IS_SKY9X(board))
         return 1;
@@ -533,11 +537,11 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case NumCurvePoints:
       return (IS_ARM(board) ? 512 : 104);
     case VoicesAsNumbers:
-      return (IS_ARM(board) ? 0 : 1);
+      return (IS_ARM(board) || IS_ESP32(board) ? 0 : 1);
     case VoicesMaxLength:
-      return (IS_ARM(board) ? (IS_TARANIS_X9(board) ? 8 : 6) : 0);
+      return (IS_ARM(board) ? (IS_TARANIS_X9(board) ? 8 : 6) : IS_ESP32(board) ? 6 : 0);
     case MultiLangVoice:
-      return (IS_ARM(board) ? 1 : 0);
+      return (IS_ARM(board) || IS_ESP32(board) ? 1 : 0);
     case SoundPitch:
       return 1;
     case Haptic:
@@ -548,7 +552,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
       else
         return 0;
     case MaxVolume:
-      return (IS_ARM(board) ? 23 : 7);
+      return (IS_ARM(board) || IS_ESP32(board) ? 23 : 7);
     case MaxContrast:
       if (IS_TARANIS_SMALL(board))
         return 30;
@@ -560,7 +564,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
       else
         return 10;
     case HasSoundMixer:
-      return (IS_ARM(board) ? 1 : 0);
+      return (IS_ARM(board) || IS_ESP32(board) ? 1 : 0);
     case ExtraInputs:
       return 1;
     case TrimsRange:
@@ -582,7 +586,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case HasCvNames:
       return (IS_ARM(board) ? 1 : 0);
     case Telemetry:
-      if (IS_2560(board) || IS_ARM(board) || id.contains("frsky") || id.contains("telemetrez"))
+      if (IS_ESP32(board) || IS_2560(board) || IS_ARM(board) || id.contains("frsky") || id.contains("telemetrez"))
         return TM_HASTELEMETRY | TM_HASOFFSET | TM_HASWSHH;
       else
         return 0;
@@ -612,7 +616,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case HasVario:
       return 1;
     case HasVarioSink:
-      return ((IS_2560(board) || IS_ARM(board)) ? true : false);
+      return ((IS_ESP32(board) || IS_2560(board) || IS_ARM(board)) ? true : false);
     case HasFailsafe:
       return (IS_ARM(board) ? 32 : 0);
     case NumModules:
@@ -626,7 +630,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case HastxCurrentCalibration:
       return (IS_SKY9X(board) ? true : false);
     case HasVolume:
-      return (IS_ARM(board) ? true : false);
+      return (IS_ARM(board) || IS_ESP32(board) ? true : false);
     case HasBrightness:
       return (IS_ARM(board) ? true : false);
     case PerModelTimers:
@@ -638,7 +642,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case CSFunc:
       return 18;
     case HasSDLogs:
-      return ((IS_2560(board) || IS_ARM(board)) ? true : false);
+      return ((IS_ESP32(board) || IS_2560(board) || IS_ARM(board)) ? true : false);
     case LcdWidth:
       if (IS_HORUS(board))
         return 480;
@@ -669,7 +673,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case HasTopLcd:
       return IS_TARANIS_X9E(board) ? 1 : 0;
     case GlobalFunctions:
-      return IS_ARM(board) ? 64 : 0;
+      return IS_ARM(board) ? 64 : IS_ESP32(board) ? 24 : 0;
     case VirtualInputs:
       return IS_ARM(board) ? 32 : 0;
     case InputsLength:
@@ -895,6 +899,7 @@ EepromLoadErrors OpenTxEepromInterface::checkVersion(unsigned int version)
         return OLD_VERSION;
       }
     case 218:
+    case 219:
       break;
     default:
       return NOT_OPENTX;
@@ -1457,6 +1462,37 @@ void registerOpenTxFirmwares()
   firmware->addOption("pgbar", QCoreApplication::translate("Firmware", "EEprom write Progress bar"));
   firmware->addOption("imperial", QCoreApplication::translate("Firmware", "Imperial units"));
   firmware->addOption("sqt5font", QCoreApplication::translate("Firmware", "Use alternative SQT5 font"));
+  addOpenTxCommonOptions(firmware);
+  registerOpenTxFirmware(firmware);
+
+  /* ESP_WROOM_32 board */
+  firmware = new OpenTxFirmware("opentx-esp_wroom_32", QCoreApplication::translate("Firmware", "DIY ESP32 radio"), BOARD_ESP_WROOM_32);
+//  addOpenTxLcdOptions(firmware);
+//  firmware->addOption("PWR", QCoreApplication::translate("Firmware", "Power management by soft-off circuitry"));
+//  firmware->addOptions(ext_options);
+//  firmware->addOption("PXX", QCoreApplication::translate("Firmware", "Support of FrSky PXX protocol"));
+//  firmware->addOptions(dsm2_options);
+  firmware->addOption("heli", QCoreApplication::translate("Firmware", "Enable heli menu and cyclic mix support"));
+  firmware->addOption("templates", QCoreApplication::translate("Firmware", "Enable TEMPLATES menu"));
+//  firmware->addOption("nofp", QCoreApplication::translate("Firmware", "No flight modes"));
+//  firmware->addOption("nocurves", QCoreApplication::translate("Firmware", "Disable curves menus"));
+  firmware->addOption("sdcard", QCoreApplication::translate("Firmware", "Support for SD memory card"));
+//  firmware->addOption("audio", QCoreApplication::translate("Firmware", "Support for radio modified with regular speaker"));
+  //firmware->addOption("voice", QCoreApplication::translate("Firmware", "Used if you have modified your radio with voice mode"));
+//  addOpenTxVoiceOptions(firmware);
+//  firmware->addOption("haptic", QCoreApplication::translate("Firmware", "Used if you have modified your radio with haptic mode"));
+  firmware->addOption("ppmca", QCoreApplication::translate("Firmware", "PPM center adjustment in limits"));
+  firmware->addOption("gvars", QCoreApplication::translate("Firmware", "Global variables"), GVARS_VARIANT);
+//  firmware->addOption("symlimits", QCoreApplication::translate("Firmware", "Symetrical Limits"));
+//  firmware->addOption("autosource", QCoreApplication::translate("Firmware", "In model setup menus automatically set source by moving the control"));
+//  firmware->addOption("autoswitch", QCoreApplication::translate("Firmware", "In model setup menus automatically set switch by moving the control"));
+//  firmware->addOption("dblkeys", QCoreApplication::translate("Firmware", "Enable resetting values by pressing up and down at the same time"));
+//  firmware->addOption("nographics", QCoreApplication::translate("Firmware", "No graphical check boxes and sliders"));
+//  firmware->addOption("battgraph", QCoreApplication::translate("Firmware", "Battery graph"));
+//  firmware->addOption("nobold", QCoreApplication::translate("Firmware", "Don't use bold font for highlighting active items"));
+//  firmware->addOption("pgbar", QCoreApplication::translate("Firmware", "EEprom write Progress bar"));
+//  firmware->addOption("imperial", QCoreApplication::translate("Firmware", "Imperial units"));
+//  firmware->addOption("sqt5font", QCoreApplication::translate("Firmware", "Use alternative SQT5 font"));
   addOpenTxCommonOptions(firmware);
   registerOpenTxFirmware(firmware);
 

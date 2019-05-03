@@ -17,7 +17,7 @@ extern "C" {
 #include "ota_server.h"
 }
 
-#define FTP_SERVER_TASK_CORE    0
+#define FTP_SERVER_TASK_CORE    1
 #define OTA_SERVER_TASK_CORE    1
 #define FTP_SERVER_STACK_SIZE   0x1000
 #define OTA_SERVER_STACK_SIZE   0xE00

@@ -119,8 +119,8 @@
 #define CFN_CH_INDEX(p)     ((p)->param)
 #define CFN_TIMER_INDEX(p)  ((p)->param)
 #define CFN_GVAR_INDEX(p)   ((p)->param)
-#define CFN_PLAY_REPEAT(p)  ((p)->active)
-#define CFN_PLAY_REPEAT_MUL            1
+#define CFN_PLAY_REPEAT(p)  ((p)->param)
+#define CFN_PLAY_REPEAT_MUL           10
 #define CFN_PLAY_REPEAT_NOSTART        0xFF
 #define CFN_GVAR_MODE(p)    ((p)->mode)
 #define CFN_PARAM(p)        ((p)->value)

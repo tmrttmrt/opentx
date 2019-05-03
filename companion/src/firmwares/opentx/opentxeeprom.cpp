@@ -31,7 +31,7 @@ using namespace Board;
 // Macro used for Gruvin9x board and M128 board between versions 213 and 214 (when there were stack overflows!)
 #define IS_DBLRAM(board, version)             ((IS_2560(board) && version >= 213) || (board==BOARD_M128 && version >= 213 && version <= 214))
 
-#define HAS_PERSISTENT_TIMERS(board)          (IS_ARM(board) || IS_2560(board))
+#define HAS_PERSISTENT_TIMERS(board)          (IS_ARM(board) || IS_2560(board) || IS_ESP32(board))
 #define MAX_VIEWS(board)                      (HAS_LARGE_LCD(board) ? 2 : 256)
 #define MAX_POTS(board, version)              (IS_TARANIS_NOT_X9E(board) && version < 216 ? 2 : Boards::getCapability(board, Board::Pots))
 #define MAX_SLIDERS(board)                    (IS_HORUS_X10(board) ? 4 : (Boards::getCapability(board, Board::Sliders))) //TODO need to be remove when x10 eeprom gets fixed
@@ -39,21 +39,21 @@ using namespace Board;
 #define MAX_SWITCHES(board, version)          (Boards::getCapability(board, Board::Switches))
 #define MAX_SWITCH_SLOTS(board, version)      (IS_TARANIS_X9E(board) ? 32 : 8)  // bitsize of swconfig_t / 2 (see radio/src/datastructs.h)
 #define MAX_SWITCHES_POSITION(board, version) (Boards::getCapability(board, Board::SwitchPositions))
-#define MAX_ROTARY_ENCODERS(board)            (IS_2560(board) ? 2 : (IS_SKY9X(board) ? 1 : 0))
-#define MAX_FLIGHT_MODES(board, version)      (IS_ARM(board) ? 9 :  (IS_DBLRAM(board, version) ? 6 :  5))
+#define MAX_ROTARY_ENCODERS(board)            (IS_2560(board) || IS_ESP32(board) ? 2 : (IS_SKY9X(board) ? 1 : 0))
+#define MAX_FLIGHT_MODES(board, version)      (IS_ARM(board) ? 9 :  (IS_DBLRAM(board, version) || IS_ESP32(board) ? 6 :  5))
 #define MAX_TIMERS(board, version)            ((IS_ARM(board) && version >= 217) ? 3 : 2)
 #define MAX_MIXERS(board, version)            (IS_ARM(board) ? 64 : 32)
 #define MAX_CHANNELS(board, version)          (IS_ARM(board) ? 32 : 16)
 #define MAX_TRIMS(board)                      (Boards::getCapability(board, Board::NumTrims))
-#define MAX_EXPOS(board, version)             (IS_ARM(board) ? ((IS_HORUS_OR_TARANIS(board) && version >= 216) ? 64 : 32) : (IS_DBLRAM(board, version) ? 16 : 14))
+#define MAX_EXPOS(board, version)             (IS_ARM(board) ? ((IS_HORUS_OR_TARANIS(board) && version >= 216) ? 64 : 32) : (IS_DBLRAM(board, version) || IS_ESP32(board) ? 16 : 14))
 #define MAX_LOGICAL_SWITCHES(board, version)  (IS_ARM(board) ? (version >= 218 ? 64 : 32) : ((IS_DBLEEPROM(board, version) && version<217) ? 15 : 12))
-#define MAX_CUSTOM_FUNCTIONS(board, version)  (IS_ARM(board) ? (version >= 216 ? 64 : 32) : (IS_DBLEEPROM(board, version) ? 24 : 16))
+#define MAX_CUSTOM_FUNCTIONS(board, version)  (IS_ARM(board) ? (version >= 216 ? 64 : 32) : (IS_DBLEEPROM(board, version) || IS_ESP32(board) ? 24 : 16))
 #define MAX_CURVES(board, version)            (IS_ARM(board) ? ((HAS_LARGE_LCD(board) && version >= 216) ? 32 : 16) : 8)
 #define MAX_GVARS(board, version)             ((IS_ARM(board) && version >= 216) ? 9 : 5)
 #define MAX_SCRIPTS(board)                    (IS_HORUS(board) ? 9 : 7)
 #define MAX_TELEMETRY_SENSORS(board, version) (32)
 #define NUM_PPM_INPUTS(board, version)        ((IS_ARM(board) && version >= 216) ? 16 : 8)
-#define ROTENC_COUNT(board, version)          (IS_ARM(board) ? ((IS_STM32(board) && version >= 218) ? 0 : 1) : (IS_2560(board) ? 2 : 0))
+#define ROTENC_COUNT(board, version)          (IS_ARM(board) ? ((IS_STM32(board) && version >= 218) ? 0 : 1) : (IS_2560(board) || IS_ESP32(board) ? 2 : 0))
 #define MAX_AUX_TRIMS(board)                  (IS_HORUS(board) ? 2 : 0)
 
 #define IS_AFTER_RELEASE_21_MARCH_2013(board, version) (version >= 214 || (!IS_ARM(board) && version >= 213))
@@ -1121,7 +1121,7 @@ class MixField: public TransformedField {
           internalField.Append(new ZCharField<6>(this, mix.name));
         }
       }
-      else if (IS_DBLRAM(board, version) && IS_AFTER_RELEASE_23_MARCH_2013(board, version)) {
+      else if (IS_DBLRAM(board, version) && IS_AFTER_RELEASE_23_MARCH_2013(board, version) || IS_ESP32(board)) {
         internalField.Append(new UnsignedField<4>(this, _destCh));
         internalField.Append(new BoolField<1>(this, _curveMode));
         internalField.Append(new BoolField<1>(this, mix.noExpo));
@@ -1230,7 +1230,7 @@ class MixField: public TransformedField {
         }
       }
 
-      if (IS_ARM(board)) {
+      if (IS_ARM(board) || IS_ESP32(board)) {
         importGvarParam(mix.weight, _weight, version);
         if (version >= 214)
           importGvarParam(mix.sOffset, _offset, version);
@@ -1357,7 +1357,7 @@ class InputField: public TransformedField {
         }
         internalField.Append(new SignedField<8>(this, _curveParam));
       }
-      else if (IS_DBLRAM(board, version) && IS_AFTER_RELEASE_23_MARCH_2013(board, version)) {
+      else if (IS_DBLRAM(board, version) && IS_AFTER_RELEASE_23_MARCH_2013(board, version) || IS_ESP32(board)) {
         internalField.Append(new UnsignedField<2>(this, expo.mode));
         internalField.Append(new UnsignedField<2>(this, expo.chn));
         internalField.Append(new BoolField<1>(this, _curveMode));
@@ -2048,14 +2048,17 @@ class CustomFunctionsConversionTable: public ConversionTable {
           addConversion(FuncBindInternalModule, val);
           addConversion(FuncBindExternalModule, val++);
         }
+        if (IS_ESP32(board)) {
+          addConversion(FuncVolume, val++);
+        }
         addConversion(FuncPlaySound, val++);
         addConversion(FuncPlayPrompt, val++);
-        if (version >= 213 && !IS_ARM(board))
+        if (version >= 213 && !IS_ARM(board) && !IS_ESP32(board))
           addConversion(FuncPlayBoth, val++);
         addConversion(FuncPlayValue, val++);
-        if (IS_ARM(board)) {
+        if (IS_ARM(board) || IS_ESP32(board)) {
           addConversion(FuncReserve, val++);
-          if (IS_STM32(board))
+          if (IS_STM32(board) || IS_ESP32(board))
             addConversion(FuncPlayScript, val++);
           else
             addConversion(FuncReserve, val++);
@@ -2065,7 +2068,7 @@ class CustomFunctionsConversionTable: public ConversionTable {
         }
         addConversion(FuncVario, val++);
         addConversion(FuncPlayHaptic, val++);
-        if (IS_2560(board) || IS_ARM(board) )
+        if (IS_ESP32(board) ||IS_2560(board) || IS_ARM(board) )
           addConversion(FuncLogs, val++);
         addConversion(FuncBacklight, val++);
         if (IS_STM32(board))
@@ -2081,7 +2084,7 @@ class CustomFunctionsConversionTable: public ConversionTable {
         if (version >= 213 && !IS_ARM(board))
           addConversion(FuncPlayBoth, val++);
         addConversion(FuncPlayValue, val++);
-        if (IS_2560(board) || IS_ARM(board) )
+        if (IS_ESP32(board) || IS_2560(board) || IS_ARM(board) )
           addConversion(FuncLogs, val++);
         if (IS_ARM(board))
           addConversion(FuncVolume, val++);
@@ -2565,6 +2568,109 @@ class AvrCustomFunctionField: public TransformedField {
     unsigned int _union_param;
     unsigned int _active;
 };
+
+class Esp32CustomFunctionField: public TransformedField {
+  public:
+    Esp32CustomFunctionField(DataField * parent, CustomFunctionData & fn, Board::Type board, unsigned int version, unsigned int variant):
+      TransformedField(parent, internalField),
+      internalField(this, "CustomFunction"),
+      fn(fn),
+      board(board),
+      version(version),
+      variant(variant),
+      functionsConversionTable(board, version),
+      sourcesConversionTable(SourcesConversionTable::getInstance(board, version, variant, version >= 216 ? 0 : FLAG_NONONE)),
+      _func(0),
+      _active(0),
+      _union_param(0),
+      _mode(0)
+    {
+      memset(_play, 0, sizeof(_play));
+
+      internalField.Append(new SwitchField<8>(this, fn.swtch, board, version));
+      internalField.Append(new ConversionField< UnsignedField<8> >(this, (unsigned int &)fn.func, &functionsConversionTable, "Function", DataField::tr("OpenTX on this board doesn't accept this function")));
+      internalField.Append(new CharField<6>(this, _play, false));
+      internalField.Append(new UnsignedField<2>(this, fn.adjustMode));
+      internalField.Append(new UnsignedField<4>(this, _union_param));
+      internalField.Append(new UnsignedField<1>(this, _active));
+      internalField.Append(new SpareBitsField<1>(this));
+      internalField.Append(new UnsignedField<8>(this, _param));
+    }
+
+    
+    virtual void beforeExport()
+    {
+      _param = fn.param;
+      _active = (fn.enabled ? 1 : 0);
+
+      if (fn.func >= FuncOverrideCH1 && fn.func <= FuncOverrideCH32) {
+        _union_param = fn.func - FuncOverrideCH1;
+      }
+      else if (fn.func >= FuncTrainer && fn.func <= FuncTrainerAIL) {
+        _union_param = fn.func - FuncTrainer;
+      }
+      else if (fn.func >= FuncAdjustGV1 && fn.func <= FuncAdjustGVLast) {
+        _union_param = (fn.func - FuncAdjustGV1);
+        if (fn.adjustMode == 1)
+          sourcesConversionTable->exportValue(fn.param, (int &)_param);
+        else if (fn.adjustMode == 2)
+          _param = RawSource(fn.param).index;
+      }
+      else if (fn.func == FuncPlayValue) {
+        _union_param = fn.repeatParam / 10;
+        sourcesConversionTable->exportValue(fn.param, (int &)_param);
+      }
+      else if (fn.func == FuncPlaySound || fn.func == FuncPlayPrompt || fn.func == FuncPlayBoth) {
+        memcpy(_play, fn.paramarm, sizeof(_play));
+        _union_param = fn.repeatParam / 10;
+      }
+    }
+
+    virtual void afterImport()
+    {
+      fn.param = _union_param;
+      fn.enabled = (_active & 0x01);
+
+      if (fn.func >= FuncOverrideCH1 && fn.func <= FuncOverrideCH32) {
+        fn.func = AssignFunc(fn.func + _union_param);
+      }
+      else if (fn.func >= FuncTrainer && fn.func <= FuncTrainerAIL) {
+        fn.func = AssignFunc(fn.func + _union_param);
+      }
+      else if (fn.func >= FuncAdjustGV1 && fn.func <= FuncAdjustGVLast) {
+        fn.func = AssignFunc(fn.func + _union_param);
+        if (fn.adjustMode == 1)
+          sourcesConversionTable->importValue(_param, (int &)fn.param);
+        else if (fn.adjustMode == 2)
+          fn.param = RawSource(SOURCE_TYPE_GVAR, _param).toValue();
+      }
+      else if (fn.func == FuncPlayValue) {
+        fn.repeatParam = _union_param * 10;
+        sourcesConversionTable->importValue(_param, (int &)fn.param);
+      }
+      else if (fn.func == FuncPlaySound || fn.func == FuncPlayPrompt) {
+       memcpy( fn.paramarm, _play, sizeof(_play));
+       fn.repeatParam = _union_param * 10;
+      }
+      qCDebug(eepromImport) << QString("imported %1").arg(internalField.getName());
+    }
+
+  protected:
+    StructField internalField;
+    CustomFunctionData & fn;
+    Board::Type board;
+    unsigned int version;
+    unsigned int variant;
+    CustomFunctionsConversionTable functionsConversionTable;
+    SourcesConversionTable * sourcesConversionTable;
+    unsigned int _func;
+    char _play[10];
+    unsigned int _param;
+    unsigned int _mode;
+    unsigned int _union_param;
+    unsigned int _active;
+};
+
 
 class FrskyScreenField: public DataField {
   public:
@@ -3102,7 +3208,7 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
       else
         internalField.Append(new ZCharField<3>(this, modelData.timers[i].name, "Timer name"));
     }
-    else if ((IS_ARM(board) || IS_2560(board)) && version >= 216) {
+    else if ((IS_ARM(board) || IS_2560(board) || IS_ESP32(board)) && version >= 216) {
       internalField.Append(new SwitchField<8>(this, modelData.timers[i].mode, board, version, true));
       internalField.Append(new UnsignedField<16>(this, modelData.timers[i].val));
       internalField.Append(new UnsignedField<2>(this, modelData.timers[i].countdownBeep));
@@ -3153,7 +3259,9 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
   else {
     internalField.Append(new ConversionField< SignedField<4> >(this, modelData.moduleData[0].channelsCount, &channelsConversionTable, "Channels number", DataField::tr("OpenTX doesn't allow this number of channels")));
   }
-
+  if (IS_ESP32(board)) {
+    internalField.Append(new BoolField<8>(this, modelData.noGlobalFunctions));
+  }
   if (version >= 216)
     internalField.Append(new SignedField<3>(this, modelData.trimInc));
   else
@@ -3169,12 +3277,11 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
   internalField.Append(new BoolField<1>(this, modelData.extendedLimits));
   internalField.Append(new BoolField<1>(this, modelData.extendedTrims));
   internalField.Append(new BoolField<1>(this, modelData.throttleReversed));
-
   if (!IS_ARM(board) || version < 216) {
     internalField.Append(new ConversionField< SignedField<8> >(this, modelData.moduleData[0].ppm.delay, exportPpmDelay, importPpmDelay));
   }
 
-  if (IS_ARM(board) || IS_2560(board))
+  if (IS_ARM(board) || IS_2560(board) || IS_ESP32(board))
     internalField.Append(new UnsignedField<16>(this, modelData.beepANACenter));
   else
     internalField.Append(new UnsignedField<8>(this, modelData.beepANACenter));
@@ -3191,6 +3298,9 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
   for (int i=0; i<MAX_CUSTOM_FUNCTIONS(board, version); i++) {
     if (IS_ARM(board))
       internalField.Append(new ArmCustomFunctionField(this, modelData.customFn[i], board, version, variant));
+    else if (IS_ESP32(board)) {
+      internalField.Append(new Esp32CustomFunctionField(this, modelData.customFn[i], board, version, variant));
+    }
     else
       internalField.Append(new AvrCustomFunctionField(this, modelData.customFn[i], board, version, variant));
   }
@@ -3427,7 +3537,7 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
 
 void OpenTxModelData::beforeExport()
 {
-  // qDebug() << QString("before export model") << modelData.name;
+  qDebug() << QString("before export model") << modelData.name;
 
   for (int module=0; module<3; module++) {
     if ((modelData.moduleData[module].protocol >= PULSES_PXX_XJT_X16 && modelData.moduleData[module].protocol <= PULSES_PXX_XJT_LR12) ||
@@ -3670,7 +3780,7 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
 
   internalField.Append(new UnsignedField<8>(this, generalData.speakerPitch));
 
-  if (IS_ARM(board))
+  if (IS_ARM(board) || IS_ESP32(board))
     internalField.Append(new ConversionField< SignedField<8> >(this, generalData.speakerVolume, -12, 0, 0, 23, "Volume"));
   else
     internalField.Append(new ConversionField< SignedField<8> >(this, generalData.speakerVolume, -7, 0, 0, 7, "Volume"));
@@ -3846,6 +3956,18 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
         internalField.Append(new CharField<8>(this, (char *)generalData.themeOptionValue[i], true, "Theme blob"));
       }
     }
+  }
+  if (IS_ESP32(board)){
+    internalField.Append(new SignedField<4>(this, generalData.beepVolume));
+    internalField.Append(new SignedField<4>(this, generalData.wavVolume));
+    internalField.Append(new SignedField<4>(this, generalData.varioVolume));
+    internalField.Append(new SignedField<4>(this, generalData.backgroundVolume));
+    for (int i=0; i<MAX_CUSTOM_FUNCTIONS(board, version); i++) {
+      internalField.Append(new Esp32CustomFunctionField(this, generalData.customFn[i], board, version, variant));
+    }
+    internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.passwd, "WiFi password")); 
+    internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.ssid, "WiFi SSID"));
+    internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.ftppasswd, "ftp password"));
   }
 }
 

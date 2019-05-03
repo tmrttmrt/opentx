@@ -684,6 +684,7 @@ void CustomFunctionsPanel::populateFuncCB(QComboBox *b, unsigned int value)
   b->clear();
   for (unsigned int i=0; i<FuncCount; i++) {
     if (((i>=FuncOverrideCH1 && i<=FuncOverrideCH32) && (!model || !firmware->getCapability(SafetyChannelCustomFunction))) ||
+        ((i>=(FuncOverrideCH1 + 16) && i<=FuncOverrideCH32) && (IS_ESP32(firmware->getBoard()))) ||
         ((i==FuncVolume || i==FuncBackgroundMusic || i==FuncBackgroundMusicPause) && !firmware->getCapability(HasVolume)) ||
         ((i==FuncPlayScript && !IS_HORUS_OR_TARANIS(firmware->getBoard()))) ||
         ((i==FuncPlayHaptic) && !firmware->getCapability(Haptic)) ||
@@ -693,7 +694,9 @@ void CustomFunctionsPanel::populateFuncCB(QComboBox *b, unsigned int value)
         ((i==FuncSetTimer3) && firmware->getCapability(Timers) < 3) ||
         ((i==FuncScreenshot) && !IS_TARANIS(firmware->getBoard())) ||
         ((i>=FuncRangeCheckInternalModule && i<=FuncBindExternalModule) && (!model || !firmware->getCapability(DangerousFunctions))) ||
-        ((i>=FuncAdjustGV1 && i<=FuncAdjustGVLast) && (!model || !firmware->getCapability(Gvars)))
+        ((i>=FuncAdjustGV1 && i<=FuncAdjustGVLast) && (!model || !firmware->getCapability(Gvars))) ||
+        ((i>=(FuncAdjustGV1 + 6) && i<=FuncAdjustGVLast) && (IS_ESP32(firmware->getBoard()))) ||
+        ((i==FuncSetFailsafeInternalModule || i== FuncSetFailsafeExternalModule) && IS_ESP32(firmware->getBoard()))
         ) {
       // skipped
       continue;

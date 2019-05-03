@@ -23,12 +23,8 @@ set(GUI_SRC ${GUI_SRC}
 
 set(GVAR_SCREEN model_gvars.cpp)
 
-if(AUDIO)
-  add_definitions(-DAUDIO)
-  set(BUZZER OFF)
-else()
-  set(BUZZER ON)
-endif()
+add_definitions(-DAUDIO)
+
 if(SDCARD)
   add_definitions(-DSDCARD -DVOICE)
   set(SRC ${SRC} rtc.cpp logs.cpp)

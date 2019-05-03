@@ -56,7 +56,7 @@ GeneralEdit::GeneralEdit(QWidget * parent, RadioData & radioData, Firmware * fir
   }
 
   addTab(new GeneralSetupPanel(this, generalSettings, firmware), tr("Setup"));
-  if (IS_ARM(firmware->getBoard())) {
+  if (IS_ARM(firmware->getBoard()) || IS_ESP32(firmware->getBoard())) {
     addTab(new CustomFunctionsPanel(this, NULL, generalSettings, firmware), tr("Global Functions"));
   }
   addTab(new TrainerPanel(this, generalSettings, firmware), tr("Trainer"));

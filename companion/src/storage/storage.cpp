@@ -19,6 +19,7 @@
  */
 
 #include "bineeprom.h"
+#include "binraw.h"
 #include "eepe.h"
 #include "otx.h"
 #include "sdcard.h"
@@ -41,6 +42,8 @@ StorageType getStorageType(const QString & filename)
     return STORAGE_TYPE_XML;
   else if (suffix == "OTX")
     return STORAGE_TYPE_OTX;
+  else if (suffix == "EESP")
+    return STORAGE_TYPE_EESP;
   else
     return STORAGE_TYPE_UNKNOWN;
 }
@@ -62,6 +65,7 @@ void registerStorageFactories()
   registerStorageFactory(new DefaultStorageFactory<HexEepromFormat>("hex"));
   registerStorageFactory(new DefaultStorageFactory<OtxFormat>("otx"));
   registerStorageFactory(new SdcardStorageFactory());
+  registerStorageFactory(new DefaultStorageFactory<BinRawFormat>("eesp"));
 }
 
 void unregisterStorageFactories()

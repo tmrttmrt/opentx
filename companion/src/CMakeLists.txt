@@ -231,6 +231,7 @@ set(companion_SRCS
   progressdialog.cpp
   process_copy.cpp
   process_flash.cpp
+  process_dnld.cpp
   process_sync.cpp
   flashfirmwaredialog.cpp
   flasheepromdialog.cpp
@@ -266,6 +267,7 @@ set(companion_MOC_HDRS
   progressdialog.h
   process_copy.h
   process_flash.h
+  process_dnld.h
   process_sync.h
   flashfirmwaredialog.h
   flasheepromdialog.h

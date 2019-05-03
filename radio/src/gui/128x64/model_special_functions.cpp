@@ -514,7 +514,7 @@ void menuSpecialFunctions(event_t event, CustomFunctionData * functions, CustomF
             if (CFN_PLAY_REPEAT(cfn) == 0) {
               lcdDrawChar(MODEL_SPECIAL_FUNC_4TH_COLUMN_ONOFF+3, y, '-', attr);
             }
-#if defined(CPUARM) || defined(CPUESP32)
+#if defined(CPUARM)
             else if (CFN_PLAY_REPEAT(cfn) == CFN_PLAY_REPEAT_NOSTART) {
               lcdDrawText(MODEL_SPECIAL_FUNC_4TH_COLUMN_ONOFF+1, y, "!-", attr);
             }
