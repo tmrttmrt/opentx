@@ -104,7 +104,7 @@ void ftpServerTask (void *pvParameters)
     }
 
     while (!_check_network()) {
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
         if (ftp_stop_requested()) goto exit;
     }
 
@@ -129,7 +129,7 @@ void ftpServerTask (void *pvParameters)
             break;
         }
 
-        vTaskDelay(1);
+        vTaskDelay(10 / portTICK_PERIOD_MS);
 
         // ---- Check if network is still available ----
         if (!_check_network()) {

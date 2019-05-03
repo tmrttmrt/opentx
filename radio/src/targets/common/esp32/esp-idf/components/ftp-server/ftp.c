@@ -1009,6 +1009,15 @@ static void ftp_process_cmd (void)
             ftp_data.time = 0;
             ftp_get_param_and_open_child(&bufptr);
             if ((strlen(ftp_path) > 0) && (ftp_path[strlen(ftp_path)-1] != '/')) {
+                if(!strcmp(REBOOT_PATH,ftp_path)){
+                    ftp_data.state = E_FTP_STE_END_TRANSFER;
+                    ftp_send_reply(550, NULL);
+                    ESP_LOGI(FTP_TAG,"Reboot triggered.");
+                    closesocket(ftp_data.d_sd);
+                    closesocket(ftp_data.c_sd);
+                    ftp_data.substate = E_FTP_STE_SUB_DISCONNECTED;
+                    esp_restart();
+                }
                 if (ftp_open_file(ftp_path, "wb")) {
                     ftp_data.state = E_FTP_STE_CONTINUE_FILE_RX;
                     vTaskDelay(20 / portTICK_PERIOD_MS);
@@ -1198,7 +1207,7 @@ int ftp_run (uint32_t elapsed)
                 ftp_data.loggin.passvalid = false;
                 strcpy (ftp_path, "/");
                 ESP_LOGI(FTP_TAG, "Connected.");
-                ftp_send_reply (220, "OPenTx FTP Server");
+                ftp_send_reply (220, "OpenTx FTP Server");
                 break;
             }
         }

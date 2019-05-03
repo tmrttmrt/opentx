@@ -18,6 +18,7 @@
 
 #define STATUS_LEN 32
 #define mp_hal_ticks_ms()  (esp_timer_get_time()/1000)
+#define REBOOT_PATH "/flash/reboot"
 
 enum WifiState {
     WIFI_IDLE = BIT0,
