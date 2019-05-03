@@ -40,7 +40,7 @@ using namespace Board;
 #define MAX_SWITCH_SLOTS(board, version)      (IS_TARANIS_X9E(board) ? 32 : 8)  // bitsize of swconfig_t / 2 (see radio/src/datastructs.h)
 #define MAX_SWITCHES_POSITION(board, version) (Boards::getCapability(board, Board::SwitchPositions))
 #define MAX_ROTARY_ENCODERS(board)            (IS_2560(board) || IS_ESP32(board) ? 2 : (IS_SKY9X(board) ? 1 : 0))
-#define MAX_FLIGHT_MODES(board, version)      (IS_ARM(board) ? 9 :  (IS_DBLRAM(board, version) ? 6 :  5))
+#define MAX_FLIGHT_MODES(board, version)      (IS_ARM(board) ? 9 :  (IS_DBLRAM(board, version) || IS_ESP32(board) ? 6 :  5))
 #define MAX_TIMERS(board, version)            ((IS_ARM(board) && version >= 217) ? 3 : 2)
 #define MAX_MIXERS(board, version)            (IS_ARM(board) ? 64 : 32)
 #define MAX_CHANNELS(board, version)          (IS_ARM(board) ? 32 : 16)
@@ -2048,14 +2048,17 @@ class CustomFunctionsConversionTable: public ConversionTable {
           addConversion(FuncBindInternalModule, val);
           addConversion(FuncBindExternalModule, val++);
         }
+        if (IS_ESP32(board)) {
+          addConversion(FuncVolume, val++);
+        }
         addConversion(FuncPlaySound, val++);
         addConversion(FuncPlayPrompt, val++);
-        if (version >= 213 && !IS_ARM(board))
+        if (version >= 213 && !IS_ARM(board) && !IS_ESP32(board))
           addConversion(FuncPlayBoth, val++);
         addConversion(FuncPlayValue, val++);
-        if (IS_ARM(board)) {
+        if (IS_ARM(board) || IS_ESP32(board)) {
           addConversion(FuncReserve, val++);
-          if (IS_STM32(board))
+          if (IS_STM32(board) || IS_ESP32(board))
             addConversion(FuncPlayScript, val++);
           else
             addConversion(FuncReserve, val++);
@@ -2594,6 +2597,7 @@ class Esp32CustomFunctionField: public TransformedField {
       internalField.Append(new UnsignedField<8>(this, _param));
     }
 
+    
     virtual void beforeExport()
     {
       _param = fn.param;
@@ -2644,7 +2648,7 @@ class Esp32CustomFunctionField: public TransformedField {
         fn.repeatParam = _union_param * 10;
         sourcesConversionTable->importValue(_param, (int &)fn.param);
       }
-      else if (fn.func == FuncPlaySound || fn.func == FuncPlayPrompt || fn.func == FuncPlayBoth) {
+      else if (fn.func == FuncPlaySound || fn.func == FuncPlayPrompt) {
        memcpy( fn.paramarm, _play, sizeof(_play));
        fn.repeatParam = _union_param * 10;
       }

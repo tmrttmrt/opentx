@@ -177,7 +177,7 @@ FlightModePanel::FlightModePanel(QWidget * parent, ModelData & model, int phaseI
     valueLabel->setText(tr("Value"));
     gvLayout->addWidget(valueLabel, 0, headerCol++, 1, 1);
 
-    if (IS_HORUS_OR_TARANIS(board) && phaseIdx == 0) {
+    if ((IS_HORUS_OR_TARANIS(board) || IS_ESP32(board)) && phaseIdx == 0) {
       QLabel *unitLabel = new QLabel(ui->gvGB);
       unitLabel->setText(tr("Unit"));
       gvLayout->addWidget(unitLabel, 0, headerCol++, 1, 1);
@@ -194,7 +194,7 @@ FlightModePanel::FlightModePanel(QWidget * parent, ModelData & model, int phaseI
       maxLabel->setText(tr("Max"));
       gvLayout->addWidget(maxLabel, 0, headerCol++, 1, 1);
     }
-    if (IS_TARANIS(board) && phaseIdx == 0) {
+    if ((IS_TARANIS(board) || IS_ESP32(board)) && phaseIdx == 0) {
       QLabel *popupLabel = new QLabel(ui->gvGB);
       popupLabel->setText(tr("Popup enabled"));
       gvLayout->addWidget(popupLabel, 0, headerCol++, 1, 1);
@@ -235,7 +235,7 @@ FlightModePanel::FlightModePanel(QWidget * parent, ModelData & model, int phaseI
       connect(gvValues[i], SIGNAL(editingFinished()), this, SLOT(phaseGVValue_editingFinished()));
       gvLayout->addWidget(gvValues[i], i+1, col++, 1, 1);
 
-      if (IS_HORUS_OR_TARANIS(board) && phaseIdx == 0) {
+      if ((IS_HORUS_OR_TARANIS(board) || IS_ESP32(board)) && phaseIdx == 0) {
         // GVar unit
         gvUnit[i] = new QComboBox(ui->gvGB);
         gvUnit[i]->setProperty("index", i);
@@ -262,7 +262,7 @@ FlightModePanel::FlightModePanel(QWidget * parent, ModelData & model, int phaseI
         connect(gvMax[i], SIGNAL(editingFinished()), this, SLOT(phaseGVMax_editingFinished()));
         gvLayout->addWidget(gvMax[i], i+1, col++, 1, 1);
       }
-      if (IS_TARANIS(board) && phaseIdx == 0) {
+      if ((IS_TARANIS(board) || IS_ESP32(board)) && phaseIdx == 0) {
         // Popups
         gvPopups[i] = new QCheckBox(ui->gvGB);
         gvPopups[i]->setProperty("index", i);

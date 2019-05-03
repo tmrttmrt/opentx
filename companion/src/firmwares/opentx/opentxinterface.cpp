@@ -442,7 +442,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case ModelImage:
       return (board == BOARD_TARANIS_X9D || IS_TARANIS_PLUS(board) || IS_HORUS(board));
     case HasBeeper:
-      return (!IS_ARM(board));
+      return (!IS_ARM(board) && !IS_ESP32(board));
     case HasPxxCountry:
       return 1;
     case HasGeneralUnits:
@@ -526,7 +526,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case LogicalSwitchesExt:
       return (IS_ARM(board) ? true : false);
     case RotaryEncoders:
-      if (board == BOARD_GRUVIN9X)
+      if (board == BOARD_GRUVIN9X || IS_ESP32(board) || IS_2560(board) )
         return 2;
       else if (IS_SKY9X(board))
         return 1;
@@ -537,9 +537,9 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case NumCurvePoints:
       return (IS_ARM(board) ? 512 : 104);
     case VoicesAsNumbers:
-      return (IS_ARM(board) ? 0 : 1);
+      return (IS_ARM(board) || IS_ESP32(board) ? 0 : 1);
     case VoicesMaxLength:
-      return (IS_ARM(board) ? (IS_TARANIS_X9(board) ? 8 : 6) : 0);
+      return (IS_ARM(board) ? (IS_TARANIS_X9(board) ? 8 : 6) : IS_ESP32(board) ? 6 : 0);
     case MultiLangVoice:
       return (IS_ARM(board) || IS_ESP32(board) ? 1 : 0);
     case SoundPitch:
@@ -552,7 +552,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
       else
         return 0;
     case MaxVolume:
-      return (IS_ARM(board) ? 23 : 7);
+      return (IS_ARM(board) || IS_ESP32(board) ? 23 : 7);
     case MaxContrast:
       if (IS_TARANIS_SMALL(board))
         return 30;
@@ -564,7 +564,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
       else
         return 10;
     case HasSoundMixer:
-      return (IS_ARM(board) ? 1 : 0);
+      return (IS_ARM(board) || IS_ESP32(board) ? 1 : 0);
     case ExtraInputs:
       return 1;
     case TrimsRange:
@@ -630,7 +630,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case HastxCurrentCalibration:
       return (IS_SKY9X(board) ? true : false);
     case HasVolume:
-      return (IS_ARM(board) ? true : false);
+      return (IS_ARM(board) || IS_ESP32(board) ? true : false);
     case HasBrightness:
       return (IS_ARM(board) ? true : false);
     case PerModelTimers:
@@ -673,7 +673,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case HasTopLcd:
       return IS_TARANIS_X9E(board) ? 1 : 0;
     case GlobalFunctions:
-      return IS_ARM(board) ? 64 : 0;
+      return IS_ARM(board) ? 64 : IS_ESP32(board) ? 24 : 0;
     case VirtualInputs:
       return IS_ARM(board) ? 32 : 0;
     case InputsLength:
@@ -1482,7 +1482,7 @@ void registerOpenTxFirmwares()
 //  addOpenTxVoiceOptions(firmware);
 //  firmware->addOption("haptic", QCoreApplication::translate("Firmware", "Used if you have modified your radio with haptic mode"));
   firmware->addOption("ppmca", QCoreApplication::translate("Firmware", "PPM center adjustment in limits"));
-//  firmware->addOption("gvars", QCoreApplication::translate("Firmware", "Global variables"), GVARS_VARIANT);
+  firmware->addOption("gvars", QCoreApplication::translate("Firmware", "Global variables"), GVARS_VARIANT);
 //  firmware->addOption("symlimits", QCoreApplication::translate("Firmware", "Symetrical Limits"));
 //  firmware->addOption("autosource", QCoreApplication::translate("Firmware", "In model setup menus automatically set source by moving the control"));
 //  firmware->addOption("autoswitch", QCoreApplication::translate("Firmware", "In model setup menus automatically set switch by moving the control"));

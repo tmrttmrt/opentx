@@ -92,7 +92,12 @@ void DnldProcess::onStarted()
   progress->lock(true);
   progress->addText(cmd + " " + args.join(" "));
   progress->addSeparator();
-  progress->setMaximum(31);
+  if (FLASHING == dnldPhase) {
+    progress->setMaximum(100);
+  }
+  else {
+    progress->setMaximum(31);
+  }
 }
 
 #if !__GNUC__
@@ -183,6 +188,15 @@ void DnldProcess::analyseStandardError(const QString &text)
       if (match.hasMatch()) {
         itemsProcessed++;
         progress->setValue(itemsProcessed);
+      }
+    }
+    else if (FLASHING == dnldPhase && line.at(0) == QChar('#')) {
+      QRegularExpression re("#+\\s*(\\d+)\\.");
+      QRegularExpressionMatch match = re.match(line);
+      if (match.hasMatch()) {
+          QString matched = match.captured(1);
+          int val = matched.toInt();
+        progress->setValue(val);
       }
     }
   } 

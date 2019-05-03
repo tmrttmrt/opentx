@@ -99,7 +99,7 @@ QStringList getCurlDnldArgs(const QString & filename)
   burnConfigDialog bcd;
 
   QString url =     "ftp://opentx:" + bcd.getFtpPasswd() + "@" + bcd.getCurlIP();
-  args << "-#" << (url + "/flash/eeprom.dir/radio.eesp") << "--output";
+  args << "-#" << "--ftp-method" << "nocwd" << (url + "/flash/eeprom.dir/radio.eesp") << "--output";
   args << filename;
   
   QFileInfo fi(filename);
@@ -114,12 +114,23 @@ QStringList getCurlUplArgs(const QString & filename)
   QStringList args;
   burnConfigDialog bcd;
 
-  args << "-#" << "-T" << filename;
+  args << "-#" << "--ftp-method" << "nocwd" << "-T" << filename;
   QString url =     "ftp://opentx:" + bcd.getFtpPasswd() + "@" + bcd.getCurlIP();
   QFileInfo fi(filename);
   args << (url  + "/flash/eeprom.dir/radio.eesp");
   args << "-T" << fi.absolutePath() +"/model-[0-29].ebin";
   args << (url  + "/flash/eeprom.dir/");
+  args << "-T" << filename << (url  + "/flash/reboot") ;
+
+  return args;
+}
+
+QStringList getCurlFlashArgs(const QString & filename)
+{
+  QStringList args;
+  burnConfigDialog bcd;
+  
+  args << "-#" << (bcd.getCurlIP() + ":8032") << "--data-binary" << ("@"+ filename);
 
   return args;
 }
@@ -306,6 +317,12 @@ bool readFirmware(const QString & filename, ProgressWidget * progress)
                          QCoreApplication::translate("RadioInterface", "Could not delete temporary file: %1").arg(filename));
     return false;
   }
+  
+  if (IS_ESP32(getCurrentBoard())) {
+     QMessageBox::warning(NULL, CPN_STR_TTL_ERROR,
+                           QCoreApplication::translate("RadioInterface", "Not implemented for current board"));
+     return false;
+  }
 
   if (IS_ARM(getCurrentBoard())) {
     QString path = findMassstoragePath("FIRMWARE.BIN");
@@ -338,6 +355,11 @@ bool writeFirmware(const QString & filename, ProgressWidget * progress)
       CopyProcess copyProcess(filename, path, progress);
       return copyProcess.run();
     }
+  }
+  
+  if (IS_ESP32(getCurrentBoard())) {
+    DnldProcess dnldProcess(getRadioInterfaceCmd(), getCurlFlashArgs(filename), progress, DnldProcess::FLASHING);
+    return dnldProcess.run();
   }
 
   qDebug() << "writeFirmware: writing" << filename << "with" << getRadioInterfaceCmd() << getWriteFirmwareArgs(filename);
