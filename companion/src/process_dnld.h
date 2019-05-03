@@ -34,7 +34,7 @@ class DnldProcess : public QObject
   Q_OBJECT
 
 public:
-  enum DnldPhase { READING, WRITING };
+  enum DnldPhase { READING, WRITING, FLASHING };
   DnldProcess(const QString &cmd, const QStringList &args, ProgressWidget *progress, enum DnldPhase dnldPhase = READING);
   ~DnldProcess();
   bool run();

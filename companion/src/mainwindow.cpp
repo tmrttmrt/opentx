@@ -1187,6 +1187,11 @@ void MainWindow::readBackup()
 
 void MainWindow::readFlash()
 {
+  if (IS_ESP32(getCurrentBoard())) {
+     QMessageBox::warning(NULL, CPN_STR_TTL_ERROR,
+                           QCoreApplication::translate("RadioInterface", "Not implemented for current board"));
+     return ;
+  }
   QString fileName = QFileDialog::getSaveFileName(this,tr("Read Radio Firmware to File"), g.flashDir(), FLASH_FILES_FILTER);
   if (!fileName.isEmpty()) {
     readFirmwareFromRadio(fileName);
