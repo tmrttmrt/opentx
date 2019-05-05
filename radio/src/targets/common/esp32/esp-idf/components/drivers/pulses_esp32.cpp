@@ -29,7 +29,7 @@
 #define SETUP_PULSES_DURATION 1000 // 500us
 
 static const char *TAG = "pulses_esp32.cpp";
-DRAM_ATTR uint8_t s_pulses_paused = 0;
+extern uint8_t s_pulses_paused;
 DRAM_ATTR uint8_t s_current_protocol[1] = { 255 };
 rmt_isr_handle_t handle = 0;
 static portMUX_TYPE rmt_spinlock = portMUX_INITIALIZER_UNLOCKED;
@@ -37,23 +37,101 @@ QueueHandle_t xPulsesQueue;
 SemaphoreHandle_t xPPMSem = NULL;
 DRAM_ATTR int16_t locChannelOutputs[MAX_OUTPUT_CHANNELS] = {0};
 uint32_t testCount=0;
+uint8_t ppmPol;
 
-void IRAM_ATTR setupPulsesPPM()
+
+void setExternalModulePolarity()
 {
-    // Total frame length is a fixed 22.5msec (more than 9 channels is non-standard and requires this to be extended.)
-    // Each channel's pulse is 0.7 to 1.7ms long, with a 0.3ms stop tail, making each compelte cycle 1 to 2ms.
+  ppmPol = GET_MODULE_PPM_POLARITY(EXTERNAL_MODULE);
+}
 
-    int16_t PPM_range = g_model.extendedLimits ? 640*2 : 512*2;   //range of 0.7..1.7msec
+void disable_main_ppm()
+{
 
+}
+
+void disable_second_ppm()
+{
+
+}
+
+void extmoduleSendNextFrame()
+{
+
+}
+
+void disable_ppm(uint32_t port)
+{
+  if (port == EXTERNAL_MODULE) {
+    disable_main_ppm();
+  }
+  else {
+    disable_second_ppm();
+  }
+}
+
+void init_main_ppm(uint32_t period, uint32_t out_enable){
+}
+
+void init_second_ppm(uint32_t period)
+{
+}
+
+void init_ppm(uint32_t port)
+{
+  if (port == EXTERNAL_MODULE) {
+    init_main_ppm(3000, 1);
+  }
+  else {
+    init_second_ppm(3000);
+  }
+}
+
+
+void extmoduleSerialStart(uint32_t baudrate, uint32_t period_half_us, bool inverted)
+{
+  if (baudrate == 125000) {
+    // TODO init_main_ppm could take the period as parameter?
+    init_main_ppm(2500 * 2, 0);
+
+  }
+  else {
+    init_main_ppm(3500 * 2, 0);
+//    init_ssc(100);
+  }
+}
+
+
+void disable_serial(uint32_t port)
+{
+  if (port == EXTERNAL_MODULE) {
+    disable_ppm(EXTERNAL_MODULE);
+  }
+  else {
+    // TODO
+  }
+}
+
+template<class T>
+void IRAM_ATTR setupPulsesPPM(PpmPulsesData<T> * ppmPulsesData, uint8_t channelsStart, int8_t channelsCount, int8_t frameLength)
+{
+  int16_t PPM_range = g_model.extendedLimits ? (512*LIMIT_EXT_PERCENT/100) * 2 : 512 * 2; // range of 0.7 .. 1.7msec
+
+  // Total frame length = 22.5msec
+  // each pulse is 0.7..1.7ms long with a 0.3ms stop tail
+  // The pulse ISR is 2mhz that's why everything is multiplied by 2
+
+  uint8_t firstCh = channelsStart;
+  uint8_t lastCh = min<uint8_t>(MAX_OUTPUT_CHANNELS, firstCh + 8 + channelsCount);
+  int32_t rest = 22500u * 2;
+  rest += int32_t(frameLength) * 1000;
     //The pulse tick is 2mhz that's why everything is multiplied by 2
-    uint8_t p = 8 + (g_model.ppmNCH * 2); //Channels *2
-    uint16_t q = (g_model.ppmDelay*50+300)*2; // Stoplen *2
-    int32_t rest = 22500u*2 - q;
-    rest += (int32_t(g_model.ppmFrameLength))*1000;
+  uint8_t p = 8 + (channelsCount * 2); //Channels *2
+  uint16_t q = (/*g_model.ppmDelay*50+*/300)*2; // Stoplen *2
 
     uint16_t pulseLevel;
     uint16_t idleLevel;
-    if(g_model.pulsePol) {
+    if(ppmPol) {
         pulseLevel=1;
         idleLevel=0;
     } else {
@@ -63,7 +141,7 @@ void IRAM_ATTR setupPulsesPPM()
     portENTER_CRITICAL(&rmt_spinlock);
     int j=0;
     volatile rmt_item32_t* pd = RMTMEM.chan[PPM_OUT_RMT_CHANNEL_0].data32;
-    for ( uint8_t i=0; i<p; i++) {
+  for (uint32_t i=firstCh; i<lastCh; i++) {
         int16_t v = limit((int16_t)-PPM_range, locChannelOutputs[i], (int16_t)PPM_range) + 2*PPM_CH_CENTER(i);
         rest -= v;
         pd->duration0 = q;
@@ -91,7 +169,7 @@ void IRAM_ATTR setupPulsesPPM()
     portEXIT_CRITICAL(&rmt_spinlock);
 }
 
-
+/*
 void IRAM_ATTR setupPulses()
 {
     uint8_t required_protocol = g_model.protocol;
@@ -200,7 +278,7 @@ void resumePulses()
     }
 }
 
-void startPulses()
+void initPulses()
 {
     rmt_config_t config;
 
@@ -216,19 +294,7 @@ void startPulses()
     config.gpio_num = (gpio_num_t)PPM_TX_GPIO;
     config.mem_block_num = 1;
     config.tx_config.loop_en = 1;
-    // enable the carrier to be able to hear the Morse sound
-    // if the RMT_TX_GPIO is connected to a speaker
     config.tx_config.carrier_en = 0;
-    //config.tx_config.idle_output_en = 0;
-    //config.tx_config.idle_level = 0;
-    //config.tx_config.carrier_duty_percent = 50;
-    // set audible career frequency of 611 Hz
-    // actually 611 Hz is the minimum, that can be set
-    // with current implementation of the RMT API
-    //config.tx_config.carrier_freq_hz = 611;
-    //config.tx_config.carrier_level = 1;
-    // set the maximum clock divider to be able to output
-    // RMT pulses in range of about one hundred milliseconds
     config.clk_div = 40; //2MHz tick
 
     ESP_ERROR_CHECK(rmt_config(&config));
@@ -247,6 +313,6 @@ void sendToPulses()
     xQueueOverwrite( xPulsesQueue, channelOutputs );
 }
 
-
+*/
 
 

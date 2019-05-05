@@ -35,16 +35,23 @@ uint8_t telemetryGetByte(uint8_t * byte)
     }
 }
 
-void telemetryPortInit()
+void telemetryPortInit(uint32_t baudrate, uint8_t mode)
 {
     ESP_LOGI(TAG,"telemetryPortInit");
     uart_config_t uart_config;
     memset(&uart_config, 0, sizeof(uart_config));
 
-    uart_config.baud_rate = 9600;
-    uart_config.data_bits = UART_DATA_8_BITS;
-    uart_config.parity = UART_PARITY_DISABLE;
-    uart_config.stop_bits = UART_STOP_BITS_1;
+    uart_config.baud_rate = baudrate;
+    if (mode & TELEMETRY_SERIAL_8E2) {
+      uart_config.data_bits = UART_DATA_8_BITS;
+      uart_config.parity = UART_PARITY_EVEN;
+      uart_config.stop_bits = UART_STOP_BITS_2;
+    }
+    else {
+      uart_config.data_bits = UART_DATA_8_BITS;
+      uart_config.parity = UART_PARITY_DISABLE;
+      uart_config.stop_bits = UART_STOP_BITS_1;
+    }
     uart_config.flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
     uart_param_config(UART_NUM_1, &uart_config);
     uart_set_pin(UART_NUM_1, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);

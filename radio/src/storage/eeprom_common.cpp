@@ -86,6 +86,7 @@ void eeLoadModelHeaders()
   }
 }
 
+#if !defined(CPUESP32)
 void storageReadRadioSettings()
 {
   if (!eepromOpen() || !eeLoadGeneral()) {
@@ -102,6 +103,7 @@ void storageReadRadioSettings()
     }
   }
 }
+#endif
 
 void storageReadCurrentModel()
 {

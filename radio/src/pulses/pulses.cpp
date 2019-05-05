@@ -22,7 +22,7 @@
 #include "io/frsky_pxx2.h"
 #include "pulses/pxx2.h"
 
-uint8_t s_pulses_paused = 0;
+DRAM_ATTR uint8_t s_pulses_paused = 0;
 ModuleState moduleState[NUM_MODULES];
 InternalModulePulsesData intmodulePulsesData __DMA;
 ExternalModulePulsesData extmodulePulsesData __DMA;

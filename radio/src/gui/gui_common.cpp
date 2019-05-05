@@ -308,7 +308,7 @@ bool isSwitchAvailable(int swtch, SwitchContext context)
     swtch = -swtch;
   }
 
-#if defined(PCBSKY9X)
+#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
   if (swtch >= SWSRC_FIRST_SWITCH && swtch <= SWSRC_LAST_SWITCH) {
     UNUSED(negative);
     return true;

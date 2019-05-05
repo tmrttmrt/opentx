@@ -30,6 +30,10 @@
 #if defined(STM32)
 #include "usbd_conf.h"
 #endif
+#if !defined(CPUESP32)
+#define IRAM_ATTR
+#define DRAM_ATTR
+#endif
 
 #if defined(SIMU)
   #define SWITCH_SIMU(a, b)  (a)
@@ -333,7 +337,9 @@ typedef struct {
 #include "gui.h"
 
 #if !defined(SIMU)
+  #if !defined(CPUESP32)
   #define assert(x)
+  #endif
   #if !defined(DEBUG)
     #define printf printf_not_allowed
   #endif
@@ -563,7 +569,11 @@ extern uint16_t vbattRTC;
 
 extern uint16_t maxMixerDuration;
 
+#if !defined(CPUESP32)
 #define DURATION_MS_PREC2(x) ((x)/20)
+#else 
+  #define DURATION_MS_PREC2(x) ((x)/10)
+#endif
 
 #if defined(THRTRACE)
   #if defined(COLORLCD)
@@ -588,6 +598,8 @@ extern uint16_t maxMixerDuration;
   static inline uint16_t getTmr2MHz() { return TIMER_2MHz_TIMER->CNT; }
 #elif defined(PCBSKY9X)
   static inline uint16_t getTmr2MHz() { return TC1->TC_CHANNEL[0].TC_CV; }
+#elif defined(PCBESP_WROOM_32)
+  uint16_t getTmr2MHz();
 #else
   uint16_t getTmr16KHz();
 #endif
@@ -646,6 +658,9 @@ uint16_t isqrt32(uint32_t n);
 #if defined(BOOT)
 #define pauseMixerCalculations()
 #define resumeMixerCalculations()
+#elif defined(CPUESP32)
+void pauseMixerCalculations();
+void resumeMixerCalculations();
 #else
 #include "tasks.h"
 extern RTOS_MUTEX_HANDLE mixerMutex;
@@ -1365,5 +1380,12 @@ inline bool isSimu()
   return false;
 #endif
 }
+
+#if defined(CPUESP32)
+#define f_getcwd(lfn, maxlen) wr_getcwd(lfn, maxlen)
+#define f_unlink(lfn) unlink(lfn)
+#define f_chdir(lfn)  wr_chdir(lfn)
+#define f_rename(old, new) rename(old, new)
+#endif
 
 #endif // _OPENTX_H_

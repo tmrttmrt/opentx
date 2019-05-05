@@ -37,22 +37,20 @@
 
 
 
-#define MENUS_STACK_SIZE       0xC00
-#define MIXER_STACK_SIZE       0x800
-#define AUDIO_STACK_SIZE       0x900
-#define PER10MS_STACK_SIZE     0x500
-#define ENC_STACK_SIZE         0x700
+
 #define MENU_TASK_PERIOD_TICKS      50/portTICK_PERIOD_MS    // 50ms
-#define MENU_TASK_CORE 0
-#define MIXER_TASK_CORE 1
 #define AUDIO_TASK_CORE 0
 #define PER10MS_TASK_CORE 0
 #define ENC_TASK_CORE 0
 
+TaskPrio mixerTaskPrio = {ESP_TASK_PRIO_MAX -6, MIXER_TASK_CORE};
+TaskPrio menuTaskPrio = {ESP_TASK_PRIO_MAX -9, MENU_TASK_CORE};
+TaskPrio audioTaskPrio = {ESP_TASK_PRIO_MAX -8, MENU_TASK_CORE};
 static const char *TAG = "startup.cpp";
-TaskHandle_t xMenusTaskHandle = NULL;
-TaskHandle_t xMixerTaskHandle = NULL;
-TaskHandle_t xAudioTaskHandle = NULL;
+extern TaskHandle_t menusTaskId;
+extern TaskHandle_t mixerTaskId;
+extern TaskHandle_t audioTaskId;
+
 TaskHandle_t xPer10msTaskHandle = NULL;
 TaskHandle_t xEncTaskHandle = NULL;
 extern TaskHandle_t wifiTaskHandle;
@@ -60,6 +58,8 @@ extern TaskHandle_t otaTaskHandle;
 
 SemaphoreHandle_t xAudioSem = NULL;
 SemaphoreHandle_t xPer10msSem = NULL;
+extern SemaphoreHandle_t mixerMutex;
+extern SemaphoreHandle_t audioMutex;
 extern SemaphoreHandle_t xPPMSem;
 //uint16_t testDuration;
 
@@ -70,12 +70,12 @@ uint16_t encStackAvailable()
 
 uint16_t menusStackAvailable()
 {
-    return uxTaskGetStackHighWaterMark(xMenusTaskHandle);
+    return uxTaskGetStackHighWaterMark(menusTaskId);
 }
 
 uint16_t mixerStackAvailable()
 {
-    return uxTaskGetStackHighWaterMark(xMixerTaskHandle);
+    return uxTaskGetStackHighWaterMark(mixerTaskId);
 }
 
 uint16_t per10msStackAvailable()
@@ -85,7 +85,7 @@ uint16_t per10msStackAvailable()
 
 uint16_t audioStackAvailable()
 {
-    return uxTaskGetStackHighWaterMark(xAudioTaskHandle);
+    return uxTaskGetStackHighWaterMark(audioTaskId);
 }
 
 
@@ -94,79 +94,13 @@ uint16_t getTmr2MHz()
     return ((uint16_t) esp_timer_get_time())*2;
 }
 
-void menusTask(void * pvParameters)
-{
-    TickType_t xLastWakeTime;
-    const TickType_t xTimeIncrement = MENU_TASK_PERIOD_TICKS;
-
-    ESP_LOGI(TAG,"Starting menusTask.");
-    opentxInit();
-
-    xLastWakeTime = xTaskGetTickCount ();
-    while (1) {
-        vTaskDelayUntil( &xLastWakeTime, xTimeIncrement );
-        perMain();
-    }
-    DEBUG_TIMER_STOP(debugTimerPerMain);
-
-
-#if defined(SIMU)
-    if (main_thread_running == 0)
-    break;
-#endif
+void pauseMixerCalculations() {
+  xSemaphoreTake(mixerMutex, portMAX_DELAY);
 }
 
-void mixerTask(void * pdata)
-{
-    static uint32_t lastRunTime;
-    ESP_LOGI(TAG,"Starting mixerTask./n");
-    startPulses(); //Must start pulses here to run interrupt on MIXER_TASK_CORE = 1. No interupts on core 0 seem available. 
-    while(1) {
-
-#if defined(SIMU)
-        if (main_thread_running == 0)
-        return;
-#endif
-
-#if defined(SBUS)
-        processSbusInput();
-#endif
-
-        xSemaphoreTake( xPPMSem, 20/portTICK_PERIOD_MS); // run at least every 20ms
-        lastRunTime = esp_timer_get_time()/1000;
-        //    if (isForcePowerOffRequested()) {
-        //      pwrOff();
-        //    }
-        if (!s_pulses_paused) {
-            int64_t t0 = esp_timer_get_time();
-
-            DEBUG_TIMER_START(debugTimerMixer);
-            doMixerCalculations();
-            DEBUG_TIMER_START(debugTimerMixerCalcToUsage);
-            DEBUG_TIMER_SAMPLE(debugTimerMixerIterval);
-            DEBUG_TIMER_STOP(debugTimerMixer);
-
-#if defined(TELEMETRY_FRSKY) || defined(TELEMETRY_MAVLINK)
-            DEBUG_TIMER_START(debugTimerTelemetryWakeup);
-            telemetryWakeup();
-            DEBUG_TIMER_STOP(debugTimerTelemetryWakeup);
-#endif
-
-#if defined(BLUETOOTH)
-            bluetoothWakeup();
-#endif
-
-            if (heartbeat == HEART_WDT_CHECK) {
-                wdt_reset();
-                heartbeat = 0;
-            }
-
-            t0 = esp_timer_get_time() - t0;
-            if (t0 > maxMixerDuration) maxMixerDuration = t0 ;
-        }
-    }
+void resumeMixerCalculations() {
+  xSemaphoreGive(mixerMutex);
 }
-
 
 void  per10msTask(void * pdata)
 {
@@ -178,28 +112,17 @@ void  per10msTask(void * pdata)
     }
 }
 
-void tasksStart()
+
+void espTasksStart()
 {
     BaseType_t ret;
 
     ESP_LOGI(TAG,"Starting tasks.");
-    xAudioSem = xSemaphoreCreateMutex();
-    if( xAudioSem == NULL ) {
-        ESP_LOGE(TAG,"Failed to create semaphore: xPer10msSem.");
-    } else {
-        ret=xTaskCreatePinnedToCore( audioTask, "audioTask", AUDIO_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -8, &xAudioTaskHandle, AUDIO_TASK_CORE );
-        configASSERT( xAudioTaskHandle );
-    }
 
     xPPMSem = xSemaphoreCreateMutex();
     if( xPPMSem == NULL ) {
         ESP_LOGE(TAG,"Failed to create semaphore: xPPMSem.");
     }
-    ret=xTaskCreatePinnedToCore( menusTask, "menusTask", MENUS_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -9, &xMenusTaskHandle, MENU_TASK_CORE );
-    configASSERT( xMenusTaskHandle );
-
-    ret=xTaskCreatePinnedToCore( mixerTask, "mixerTask", MIXER_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -6, &xMixerTaskHandle, MIXER_TASK_CORE );
-    configASSERT( xMixerTaskHandle );
 
     ret=xTaskCreatePinnedToCore( per10msTask, "per10msTask", PER10MS_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -5, &xPer10msTaskHandle, PER10MS_TASK_CORE );
     configASSERT( xPer10msTaskHandle );
@@ -207,6 +130,19 @@ void tasksStart()
     ret=xTaskCreatePinnedToCore( encoderTask, "encoderTask", ENC_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -4, &xEncTaskHandle, ENC_TASK_CORE );
     configASSERT( xEncTaskHandle );
 }
+
+void rtosInit() {
+  audioMutex = xSemaphoreCreateMutex();
+  if( audioMutex == NULL ) {
+    ESP_LOGE(TAG,"Failed to create semaphore: audioMutex");
+  }
+  mixerMutex = xSemaphoreCreateMutex();
+  if( mixerMutex == NULL ) {
+    ESP_LOGE(TAG,"Failed to create semaphore: mixerMutex");
+  }
+  espTasksStart();
+}
+
 
 void IRAM_ATTR timer_group0_isr(void *para)
 {
@@ -353,7 +289,7 @@ extern "C"   void app_main()
 {
     main();
     eeBackupAll();
-    TaskHandle_t *tasks[]= {&xMenusTaskHandle,&xMixerTaskHandle,&xAudioTaskHandle,&xPer10msTaskHandle,&xEncTaskHandle,&wifiTaskHandle, &otaTaskHandle};
+    TaskHandle_t *tasks[]= {&menusTaskId,&mixerTaskId,&audioTaskId,&xPer10msTaskHandle,&xEncTaskHandle,&wifiTaskHandle, &otaTaskHandle};
     uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
     while(1) {
 //        isWiFiStarted();

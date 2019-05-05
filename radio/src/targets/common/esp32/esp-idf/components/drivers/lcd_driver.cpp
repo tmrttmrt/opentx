@@ -66,7 +66,7 @@ void lcdSendCtl(const uint8_t cmd)
     assert(ret==ESP_OK);            //Should have had no issues.
 }
 
-const static pm_uchar lcdInitSequence[] PROGMEM = {
+const static uint8_t lcdInitSequence[] = {
     //ST7565 eq. : KS0713, SED1565, S6B1713, SPLC501C, NT7532 /34 /38, TL03245
 #if defined(LCD_ST7565R)
     0xE2, //Initialize the internal functions

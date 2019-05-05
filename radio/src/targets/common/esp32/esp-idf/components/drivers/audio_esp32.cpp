@@ -17,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
- 
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
@@ -26,12 +26,13 @@
 #include <math.h>
 #define HASASSERT
 #include "opentx.h"
+#include <math.h>
 
 static const char *TAG = "audio_driver.cpp";
-extern SemaphoreHandle_t xAudioSem;
-uint8_t currentSpeakerVolume=20;
+extern SemaphoreHandle_t audioMutex;
 
-const int16_t sineValues[] = {
+const int16_t sineValues[] =
+{
     0, 196, 392, 588, 784, 980, 1175, 1370, 1564, 1758,
     1951, 2143, 2335, 2525, 2715, 2904, 3091, 3278, 3463, 3647,
     3829, 4011, 4190, 4369, 4545, 4720, 4894, 5065, 5235, 5403,
@@ -140,343 +141,359 @@ const int16_t sineValues[] = {
 #if defined(SDCARD)
 
 const char * const unitsFilenames[] = {
-    "",
-    "volt",
-    "amp",
-    "mamp",
-    "knot",
-    "mps",
-    "fps",
-    "kph",
-    "mph",
-    "meter",
-    "foot",
-    "celsius",
-    "fahr",
-    "percent",
-    "mamph",
-    "watt",
-    "mwatt",
-    "db",
-    "rpm",
-    "g",
-    "degree",
-    "radian",
-    "ml",
-    "founce",
-    "hour",
-    "minute",
-    "second",
+  "",
+  "volt",
+  "amp",
+  "mamp",
+  "knot",
+  "mps",
+  "fps",
+  "kph",
+  "mph",
+  "meter",
+  "foot",
+  "celsius",
+  "fahr",
+  "percent",
+  "mamph",
+  "watt",
+  "mwatt",
+  "db",
+  "rpm",
+  "g",
+  "degree",
+  "radian",
+  "ml",
+  "founce",
+  "mlpm",
+  "spare1",
+  "spare2",
+  "spare3",
+  "spare4",
+  "spare5",
+  "spare6",
+  "spare7",
+  "spare8",
+  "spare9",
+  "spare10",
+  "hour",
+  "minute",
+  "second",
 };
 
 const char * const audioFilenames[] = {
-    "hello",
-    "bye",
-    "thralert",
-    "swalert",
-    "baddata",
-    "lowbatt",
-    "inactiv",
-    "rssi_org",
-    "rssi_red",
-    "swr_red",
-    "telemko",
-    "telemok",
-    "trainko",
-    "trainok",
-    "sensorko",
-    "servoko",
-    "rxko",
-    "modelpwr",
+  "hello",
+  "bye",
+  "thralert",
+  "swalert",
+  "baddata",
+  "lowbatt",
+  "inactiv",
+  "rssi_org",
+  "rssi_red",
+  "swr_red",
+  "telemko",
+  "telemok",
+  "trainko",
+  "trainok",
+  "sensorko",
+  "servoko",
+  "rxko",
+  "modelpwr",
 #if defined(PCBSKY9X)
-    "highmah",
-    "hightemp",
+  "highmah",
+  "hightemp",
 #endif
-    "error",
-    "warning1",
-    "warning2",
-    "warning3",
-    "midtrim",
-    "mintrim",
-    "maxtrim",
-    "midstck1",
-    "midstck2",
-    "midstck3",
-    "midstck4",
+  "error",
+  "warning1",
+  "warning2",
+  "warning3",
+  "midtrim",
+  "mintrim",
+  "maxtrim",
+  "midstck1",
+  "midstck2",
+  "midstck3",
+  "midstck4",
 #if defined(PCBTARANIS) || defined(PCBHORUS)
-    "midpot1",
-    "midpot2",
+  "midpot1",
+  "midpot2",
 #if defined(PCBX9E)
-    "midpot3",
-    "midpot4",
+  "midpot3",
+  "midpot4",
 #endif
-    "midslid1",
-    "midslid2",
+  "midslid1",
+  "midslid2",
 #if defined(PCBX9E)
-    "midslid3",
-    "midslid4",
+  "midslid3",
+  "midslid4",
 #endif
 #else
-    "midpot1",
-    "midpot2",
-    "midpot3",
+  "midpot1",
+  "midpot2",
+  "midpot3",
 #endif
-    "mixwarn1",
-    "mixwarn2",
-    "mixwarn3",
-    "timovr1",
-    "timovr2",
-    "timovr3"
+  "mixwarn1",
+  "mixwarn2",
+  "mixwarn3",
+  "timovr1",
+  "timovr2",
+  "timovr3"
 };
 
 BitField<(AU_SPECIAL_SOUND_FIRST)> sdAvailableSystemAudioFiles;
-BitField<(MAX_FLIGHT_MODES * 2/*on, off*/)> sdAvailablePhaseAudioFiles;
+BitField<(MAX_FLIGHT_MODES * 2/*on, off*/)> sdAvailableFlightmodeAudioFiles;
 BitField<(SWSRC_LAST_SWITCH+NUM_XPOTS*XPOTS_MULTIPOS_COUNT)> sdAvailableSwitchAudioFiles;
 BitField<(MAX_LOGICAL_SWITCHES * 2/*on, off*/)> sdAvailableLogicalSwitchAudioFiles;
 
 char * getAudioPath(char * path)
 {
-    strcpy(path, SOUNDS_PATH "/");
-    strncpy(path+SOUNDS_PATH_LNG_OFS, currentLanguagePack->id, 2);
-    return path + sizeof(SOUNDS_PATH);
+  strcpy(path, SOUNDS_PATH "/");
+  strncpy(path+SOUNDS_PATH_LNG_OFS, currentLanguagePack->id, 2);
+  return path + sizeof(SOUNDS_PATH);
 }
 
 char * strAppendSystemAudioPath(char * path)
 {
-    char * str = getAudioPath(path);
-    strcpy(str, SYSTEM_SUBDIR "/");
-    return str + sizeof(SYSTEM_SUBDIR);
+  char * str = getAudioPath(path);
+  strcpy(str, SYSTEM_SUBDIR "/");
+  return str + sizeof(SYSTEM_SUBDIR);
 }
 
 void getSystemAudioFile(char * filename, int index)
 {
-    char * str = strAppendSystemAudioPath(filename);
-    strcpy(str, audioFilenames[index]);
-    strcat(str, SOUNDS_EXT);
+  char * str = strAppendSystemAudioPath(filename);
+  strcpy(str, audioFilenames[index]);
+  strcat(str, SOUNDS_EXT);
 }
 
 void referenceSystemAudioFiles()
 {
-    static_assert(sizeof(audioFilenames)==AU_SPECIAL_SOUND_FIRST*sizeof(char *), "Invalid audioFilenames size");
-    char path[AUDIO_FILENAME_MAXLEN+1];
+  static_assert(sizeof(audioFilenames)==AU_SPECIAL_SOUND_FIRST*sizeof(char *), "Invalid audioFilenames size");
+  char path[AUDIO_FILENAME_MAXLEN+1];
     struct dirent *de;
     DIR *dir;
 
-    sdAvailableSystemAudioFiles.reset();
+  sdAvailableSystemAudioFiles.reset();
 
-    char * filename = strAppendSystemAudioPath(path);
-    *(filename-1) = '\0';
+  char * filename = strAppendSystemAudioPath(path);
+  *(filename-1) = '\0';
 
     dir = opendir(path);        /* Open the directory */
     if (NULL != dir) {
-        for (;;) {
+    for (;;) {
             de = readdir(dir);                   /* Read a directory item */
             if (NULL == de) break;  /* Break on error or end of dir */
             uint8_t len = strlen(de->d_name);
 
-            // Eliminates directories / non wav files
+      // Eliminates directories / non wav files
             if (len < 5 || strcasecmp(de->d_name+len-4, SOUNDS_EXT) || (de->d_type != DT_REG)) continue;
 
-            for (int i=0; i<AU_SPECIAL_SOUND_FIRST; i++) {
-                getSystemAudioFile(path, i);
+      for (int i=0; i<AU_SPECIAL_SOUND_FIRST; i++) {
+        getSystemAudioFile(path, i);
                 if (!strcasecmp(filename, de->d_name)) {
-                    sdAvailableSystemAudioFiles.setBit(i);
-                    break;
-                }
-            }
+          sdAvailableSystemAudioFiles.setBit(i);
+          break;
         }
-        closedir(dir);
+      }
     }
+        closedir(dir);
+  }
 }
 
 const char * const suffixes[] = { "-off", "-on" };
 
 char * getModelAudioPath(char * path)
 {
-    strcpy(path, SOUNDS_PATH "/");
-    strncpy(path+SOUNDS_PATH_LNG_OFS, currentLanguagePack->id, 2);
-    char * result = strcat_currentmodelname(path+sizeof(SOUNDS_PATH));
-    *result++ = '/';
-    *result = '\0';
-    return result;
+  strcpy(path, SOUNDS_PATH "/");
+  strncpy(path+SOUNDS_PATH_LNG_OFS, currentLanguagePack->id, 2);
+  char * result = strcat_currentmodelname(path+sizeof(SOUNDS_PATH));
+  *result++ = '/';
+  *result = '\0';
+  return result;
 }
 
-void getPhaseAudioFile(char * filename, int index, unsigned int event)
+void getFlightmodeAudioFile(char * filename, int index, unsigned int event)
 {
-    char * str = getModelAudioPath(filename);
-    char * tmp = strcat_phasename(str, index);
-    strcpy(tmp, suffixes[event]);
-    strcat(tmp, SOUNDS_EXT);
+  char * str = getModelAudioPath(filename);
+  char * tmp = strcatFlightmodeName(str, index);
+  strcpy(tmp, suffixes[event]);
+  strcat(tmp, SOUNDS_EXT);
 }
 
 void getSwitchAudioFile(char * filename, swsrc_t index)
 {
-    char * str = getModelAudioPath(filename);
+  char * str = getModelAudioPath(filename);
 
 #if defined(PCBTARANIS) || defined(PCBHORUS)
-    if (index <= SWSRC_LAST_SWITCH) {
-        div_t swinfo = switchInfo(index);
-        *str++ = 'S';
-        *str++ = 'A' + swinfo.quot;
-        const char * positions[] = { "-up", "-mid", "-down" };
-        strcpy(str, positions[swinfo.rem]);
-    } else {
-        div_t swinfo = div(int(index - SWSRC_FIRST_MULTIPOS_SWITCH), XPOTS_MULTIPOS_COUNT);
-        *str++ = 'S';
-        *str++ = '1' + swinfo.quot;
-        *str++ = '1' + swinfo.rem;
-        *str = '\0';
-    }
-#else
-    int len = STR_VSWITCHES[0];
-    strncpy(str, &STR_VSWITCHES[1+(len*index)], len);
-    str += len;
+  if (index <= SWSRC_LAST_SWITCH) {
+    div_t swinfo = switchInfo(index);
+    *str++ = 'S';
+    *str++ = 'A' + swinfo.quot;
+    const char * positions[] = { "-up", "-mid", "-down" };
+    strcpy(str, positions[swinfo.rem]);
+  }
+  else {
+    div_t swinfo = div(int(index - SWSRC_FIRST_MULTIPOS_SWITCH), XPOTS_MULTIPOS_COUNT);
+    *str++ = 'S';
+    *str++ = '1' + swinfo.quot;
+    *str++ = '1' + swinfo.rem;
     *str = '\0';
+  }
+#else
+  int len = STR_VSWITCHES[0];
+  strncpy(str, &STR_VSWITCHES[1+(len*index)], len);
+  str += len;
+  *str = '\0';
 #endif
-    strcat(str, SOUNDS_EXT);
+  strcat(str, SOUNDS_EXT);
 }
 
 void getLogicalSwitchAudioFile(char * filename, int index, unsigned int event)
 {
-    char * str = getModelAudioPath(filename);
+  char * str = getModelAudioPath(filename);
 
 #if defined(PCBTARANIS) || defined(PCBHORUS)
-    *str++ = 'L';
-    if (index >= 9) {
-        div_t qr = div(index+1, 10);
-        *str++ = '0' + qr.quot;
-        *str++ = '0' + qr.rem;
-    } else {
-        *str++ = '1' + index;
-    }
+  *str++ = 'L';
+  if (index >= 9) {
+    div_t qr = div(index+1, 10);
+    *str++ = '0' + qr.quot;
+    *str++ = '0' + qr.rem;
+  }
+  else {
+    *str++ = '1' + index;
+  }
 #else
-    int len = STR_VSWITCHES[0];
-    strncpy(str, &STR_VSWITCHES[1+len*(index+SWSRC_FIRST_LOGICAL_SWITCH)], len);
-    str += len;
+  int len = STR_VSWITCHES[0];
+  strncpy(str, &STR_VSWITCHES[1+len*(index+SWSRC_FIRST_LOGICAL_SWITCH)], len);
+  str += len;
 #endif
 
-    strcpy(str, suffixes[event]);
-    strcat(str, SOUNDS_EXT);
+  strcpy(str, suffixes[event]);
+  strcat(str, SOUNDS_EXT);
 }
 
 void referenceModelAudioFiles()
 {
-    char path[AUDIO_FILENAME_MAXLEN+1];
+  char path[AUDIO_FILENAME_MAXLEN+1];
     struct dirent *de;
     DIR *dir;
 
-    sdAvailablePhaseAudioFiles.reset();
-    sdAvailableSwitchAudioFiles.reset();
-    sdAvailableLogicalSwitchAudioFiles.reset();
+  sdAvailableFlightmodeAudioFiles.reset();
+  sdAvailableSwitchAudioFiles.reset();
+  sdAvailableLogicalSwitchAudioFiles.reset();
 
-    char * filename = getModelAudioPath(path);
-    *(filename-1) = '\0';
+  char * filename = getModelAudioPath(path);
+  *(filename-1) = '\0';
 
     dir = opendir(path);        /* Open the directory */
     if (NULL!=dir) {
-        for (;;) {
+    for (;;) {
             de = readdir(dir);                   /* Read a directory item */
             if (NULL == de) break;  /* Break on error or end of dir */
             uint8_t len = strlen(de->d_name);
-            bool found = false;
+      bool found = false;
 
-            // Eliminates directories / non wav files
+      // Eliminates directories / non wav files
             if (len < 5 || strcasecmp(de->d_name+len-4, SOUNDS_EXT) || (de->d_type != DT_REG)) continue;
             TRACE("referenceModelAudioFiles(): using file: %s", de->d_name);
 
-            // Phases Audio Files <phasename>-[on|off].wav
-            for (int i=0; i<MAX_FLIGHT_MODES && !found; i++) {
-                for (int event=0; event<2; event++) {
-                    getPhaseAudioFile(path, i, event);
-                    // TRACE("referenceModelAudioFiles(): searching for %s in %s", filename, de->d_name);
-                    if (!strcasecmp(filename, de->d_name)) {
-                        sdAvailablePhaseAudioFiles.setBit(INDEX_PHASE_AUDIO_FILE(i, event));
-                        found = true;
-                        TRACE("\tfound: %s", filename);
-                        break;
-                    }
-                }
-            }
-
-            // Switches Audio Files <switchname>-[up|mid|down].wav
-            for (int i=SWSRC_FIRST_SWITCH; i<=SWSRC_LAST_SWITCH+NUM_XPOTS*XPOTS_MULTIPOS_COUNT && !found; i++) {
-                getSwitchAudioFile(path, i);
-                // TRACE("referenceModelAudioFiles(): searching for %s in %s (%d)", path, de->d_name, i);
-                if (!strcasecmp(filename, de->d_name)) {
-                    sdAvailableSwitchAudioFiles.setBit(i-SWSRC_FIRST_SWITCH);
-                    found = true;
-                    TRACE("\tfound: %s", filename);
-                }
-            }
-
-            // Logical Switches Audio Files <switchname>-[on|off].wav
-            for (int i=0; i<MAX_LOGICAL_SWITCHES && !found; i++) {
-                for (int event=0; event<2; event++) {
-                    getLogicalSwitchAudioFile(path, i, event);
-                    // TRACE("referenceModelAudioFiles(): searching for %s in %s", filename, de->d_name);
-                    if (!strcasecmp(filename, de->d_name)) {
-                        sdAvailableLogicalSwitchAudioFiles.setBit(INDEX_LOGICAL_SWITCH_AUDIO_FILE(i, event));
-                        found = true;
-                        TRACE("\tfound: %s", filename);
-                        break;
-                    }
-                }
-            }
+      // Flight modes Audio Files <flightmodename>-[on|off].wav
+      for (int i=0; i<MAX_FLIGHT_MODES && !found; i++) {
+        for (int event=0; event<2; event++) {
+          getFlightmodeAudioFile(path, i, event);
+          // TRACE("referenceModelAudioFiles(): searching for %s in %s", filename,  de->d_name);
+          if (!strcasecmp(filename,  de->d_name)) {
+            sdAvailableFlightmodeAudioFiles.setBit(INDEX_PHASE_AUDIO_FILE(i, event));
+            found = true;
+            TRACE("\tfound: %s", filename);
+            break;
+          }
         }
-        closedir(dir);
+      }
+
+      // Switches Audio Files <switchname>-[up|mid|down].wav
+      for (int i=SWSRC_FIRST_SWITCH; i<=SWSRC_LAST_SWITCH+NUM_XPOTS*XPOTS_MULTIPOS_COUNT && !found; i++) {
+        getSwitchAudioFile(path, i);
+        // TRACE("referenceModelAudioFiles(): searching for %s in %s (%d)", path,  de->d_name, i);
+        if (!strcasecmp(filename,  de->d_name)) {
+          sdAvailableSwitchAudioFiles.setBit(i-SWSRC_FIRST_SWITCH);
+          found = true;
+          TRACE("\tfound: %s", filename);
+        }
+      }
+
+      // Logical Switches Audio Files <switchname>-[on|off].wav
+      for (int i=0; i<MAX_LOGICAL_SWITCHES && !found; i++) {
+        for (int event=0; event<2; event++) {
+          getLogicalSwitchAudioFile(path, i, event);
+          // TRACE("referenceModelAudioFiles(): searching for %s in %s", filename,  de->d_name);
+          if (!strcasecmp(filename,  de->d_name)) {
+            sdAvailableLogicalSwitchAudioFiles.setBit(INDEX_LOGICAL_SWITCH_AUDIO_FILE(i, event));
+            found = true;
+            TRACE("\tfound: %s", filename);
+            break;
+          }
+        }
+      }
     }
+        closedir(dir);
+  }
 }
 
 bool isAudioFileReferenced(uint32_t i, char * filename)
 {
-    uint8_t category = (i >> 24);
-    uint8_t index = (i >> 16) & 0xFF;
-    event_t event = i & 0xFF;
+  uint8_t category = (i >> 24);
+  uint8_t index = (i >> 16) & 0xFF;
+  event_t event = i & 0xFF;
 
-    // TRACE("isAudioFileReferenced(%08x)", i);
+  // TRACE("isAudioFileReferenced(%08x)", i);
 
-    if (category == SYSTEM_AUDIO_CATEGORY) {
-        if (sdAvailableSystemAudioFiles.getBit(event)) {
-            getSystemAudioFile(filename, event);
-            return true;
-        }
-    } else if (category == PHASE_AUDIO_CATEGORY) {
-        if (sdAvailablePhaseAudioFiles.getBit(INDEX_PHASE_AUDIO_FILE(index, event))) {
-            getPhaseAudioFile(filename, index, event);
-            return true;
-        }
-    } else if (category == SWITCH_AUDIO_CATEGORY) {
-        if (sdAvailableSwitchAudioFiles.getBit(index)) {
-            getSwitchAudioFile(filename, SWSRC_FIRST_SWITCH+index);
-            return true;
-        }
-    } else if (category == LOGICAL_SWITCH_AUDIO_CATEGORY) {
-        if (sdAvailableLogicalSwitchAudioFiles.getBit(INDEX_LOGICAL_SWITCH_AUDIO_FILE(index, event))) {
-            getLogicalSwitchAudioFile(filename, index, event);
-            return true;
-        }
+  if (category == SYSTEM_AUDIO_CATEGORY) {
+    if (sdAvailableSystemAudioFiles.getBit(event)) {
+      getSystemAudioFile(filename, event);
+      return true;
     }
+  }
+  else if (category == PHASE_AUDIO_CATEGORY) {
+    if (sdAvailableFlightmodeAudioFiles.getBit(INDEX_PHASE_AUDIO_FILE(index, event))) {
+      getFlightmodeAudioFile(filename, index, event);
+      return true;
+    }
+  }
+  else if (category == SWITCH_AUDIO_CATEGORY) {
+    if (sdAvailableSwitchAudioFiles.getBit(index)) {
+      getSwitchAudioFile(filename, SWSRC_FIRST_SWITCH+index);
+      return true;
+    }
+  }
+  else if (category == LOGICAL_SWITCH_AUDIO_CATEGORY) {
+    if (sdAvailableLogicalSwitchAudioFiles.getBit(INDEX_LOGICAL_SWITCH_AUDIO_FILE(index, event))) {
+      getLogicalSwitchAudioFile(filename, index, event);
+      return true;
+    }
+  }
 
-    return false;
+  return false;
 }
 
 tmr10ms_t timeAutomaticPromptsSilence = 0;
 
 void playModelEvent(uint8_t category, uint8_t index, event_t event)
 {
-    char filename[AUDIO_FILENAME_MAXLEN+1];
-    // TRACE("playModelEvent(): cat: %u, idx: %u, evt:%u", (uint32_t)category, (uint32_t)index, (uint32_t)event);
-    if (IS_SILENCE_PERIOD_ELAPSED() && isAudioFileReferenced((category << 24) + (index << 16) + event, filename)) {
-        audioQueue.playFile(filename);
-    }
+  char filename[AUDIO_FILENAME_MAXLEN+1];
+  // TRACE("playModelEvent(): cat: %u, idx: %u, evt:%u", (uint32_t)category, (uint32_t)index, (uint32_t)event);
+  if (IS_SILENCE_PERIOD_ELAPSED() && isAudioFileReferenced((category << 24) + (index << 16) + event, filename)) {
+    audioQueue.playFile(filename);
+  }
 }
 
 void playModelName()
 {
-    char filename[AUDIO_FILENAME_MAXLEN+1];
-    char * str = getModelAudioPath(filename);
-    strcpy(str, "name.wav");
-    audioQueue.playFile(filename);
+  char filename[AUDIO_FILENAME_MAXLEN+1];
+  char * str = getModelAudioPath(filename);
+  strcpy(str, "name.wav");
+  audioQueue.playFile(filename);
 }
 
 #else   // defined(SDCARD)
@@ -491,11 +508,11 @@ const int16_t ulawTable[256] = { -32124, -31100, -30076, -29052, -28028, -27004,
 AudioQueue audioQueue;
 AudioQueue::AudioQueue()
     :_started(false),
-     normalContext(),
-     backgroundContext(),
-     priorityContext(),
-     varioContext(),
-     fragmentsFifo()
+  normalContext(),
+  backgroundContext(),
+  priorityContext(),
+  varioContext(),
+  fragmentsFifo()
 {
 }
 
@@ -507,30 +524,30 @@ AudioQueue::AudioQueue()
 void audioTask(void * pdata)
 {
     ESP_LOGI(TAG,"Starting audioTask.");
-    while (!audioQueue.started()) {
+  while (!audioQueue.started()) {
         vTaskDelay(1);
-    }
+  }
 
-    setSampleRate(AUDIO_SAMPLE_RATE);
+  setSampleRate(AUDIO_SAMPLE_RATE);
 
 
-    if (!unexpectedShutdown) {
-        AUDIO_HELLO();
-    }
+  if (!unexpectedShutdown) {
+    AUDIO_HELLO();
+  }
 
-    while (1) {
-        DEBUG_TIMER_SAMPLE(debugTimerAudioIterval);
-        DEBUG_TIMER_START(debugTimerAudioDuration);
-        audioQueue.wakeup();
-        DEBUG_TIMER_STOP(debugTimerAudioDuration);
+  while (1) {
+    DEBUG_TIMER_SAMPLE(debugTimerAudioIterval);
+    DEBUG_TIMER_START(debugTimerAudioDuration);
+    audioQueue.wakeup();
+    DEBUG_TIMER_STOP(debugTimerAudioDuration);
         vTaskDelay(4/portTICK_PERIOD_MS);
-    }
+  }
 }
 #endif
 
 inline void mixSample(audio_data_t * result, int sample, unsigned int fade)
 {
-    *result = limit(AUDIO_DATA_MIN, *result + ((sample >> fade) >> (16-AUDIO_BITS_PER_SAMPLE)), AUDIO_DATA_MAX);
+  *result = limit(AUDIO_DATA_MIN, *result + ((sample >> fade) >> (16-AUDIO_BITS_PER_SAMPLE)), AUDIO_DATA_MAX);
 }
 
 #if defined(SDCARD)
@@ -542,22 +559,22 @@ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
 {
     ssize_t rb = 0;
 
-    if (fragment.file[1]) {
+  if (fragment.file[1]) {
         state.fd = open(fragment.file, O_RDONLY);
-        fragment.file[1] = 0;
+    fragment.file[1] = 0;
         if ( -1 != state.fd) {
             rb = read(state.fd, wavBuffer, RIFF_CHUNK_SIZE+8);
             if (rb != -1 && rb == RIFF_CHUNK_SIZE+8 && !memcmp(wavBuffer, "RIFF", 4) && !memcmp(wavBuffer+8, "WAVEfmt ", 8)) {
-                uint32_t size = *((uint32_t *)(wavBuffer+16));
+        uint32_t size = *((uint32_t *)(wavBuffer+16));
                 rb = (size < 256 ? read(state.fd, wavBuffer, size+8) : -1);
                 if (rb == size+8) {
-                    state.codec = ((uint16_t *)wavBuffer)[0];
-                    state.freq = ((uint16_t *)wavBuffer)[2];
-                    uint32_t *wavSamplesPtr = (uint32_t *)(wavBuffer + size);
-                    uint32_t size = wavSamplesPtr[1];
-                    if (state.freq != 0 && state.freq * (AUDIO_SAMPLE_RATE / state.freq) == AUDIO_SAMPLE_RATE) {
-                        state.resampleRatio = (AUDIO_SAMPLE_RATE / state.freq);
-                        state.readSize = (state.codec == CODEC_ID_PCM_S16LE ? 2*AUDIO_BUFFER_SIZE : AUDIO_BUFFER_SIZE) / state.resampleRatio;
+          state.codec = ((uint16_t *)wavBuffer)[0];
+          state.freq = ((uint16_t *)wavBuffer)[2];
+          uint32_t *wavSamplesPtr = (uint32_t *)(wavBuffer + size);
+          uint32_t size = wavSamplesPtr[1];
+          if (state.freq != 0 && state.freq * (AUDIO_SAMPLE_RATE / state.freq) == AUDIO_SAMPLE_RATE) {
+            state.resampleRatio = (AUDIO_SAMPLE_RATE / state.freq);
+            state.readSize = (state.codec == CODEC_ID_PCM_S16LE ? 2*AUDIO_BUFFER_SIZE : AUDIO_BUFFER_SIZE) / state.resampleRatio;
                     } else {
                         rb=-1;
                     }
@@ -567,19 +584,19 @@ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
                         if (pos != -1) {
                             rb = read(state.fd, wavBuffer, 8);
                             if (rb != 8) pos = -1;
-                            wavSamplesPtr = (uint32_t *)wavBuffer;
-                            size = wavSamplesPtr[1];
-                        }
-                    }
-                    state.size = size;
+              wavSamplesPtr = (uint32_t *)wavBuffer;
+              size = wavSamplesPtr[1];
+            }
+          }
+          state.size = size;
                 } else {
                     rb = -1;
-                }
-            }
+        }
+      }
         } else {
             rb = -1;
-        }
     }
+  }
 
     if (rb != -1) {
         rb = 0;
@@ -587,141 +604,145 @@ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
         if (rb != -1) {
             if (rb > state.size) {
                 rb = state.size;
-            }
+      }
             state.size -= rb;
 
             if (rb != state.readSize) {
                 close(state.fd);
-                fragment.clear();
-            }
+        fragment.clear();
+      }
 
-            audio_data_t * samples = buffer->data;
-            if (state.codec == CODEC_ID_PCM_S16LE) {
+      audio_data_t * samples = buffer->data;
+      if (state.codec == CODEC_ID_PCM_S16LE) {
                 rb /= 2;
                 for (uint32_t i=0; i<rb; i++) {
-                    for (uint8_t j=0; j<state.resampleRatio; j++) {
-                        mixSample(samples++, ((int16_t *)wavBuffer)[i], fade+2-volume);
-                    }
-                }
+          for (uint8_t j=0; j<state.resampleRatio; j++) {
+            mixSample(samples++, ((int16_t *)wavBuffer)[i], fade+2-volume);
+          }
+        }
             } else if (state.codec == CODEC_ID_PCM_ALAW) {
                 for (uint32_t i=0; i<rb; i++) {
-                    for (uint8_t j=0; j<state.resampleRatio; j++) {
-                        mixSample(samples++, alawTable[wavBuffer[i]], fade+2-volume);
-                    }
-                }
+          for (uint8_t j=0; j<state.resampleRatio; j++) {
+            mixSample(samples++, alawTable[wavBuffer[i]], fade+2-volume);
+          }
+        }
             } else if (state.codec == CODEC_ID_PCM_MULAW) {
                 for (uint32_t i=0; i<rb; i++) {
-                    for (uint8_t j=0; j<state.resampleRatio; j++) {
-                        mixSample(samples++, ulawTable[wavBuffer[i]], fade+2-volume);
-                    }
-                }
-            }
-
-            return samples - buffer->data;
+          for (uint8_t j=0; j<state.resampleRatio; j++) {
+            mixSample(samples++, ulawTable[wavBuffer[i]], fade+2-volume);
+          }
         }
+      }
+
+      return samples - buffer->data;
     }
+  }
 
     if (rb == -1) {
-        clear();
-    }
-    return 0;
+    clear();
+  }
+  return 0;
 }
 #else
 int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
 {
-    return 0;
+  return 0;
 }
 #endif
 
 const unsigned int toneVolumes[] = { 10, 8, 6, 4, 2 };
 inline float evalVolumeRatio(int freq, int volume)
 {
-    float result = toneVolumes[2+volume];
-    if (freq < 330) {
-        result = (result * freq * freq) / (330 * 330);
-    }
-    return result;
+  float result = toneVolumes[2+volume];
+  if (freq < 330) {
+    result = (result * freq * freq) / (330 * 330);
+  }
+  return result;
 }
 
 int ToneContext::mixBuffer(AudioBuffer * buffer, int volume, unsigned int fade)
 {
-    int duration = 0;
-    int result = 0;
+  int duration = 0;
+  int result = 0;
 
-    int remainingDuration = fragment.tone.duration - state.duration;
-    if (remainingDuration > 0) {
-        int points;
-        float toneIdx = state.idx;
+  int remainingDuration = fragment.tone.duration - state.duration;
+  if (remainingDuration > 0) {
+    int points;
+    float toneIdx = state.idx;
 
-        if (fragment.tone.reset) {
-            fragment.tone.reset = 0;
-            state.duration = 0;
-            state.pause = 0;
-        }
-
-        if (fragment.tone.freq != state.freq) {
-            state.freq = fragment.tone.freq;
-            state.step = limit<float>(1, float(fragment.tone.freq) * (float(DIM(sineValues))/float(AUDIO_SAMPLE_RATE)), 512);
-            state.volume = 2.0f / evalVolumeRatio(fragment.tone.freq, volume);
-        }
-
-        if (fragment.tone.freqIncr) {
-            int freqChange = AUDIO_BUFFER_DURATION * fragment.tone.freqIncr;
-            if (freqChange > 0) {
-                fragment.tone.freq += freqChange;
-                if (fragment.tone.freq > BEEP_MAX_FREQ) {
-                    fragment.tone.freq = BEEP_MAX_FREQ;
-                }
-            } else {
-                if (fragment.tone.freq > BEEP_MIN_FREQ - freqChange) {
-                    fragment.tone.freq += freqChange;
-                } else {
-                    fragment.tone.freq = BEEP_MIN_FREQ;
-                }
-            }
-        }
-
-        if (remainingDuration > AUDIO_BUFFER_DURATION) {
-            duration = AUDIO_BUFFER_DURATION;
-            points = AUDIO_BUFFER_SIZE;
-        } else {
-            duration = remainingDuration;
-            points = (duration * AUDIO_BUFFER_SIZE) / AUDIO_BUFFER_DURATION;
-            unsigned int end = toneIdx + (state.step * points);
-            if (end > DIM(sineValues))
-                end -= (end % DIM(sineValues));
-            else
-                end = DIM(sineValues);
-            points = (float(end) - toneIdx) / state.step;
-        }
-
-        for (int i=0; i<points; i++) {
-            int16_t sample = sineValues[int(toneIdx)] * state.volume;
-            mixSample(&buffer->data[i], sample, fade);
-            toneIdx += state.step;
-            if ((unsigned int)toneIdx >= DIM(sineValues))
-                toneIdx -= DIM(sineValues);
-        }
-
-        if (remainingDuration > AUDIO_BUFFER_DURATION) {
-            state.duration += AUDIO_BUFFER_DURATION;
-            state.idx = toneIdx;
-            return AUDIO_BUFFER_SIZE;
-        } else {
-            state.duration = 32000; // once the tone is finished, it's not possible to update its frequency and duration
-        }
+    if (fragment.tone.reset) {
+      fragment.tone.reset = 0;
+      state.duration = 0;
+      state.pause = 0;
     }
 
-    remainingDuration = fragment.tone.pause - state.pause;
-    if (remainingDuration > 0) {
-        result = AUDIO_BUFFER_SIZE;
-        state.pause += min<unsigned int>(AUDIO_BUFFER_DURATION-duration, fragment.tone.pause);
-        if (fragment.tone.pause > state.pause)
-            return result;
+    if (fragment.tone.freq != state.freq) {
+      state.freq = fragment.tone.freq;
+      state.step = limit<float>(1, float(fragment.tone.freq) * (float(DIM(sineValues))/float(AUDIO_SAMPLE_RATE)), 512);
+      state.volume = 1.0f / evalVolumeRatio(fragment.tone.freq, volume);
     }
 
-    clear();
-    return result;
+    if (fragment.tone.freqIncr) {
+      int freqChange = AUDIO_BUFFER_DURATION * fragment.tone.freqIncr;
+      if (freqChange > 0) {
+        fragment.tone.freq += freqChange;
+        if (fragment.tone.freq > BEEP_MAX_FREQ) {
+          fragment.tone.freq = BEEP_MAX_FREQ;
+        }
+      }
+      else {
+        if (fragment.tone.freq > BEEP_MIN_FREQ - freqChange) {
+          fragment.tone.freq += freqChange;
+        }
+        else {
+          fragment.tone.freq = BEEP_MIN_FREQ;
+        }
+      }
+    }
+
+    if (remainingDuration > AUDIO_BUFFER_DURATION) {
+      duration = AUDIO_BUFFER_DURATION;
+      points = AUDIO_BUFFER_SIZE;
+    }
+    else {
+      duration = remainingDuration;
+      points = (duration * AUDIO_BUFFER_SIZE) / AUDIO_BUFFER_DURATION;
+      unsigned int end = toneIdx + (state.step * points);
+      if (end > DIM(sineValues))
+        end -= (end % DIM(sineValues));
+      else
+        end = DIM(sineValues);
+      points = (float(end) - toneIdx) / state.step;
+    }
+
+    for (int i=0; i<points; i++) {
+      int16_t sample = sineValues[int(toneIdx)] * state.volume;
+      mixSample(&buffer->data[i], sample, fade);
+      toneIdx += state.step;
+      if ((unsigned int)toneIdx >= DIM(sineValues))
+        toneIdx -= DIM(sineValues);
+    }
+
+    if (remainingDuration > AUDIO_BUFFER_DURATION) {
+      state.duration += AUDIO_BUFFER_DURATION;
+      state.idx = toneIdx;
+      return AUDIO_BUFFER_SIZE;
+    }
+    else {
+      state.duration = 32000; // once the tone is finished, it's not possible to update its frequency and duration
+    }
+  }
+
+  remainingDuration = fragment.tone.pause - state.pause;
+  if (remainingDuration > 0) {
+    result = AUDIO_BUFFER_SIZE;
+    state.pause += min<unsigned int>(AUDIO_BUFFER_DURATION-duration, fragment.tone.pause);
+    if (fragment.tone.pause > state.pause)
+      return result;
+  }
+
+  clear();
+  return result;
 }
 
 void AudioQueue::wakeup()
@@ -734,48 +755,48 @@ void AudioQueue::wakeup()
 
     // write silence in the buffer
     for (uint32_t i=0; i<AUDIO_BUFFER_SIZE; i++) {
-        buffer->data[i] = AUDIO_DATA_SILENCE; /* silence */
+      buffer->data[i] = AUDIO_DATA_SILENCE; /* silence */
     }
 
     // mix the priority context (only tones)
     result = priorityContext.mixBuffer(buffer, g_eeGeneral.beepVolume, fade);
     if (result > 0) {
-        size = result;
-        fade += 1;
+      size = result;
+      fade += 1;
     }
 
     // mix the normal context (tones and wavs)
     if (normalContext.isEmpty() && !fragmentsFifo.empty()) {
-        xSemaphoreTake(xAudioSem, portMAX_DELAY);
-        normalContext.setFragment(fragmentsFifo.get());
-        xSemaphoreGive(xAudioSem);
+        xSemaphoreTake(audioMutex, portMAX_DELAY);
+      normalContext.setFragment(fragmentsFifo.get());
+        xSemaphoreGive(audioMutex);
     }
     result = normalContext.mixBuffer(buffer, g_eeGeneral.beepVolume, g_eeGeneral.wavVolume, fade);
     if (result > 0) {
-        size = max(size, result);
-        fade += 1;
+      size = max(size, result);
+      fade += 1;
     }
 
     // mix the vario context
     result = varioContext.mixBuffer(buffer, g_eeGeneral.varioVolume, fade);
     if (result > 0) {
-        size = max(size, result);
-        fade += 1;
+      size = max(size, result);
+      fade += 1;
     }
 
     // mix the background context
     if (isFunctionActive(FUNCTION_BACKGND_MUSIC) && !isFunctionActive(FUNCTION_BACKGND_MUSIC_PAUSE)) {
-        result = backgroundContext.mixBuffer(buffer, g_eeGeneral.backgroundVolume, fade);
-        if (result > 0) {
-            size = max(size, result);
-        }
+      result = backgroundContext.mixBuffer(buffer, g_eeGeneral.backgroundVolume, fade);
+      if (result > 0) {
+        size = max(size, result);
+      }
     }
 
     buffer->size = AUDIO_BUFFER_SIZE;
 
     for (uint32_t i=0; i<buffer->size; ++i) {
-        int32_t tmpSample = (int32_t) ((uint32_t) (buffer->data[i]) - AUDIO_DATA_SILENCE);  // conversion from uint16_t
-        buffer->data[i] = (int16_t) (((tmpSample * currentSpeakerVolume) / VOLUME_LEVEL_MAX) + AUDIO_DATA_SILENCE);
+      int32_t tmpSample = (int32_t) ((uint32_t) (buffer->data[i]) - AUDIO_DATA_SILENCE);  // conversion from uint16_t
+      buffer->data[i] = (int16_t) (((tmpSample * currentSpeakerVolume) / VOLUME_LEVEL_MAX) + AUDIO_DATA_SILENCE);
     }
     size_t bytes_written=0;
     static bool needsInit=true;
@@ -784,9 +805,9 @@ void AudioQueue::wakeup()
         for(uint32_t i=0; i<AUDIO_SAMPLE_RATE/100;) {
             for(int j=0; j<100; j++) {
                 val[j]= (i++* AUDIO_DATA_SILENCE*100)/AUDIO_SAMPLE_RATE;
-            }
+      }
             i2s_write(I2S_NUM_0, (const void*) &val, 100*sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
-        }
+    }
         needsInit=false;
     }
     static audio_data_t usbuff[AUDIO_BUFFER_SIZE*2];
@@ -794,406 +815,417 @@ void AudioQueue::wakeup()
     for(uint16_t i=0; i<AUDIO_BUFFER_SIZE; i++) { //Upsampling due to strange i2s behaviour
         *p++=buffer->data[i];
         *p++=buffer->data[i];
-    }
+  }
     i2s_write(I2S_NUM_0, (const void*) usbuff, 2*AUDIO_BUFFER_SIZE * sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
 }
 
 inline unsigned int getToneLength(uint16_t len)
 {
-    unsigned int result = len; // default
-    if (g_eeGeneral.beepLength < 0) {
-        result /= (1-g_eeGeneral.beepLength);
+  unsigned int result = len; // default
+  if (g_eeGeneral.beepLength < 0) {
+    result /= (1-g_eeGeneral.beepLength);
     } else if (g_eeGeneral.beepLength > 0) {
-        result *= (1+g_eeGeneral.beepLength);
-    }
-    return result;
+    result *= (1+g_eeGeneral.beepLength);
+  }
+  return result;
 }
 
 void AudioQueue::pause(uint16_t len)
 {
-    playTone(0, 0, len);
+  playTone(0, 0, len);
 }
 
 bool AudioQueue::isPlaying(uint8_t id)
 {
-    return normalContext.hasPromptId(id) ||
-           (isFunctionActive(FUNCTION_BACKGND_MUSIC) && backgroundContext.hasPromptId(id)) ||
-           fragmentsFifo.hasPromptId(id);
+  return normalContext.hasPromptId(id) ||
+         (isFunctionActive(FUNCTION_BACKGND_MUSIC) && backgroundContext.hasPromptId(id)) ||
+         fragmentsFifo.hasPromptId(id);
 }
 
 void AudioQueue::playTone(uint16_t freq, uint16_t len, uint16_t pause, uint8_t flags, int8_t freqIncr)
 {
 #if defined(SIMU) && !defined(SIMU_AUDIO)
-    return;
+  return;
 #endif
 
-    xSemaphoreTake(xAudioSem, portMAX_DELAY);
+    xSemaphoreTake(audioMutex, portMAX_DELAY);
 
-    freq = limit<uint16_t>(BEEP_MIN_FREQ, freq, BEEP_MAX_FREQ);
+  freq = limit<uint16_t>(BEEP_MIN_FREQ, freq, BEEP_MAX_FREQ);
 
-    if (flags & PLAY_BACKGROUND) {
-        varioContext.setFragment(freq, len, pause, 0, 0, (flags & PLAY_NOW));
+  if (flags & PLAY_BACKGROUND) {
+    varioContext.setFragment(freq, len, pause, 0, 0, (flags & PLAY_NOW));
     } else {
-        // adjust frequency and length according to the user preferences
-        freq += g_eeGeneral.speakerPitch * 15;
-        len = getToneLength(len);
+    // adjust frequency and length according to the user preferences
+    freq += g_eeGeneral.speakerPitch * 15;
+    len = getToneLength(len);
 
-        if (flags & PLAY_NOW) {
-            if (priorityContext.isFree()) {
-                priorityContext.clear();
-                priorityContext.setFragment(freq, len, pause, flags & 0x0f, freqIncr, false);
-            }
+    if (flags & PLAY_NOW) {
+      if (priorityContext.isFree()) {
+        priorityContext.clear();
+        priorityContext.setFragment(freq, len, pause, flags & 0x0f, freqIncr, false);
+      }
         } else {
-            fragmentsFifo.push(AudioFragment(freq, len, pause, flags & 0x0f, freqIncr, false));
-        }
+      fragmentsFifo.push(AudioFragment(freq, len, pause, flags & 0x0f, freqIncr, false));
     }
+  }
 
-    xSemaphoreGive(xAudioSem);
+    xSemaphoreGive(audioMutex);
 }
 
 #if defined(SDCARD)
 void AudioQueue::playFile(const char * filename, uint8_t flags, uint8_t id)
 {
 #if defined(SIMU)
-    TRACE("playFile(\"%s\", flags=%x, id=%d)", filename, flags, id);
-    if (strlen(filename) > AUDIO_FILENAME_MAXLEN) {
-        TRACE("file name too long! maximum length is %d characters", AUDIO_FILENAME_MAXLEN);
-        return;
-    }
-#if !defined(SIMU_AUDIO)
+  TRACE("playFile(\"%s\", flags=%x, id=%d)", filename, flags, id);
+  if (strlen(filename) > AUDIO_FILENAME_MAXLEN) {
+    TRACE("file name too long! maximum length is %d characters", AUDIO_FILENAME_MAXLEN);
     return;
+  }
+  #if !defined(SIMU_AUDIO)
+  return;
+  #endif
 #endif
-#endif
 
-    if (!sdMounted())
-        return;
+  if (!sdMounted())
+    return;
 
-    if (g_eeGeneral.beepMode == e_mode_quiet)
-        return;
+  if (g_eeGeneral.beepMode == e_mode_quiet)
+    return;
 
-    if (strlen(filename) > AUDIO_FILENAME_MAXLEN) {
-        POPUP_WARNING(STR_PATH_TOO_LONG);
-        return;
-    }
+  if (strlen(filename) > AUDIO_FILENAME_MAXLEN) {
+    POPUP_WARNING(STR_PATH_TOO_LONG);
+    return;
+  }
 
-    xSemaphoreTake(xAudioSem, portMAX_DELAY);
+    xSemaphoreTake(audioMutex, portMAX_DELAY);
 
-    if (flags & PLAY_BACKGROUND) {
-        backgroundContext.clear();
-        backgroundContext.setFragment(filename, 0, id);
+  if (flags & PLAY_BACKGROUND) {
+    backgroundContext.clear();
+    backgroundContext.setFragment(filename, 0, id);
     } else {
-        fragmentsFifo.push(AudioFragment(filename, flags & 0x0f, id));
-    }
+    fragmentsFifo.push(AudioFragment(filename, flags & 0x0f, id));
+  }
 
-    xSemaphoreGive(xAudioSem);
+    xSemaphoreGive(audioMutex);
 }
 
 void AudioQueue::stopPlay(uint8_t id)
 {
 #if defined(SIMU)
-    TRACE("stopPlay(id=%d)", id);
+  TRACE("stopPlay(id=%d)", id);
 #endif
 
 #if defined(SIMU) && !defined(SIMU_AUDIO)
-    return;
+  return;
 #endif
 
-    xSemaphoreTake(xAudioSem, portMAX_DELAY);
+    xSemaphoreTake(audioMutex, portMAX_DELAY);
 
-    fragmentsFifo.removePromptById(id);
-    backgroundContext.stop(id);
+  fragmentsFifo.removePromptById(id);
+  backgroundContext.stop(id);
 
-    xSemaphoreGive(xAudioSem);
+    xSemaphoreGive(audioMutex);
 }
 
 void AudioQueue::stopSD()
 {
-    sdAvailableSystemAudioFiles.reset();
-    stopAll();
-    playTone(0, 0, 100, PLAY_NOW);        // insert a 100ms pause
+  sdAvailableSystemAudioFiles.reset();
+  stopAll();
+  playTone(0, 0, 100, PLAY_NOW);        // insert a 100ms pause
 }
 
 #endif
 
 void AudioQueue::stopAll()
 {
-    flush();
-    xSemaphoreTake(xAudioSem, portMAX_DELAY);
-    priorityContext.clear();
-    normalContext.clear();
-    xSemaphoreGive(xAudioSem);
+  flush();
+    xSemaphoreTake(audioMutex, portMAX_DELAY);
+  priorityContext.clear();
+  normalContext.clear();
+    xSemaphoreGive(audioMutex);
 }
 
 void AudioQueue::flush()
 {
-    xSemaphoreTake(xAudioSem, portMAX_DELAY);
-    fragmentsFifo.clear();
-    varioContext.clear();
-    backgroundContext.clear();
-    xSemaphoreGive(xAudioSem);
+    xSemaphoreTake(audioMutex, portMAX_DELAY);
+  fragmentsFifo.clear();
+  varioContext.clear();
+  backgroundContext.clear();
+    xSemaphoreGive(audioMutex);
 }
 
 void audioPlay(unsigned int index, uint8_t id)
 {
-    if (g_eeGeneral.beepMode >= -1) {
-        char filename[AUDIO_FILENAME_MAXLEN+1];
-        if (isAudioFileReferenced(index, filename)) {
-            audioQueue.playFile(filename, 0, id);
-        }
+  if (g_eeGeneral.beepMode >= -1) {
+    char filename[AUDIO_FILENAME_MAXLEN+1];
+    if (isAudioFileReferenced(index, filename)) {
+      audioQueue.playFile(filename, 0, id);
     }
+  }
 }
 
 void audioKeyPress()
 {
-    if (g_eeGeneral.beepMode == e_mode_all) {
-        audioQueue.playTone(BEEP_DEFAULT_FREQ, 40, 20, PLAY_NOW);
-    }
+  if (g_eeGeneral.beepMode == e_mode_all) {
+    audioQueue.playTone(BEEP_DEFAULT_FREQ, 40, 20, PLAY_NOW);
+  }
 #if defined(HAPTIC)
-    if (g_eeGeneral.hapticMode == e_mode_all) {
-        haptic.play(5, 0, PLAY_NOW);
-    }
+  if (g_eeGeneral.hapticMode == e_mode_all) {
+    haptic.play(5, 0, PLAY_NOW);
+  }
 #endif
 }
 
 void audioKeyError()
 {
-    if (g_eeGeneral.beepMode >= e_mode_nokeys) {
-        audioQueue.playTone(BEEP_DEFAULT_FREQ, 160, 20, PLAY_NOW);
-    }
+  if (g_eeGeneral.beepMode >= e_mode_nokeys) {
+    audioQueue.playTone(BEEP_DEFAULT_FREQ, 160, 20, PLAY_NOW);
+  }
 
 #if defined(HAPTIC)
-    if (g_eeGeneral.hapticMode >= e_mode_nokeys) {
-        haptic.play(15, 3, PLAY_NOW);
-    }
+  if (g_eeGeneral.hapticMode >= e_mode_nokeys) {
+    haptic.play(15, 3, PLAY_NOW);
+  }
 #endif
 }
 
 void audioTrimPress(int value)
 {
-    if (g_eeGeneral.beepMode >= e_mode_nokeys) {
-        value = limit(TRIM_MIN, value, TRIM_MAX) * 8 + 120*16;
-        audioQueue.playTone(value, 40, 20, PLAY_NOW);
-    }
+  if (g_eeGeneral.beepMode >= e_mode_nokeys) {
+    value = limit(TRIM_MIN, value, TRIM_MAX) * 8 + 120*16;
+    audioQueue.playTone(value, 40, 20, PLAY_NOW);
+  }
 }
 
 void audioTimerCountdown(uint8_t timer, int value)
 {
-    if (g_model.timers[timer].countdownBeep == COUNTDOWN_VOICE) {
-        if (value >= 0 && value <= TIMER_COUNTDOWN_START(timer)) {
-//      playNumber(value, 0, 0, 0);
-        } else if (value == 30 || value == 20) {
-//      playDuration(value, 0, 0);
-        }
-    } else if (g_model.timers[timer].countdownBeep == COUNTDOWN_BEEPS) {
-        if (value == 0) {
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 300, 20, PLAY_NOW);
-        } else if (value > 0 && value <= TIMER_COUNTDOWN_START(timer)) {
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 100, 20, PLAY_NOW);
-        } else if (value == 30) {
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 120, 20, PLAY_REPEAT(2));
-        } else if (value == 20) {
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 120, 20, PLAY_REPEAT(1));
-        } else if (value == 10) {
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 120, 20, PLAY_NOW);
-        }
+  if (g_model.timers[timer].countdownBeep == COUNTDOWN_VOICE) {
+    if (value >= 0 && value <= TIMER_COUNTDOWN_START(timer)) {
+      playNumber(value, 0, 0, 0);
     }
+    else if (value == 30 || value == 20) {
+      playDuration(value, 0, 0);
+    }
+  }
+  else if (g_model.timers[timer].countdownBeep == COUNTDOWN_BEEPS) {
+    if (value == 0) {
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 300, 20, PLAY_NOW);
+    }
+    else if (value > 0 && value <= TIMER_COUNTDOWN_START(timer)) {
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 100, 20, PLAY_NOW);
+    }
+    else if (value == 30) {
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 120, 20, PLAY_REPEAT(2));
+    }
+    else if (value == 20) {
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 120, 20, PLAY_REPEAT(1));
+    }
+    else if (value == 10) {
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 120, 20, PLAY_NOW);
+    }
+  }
 #if defined(HAPTIC)
-    else if (g_model.timers[timer].countdownBeep == COUNTDOWN_HAPTIC) {
-        if (value == 0) {
-            haptic.play(15, 3, PLAY_NOW);
-        } else if (value > 0 && value <= TIMER_COUNTDOWN_START(timer)) {
-            haptic.play(10, 0, PLAY_NOW);
-        } else if (value == 30) {
-            haptic.play(10, 3, PLAY_REPEAT(2) | PLAY_NOW);
-        } else if (value == 20) {
-            haptic.play(10, 3, PLAY_REPEAT(1) | PLAY_NOW);
-        } else if (value == 10) {
-            haptic.play(10, 3, PLAY_NOW);
-        }
+  else if (g_model.timers[timer].countdownBeep == COUNTDOWN_HAPTIC) {
+    if (value == 0) {
+      haptic.play(15, 3, PLAY_NOW);
     }
+    else if (value > 0 && value <= TIMER_COUNTDOWN_START(timer)) {
+      haptic.play(10, 0, PLAY_NOW);
+    }
+    else if (value == 30) {
+      haptic.play(10, 3, PLAY_REPEAT(2) | PLAY_NOW);
+    }
+    else if (value == 20) {
+      haptic.play(10, 3, PLAY_REPEAT(1) | PLAY_NOW);
+    }
+    else if (value == 10) {
+      haptic.play(10, 3, PLAY_NOW);
+    }
+  }
 #endif
 }
 
 void audioEvent(unsigned int index)
 {
-    if (index == AU_NONE)
-        return;
+  if (index == AU_NONE)
+    return;
 
 #if defined(HAPTIC)
-    haptic.event(index); // do this before audio to help sync timings
+  haptic.event(index); // do this before audio to help sync timings
 #endif
 
-    if (index <= AU_ERROR) {
-        if (g_eeGeneral.alarmsFlash) {
-            flashCounter = FLASH_DURATION;
-        }
+  if (index <= AU_ERROR) {
+    if (g_eeGeneral.alarmsFlash) {
+      flashCounter = FLASH_DURATION;
     }
+  }
 
-    if (g_eeGeneral.beepMode >= e_mode_nokeys || (g_eeGeneral.beepMode >= e_mode_alarms && index <= AU_ERROR)) {
+  if (g_eeGeneral.beepMode >= e_mode_nokeys || (g_eeGeneral.beepMode >= e_mode_alarms && index <= AU_ERROR)) {
 #if defined(SDCARD)
-        char filename[AUDIO_FILENAME_MAXLEN + 1];
-        if (index < AU_SPECIAL_SOUND_FIRST && isAudioFileReferenced(index, filename)) {
-            audioQueue.stopPlay(ID_PLAY_PROMPT_BASE + index);
-            audioQueue.playFile(filename, 0, ID_PLAY_PROMPT_BASE + index);
-            return;
-        }
-#endif
-        switch (index) {
-        case AU_INACTIVITY:
-            audioQueue.playTone(2250, 80, 20, PLAY_REPEAT(2));
-            break;
-        case AU_TX_BATTERY_LOW:
-            audioQueue.playTone(1950, 160, 20, PLAY_REPEAT(2), 1);
-            audioQueue.playTone(2550, 160, 20, PLAY_REPEAT(2), -1);
-            break;
-        case AU_THROTTLE_ALERT:
-        case AU_SWITCH_ALERT:
-        case AU_ERROR:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ, 200, 20, PLAY_NOW);
-            break;
-        case AU_TRIM_MIDDLE:
-            audioQueue.playTone(120*16, 80, 20, PLAY_NOW);
-            break;
-        case AU_TRIM_MIN:
-            audioQueue.playTone(TRIM_MIN*8 + 120*16, 80, 20, PLAY_NOW);
-            break;
-        case AU_TRIM_MAX:
-            audioQueue.playTone(TRIM_MAX*8 + 120*16, 80, 20, PLAY_NOW);
-            break;
-        case AU_WARNING1:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ, 80, 20, PLAY_NOW);
-            break;
-        case AU_WARNING2:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ, 160, 20, PLAY_NOW);
-            break;
-        case AU_WARNING3:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ, 200, 20, PLAY_NOW);
-            break;
-        // TODO remove all these ones
-        case AU_STICK1_MIDDLE:
-        case AU_STICK2_MIDDLE:
-        case AU_STICK3_MIDDLE:
-        case AU_STICK4_MIDDLE:
-        case AU_POT1_MIDDLE:
-        case AU_POT2_MIDDLE:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 80, 20, PLAY_NOW);
-            break;
-        case AU_MIX_WARNING_1:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 1440, 48, 32);
-            break;
-        case AU_MIX_WARNING_2:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 1560, 48, 32, PLAY_REPEAT(1));
-            break;
-        case AU_MIX_WARNING_3:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 1680, 48, 32, PLAY_REPEAT(2));
-            break;
-        case AU_TIMER1_ELAPSED:
-        case AU_TIMER2_ELAPSED:
-        case AU_TIMER3_ELAPSED:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 300, 20, PLAY_NOW);
-            break;
-        case AU_RSSI_ORANGE:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 800, 20, PLAY_NOW);
-            break;
-        case AU_RSSI_RED:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 1800, 800, 20, PLAY_REPEAT(1) | PLAY_NOW);
-            break;
-        case AU_RAS_RED:
-            audioQueue.playTone(450, 160, 40, PLAY_REPEAT(2), 1);
-            break;
-        case AU_SPECIAL_SOUND_BEEP1:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ, 60, 20);
-            break;
-        case AU_SPECIAL_SOUND_BEEP2:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ, 120, 20);
-            break;
-        case AU_SPECIAL_SOUND_BEEP3:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ, 200, 20);
-            break;
-        case AU_SPECIAL_SOUND_WARN1:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 600, 120, 40, PLAY_REPEAT(2));
-            break;
-        case AU_SPECIAL_SOUND_WARN2:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 900, 120, 40, PLAY_REPEAT(2));
-            break;
-        case AU_SPECIAL_SOUND_CHEEP:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 900, 80, 20, PLAY_REPEAT(2), 2);
-            break;
-        case AU_SPECIAL_SOUND_RING:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 750, 40, 20, PLAY_REPEAT(10));
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 750, 40, 80, PLAY_REPEAT(1));
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 750, 40, 20, PLAY_REPEAT(10));
-            break;
-        case AU_SPECIAL_SOUND_SCIFI:
-            audioQueue.playTone(2550, 80, 20, PLAY_REPEAT(2), -1);
-            audioQueue.playTone(1950, 80, 20, PLAY_REPEAT(2), 1);
-            audioQueue.playTone(2250, 80, 20, 0);
-            break;
-        case AU_SPECIAL_SOUND_ROBOT:
-            audioQueue.playTone(2250, 40, 20, PLAY_REPEAT(1));
-            audioQueue.playTone(1650, 120, 20, PLAY_REPEAT(1));
-            audioQueue.playTone(2550, 120, 20, PLAY_REPEAT(1));
-            break;
-        case AU_SPECIAL_SOUND_CHIRP:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 1200, 40, 20, PLAY_REPEAT(2));
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 1620, 40, 20, PLAY_REPEAT(3));
-            break;
-        case AU_SPECIAL_SOUND_TADA:
-            audioQueue.playTone(1650, 80, 40);
-            audioQueue.playTone(2850, 80, 40);
-            audioQueue.playTone(3450, 64, 36, PLAY_REPEAT(2));
-            break;
-        case AU_SPECIAL_SOUND_CRICKET:
-            audioQueue.playTone(2550, 40, 80, PLAY_REPEAT(3));
-            audioQueue.playTone(2550, 40, 160, PLAY_REPEAT(1));
-            audioQueue.playTone(2550, 40, 80, PLAY_REPEAT(3));
-            break;
-        case AU_SPECIAL_SOUND_SIREN:
-            audioQueue.playTone(450, 160, 40, PLAY_REPEAT(2), 2);
-            break;
-        case AU_SPECIAL_SOUND_ALARMC:
-            audioQueue.playTone(1650, 32, 68, PLAY_REPEAT(2));
-            audioQueue.playTone(2250, 64, 156, PLAY_REPEAT(1));
-            audioQueue.playTone(1650, 64, 76, PLAY_REPEAT(2));
-            audioQueue.playTone(2250, 32, 168, PLAY_REPEAT(1));
-            break;
-        case AU_SPECIAL_SOUND_RATATA:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 40, 80, PLAY_REPEAT(10));
-            break;
-        case AU_SPECIAL_SOUND_TICK:
-            audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 40, 400, PLAY_REPEAT(2));
-            break;
-        default:
-            break;
-        }
+    char filename[AUDIO_FILENAME_MAXLEN + 1];
+    if (index < AU_SPECIAL_SOUND_FIRST && isAudioFileReferenced(index, filename)) {
+      audioQueue.stopPlay(ID_PLAY_PROMPT_BASE + index);
+      audioQueue.playFile(filename, 0, ID_PLAY_PROMPT_BASE + index);
+      return;
     }
+#endif
+    switch (index) {
+      case AU_INACTIVITY:
+        audioQueue.playTone(2250, 80, 20, PLAY_REPEAT(2));
+        break;
+      case AU_TX_BATTERY_LOW:
+        audioQueue.playTone(1950, 160, 20, PLAY_REPEAT(2), 1);
+        audioQueue.playTone(2550, 160, 20, PLAY_REPEAT(2), -1);
+        break;
+      case AU_THROTTLE_ALERT:
+      case AU_SWITCH_ALERT:
+      case AU_ERROR:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ, 200, 20, PLAY_NOW);
+        break;
+      case AU_TRIM_MIDDLE:
+        audioQueue.playTone(120*16, 80, 20, PLAY_NOW);
+        break;
+      case AU_TRIM_MIN:
+        audioQueue.playTone(TRIM_MIN*8 + 120*16, 80, 20, PLAY_NOW);
+        break;
+      case AU_TRIM_MAX:
+        audioQueue.playTone(TRIM_MAX*8 + 120*16, 80, 20, PLAY_NOW);
+        break;
+      case AU_WARNING1:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ, 80, 20, PLAY_NOW);
+        break;
+      case AU_WARNING2:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ, 160, 20, PLAY_NOW);
+        break;
+      case AU_WARNING3:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ, 200, 20, PLAY_NOW);
+        break;
+        // TODO remove all these ones
+      case AU_STICK1_MIDDLE:
+      case AU_STICK2_MIDDLE:
+      case AU_STICK3_MIDDLE:
+      case AU_STICK4_MIDDLE:
+      case AU_POT1_MIDDLE:
+      case AU_POT2_MIDDLE:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 80, 20, PLAY_NOW);
+        break;
+      case AU_MIX_WARNING_1:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1440, 48, 32);
+        break;
+      case AU_MIX_WARNING_2:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1560, 48, 32, PLAY_REPEAT(1));
+        break;
+      case AU_MIX_WARNING_3:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1680, 48, 32, PLAY_REPEAT(2));
+        break;
+      case AU_TIMER1_ELAPSED:
+      case AU_TIMER2_ELAPSED:
+      case AU_TIMER3_ELAPSED:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 300, 20, PLAY_NOW);
+        break;
+      case AU_RSSI_ORANGE:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 800, 20, PLAY_NOW);
+        break;
+      case AU_RSSI_RED:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1800, 800, 20, PLAY_REPEAT(1) | PLAY_NOW);
+        break;
+      case AU_RAS_RED:
+        audioQueue.playTone(450, 160, 40, PLAY_REPEAT(2), 1);
+        break;
+      case AU_SPECIAL_SOUND_BEEP1:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ, 60, 20);
+        break;
+      case AU_SPECIAL_SOUND_BEEP2:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ, 120, 20);
+        break;
+      case AU_SPECIAL_SOUND_BEEP3:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ, 200, 20);
+        break;
+      case AU_SPECIAL_SOUND_WARN1:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 600, 120, 40, PLAY_REPEAT(2));
+        break;
+      case AU_SPECIAL_SOUND_WARN2:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 900, 120, 40, PLAY_REPEAT(2));
+        break;
+      case AU_SPECIAL_SOUND_CHEEP:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 900, 80, 20, PLAY_REPEAT(2), 2);
+        break;
+      case AU_SPECIAL_SOUND_RING:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 750, 40, 20, PLAY_REPEAT(10));
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 750, 40, 80, PLAY_REPEAT(1));
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 750, 40, 20, PLAY_REPEAT(10));
+        break;
+      case AU_SPECIAL_SOUND_SCIFI:
+        audioQueue.playTone(2550, 80, 20, PLAY_REPEAT(2), -1);
+        audioQueue.playTone(1950, 80, 20, PLAY_REPEAT(2), 1);
+        audioQueue.playTone(2250, 80, 20, 0);
+        break;
+      case AU_SPECIAL_SOUND_ROBOT:
+        audioQueue.playTone(2250, 40, 20, PLAY_REPEAT(1));
+        audioQueue.playTone(1650, 120, 20, PLAY_REPEAT(1));
+        audioQueue.playTone(2550, 120, 20, PLAY_REPEAT(1));
+        break;
+      case AU_SPECIAL_SOUND_CHIRP:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1200, 40, 20, PLAY_REPEAT(2));
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1620, 40, 20, PLAY_REPEAT(3));
+        break;
+      case AU_SPECIAL_SOUND_TADA:
+        audioQueue.playTone(1650, 80, 40);
+        audioQueue.playTone(2850, 80, 40);
+        audioQueue.playTone(3450, 64, 36, PLAY_REPEAT(2));
+        break;
+      case AU_SPECIAL_SOUND_CRICKET:
+        audioQueue.playTone(2550, 40, 80, PLAY_REPEAT(3));
+        audioQueue.playTone(2550, 40, 160, PLAY_REPEAT(1));
+        audioQueue.playTone(2550, 40, 80, PLAY_REPEAT(3));
+        break;
+      case AU_SPECIAL_SOUND_SIREN:
+        audioQueue.playTone(450, 160, 40, PLAY_REPEAT(2), 2);
+        break;
+      case AU_SPECIAL_SOUND_ALARMC:
+        audioQueue.playTone(1650, 32, 68, PLAY_REPEAT(2));
+        audioQueue.playTone(2250, 64, 156, PLAY_REPEAT(1));
+        audioQueue.playTone(1650, 64, 76, PLAY_REPEAT(2));
+        audioQueue.playTone(2250, 32, 168, PLAY_REPEAT(1));
+        break;
+      case AU_SPECIAL_SOUND_RATATA:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 40, 80, PLAY_REPEAT(10));
+        break;
+      case AU_SPECIAL_SOUND_TICK:
+        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 40, 400, PLAY_REPEAT(2));
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 #if defined(SDCARD)
 void pushUnit(uint8_t unit, uint8_t idx, uint8_t id)
 {
-    if (unit < DIM(unitsFilenames)) {
-        char path[AUDIO_FILENAME_MAXLEN+1];
-        char * tmp = strAppendSystemAudioPath(path);
-        tmp = strAppendStringWithIndex(tmp, unitsFilenames[unit], idx);
-        strcpy(tmp, SOUNDS_EXT);
-        audioQueue.playFile(path, 0, id);
-    } else {
-        TRACE("pushUnit: out of bounds unit : %d", unit); // We should never get here, but given the nature of TTS files, this prevent segfault in case of bug there.
-    }
+  if (unit < DIM(unitsFilenames)) {
+    char path[AUDIO_FILENAME_MAXLEN+1];
+    char * tmp = strAppendSystemAudioPath(path);
+    tmp = strAppendStringWithIndex(tmp, unitsFilenames[unit], idx);
+    strcpy(tmp, SOUNDS_EXT);
+    audioQueue.playFile(path, 0, id);
+  }
+  else {
+    TRACE("pushUnit: out of bounds unit : %d", unit); // We should never get here, but given the nature of TTS files, this prevent segfault in case of bug there.
+  }
 }
 #endif
 
 void pushPrompt(uint16_t prompt, uint8_t id)
 {
 #if defined(SDCARD)
-    char filename[AUDIO_FILENAME_MAXLEN+1];
-    char * str = strAppendSystemAudioPath(filename);
-    strcpy(str, "0000" SOUNDS_EXT);
-    for (int8_t i=3; i>=0; i--) {
-        str[i] = '0' + (prompt%10);
-        prompt /= 10;
-    }
-    audioQueue.playFile(filename, 0, id);
+  char filename[AUDIO_FILENAME_MAXLEN+1];
+  char * str = strAppendSystemAudioPath(filename);
+  strcpy(str, "0000" SOUNDS_EXT);
+  for (int8_t i=3; i>=0; i--) {
+    str[i] = '0' + (prompt%10);
+    prompt /= 10;
+  }
+  audioQueue.playFile(filename, 0, id);
 #endif
 }

@@ -248,11 +248,16 @@ if(SIMU_DISKIO)
   add_definitions(-DSIMU_DISKIO)
 endif()
 
-if(SDCARD AND NOT CPU_FAMILY STREQUAL ESP32)
+if(SDCARD)
+if(CPU_FAMILY STREQUAL ESP32)
+  add_definitions(-DSDCARD)
+  set(SRC ${SRC} rtc.cpp logs.cpp)
+else()
   add_definitions(-DSDCARD)
   include_directories(${FATFS_DIR} ${FATFS_DIR}/option)
   set(SRC ${SRC} sdcard.cpp rtc.cpp logs.cpp)
   set(FIRMWARE_SRC ${FIRMWARE_SRC} ${FATFS_SRC})
+endif()
 endif()
 
 if(SHUTDOWN_CONFIRMATION)
@@ -347,12 +352,6 @@ if(GUI)
   foreach(FILE ${GUI_SRC})
     set(SRC ${SRC} gui/${GUI_DIR}/${FILE})
   endforeach()
-  if(ARCH STREQUAL ESP32)
-    set(SRC
-      ${SRC}
-      gui/gui_common_esp32.cpp
-      )
-  endif()
 endif()
 
 foreach(FILE ${TARGET_SRC})
@@ -517,7 +516,7 @@ if(NOT MSVC)
     set(CMAKE_SYSTEM_VERSION 1)
     set(CMAKE_ASM_COMPILE_OBJECT "<CMAKE_ASM_COMPILER> -o <OBJECT> <SOURCE>")
 
-    set(COMMON_FLAGS "-mlongcalls -fomit-frame-pointer -fverbose-asm -Wa,-ahlms=firmware.lst -O${OPT} -gdwarf-2 -DHSE_VALUE=${HSE_VALUE} -fno-exceptions -fdata-sections -ffunction-sections ${WARNING_FLAGS}")
+    set(COMMON_FLAGS "-mlongcalls -fomit-frame-pointer -fverbose-asm -Wa,-ahlms=firmware.lst -O${OPT} -gdwarf-2 -DHSE_VALUE=${HSE_VALUE} -fno-exceptions -fdata-sections -ffunction-sections ${WARNING_FLAGS} -fmax-errors=2" )
     set(COMMON_FLAGS "${COMMON_FLAGS} ${FPU_FLAGS}")
 
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_FLAGS} -Wimplicit")

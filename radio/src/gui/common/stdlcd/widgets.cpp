@@ -61,7 +61,11 @@ FlightModesType editFlightModes(coord_t x, coord_t y, event_t event, FlightModes
   return value;
 }
 
+#if defined(CPUESP32)
+void editNameMask(coord_t x, coord_t y, char * name, uint8_t size, uint8_t mask, event_t event, uint8_t active, LcdFlags attr)
+#else
 void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, uint8_t active, LcdFlags attr)
+#endif
 {
   uint8_t mode = 0;
   if (active) {
@@ -70,8 +74,25 @@ void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, ui
     else
       mode = FIXEDWIDTH;
   }
-
+#if defined(CPUESP32)
+  if(mask){
+    char buff[size];
+    for (int i=0; i<size; ++i) {
+      if (!name[i]) {
+        buff[i] = 0;
+      } 
+      else {
+        buff[i] = '*';
+      }
+    }
+    lcdDrawSizedText(x, y, buff, size, attr | mode);
+  }
+  else{
+    lcdDrawSizedText(x, y, name, size, attr | mode);
+  }
+#else
   lcdDrawSizedText(x, y, name, size, attr | mode);
+#endif
   coord_t backupNextPos = lcdNextPos;
 
   if (active) {

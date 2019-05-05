@@ -24,8 +24,9 @@
 
 static const char *TAG = "eeprom_driver.cpp";
 
-#undef ESP32_FIELD
 #define ESP32_FIELD(x)
+#define ARM_FIELD(x)
+#define AVR_FIELD(x)                 x;
 
 #define SWITCHES_WARNING_DATA \
     swarnstate_t  switchWarningState; \
@@ -38,7 +39,43 @@ static const char *TAG = "eeprom_driver.cpp";
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
+#define MAX_TELEMETRY_SCREENS 4
+#define TELEMETRY_SCREEN_TYPE(screenIndex) TelemetryScreenType((g_model.frsky.screensType >> (2*(screenIndex))) & 0x03)
+#define IS_BARS_SCREEN(screenIndex)        (TELEMETRY_SCREEN_TYPE(screenIndex) == TELEMETRY_SCREEN_TYPE_GAUGES)
+#else
+#define MAX_FRSKY_A_CHANNELS 2
+#define MAX_TELEMETRY_SCREENS 2
+#define IS_BARS_SCREEN(screenIndex)    (g_model.frsky.screensType & (1<<(screenIndex)))
+#define MIN_BLADES 0 // 2 blades
+#define MAX_BLADES 3 // 5 blades
 
+
+PACK(struct FrSkyChannelData {
+  uint8_t   ratio;              // 0.0 means not used, 0.1V steps EG. 6.6 Volts = 66. 25.1V = 251, etc.
+  int16_t   offset:12;
+  uint16_t  type:4;             // channel unit (0=volts, ...)
+  uint8_t   alarms_value[2];    // 0.1V steps EG. 6.6 Volts = 66. 25.1V = 251, etc.
+  uint8_t   alarms_level:4;
+  uint8_t   alarms_greater:2;   // 0=LT(<), 1=GT(>)
+  uint8_t   multiplier:2;       // 0=no multiplier, 1=*2 multiplier
+});
+
+PACK(struct FrSkyTelemetryData {
+  FrSkyChannelData channels[MAX_FRSKY_A_CHANNELS];
+  uint8_t usrProto:2; // Protocol in FrSky user data, 0=None, 1=FrSky hub, 2=WS HowHigh, 3=Halcyon
+  uint8_t blades:2;   // How many blades for RPMs, 0=2 blades
+  uint8_t screensType:2;
+  uint8_t voltsSource:2;
+  int8_t  varioMin:4;
+  int8_t  varioMax:4;
+  FrSkyRSSIAlarm rssiAlarms[2];
+  FrSkyScreenData screens[MAX_TELEMETRY_SCREENS];
+  uint8_t varioSource:3;
+  int8_t  varioCenterMin:5;
+  uint8_t currentSource:3;
+  int8_t  varioCenterMax:5;
+  int8_t  fasOffset;
+});
 
 
 PACK(struct CustomFunctionDataM217 {
@@ -187,7 +224,7 @@ const char * ConvertModel_M217_to_219(ModelData & model)
     }
 }
 
-const pm_char * CopyConvertModel_M217(uint8_t i_fileDst, char * path){
+const char * CopyConvertModel_M217(uint8_t i_fileDst, char * path){
     uint8_t version;
 
     ModelData *md= new ModelData;

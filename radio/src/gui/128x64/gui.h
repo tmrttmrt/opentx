@@ -228,8 +228,12 @@ int16_t editGVarFieldValue(coord_t x, coord_t y, int16_t value, int16_t min, int
 #endif
 
 void gvarWeightItem(coord_t x, coord_t y, MixData * md, LcdFlags attr, event_t event);
-
+#if defined(CPUESP32)
+void editNameMask(coord_t x, coord_t y, char * name, uint8_t size, uint8_t mask, event_t event, uint8_t active, LcdFlags attr=ZCHAR);
+#define editName(x, y, name, size, ... ) editNameMask(x, y, name, size, false, __VA_ARGS__)
+#else
 void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, uint8_t active, LcdFlags attr=ZCHAR);
+#endif
 void editSingleName(coord_t x, coord_t y, const char * label, char * name, uint8_t size, event_t event, uint8_t active);
 
 uint8_t editDelay(coord_t y, event_t event, uint8_t attr, const char * str, uint8_t delay);

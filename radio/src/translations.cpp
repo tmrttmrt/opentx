@@ -488,6 +488,10 @@ const char STR_LOGS_PATH[]  = LOGS_PATH;
 const char STR_LOGS_EXT[]  = LOGS_EXT;
 const char STR_MODELS_PATH[]  = MODELS_PATH;
 const char STR_MODELS_EXT[]  = MODELS_EXT;
+#if defined(CPUESP32)
+const char STR_OUT_OF_MEM[] = TR_OUT_OF_MEM;
+const char STR_BACKUP_PATH[] = BACKUP_PATH;
+#endif
 #endif
 
 const char STR_CAT_NOT_EMPTY[]  = TR_CAT_NOT_EMPTY;

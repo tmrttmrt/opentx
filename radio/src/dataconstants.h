@@ -72,7 +72,7 @@
   #define MAX_INPUTS                   32
   #define MAX_TRAINER_CHANNELS         16
   #define MAX_TELEMETRY_SENSORS        40
-#elif defined(PCBSKY9X)
+#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32) 
   #define MAX_MODELS                   60
   #define MAX_OUTPUT_CHANNELS          32 // number of real output channels CH1-CH32
   #define MAX_FLIGHT_MODES             9
@@ -136,7 +136,7 @@ enum CurveType {
   #define MAX_CURVE_POINTS             512
 #endif
 
-#if defined(PCBTARANIS) || defined(PCBSKY9X) || defined(PCBHORUS)
+#if defined(PCBTARANIS) || defined(PCBSKY9X) || defined(PCBHORUS) || defined(PCBESP_WROOM_32)
   #define NUM_MODULES                  2
 #else
   #define NUM_MODULES                  1
@@ -198,7 +198,7 @@ enum BeeperMode {
     TRAINER_MODE_SLAVE_BLUETOOTH,
 #endif
   };
-#elif defined(PCBSKY9X)
+#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
   enum ModuleIndex {
     EXTERNAL_MODULE,
     EXTRA_MODULE,
@@ -216,7 +216,7 @@ enum BeeperMode {
 
 #if defined(PCBTARANIS) || defined(PCBHORUS)
   #define IS_INTERNAL_MODULE_ENABLED() (g_model.moduleData[INTERNAL_MODULE].type != MODULE_TYPE_NONE)
-#elif defined(PCBSKY9X)
+#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
   #define IS_INTERNAL_MODULE_ENABLED() (false)
 #endif
 

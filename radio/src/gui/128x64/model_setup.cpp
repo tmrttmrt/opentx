@@ -176,7 +176,7 @@ enum MenuModelSetupItems {
 
 #if defined(PCBSKY9X) && defined(REVX)
   #define OUTPUT_TYPE_ROWS()             (isModulePPM(EXTERNAL_MODULE) ? (uint8_t)0 : HIDDEN_ROW) ,
-#elif defined(PCBSKY9X)
+#elif defined(PCBSKY9X) || defined(CPUESP32)
   #define OUTPUT_TYPE_ROWS()
 #endif
 

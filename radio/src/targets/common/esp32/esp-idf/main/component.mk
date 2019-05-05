@@ -6,4 +6,4 @@
 COMPONENT_DEPENDS := otxcore
 
 COMPONENT_EXTRA_INCLUDES := $(shell cat $(COMPONENT_PATH)/../components/otxcore/includes.mk)
-CPPFLAGS += $(shell cat $(COMPONENT_PATH)/../components/otxcore/defines.mk)
+CPPFLAGS += $(shell cat $(COMPONENT_PATH)/../components/otxcore/defines.mk) 

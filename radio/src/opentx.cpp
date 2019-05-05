@@ -1164,7 +1164,7 @@ uint16_t anaIn(uint8_t chan)
 {
   return ANA_FILT(chan);
 }
-
+#if !defined(CPUESP32)
 void getADC()
 {
 #if defined(JITTER_MEASURE)
@@ -1251,7 +1251,7 @@ void getADC()
     }
   }
 }
-
+#endif //ESP32
 #endif // SIMU
 
 uint8_t g_vbat100mV = 0;
@@ -1908,12 +1908,12 @@ int main()
 #endif
 
 
-#if defined(GUI) && !defined(PCBTARANIS) && !defined(PCBHORUS)
+#if defined(GUI) && !defined(PCBTARANIS) && !defined(PCBHORUS) && !defined(PCBESP_WROOM_32)
   // TODO remove this
   lcdInit();
 #endif
 
-#if !defined(SIMU)
+#if !defined(SIMU) && !defined(CPUESP32)
   stackPaint();
 #endif
 
@@ -1948,7 +1948,7 @@ int main()
   tasksStart();
 }
 
-#if !defined(SIMU)
+#if !defined(SIMU) && !defined(CPUESP32)
 #if defined(PWR_BUTTON_PRESS)
 uint32_t pwr_press_time = 0;
 

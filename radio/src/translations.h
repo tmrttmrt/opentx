@@ -687,6 +687,10 @@ extern const char STR_NO_TOOLS[];
   extern const char STR_MODELS_PATH[];
   extern const char STR_MODELS_EXT[];
   #define STR_UPDATE_LIST STR_DELAYDOWN
+#if defined(CPUESP32)
+  extern const char STR_OUT_OF_MEM[];
+  extern const char STR_BACKUP_PATH[];
+#endif 
 #endif
 
 extern const char STR_CAT_NOT_EMPTY[];

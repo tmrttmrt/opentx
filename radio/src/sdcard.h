@@ -26,8 +26,12 @@
 #endif
 
 #include "opentx.h"
-
+#if defined(CPUESP32) 
+#define ROOT_PATH           SD_PATH "/"
+#define BACKUP_PATH         ROOT_PATH "BACKUP"
+#else
 #define ROOT_PATH           "/"
+#endif
 #define MODELS_PATH         ROOT_PATH "MODELS"      // no trailing slash = important
 #define RADIO_PATH          ROOT_PATH "RADIO"       // no trailing slash = important
 #define LOGS_PATH           ROOT_PATH "LOGS"
@@ -93,8 +97,10 @@ const char RADIO_SETTINGS_PATH[] = RADIO_PATH "/radio.bin";
   filename[sizeof(path)+sizeof(var)] = '\0'; \
   strcat(&filename[sizeof(path)], ext)
 
+#if !defined(CPUESP32)
 extern FATFS g_FATFS_Obj;
 extern FIL g_oLogFile;
+#endif
 
 extern uint8_t logDelay;
 void logsInit();
@@ -149,6 +155,11 @@ const char * getBasename(const char * path);
 #elif defined(PCBSKY9X)
   #define OTX_FOURCC 0x3278746F // otx for sky9x
   #define O9X_FOURCC 0x3278396F // o9x for sky9x
+#elif defined(PCBESP_WROOM_32)
+  #define OTX_FOURCC 0x3878746F // otx for ESP32
+  #define O9X_FOURCC 0x3878396F // o9x for ESP32
+  #define OTX_FOURCC_MEGA2560 0x3178746F // otx for gruvin9x/MEGA2560
+  #define O9X_FOURCC_MEGA2560 0x3178396F // o9x for gruvin9x/MEGA2560  
 #endif
 
 bool isFileAvailable(const char * filename, bool exclDir = false);

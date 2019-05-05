@@ -42,6 +42,7 @@ enum TaskIndex {
   MAIN_TASK_INDEX = 255
 };
 
+#if !defined(CPUESP32)
 void stackPaint()
 {
   menusStack.paint();
@@ -72,6 +73,7 @@ bool isForcePowerOffRequested()
   }
   return false;
 }
+#endif
 
 bool isModuleSynchronous(uint8_t module)
 {

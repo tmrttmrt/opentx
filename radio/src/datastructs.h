@@ -687,6 +687,21 @@ PACK(struct TrainerData {
     uint8_t  rotarySteps; \
     char switchNames[NUM_SWITCHES][LEN_SWITCH_NAME]; \
     char anaNames[NUM_STICKS+NUM_POTS+NUM_SLIDERS][LEN_ANA_NAME];
+#elif defined(CPUESP32)
+  #define EXTRA_GENERAL_FIELDS \
+    int8_t   txCurrentCalibration; \
+    int8_t   temperatureWarn; \
+    uint8_t  mAhWarn; \
+    uint16_t mAhUsed; \
+    int8_t   temperatureCalib; \
+    uint8_t  optrexDisplay; \
+    uint8_t  sticksGain; \
+    uint8_t  rotarySteps; \
+    char switchNames[NUM_SWITCHES][LEN_SWITCH_NAME]; \
+    char anaNames[NUM_STICKS+NUM_POTS+NUM_SLIDERS][LEN_ANA_NAME];\
+    NOBACKUP(char passwd[18]);\
+    NOBACKUP(char ssid[18]);\
+    NOBACKUP(char ftppass[18]);
 #else
   #define EXTRA_GENERAL_FIELDS
 #endif
@@ -854,7 +869,7 @@ static inline void check_struct()
   CHKSIZE(CurveData, 4);
   CHKSIZE(CustomScreenData, 610);
   CHKSIZE(Topbar::PersistentData, 216);
-#elif defined(PCBSKY9X)
+#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
   CHKSIZE(MixData, 20);
   CHKSIZE(ExpoData, 17);
   CHKSIZE(LimitData, 11);

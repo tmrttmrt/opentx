@@ -32,6 +32,8 @@ static const char *TAG = "unistd.cpp";
 static const char *SL = "/";
 static char cpath[CONFIG_FATFS_MAX_LFN+1]="/";
 
+
+
 int wr_chdir(const char *path)
 {
     ESP_LOGD(TAG, "wr_chdir(\"%s\"), cpath: \"%s\"",path,cpath);

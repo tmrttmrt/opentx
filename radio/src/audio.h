@@ -22,7 +22,12 @@
 #define _AUDIO_ARM_H_
 
 #include <stddef.h>
+#if defined(CPUESP32)
+#define  audioDisableIrq()
+#define  audioEnableIrq()
+#else
 #include "ff.h"
+#endif
 
 /*
   Implements a bit field, number of bits is set by the template,
@@ -123,7 +128,9 @@ struct AudioBuffer {
 #endif
 };
 
+#if !defined(CPUESP32)
 extern AudioBuffer audioBuffers[AUDIO_BUFFER_COUNT];
+#endif
 
 enum FragmentTypes {
   FRAGMENT_EMPTY,
@@ -237,7 +244,11 @@ class WavContext {
     AudioFragment fragment;
 
     struct {
+#if defined(CPUESP32)
+      int fd;
+#else        
       FIL      file;
+#endif
       uint8_t  codec;
       uint32_t freq;
       uint32_t size;
@@ -292,6 +303,7 @@ class MixedContext {
 
 };
 
+#if !defined(CPUESP32)
 class AudioBufferFifo {
 #if defined(CLI)
   friend void printAudioVars();
@@ -410,7 +422,7 @@ class AudioBufferFifo {
     }
 
 };
-
+#endif
 class AudioFragmentFifo
 {
 #if defined(CLI)
@@ -513,7 +525,9 @@ class AudioQueue {
     void wakeup();
     bool started() const { return _started; };
 
+#if !defined(CPUESP32)
     AudioBufferFifo buffersFifo;
+#endif
 
   private:
     volatile bool _started;
