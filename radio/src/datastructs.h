@@ -689,13 +689,6 @@ PACK(struct TrainerData {
     char anaNames[NUM_STICKS+NUM_POTS+NUM_SLIDERS][LEN_ANA_NAME];
 #elif defined(CPUESP32)
   #define EXTRA_GENERAL_FIELDS \
-    int8_t   txCurrentCalibration; \
-    int8_t   temperatureWarn; \
-    uint8_t  mAhWarn; \
-    uint16_t mAhUsed; \
-    int8_t   temperatureCalib; \
-    uint8_t  optrexDisplay; \
-    uint8_t  sticksGain; \
     uint8_t  rotarySteps; \
     char switchNames[NUM_SWITCHES][LEN_SWITCH_NAME]; \
     char anaNames[NUM_STICKS+NUM_POTS+NUM_SLIDERS][LEN_ANA_NAME];\

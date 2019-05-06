@@ -53,7 +53,7 @@
   xTaskCreatePinnedToCore( task, taskName , stackSize, NULL, taskPrio.prio, &taskId, taskPrio.core );\
   configASSERT( taskId );
 #define RTOS_CREATE_MUTEX(mh) mh = xSemaphoreCreateMutex();
-#define MENUS_STACK_SIZE       0xC00
+#define MENUS_STACK_SIZE       0x1D00
 #define MIXER_STACK_SIZE       0x800
 #define AUDIO_STACK_SIZE       0x900
 #define PER10MS_STACK_SIZE     0x500
@@ -92,6 +92,7 @@ static inline uint32_t RTOS_GET_MS(void) {
 static inline uint32_t RTOS_GET_TIME(void) {
   return (uint32_t)(esp_timer_get_time() / 2000);
 }
+
 
 //from 2.2
 #define strcpy_P strcpy
@@ -136,8 +137,6 @@ const char * eeRestoreModel(uint8_t i_fileDst, char *model_name);
 const char * eeBackupAll();
 #endif
 
-
-
 uint16_t getTmr1MHz();
 void timer10msInit();
 void initADC();
@@ -151,8 +150,6 @@ void encoderTask(void * pdata);
 uint8_t telemetryGetByte(uint8_t * byte);
 
 void telemetryTransmitBuffer(uint8_t * data, uint8_t len);
-void mixEnterCritical();
-void mixExitCritical();
 uint16_t audioStackAvailable();
 uint16_t per10msStackAvailable();
 uint16_t mixerStackAvailable();
@@ -161,8 +158,6 @@ uint16_t encStackAvailable();
 bool rEncDown(uint8_t mask);
 void sendToPulses();
 void mountSDCard();
-
-
 
 void backlightEnable();
 void backlightDisable();
@@ -186,7 +181,5 @@ enum Analogs {
   TX_VOLTAGE,
   NUM_ANALOGS
 };
-
-
 
 #endif

@@ -473,7 +473,7 @@ void modelDefault(uint8_t id)
 #if defined(PCBTARANIS) || defined(PCBHORUS)
   g_model.moduleData[INTERNAL_MODULE].type = IS_PXX2_INTERNAL_ENABLED() ? MODULE_TYPE_XJT2 : MODULE_TYPE_XJT;
   g_model.moduleData[INTERNAL_MODULE].channelsCount = defaultModuleChannels_M8(INTERNAL_MODULE);
-#elif defined(PCBSKY9X)
+#elif defined(PCBSKY9X) || defined(CPUESP32)
   g_model.moduleData[EXTERNAL_MODULE].type = MODULE_TYPE_PPM;
 #endif
 
@@ -1159,12 +1159,12 @@ tmr10ms_t jitterResetTime = 0;
   #error "JITTER_FILTER_STRENGTH and ANALOG_SCALE are too big, their summ should be <= 5 !!!"
 #endif
 
-#if !defined(SIMU)
+#if !defined(SIMU) && !defined(CPUESP32)
 uint16_t anaIn(uint8_t chan)
 {
   return ANA_FILT(chan);
 }
-#if !defined(CPUESP32)
+
 void getADC()
 {
 #if defined(JITTER_MEASURE)
@@ -1251,7 +1251,6 @@ void getADC()
     }
   }
 }
-#endif //ESP32
 #endif // SIMU
 
 uint8_t g_vbat100mV = 0;

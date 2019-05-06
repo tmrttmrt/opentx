@@ -22,12 +22,17 @@
 
 #if defined(PCBESP_WROOM_32)
 
+#define HW_SETTINGS_COLUMN2            (30 + 5*FW)
+
 enum MenuRadioHardwareItems {
   ITEM_RADIO_HARDWARE_WIFI,
   ITEM_RADIO_HARDWARE_WIFI_NAME,
   ITEM_RADIO_HARDWARE_WIFI_PASSWD,
   ITEM_RADIO_HARDWARE_WIFI_STATUS,
   ITEM_RADIO_HARDWARE_FTP_PASSWD,
+  ITEM_RADIO_HARDWARE_LABEL_STICKS,
+  ITEM_RADIO_HARDWARE_BATTERY_CALIB,
+  ITEM_RADIO_HARDWARE_DEBUG,
   ITEM_RADIO_HARDWARE_MAX
 };
 
@@ -35,7 +40,7 @@ enum MenuRadioHardwareItems {
 
 void menuRadioHardware(event_t event)
 {
-  MENU(STR_HARDWARE, menuTabGeneral, MENU_RADIO_HARDWARE, ITEM_RADIO_HARDWARE_MAX+1, {HEADER_LINE_COLUMNS 0,0,0,(uint8_t)-1,0});
+  MENU(STR_HARDWARE, menuTabGeneral, MENU_RADIO_HARDWARE, ITEM_RADIO_HARDWARE_MAX+1, {HEADER_LINE_COLUMNS 0,0,0,(uint8_t)-1,0,0,0});
 
   uint8_t sub = menuVerticalPosition - HEADER_LINE;
 
@@ -81,6 +86,34 @@ void menuRadioHardware(event_t event)
       case ITEM_RADIO_HARDWARE_FTP_PASSWD:
         lcdDrawText(FW/2, y, "FTP P.:");
         editNameMask(WIFI_COL, y,  g_eeGeneral.ftppass, sizeof(g_eeGeneral.ftppass), true, event, attr);
+        break;
+      case ITEM_RADIO_HARDWARE_LABEL_STICKS:
+        lcdDrawTextAlignedLeft(y, STR_STICKS);
+        lcdDrawText(HW_SETTINGS_COLUMN2, y, STR_CALIB_BTN, attr);
+        if (attr && event == EVT_KEY_FIRST(KEY_ENTER)) {
+          pushMenu(menuRadioCalibration);
+        }
+        break;
+      case ITEM_RADIO_HARDWARE_BATTERY_CALIB:
+        lcdDrawTextAlignedLeft(MENU_HEADER_HEIGHT+1+4*FH, STR_BATT_CALIB);
+        {
+          uint32_t batCalV = getBatteryVoltage()/10;
+          putsVolts(HW_SETTINGS_COLUMN2, y, batCalV, (menuVerticalPosition==HEADER_LINE ? INVERS : 0));
+        }
+        if (attr) {
+          CHECK_INCDEC_GENVAR(event, g_eeGeneral.txVoltageCalibration, -127, 127);
+        }
+        break;
+      case ITEM_RADIO_HARDWARE_DEBUG:
+        lcdDrawTextAlignedLeft(y, STR_DEBUG);
+        lcdDrawText(HW_SETTINGS_COLUMN2, y, STR_ANALOGS_BTN, menuHorizontalPosition == 0 ? attr : 0);
+        lcdDrawText(lcdLastRightPos + 2, y, STR_KEYS_BTN, menuHorizontalPosition == 1 ? attr : 0);
+        if (attr && event == EVT_KEY_FIRST(KEY_ENTER)) {
+          if (menuHorizontalPosition == 0)
+            pushMenu(menuRadioDiagAnalogs);
+          else
+            pushMenu(menuRadioDiagKeys);
+        }
         break;
     }
   }

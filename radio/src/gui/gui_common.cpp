@@ -345,7 +345,7 @@ bool isSwitchAvailable(int swtch, SwitchContext context)
   }
 #endif
 
-#if defined(PCBSKY9X) && defined(REVX)
+#if defined(PCBSKY9X) && defined(REVX) || defined(CPUESP32)
   if (swtch == SWSRC_REa) {
     return false;
   }

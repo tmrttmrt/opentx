@@ -25,7 +25,7 @@ void menuRadioDiagAnalogs(event_t event)
 // TODO enum
 #if defined(TX_CAPACITY_MEASUREMENT)
   #define ANAS_ITEMS_COUNT 3
-#elif defined(PCBSKY9X)
+#elif defined(PCBSKY9X) || defined(CPUESP32)
   #define ANAS_ITEMS_COUNT 2
 #else
   #define ANAS_ITEMS_COUNT 1

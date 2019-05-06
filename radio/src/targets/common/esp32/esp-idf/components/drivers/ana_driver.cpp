@@ -42,6 +42,11 @@ uint16_t getBatteryVoltage()
   return (uint16_t)instant_vbat;
 }
 
+uint16_t anaIn(uint8_t chan)
+{
+  return s_anaFilt[chan];
+}
+
 
 void getADC()
 {

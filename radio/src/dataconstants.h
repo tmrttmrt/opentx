@@ -478,7 +478,7 @@ enum SwitchSources {
   SWSRC_TrimT6Up,
 #endif
 
-#if defined(PCBSKY9X)
+#if defined(PCBSKY9X) || defined(CPUESP32)
   SWSRC_REa,
 #endif
 
