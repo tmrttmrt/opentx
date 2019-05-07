@@ -40,7 +40,7 @@ enum MenuRadioHardwareItems {
 
 void menuRadioHardware(event_t event)
 {
-  MENU(STR_HARDWARE, menuTabGeneral, MENU_RADIO_HARDWARE, ITEM_RADIO_HARDWARE_MAX+1, {HEADER_LINE_COLUMNS 0,0,0,(uint8_t)-1,0,0,0});
+  MENU(STR_HARDWARE, menuTabGeneral, MENU_RADIO_HARDWARE, ITEM_RADIO_HARDWARE_MAX+1, {HEADER_LINE_COLUMNS 0,0,0,(uint8_t)-1,0,0,1});
 
   uint8_t sub = menuVerticalPosition - HEADER_LINE;
 
@@ -95,10 +95,10 @@ void menuRadioHardware(event_t event)
         }
         break;
       case ITEM_RADIO_HARDWARE_BATTERY_CALIB:
-        lcdDrawTextAlignedLeft(MENU_HEADER_HEIGHT+1+4*FH, STR_BATT_CALIB);
+        lcdDrawTextAlignedLeft( y, STR_BATT_CALIB);
         {
           uint32_t batCalV = getBatteryVoltage()/10;
-          putsVolts(HW_SETTINGS_COLUMN2, y, batCalV, (menuVerticalPosition==HEADER_LINE ? INVERS : 0));
+          putsVolts(HW_SETTINGS_COLUMN2, y, batCalV, attr);
         }
         if (attr) {
           CHECK_INCDEC_GENVAR(event, g_eeGeneral.txVoltageCalibration, -127, 127);

@@ -56,7 +56,6 @@ TaskHandle_t xEncTaskHandle = NULL;
 extern TaskHandle_t wifiTaskHandle;
 extern TaskHandle_t otaTaskHandle;
 
-SemaphoreHandle_t xAudioSem = NULL;
 SemaphoreHandle_t xPer10msSem = NULL;
 extern SemaphoreHandle_t mixerMutex;
 extern SemaphoreHandle_t audioMutex;

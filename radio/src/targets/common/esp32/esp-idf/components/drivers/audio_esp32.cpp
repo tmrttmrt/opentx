@@ -1,22 +1,22 @@
 /*
- * Copyright (C) OpenTX
- *
- * Based on code named
- *   th9x - http://code.google.com/p/th9x
- *   er9x - http://code.google.com/p/er9x
- *   gruvin9x - http://code.google.com/p/gruvin9x
- *
- * License GPLv2: http://www.gnu.org/licenses/gpl-2.0.html
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+* Copyright (C) OpenTX
+*
+* Based on code named
+*   th9x - http://code.google.com/p/th9x
+*   er9x - http://code.google.com/p/er9x
+*   gruvin9x - http://code.google.com/p/gruvin9x
+*
+* License GPLv2: http://www.gnu.org/licenses/gpl-2.0.html
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License version 2 as
+* published by the Free Software Foundation.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*/
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -33,109 +33,109 @@ extern SemaphoreHandle_t audioMutex;
 
 const int16_t sineValues[] =
 {
-    0, 196, 392, 588, 784, 980, 1175, 1370, 1564, 1758,
-    1951, 2143, 2335, 2525, 2715, 2904, 3091, 3278, 3463, 3647,
-    3829, 4011, 4190, 4369, 4545, 4720, 4894, 5065, 5235, 5403,
-    5569, 5733, 5895, 6055, 6213, 6369, 6522, 6673, 6822, 6969,
-    7113, 7255, 7395, 7532, 7667, 7799, 7929, 8056, 8180, 8302,
-    8422, 8539, 8653, 8765, 8874, 8980, 9084, 9185, 9283, 9379,
-    9472, 9562, 9650, 9735, 9818, 9898, 9975, 10050, 10123, 10192,
-    10260, 10324, 10387, 10447, 10504, 10559, 10612, 10663, 10711, 10757,
-    10801, 10843, 10882, 10920, 10955, 10989, 11020, 11050, 11078, 11104,
-    11128, 11151, 11172, 11191, 11209, 11225, 11240, 11254, 11266, 11277,
-    11287, 11296, 11303, 11310, 11316, 11320, 11324, 11327, 11330, 11331,
-    11332, 11333, 11333, 11333, 11332, 11331, 11329, 11328, 11326, 11324,
-    11323, 11321, 11319, 11318, 11316, 11315, 11314, 11313, 11313, 11313,
-    11314, 11315, 11317, 11319, 11323, 11326, 11331, 11336, 11342, 11349,
-    11356, 11365, 11375, 11385, 11397, 11409, 11423, 11437, 11453, 11470,
-    11488, 11507, 11527, 11548, 11571, 11595, 11620, 11646, 11673, 11702,
-    11732, 11763, 11795, 11828, 11863, 11899, 11936, 11974, 12013, 12054,
-    12095, 12138, 12182, 12227, 12273, 12320, 12368, 12417, 12467, 12518,
-    12570, 12623, 12676, 12731, 12786, 12842, 12898, 12956, 13014, 13072,
-    13131, 13191, 13251, 13311, 13372, 13433, 13495, 13556, 13618, 13680,
-    13743, 13805, 13867, 13929, 13991, 14053, 14115, 14177, 14238, 14299,
-    14359, 14419, 14479, 14538, 14597, 14655, 14712, 14768, 14824, 14879,
-    14933, 14986, 15039, 15090, 15140, 15189, 15237, 15284, 15330, 15375,
-    15418, 15460, 15500, 15539, 15577, 15614, 15648, 15682, 15714, 15744,
-    15772, 15799, 15825, 15849, 15871, 15891, 15910, 15927, 15942, 15955,
-    15967, 15977, 15985, 15991, 15996, 15999, 16000, 15999, 15996, 15991,
-    15985, 15977, 15967, 15955, 15942, 15927, 15910, 15891, 15871, 15849,
-    15825, 15799, 15772, 15744, 15714, 15682, 15648, 15614, 15577, 15539,
-    15500, 15460, 15418, 15375, 15330, 15284, 15237, 15189, 15140, 15090,
-    15039, 14986, 14933, 14879, 14824, 14768, 14712, 14655, 14597, 14538,
-    14479, 14419, 14359, 14299, 14238, 14177, 14115, 14053, 13991, 13929,
-    13867, 13805, 13743, 13680, 13618, 13556, 13495, 13433, 13372, 13311,
-    13251, 13191, 13131, 13072, 13014, 12956, 12898, 12842, 12786, 12731,
-    12676, 12623, 12570, 12518, 12467, 12417, 12368, 12320, 12273, 12227,
-    12182, 12138, 12095, 12054, 12013, 11974, 11936, 11899, 11863, 11828,
-    11795, 11763, 11732, 11702, 11673, 11646, 11620, 11595, 11571, 11548,
-    11527, 11507, 11488, 11470, 11453, 11437, 11423, 11409, 11397, 11385,
-    11375, 11365, 11356, 11349, 11342, 11336, 11331, 11326, 11323, 11319,
-    11317, 11315, 11314, 11313, 11313, 11313, 11314, 11315, 11316, 11318,
-    11319, 11321, 11323, 11324, 11326, 11328, 11329, 11331, 11332, 11333,
-    11333, 11333, 11332, 11331, 11330, 11327, 11324, 11320, 11316, 11310,
-    11303, 11296, 11287, 11277, 11266, 11254, 11240, 11225, 11209, 11191,
-    11172, 11151, 11128, 11104, 11078, 11050, 11020, 10989, 10955, 10920,
-    10882, 10843, 10801, 10757, 10711, 10663, 10612, 10559, 10504, 10447,
-    10387, 10324, 10260, 10192, 10123, 10050, 9975, 9898, 9818, 9735,
-    9650, 9562, 9472, 9379, 9283, 9185, 9084, 8980, 8874, 8765,
-    8653, 8539, 8422, 8302, 8180, 8056, 7929, 7799, 7667, 7532,
-    7395, 7255, 7113, 6969, 6822, 6673, 6522, 6369, 6213, 6055,
-    5895, 5733, 5569, 5403, 5235, 5065, 4894, 4720, 4545, 4369,
-    4190, 4011, 3829, 3647, 3463, 3278, 3091, 2904, 2715, 2525,
-    2335, 2143, 1951, 1758, 1564, 1370, 1175, 980, 784, 588,
-    392, 196, 0, -196, -392, -588, -784, -980, -1175, -1370,
-    -1564, -1758, -1951, -2143, -2335, -2525, -2715, -2904, -3091, -3278,
-    -3463, -3647, -3829, -4011, -4190, -4369, -4545, -4720, -4894, -5065,
-    -5235, -5403, -5569, -5733, -5895, -6055, -6213, -6369, -6522, -6673,
-    -6822, -6969, -7113, -7255, -7395, -7532, -7667, -7799, -7929, -8056,
-    -8180, -8302, -8422, -8539, -8653, -8765, -8874, -8980, -9084, -9185,
-    -9283, -9379, -9472, -9562, -9650, -9735, -9818, -9898, -9975, -10050,
-    -10123, -10192, -10260, -10324, -10387, -10447, -10504, -10559, -10612, -10663,
-    -10711, -10757, -10801, -10843, -10882, -10920, -10955, -10989, -11020, -11050,
-    -11078, -11104, -11128, -11151, -11172, -11191, -11209, -11225, -11240, -11254,
-    -11266, -11277, -11287, -11296, -11303, -11310, -11316, -11320, -11324, -11327,
-    -11330, -11331, -11332, -11333, -11333, -11333, -11332, -11331, -11329, -11328,
-    -11326, -11324, -11323, -11321, -11319, -11318, -11316, -11315, -11314, -11313,
-    -11313, -11313, -11314, -11315, -11317, -11319, -11323, -11326, -11331, -11336,
-    -11342, -11349, -11356, -11365, -11375, -11385, -11397, -11409, -11423, -11437,
-    -11453, -11470, -11488, -11507, -11527, -11548, -11571, -11595, -11620, -11646,
-    -11673, -11702, -11732, -11763, -11795, -11828, -11863, -11899, -11936, -11974,
-    -12013, -12054, -12095, -12138, -12182, -12227, -12273, -12320, -12368, -12417,
-    -12467, -12518, -12570, -12623, -12676, -12731, -12786, -12842, -12898, -12956,
-    -13014, -13072, -13131, -13191, -13251, -13311, -13372, -13433, -13495, -13556,
-    -13618, -13680, -13743, -13805, -13867, -13929, -13991, -14053, -14115, -14177,
-    -14238, -14299, -14359, -14419, -14479, -14538, -14597, -14655, -14712, -14768,
-    -14824, -14879, -14933, -14986, -15039, -15090, -15140, -15189, -15237, -15284,
-    -15330, -15375, -15418, -15460, -15500, -15539, -15577, -15614, -15648, -15682,
-    -15714, -15744, -15772, -15799, -15825, -15849, -15871, -15891, -15910, -15927,
-    -15942, -15955, -15967, -15977, -15985, -15991, -15996, -15999, -16000, -15999,
-    -15996, -15991, -15985, -15977, -15967, -15955, -15942, -15927, -15910, -15891,
-    -15871, -15849, -15825, -15799, -15772, -15744, -15714, -15682, -15648, -15614,
-    -15577, -15539, -15500, -15460, -15418, -15375, -15330, -15284, -15237, -15189,
-    -15140, -15090, -15039, -14986, -14933, -14879, -14824, -14768, -14712, -14655,
-    -14597, -14538, -14479, -14419, -14359, -14299, -14238, -14177, -14115, -14053,
-    -13991, -13929, -13867, -13805, -13743, -13680, -13618, -13556, -13495, -13433,
-    -13372, -13311, -13251, -13191, -13131, -13072, -13014, -12956, -12898, -12842,
-    -12786, -12731, -12676, -12623, -12570, -12518, -12467, -12417, -12368, -12320,
-    -12273, -12227, -12182, -12138, -12095, -12054, -12013, -11974, -11936, -11899,
-    -11863, -11828, -11795, -11763, -11732, -11702, -11673, -11646, -11620, -11595,
-    -11571, -11548, -11527, -11507, -11488, -11470, -11453, -11437, -11423, -11409,
-    -11397, -11385, -11375, -11365, -11356, -11349, -11342, -11336, -11331, -11326,
-    -11323, -11319, -11317, -11315, -11314, -11313, -11313, -11313, -11314, -11315,
-    -11316, -11318, -11319, -11321, -11323, -11324, -11326, -11328, -11329, -11331,
-    -11332, -11333, -11333, -11333, -11332, -11331, -11330, -11327, -11324, -11320,
-    -11316, -11310, -11303, -11296, -11287, -11277, -11266, -11254, -11240, -11225,
-    -11209, -11191, -11172, -11151, -11128, -11104, -11078, -11050, -11020, -10989,
-    -10955, -10920, -10882, -10843, -10801, -10757, -10711, -10663, -10612, -10559,
-    -10504, -10447, -10387, -10324, -10260, -10192, -10123, -10050, -9975, -9898,
-    -9818, -9735, -9650, -9562, -9472, -9379, -9283, -9185, -9084, -8980,
-    -8874, -8765, -8653, -8539, -8422, -8302, -8180, -8056, -7929, -7799,
-    -7667, -7532, -7395, -7255, -7113, -6969, -6822, -6673, -6522, -6369,
-    -6213, -6055, -5895, -5733, -5569, -5403, -5235, -5065, -4894, -4720,
-    -4545, -4369, -4190, -4011, -3829, -3647, -3463, -3278, -3091, -2904,
-    -2715, -2525, -2335, -2143, -1951, -1758, -1564, -1370, -1175, -980,
-    -784, -588, -392, -196,
+  0, 196, 392, 588, 784, 980, 1175, 1370, 1564, 1758,
+  1951, 2143, 2335, 2525, 2715, 2904, 3091, 3278, 3463, 3647,
+  3829, 4011, 4190, 4369, 4545, 4720, 4894, 5065, 5235, 5403,
+  5569, 5733, 5895, 6055, 6213, 6369, 6522, 6673, 6822, 6969,
+  7113, 7255, 7395, 7532, 7667, 7799, 7929, 8056, 8180, 8302,
+  8422, 8539, 8653, 8765, 8874, 8980, 9084, 9185, 9283, 9379,
+  9472, 9562, 9650, 9735, 9818, 9898, 9975, 10050, 10123, 10192,
+  10260, 10324, 10387, 10447, 10504, 10559, 10612, 10663, 10711, 10757,
+  10801, 10843, 10882, 10920, 10955, 10989, 11020, 11050, 11078, 11104,
+  11128, 11151, 11172, 11191, 11209, 11225, 11240, 11254, 11266, 11277,
+  11287, 11296, 11303, 11310, 11316, 11320, 11324, 11327, 11330, 11331,
+  11332, 11333, 11333, 11333, 11332, 11331, 11329, 11328, 11326, 11324,
+  11323, 11321, 11319, 11318, 11316, 11315, 11314, 11313, 11313, 11313,
+  11314, 11315, 11317, 11319, 11323, 11326, 11331, 11336, 11342, 11349,
+  11356, 11365, 11375, 11385, 11397, 11409, 11423, 11437, 11453, 11470,
+  11488, 11507, 11527, 11548, 11571, 11595, 11620, 11646, 11673, 11702,
+  11732, 11763, 11795, 11828, 11863, 11899, 11936, 11974, 12013, 12054,
+  12095, 12138, 12182, 12227, 12273, 12320, 12368, 12417, 12467, 12518,
+  12570, 12623, 12676, 12731, 12786, 12842, 12898, 12956, 13014, 13072,
+  13131, 13191, 13251, 13311, 13372, 13433, 13495, 13556, 13618, 13680,
+  13743, 13805, 13867, 13929, 13991, 14053, 14115, 14177, 14238, 14299,
+  14359, 14419, 14479, 14538, 14597, 14655, 14712, 14768, 14824, 14879,
+  14933, 14986, 15039, 15090, 15140, 15189, 15237, 15284, 15330, 15375,
+  15418, 15460, 15500, 15539, 15577, 15614, 15648, 15682, 15714, 15744,
+  15772, 15799, 15825, 15849, 15871, 15891, 15910, 15927, 15942, 15955,
+  15967, 15977, 15985, 15991, 15996, 15999, 16000, 15999, 15996, 15991,
+  15985, 15977, 15967, 15955, 15942, 15927, 15910, 15891, 15871, 15849,
+  15825, 15799, 15772, 15744, 15714, 15682, 15648, 15614, 15577, 15539,
+  15500, 15460, 15418, 15375, 15330, 15284, 15237, 15189, 15140, 15090,
+  15039, 14986, 14933, 14879, 14824, 14768, 14712, 14655, 14597, 14538,
+  14479, 14419, 14359, 14299, 14238, 14177, 14115, 14053, 13991, 13929,
+  13867, 13805, 13743, 13680, 13618, 13556, 13495, 13433, 13372, 13311,
+  13251, 13191, 13131, 13072, 13014, 12956, 12898, 12842, 12786, 12731,
+  12676, 12623, 12570, 12518, 12467, 12417, 12368, 12320, 12273, 12227,
+  12182, 12138, 12095, 12054, 12013, 11974, 11936, 11899, 11863, 11828,
+  11795, 11763, 11732, 11702, 11673, 11646, 11620, 11595, 11571, 11548,
+  11527, 11507, 11488, 11470, 11453, 11437, 11423, 11409, 11397, 11385,
+  11375, 11365, 11356, 11349, 11342, 11336, 11331, 11326, 11323, 11319,
+  11317, 11315, 11314, 11313, 11313, 11313, 11314, 11315, 11316, 11318,
+  11319, 11321, 11323, 11324, 11326, 11328, 11329, 11331, 11332, 11333,
+  11333, 11333, 11332, 11331, 11330, 11327, 11324, 11320, 11316, 11310,
+  11303, 11296, 11287, 11277, 11266, 11254, 11240, 11225, 11209, 11191,
+  11172, 11151, 11128, 11104, 11078, 11050, 11020, 10989, 10955, 10920,
+  10882, 10843, 10801, 10757, 10711, 10663, 10612, 10559, 10504, 10447,
+  10387, 10324, 10260, 10192, 10123, 10050, 9975, 9898, 9818, 9735,
+  9650, 9562, 9472, 9379, 9283, 9185, 9084, 8980, 8874, 8765,
+  8653, 8539, 8422, 8302, 8180, 8056, 7929, 7799, 7667, 7532,
+  7395, 7255, 7113, 6969, 6822, 6673, 6522, 6369, 6213, 6055,
+  5895, 5733, 5569, 5403, 5235, 5065, 4894, 4720, 4545, 4369,
+  4190, 4011, 3829, 3647, 3463, 3278, 3091, 2904, 2715, 2525,
+  2335, 2143, 1951, 1758, 1564, 1370, 1175, 980, 784, 588,
+  392, 196, 0, -196, -392, -588, -784, -980, -1175, -1370,
+  -1564, -1758, -1951, -2143, -2335, -2525, -2715, -2904, -3091, -3278,
+  -3463, -3647, -3829, -4011, -4190, -4369, -4545, -4720, -4894, -5065,
+  -5235, -5403, -5569, -5733, -5895, -6055, -6213, -6369, -6522, -6673,
+  -6822, -6969, -7113, -7255, -7395, -7532, -7667, -7799, -7929, -8056,
+  -8180, -8302, -8422, -8539, -8653, -8765, -8874, -8980, -9084, -9185,
+  -9283, -9379, -9472, -9562, -9650, -9735, -9818, -9898, -9975, -10050,
+  -10123, -10192, -10260, -10324, -10387, -10447, -10504, -10559, -10612, -10663,
+  -10711, -10757, -10801, -10843, -10882, -10920, -10955, -10989, -11020, -11050,
+  -11078, -11104, -11128, -11151, -11172, -11191, -11209, -11225, -11240, -11254,
+  -11266, -11277, -11287, -11296, -11303, -11310, -11316, -11320, -11324, -11327,
+  -11330, -11331, -11332, -11333, -11333, -11333, -11332, -11331, -11329, -11328,
+  -11326, -11324, -11323, -11321, -11319, -11318, -11316, -11315, -11314, -11313,
+  -11313, -11313, -11314, -11315, -11317, -11319, -11323, -11326, -11331, -11336,
+  -11342, -11349, -11356, -11365, -11375, -11385, -11397, -11409, -11423, -11437,
+  -11453, -11470, -11488, -11507, -11527, -11548, -11571, -11595, -11620, -11646,
+  -11673, -11702, -11732, -11763, -11795, -11828, -11863, -11899, -11936, -11974,
+  -12013, -12054, -12095, -12138, -12182, -12227, -12273, -12320, -12368, -12417,
+  -12467, -12518, -12570, -12623, -12676, -12731, -12786, -12842, -12898, -12956,
+  -13014, -13072, -13131, -13191, -13251, -13311, -13372, -13433, -13495, -13556,
+  -13618, -13680, -13743, -13805, -13867, -13929, -13991, -14053, -14115, -14177,
+  -14238, -14299, -14359, -14419, -14479, -14538, -14597, -14655, -14712, -14768,
+  -14824, -14879, -14933, -14986, -15039, -15090, -15140, -15189, -15237, -15284,
+  -15330, -15375, -15418, -15460, -15500, -15539, -15577, -15614, -15648, -15682,
+  -15714, -15744, -15772, -15799, -15825, -15849, -15871, -15891, -15910, -15927,
+  -15942, -15955, -15967, -15977, -15985, -15991, -15996, -15999, -16000, -15999,
+  -15996, -15991, -15985, -15977, -15967, -15955, -15942, -15927, -15910, -15891,
+  -15871, -15849, -15825, -15799, -15772, -15744, -15714, -15682, -15648, -15614,
+  -15577, -15539, -15500, -15460, -15418, -15375, -15330, -15284, -15237, -15189,
+  -15140, -15090, -15039, -14986, -14933, -14879, -14824, -14768, -14712, -14655,
+  -14597, -14538, -14479, -14419, -14359, -14299, -14238, -14177, -14115, -14053,
+  -13991, -13929, -13867, -13805, -13743, -13680, -13618, -13556, -13495, -13433,
+  -13372, -13311, -13251, -13191, -13131, -13072, -13014, -12956, -12898, -12842,
+  -12786, -12731, -12676, -12623, -12570, -12518, -12467, -12417, -12368, -12320,
+  -12273, -12227, -12182, -12138, -12095, -12054, -12013, -11974, -11936, -11899,
+  -11863, -11828, -11795, -11763, -11732, -11702, -11673, -11646, -11620, -11595,
+  -11571, -11548, -11527, -11507, -11488, -11470, -11453, -11437, -11423, -11409,
+  -11397, -11385, -11375, -11365, -11356, -11349, -11342, -11336, -11331, -11326,
+  -11323, -11319, -11317, -11315, -11314, -11313, -11313, -11313, -11314, -11315,
+  -11316, -11318, -11319, -11321, -11323, -11324, -11326, -11328, -11329, -11331,
+  -11332, -11333, -11333, -11333, -11332, -11331, -11330, -11327, -11324, -11320,
+  -11316, -11310, -11303, -11296, -11287, -11277, -11266, -11254, -11240, -11225,
+  -11209, -11191, -11172, -11151, -11128, -11104, -11078, -11050, -11020, -10989,
+  -10955, -10920, -10882, -10843, -10801, -10757, -10711, -10663, -10612, -10559,
+  -10504, -10447, -10387, -10324, -10260, -10192, -10123, -10050, -9975, -9898,
+  -9818, -9735, -9650, -9562, -9472, -9379, -9283, -9185, -9084, -8980,
+  -8874, -8765, -8653, -8539, -8422, -8302, -8180, -8056, -7929, -7799,
+  -7667, -7532, -7395, -7255, -7113, -6969, -6822, -6673, -6522, -6369,
+  -6213, -6055, -5895, -5733, -5569, -5403, -5235, -5065, -4894, -4720,
+  -4545, -4369, -4190, -4011, -3829, -3647, -3463, -3278, -3091, -2904,
+  -2715, -2525, -2335, -2143, -1951, -1758, -1564, -1370, -1175, -980,
+  -784, -588, -392, -196,
 };
 
 #if defined(SDCARD)
@@ -271,33 +271,33 @@ void referenceSystemAudioFiles()
 {
   static_assert(sizeof(audioFilenames)==AU_SPECIAL_SOUND_FIRST*sizeof(char *), "Invalid audioFilenames size");
   char path[AUDIO_FILENAME_MAXLEN+1];
-    struct dirent *de;
-    DIR *dir;
+  struct dirent *de;
+  DIR *dir;
 
   sdAvailableSystemAudioFiles.reset();
 
   char * filename = strAppendSystemAudioPath(path);
   *(filename-1) = '\0';
 
-    dir = opendir(path);        /* Open the directory */
-    if (NULL != dir) {
+  dir = opendir(path);        /* Open the directory */
+  if (NULL != dir) {
     for (;;) {
-            de = readdir(dir);                   /* Read a directory item */
-            if (NULL == de) break;  /* Break on error or end of dir */
-            uint8_t len = strlen(de->d_name);
+      de = readdir(dir);                   /* Read a directory item */
+      if (NULL == de) break;  /* Break on error or end of dir */
+      uint8_t len = strlen(de->d_name);
 
       // Eliminates directories / non wav files
-            if (len < 5 || strcasecmp(de->d_name+len-4, SOUNDS_EXT) || (de->d_type != DT_REG)) continue;
+      if (len < 5 || strcasecmp(de->d_name+len-4, SOUNDS_EXT) || (de->d_type != DT_REG)) continue;
 
       for (int i=0; i<AU_SPECIAL_SOUND_FIRST; i++) {
         getSystemAudioFile(path, i);
-                if (!strcasecmp(filename, de->d_name)) {
+        if (!strcasecmp(filename, de->d_name)) {
           sdAvailableSystemAudioFiles.setBit(i);
           break;
         }
       }
     }
-        closedir(dir);
+    closedir(dir);
   }
 }
 
@@ -376,8 +376,8 @@ void getLogicalSwitchAudioFile(char * filename, int index, unsigned int event)
 void referenceModelAudioFiles()
 {
   char path[AUDIO_FILENAME_MAXLEN+1];
-    struct dirent *de;
-    DIR *dir;
+  struct dirent *de;
+  DIR *dir;
 
   sdAvailableFlightmodeAudioFiles.reset();
   sdAvailableSwitchAudioFiles.reset();
@@ -386,17 +386,17 @@ void referenceModelAudioFiles()
   char * filename = getModelAudioPath(path);
   *(filename-1) = '\0';
 
-    dir = opendir(path);        /* Open the directory */
-    if (NULL!=dir) {
+  dir = opendir(path);        /* Open the directory */
+  if (NULL!=dir) {
     for (;;) {
-            de = readdir(dir);                   /* Read a directory item */
-            if (NULL == de) break;  /* Break on error or end of dir */
-            uint8_t len = strlen(de->d_name);
+      de = readdir(dir);                   /* Read a directory item */
+      if (NULL == de) break;  /* Break on error or end of dir */
+      uint8_t len = strlen(de->d_name);
       bool found = false;
 
       // Eliminates directories / non wav files
-            if (len < 5 || strcasecmp(de->d_name+len-4, SOUNDS_EXT) || (de->d_type != DT_REG)) continue;
-            TRACE("referenceModelAudioFiles(): using file: %s", de->d_name);
+      if (len < 5 || strcasecmp(de->d_name+len-4, SOUNDS_EXT) || (de->d_type != DT_REG)) continue;
+      TRACE("referenceModelAudioFiles(): using file: %s", de->d_name);
 
       // Flight modes Audio Files <flightmodename>-[on|off].wav
       for (int i=0; i<MAX_FLIGHT_MODES && !found; i++) {
@@ -437,7 +437,7 @@ void referenceModelAudioFiles()
         }
       }
     }
-        closedir(dir);
+    closedir(dir);
   }
 }
 
@@ -507,12 +507,12 @@ const int16_t ulawTable[256] = { -32124, -31100, -30076, -29052, -28028, -27004,
 
 AudioQueue audioQueue;
 AudioQueue::AudioQueue()
-    :_started(false),
-  normalContext(),
-  backgroundContext(),
-  priorityContext(),
-  varioContext(),
-  fragmentsFifo()
+:_started(false),
+normalContext(),
+backgroundContext(),
+priorityContext(),
+varioContext(),
+fragmentsFifo()
 {
 }
 
@@ -523,9 +523,9 @@ AudioQueue::AudioQueue()
 #if !defined(SIMU)
 void audioTask(void * pdata)
 {
-    ESP_LOGI(TAG,"Starting audioTask.");
+  ESP_LOGI(TAG,"Starting audioTask.");
   while (!audioQueue.started()) {
-        vTaskDelay(1);
+    vTaskDelay(1);
   }
 
   setSampleRate(AUDIO_SAMPLE_RATE);
@@ -540,7 +540,7 @@ void audioTask(void * pdata)
     DEBUG_TIMER_START(debugTimerAudioDuration);
     audioQueue.wakeup();
     DEBUG_TIMER_STOP(debugTimerAudioDuration);
-        vTaskDelay(4/portTICK_PERIOD_MS);
+    vTaskDelay(4/portTICK_PERIOD_MS);
   }
 }
 #endif
@@ -557,17 +557,17 @@ uint8_t wavBuffer[AUDIO_BUFFER_SIZE*2];
 
 int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
 {
-    ssize_t rb = 0;
+  ssize_t rb = 0;
 
   if (fragment.file[1]) {
-        state.fd = open(fragment.file, O_RDONLY);
+    state.fd = open(fragment.file, O_RDONLY);
     fragment.file[1] = 0;
-        if ( -1 != state.fd) {
-            rb = read(state.fd, wavBuffer, RIFF_CHUNK_SIZE+8);
-            if (rb != -1 && rb == RIFF_CHUNK_SIZE+8 && !memcmp(wavBuffer, "RIFF", 4) && !memcmp(wavBuffer+8, "WAVEfmt ", 8)) {
+    if ( -1 != state.fd) {
+      rb = read(state.fd, wavBuffer, RIFF_CHUNK_SIZE+8);
+      if (rb != -1 && rb == RIFF_CHUNK_SIZE+8 && !memcmp(wavBuffer, "RIFF", 4) && !memcmp(wavBuffer+8, "WAVEfmt ", 8)) {
         uint32_t size = *((uint32_t *)(wavBuffer+16));
-                rb = (size < 256 ? read(state.fd, wavBuffer, size+8) : -1);
-                if (rb == size+8) {
+        rb = (size < 256 ? read(state.fd, wavBuffer, size+8) : -1);
+        if (rb == size+8) {
           state.codec = ((uint16_t *)wavBuffer)[0];
           state.freq = ((uint16_t *)wavBuffer)[2];
           uint32_t *wavSamplesPtr = (uint32_t *)(wavBuffer + size);
@@ -575,59 +575,59 @@ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
           if (state.freq != 0 && state.freq * (AUDIO_SAMPLE_RATE / state.freq) == AUDIO_SAMPLE_RATE) {
             state.resampleRatio = (AUDIO_SAMPLE_RATE / state.freq);
             state.readSize = (state.codec == CODEC_ID_PCM_S16LE ? 2*AUDIO_BUFFER_SIZE : AUDIO_BUFFER_SIZE) / state.resampleRatio;
-                    } else {
-                        rb=-1;
-                    }
-                    off_t pos=rb;
-                    while (pos != -1 && memcmp(wavSamplesPtr, "data", 4) != 0) {
-                        pos=lseek(state.fd,size,SEEK_CUR);
-                        if (pos != -1) {
-                            rb = read(state.fd, wavBuffer, 8);
-                            if (rb != 8) pos = -1;
+          } else {
+            rb=-1;
+          }
+          off_t pos=rb;
+          while (pos != -1 && memcmp(wavSamplesPtr, "data", 4) != 0) {
+            pos=lseek(state.fd,size,SEEK_CUR);
+            if (pos != -1) {
+              rb = read(state.fd, wavBuffer, 8);
+              if (rb != 8) pos = -1;
               wavSamplesPtr = (uint32_t *)wavBuffer;
               size = wavSamplesPtr[1];
             }
           }
           state.size = size;
-                } else {
-                    rb = -1;
+        } else {
+          rb = -1;
         }
       }
-        } else {
-            rb = -1;
+    } else {
+      rb = -1;
     }
   }
 
+  if (rb != -1) {
+    rb = 0;
+    rb = read(state.fd, wavBuffer, state.readSize);
     if (rb != -1) {
-        rb = 0;
-        rb = read(state.fd, wavBuffer, state.readSize);
-        if (rb != -1) {
-            if (rb > state.size) {
-                rb = state.size;
+      if (rb > state.size) {
+        rb = state.size;
       }
-            state.size -= rb;
+      state.size -= rb;
 
-            if (rb != state.readSize) {
-                close(state.fd);
+      if (rb != state.readSize) {
+        close(state.fd);
         fragment.clear();
       }
 
       audio_data_t * samples = buffer->data;
       if (state.codec == CODEC_ID_PCM_S16LE) {
-                rb /= 2;
-                for (uint32_t i=0; i<rb; i++) {
+        rb /= 2;
+        for (uint32_t i=0; i<rb; i++) {
           for (uint8_t j=0; j<state.resampleRatio; j++) {
             mixSample(samples++, ((int16_t *)wavBuffer)[i], fade+2-volume);
           }
         }
-            } else if (state.codec == CODEC_ID_PCM_ALAW) {
-                for (uint32_t i=0; i<rb; i++) {
+      } else if (state.codec == CODEC_ID_PCM_ALAW) {
+        for (uint32_t i=0; i<rb; i++) {
           for (uint8_t j=0; j<state.resampleRatio; j++) {
             mixSample(samples++, alawTable[wavBuffer[i]], fade+2-volume);
           }
         }
-            } else if (state.codec == CODEC_ID_PCM_MULAW) {
-                for (uint32_t i=0; i<rb; i++) {
+      } else if (state.codec == CODEC_ID_PCM_MULAW) {
+        for (uint32_t i=0; i<rb; i++) {
           for (uint8_t j=0; j<state.resampleRatio; j++) {
             mixSample(samples++, ulawTable[wavBuffer[i]], fade+2-volume);
           }
@@ -638,7 +638,7 @@ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
     }
   }
 
-    if (rb == -1) {
+  if (rb == -1) {
     clear();
   }
   return 0;
@@ -679,7 +679,7 @@ int ToneContext::mixBuffer(AudioBuffer * buffer, int volume, unsigned int fade)
     if (fragment.tone.freq != state.freq) {
       state.freq = fragment.tone.freq;
       state.step = limit<float>(1, float(fragment.tone.freq) * (float(DIM(sineValues))/float(AUDIO_SAMPLE_RATE)), 512);
-      state.volume = 1.0f / evalVolumeRatio(fragment.tone.freq, volume);
+      state.volume = 2.0f / evalVolumeRatio(fragment.tone.freq, volume);
     }
 
     if (fragment.tone.freqIncr) {
@@ -709,9 +709,9 @@ int ToneContext::mixBuffer(AudioBuffer * buffer, int volume, unsigned int fade)
       points = (duration * AUDIO_BUFFER_SIZE) / AUDIO_BUFFER_DURATION;
       unsigned int end = toneIdx + (state.step * points);
       if (end > DIM(sineValues))
-        end -= (end % DIM(sineValues));
+      end -= (end % DIM(sineValues));
       else
-        end = DIM(sineValues);
+      end = DIM(sineValues);
       points = (float(end) - toneIdx) / state.step;
     }
 
@@ -720,7 +720,7 @@ int ToneContext::mixBuffer(AudioBuffer * buffer, int volume, unsigned int fade)
       mixSample(&buffer->data[i], sample, fade);
       toneIdx += state.step;
       if ((unsigned int)toneIdx >= DIM(sineValues))
-        toneIdx -= DIM(sineValues);
+      toneIdx -= DIM(sineValues);
     }
 
     if (remainingDuration > AUDIO_BUFFER_DURATION) {
@@ -738,7 +738,7 @@ int ToneContext::mixBuffer(AudioBuffer * buffer, int volume, unsigned int fade)
     result = AUDIO_BUFFER_SIZE;
     state.pause += min<unsigned int>(AUDIO_BUFFER_DURATION-duration, fragment.tone.pause);
     if (fragment.tone.pause > state.pause)
-      return result;
+    return result;
   }
 
   clear();
@@ -747,76 +747,76 @@ int ToneContext::mixBuffer(AudioBuffer * buffer, int volume, unsigned int fade)
 
 void AudioQueue::wakeup()
 {
-    static AudioBuffer aBuffer;
-    AudioBuffer * buffer = & aBuffer;
-    int result;
-    unsigned int fade = 0;
-    int size = 0;
+  static AudioBuffer aBuffer;
+  AudioBuffer * buffer = & aBuffer;
+  int result;
+  unsigned int fade = 0;
+  int size = 0;
 
-    // write silence in the buffer
-    for (uint32_t i=0; i<AUDIO_BUFFER_SIZE; i++) {
-      buffer->data[i] = AUDIO_DATA_SILENCE; /* silence */
-    }
-
-    // mix the priority context (only tones)
-    result = priorityContext.mixBuffer(buffer, g_eeGeneral.beepVolume, fade);
-    if (result > 0) {
-      size = result;
-      fade += 1;
-    }
-
-    // mix the normal context (tones and wavs)
-    if (normalContext.isEmpty() && !fragmentsFifo.empty()) {
-        xSemaphoreTake(audioMutex, portMAX_DELAY);
-      normalContext.setFragment(fragmentsFifo.get());
-        xSemaphoreGive(audioMutex);
-    }
-    result = normalContext.mixBuffer(buffer, g_eeGeneral.beepVolume, g_eeGeneral.wavVolume, fade);
-    if (result > 0) {
-      size = max(size, result);
-      fade += 1;
-    }
-
-    // mix the vario context
-    result = varioContext.mixBuffer(buffer, g_eeGeneral.varioVolume, fade);
-    if (result > 0) {
-      size = max(size, result);
-      fade += 1;
-    }
-
-    // mix the background context
-    if (isFunctionActive(FUNCTION_BACKGND_MUSIC) && !isFunctionActive(FUNCTION_BACKGND_MUSIC_PAUSE)) {
-      result = backgroundContext.mixBuffer(buffer, g_eeGeneral.backgroundVolume, fade);
-      if (result > 0) {
-        size = max(size, result);
-      }
-    }
-
-    buffer->size = AUDIO_BUFFER_SIZE;
-
-    for (uint32_t i=0; i<buffer->size; ++i) {
-      int32_t tmpSample = (int32_t) ((uint32_t) (buffer->data[i]) - AUDIO_DATA_SILENCE);  // conversion from uint16_t
-      buffer->data[i] = (int16_t) (((tmpSample * currentSpeakerVolume) / VOLUME_LEVEL_MAX) + AUDIO_DATA_SILENCE);
-    }
-    size_t bytes_written=0;
-    static bool needsInit=true;
-    if(needsInit) {
-        audio_data_t val[100];
-        for(uint32_t i=0; i<AUDIO_SAMPLE_RATE/100;) {
-            for(int j=0; j<100; j++) {
-                val[j]= (i++* AUDIO_DATA_SILENCE*100)/AUDIO_SAMPLE_RATE;
-      }
-            i2s_write(I2S_NUM_0, (const void*) &val, 100*sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
-    }
-        needsInit=false;
-    }
-    static audio_data_t usbuff[AUDIO_BUFFER_SIZE*2];
-    audio_data_t *p=usbuff;
-    for(uint16_t i=0; i<AUDIO_BUFFER_SIZE; i++) { //Upsampling due to strange i2s behaviour
-        *p++=buffer->data[i];
-        *p++=buffer->data[i];
+  // write silence in the buffer
+  for (uint32_t i=0; i<AUDIO_BUFFER_SIZE; i++) {
+    buffer->data[i] = AUDIO_DATA_SILENCE; /* silence */
   }
-    i2s_write(I2S_NUM_0, (const void*) usbuff, 2*AUDIO_BUFFER_SIZE * sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
+
+  // mix the priority context (only tones)
+  result = priorityContext.mixBuffer(buffer, g_eeGeneral.beepVolume, fade);
+  if (result > 0) {
+    size = result;
+    fade += 1;
+  }
+
+  // mix the normal context (tones and wavs)
+  if (normalContext.isEmpty() && !fragmentsFifo.empty()) {
+    xSemaphoreTake(audioMutex, portMAX_DELAY);
+    normalContext.setFragment(fragmentsFifo.get());
+    xSemaphoreGive(audioMutex);
+  }
+  result = normalContext.mixBuffer(buffer, g_eeGeneral.beepVolume, g_eeGeneral.wavVolume, fade);
+  if (result > 0) {
+    size = max(size, result);
+    fade += 1;
+  }
+
+  // mix the vario context
+  result = varioContext.mixBuffer(buffer, g_eeGeneral.varioVolume, fade);
+  if (result > 0) {
+    size = max(size, result);
+    fade += 1;
+  }
+
+  // mix the background context
+  if (isFunctionActive(FUNCTION_BACKGND_MUSIC) && !isFunctionActive(FUNCTION_BACKGND_MUSIC_PAUSE)) {
+    result = backgroundContext.mixBuffer(buffer, g_eeGeneral.backgroundVolume, fade);
+    if (result > 0) {
+      size = max(size, result);
+    }
+  }
+
+  buffer->size = AUDIO_BUFFER_SIZE;
+
+  for (uint32_t i=0; i<buffer->size; ++i) {
+    int32_t tmpSample = (int32_t) ((uint32_t) (buffer->data[i]) - AUDIO_DATA_SILENCE);  // conversion from uint16_t
+    buffer->data[i] = (int16_t) (((tmpSample * currentSpeakerVolume) / (VOLUME_LEVEL_MAX)) + AUDIO_DATA_SILENCE);
+  }
+  size_t bytes_written=0;
+  static bool needsInit=true;
+  if(needsInit) {
+    audio_data_t val[100];
+    for(uint32_t i=0; i<AUDIO_SAMPLE_RATE/100;) {
+      for(int j=0; j<100; j++) {
+        val[j]= (i++* AUDIO_DATA_SILENCE*100)/AUDIO_SAMPLE_RATE;
+      }
+      i2s_write(I2S_NUM_0, (const void*) &val, 100*sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
+    }
+    needsInit=false;
+  }
+  static audio_data_t usbuff[AUDIO_BUFFER_SIZE*2];
+  audio_data_t *p=usbuff;
+  for(uint16_t i=0; i<AUDIO_BUFFER_SIZE; i++) { //Upsampling due to strange i2s behaviour
+    *p++=buffer->data[i];
+    *p++=buffer->data[i];
+  }
+  i2s_write(I2S_NUM_0, (const void*) usbuff, 2*AUDIO_BUFFER_SIZE * sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
 }
 
 inline unsigned int getToneLength(uint16_t len)
@@ -824,7 +824,7 @@ inline unsigned int getToneLength(uint16_t len)
   unsigned int result = len; // default
   if (g_eeGeneral.beepLength < 0) {
     result /= (1-g_eeGeneral.beepLength);
-    } else if (g_eeGeneral.beepLength > 0) {
+  } else if (g_eeGeneral.beepLength > 0) {
     result *= (1+g_eeGeneral.beepLength);
   }
   return result;
@@ -838,8 +838,8 @@ void AudioQueue::pause(uint16_t len)
 bool AudioQueue::isPlaying(uint8_t id)
 {
   return normalContext.hasPromptId(id) ||
-         (isFunctionActive(FUNCTION_BACKGND_MUSIC) && backgroundContext.hasPromptId(id)) ||
-         fragmentsFifo.hasPromptId(id);
+  (isFunctionActive(FUNCTION_BACKGND_MUSIC) && backgroundContext.hasPromptId(id)) ||
+  fragmentsFifo.hasPromptId(id);
 }
 
 void AudioQueue::playTone(uint16_t freq, uint16_t len, uint16_t pause, uint8_t flags, int8_t freqIncr)
@@ -848,13 +848,13 @@ void AudioQueue::playTone(uint16_t freq, uint16_t len, uint16_t pause, uint8_t f
   return;
 #endif
 
-    xSemaphoreTake(audioMutex, portMAX_DELAY);
+  xSemaphoreTake(audioMutex, portMAX_DELAY);
 
   freq = limit<uint16_t>(BEEP_MIN_FREQ, freq, BEEP_MAX_FREQ);
 
   if (flags & PLAY_BACKGROUND) {
     varioContext.setFragment(freq, len, pause, 0, 0, (flags & PLAY_NOW));
-    } else {
+  } else {
     // adjust frequency and length according to the user preferences
     freq += g_eeGeneral.speakerPitch * 15;
     len = getToneLength(len);
@@ -864,12 +864,12 @@ void AudioQueue::playTone(uint16_t freq, uint16_t len, uint16_t pause, uint8_t f
         priorityContext.clear();
         priorityContext.setFragment(freq, len, pause, flags & 0x0f, freqIncr, false);
       }
-        } else {
+    } else {
       fragmentsFifo.push(AudioFragment(freq, len, pause, flags & 0x0f, freqIncr, false));
     }
   }
 
-    xSemaphoreGive(audioMutex);
+  xSemaphoreGive(audioMutex);
 }
 
 #if defined(SDCARD)
@@ -887,26 +887,26 @@ void AudioQueue::playFile(const char * filename, uint8_t flags, uint8_t id)
 #endif
 
   if (!sdMounted())
-    return;
+  return;
 
   if (g_eeGeneral.beepMode == e_mode_quiet)
-    return;
+  return;
 
   if (strlen(filename) > AUDIO_FILENAME_MAXLEN) {
     POPUP_WARNING(STR_PATH_TOO_LONG);
     return;
   }
 
-    xSemaphoreTake(audioMutex, portMAX_DELAY);
+  xSemaphoreTake(audioMutex, portMAX_DELAY);
 
   if (flags & PLAY_BACKGROUND) {
     backgroundContext.clear();
     backgroundContext.setFragment(filename, 0, id);
-    } else {
+  } else {
     fragmentsFifo.push(AudioFragment(filename, flags & 0x0f, id));
   }
 
-    xSemaphoreGive(audioMutex);
+  xSemaphoreGive(audioMutex);
 }
 
 void AudioQueue::stopPlay(uint8_t id)
@@ -919,12 +919,12 @@ void AudioQueue::stopPlay(uint8_t id)
   return;
 #endif
 
-    xSemaphoreTake(audioMutex, portMAX_DELAY);
+  xSemaphoreTake(audioMutex, portMAX_DELAY);
 
   fragmentsFifo.removePromptById(id);
   backgroundContext.stop(id);
 
-    xSemaphoreGive(audioMutex);
+  xSemaphoreGive(audioMutex);
 }
 
 void AudioQueue::stopSD()
@@ -939,19 +939,19 @@ void AudioQueue::stopSD()
 void AudioQueue::stopAll()
 {
   flush();
-    xSemaphoreTake(audioMutex, portMAX_DELAY);
+  xSemaphoreTake(audioMutex, portMAX_DELAY);
   priorityContext.clear();
   normalContext.clear();
-    xSemaphoreGive(audioMutex);
+  xSemaphoreGive(audioMutex);
 }
 
 void AudioQueue::flush()
 {
-    xSemaphoreTake(audioMutex, portMAX_DELAY);
+  xSemaphoreTake(audioMutex, portMAX_DELAY);
   fragmentsFifo.clear();
   varioContext.clear();
   backgroundContext.clear();
-    xSemaphoreGive(audioMutex);
+  xSemaphoreGive(audioMutex);
 }
 
 void audioPlay(unsigned int index, uint8_t id)
@@ -1048,7 +1048,7 @@ void audioTimerCountdown(uint8_t timer, int value)
 void audioEvent(unsigned int index)
 {
   if (index == AU_NONE)
-    return;
+  return;
 
 #if defined(HAPTIC)
   haptic.event(index); // do this before audio to help sync timings
@@ -1070,132 +1070,132 @@ void audioEvent(unsigned int index)
     }
 #endif
     switch (index) {
-      case AU_INACTIVITY:
-        audioQueue.playTone(2250, 80, 20, PLAY_REPEAT(2));
-        break;
-      case AU_TX_BATTERY_LOW:
-        audioQueue.playTone(1950, 160, 20, PLAY_REPEAT(2), 1);
-        audioQueue.playTone(2550, 160, 20, PLAY_REPEAT(2), -1);
-        break;
-      case AU_THROTTLE_ALERT:
-      case AU_SWITCH_ALERT:
-      case AU_ERROR:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ, 200, 20, PLAY_NOW);
-        break;
-      case AU_TRIM_MIDDLE:
-        audioQueue.playTone(120*16, 80, 20, PLAY_NOW);
-        break;
-      case AU_TRIM_MIN:
-        audioQueue.playTone(TRIM_MIN*8 + 120*16, 80, 20, PLAY_NOW);
-        break;
-      case AU_TRIM_MAX:
-        audioQueue.playTone(TRIM_MAX*8 + 120*16, 80, 20, PLAY_NOW);
-        break;
-      case AU_WARNING1:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ, 80, 20, PLAY_NOW);
-        break;
-      case AU_WARNING2:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ, 160, 20, PLAY_NOW);
-        break;
-      case AU_WARNING3:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ, 200, 20, PLAY_NOW);
-        break;
-        // TODO remove all these ones
-      case AU_STICK1_MIDDLE:
-      case AU_STICK2_MIDDLE:
-      case AU_STICK3_MIDDLE:
-      case AU_STICK4_MIDDLE:
-      case AU_POT1_MIDDLE:
-      case AU_POT2_MIDDLE:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 80, 20, PLAY_NOW);
-        break;
-      case AU_MIX_WARNING_1:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1440, 48, 32);
-        break;
-      case AU_MIX_WARNING_2:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1560, 48, 32, PLAY_REPEAT(1));
-        break;
-      case AU_MIX_WARNING_3:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1680, 48, 32, PLAY_REPEAT(2));
-        break;
-      case AU_TIMER1_ELAPSED:
-      case AU_TIMER2_ELAPSED:
-      case AU_TIMER3_ELAPSED:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 300, 20, PLAY_NOW);
-        break;
-      case AU_RSSI_ORANGE:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 800, 20, PLAY_NOW);
-        break;
-      case AU_RSSI_RED:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1800, 800, 20, PLAY_REPEAT(1) | PLAY_NOW);
-        break;
-      case AU_RAS_RED:
-        audioQueue.playTone(450, 160, 40, PLAY_REPEAT(2), 1);
-        break;
-      case AU_SPECIAL_SOUND_BEEP1:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ, 60, 20);
-        break;
-      case AU_SPECIAL_SOUND_BEEP2:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ, 120, 20);
-        break;
-      case AU_SPECIAL_SOUND_BEEP3:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ, 200, 20);
-        break;
-      case AU_SPECIAL_SOUND_WARN1:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 600, 120, 40, PLAY_REPEAT(2));
-        break;
-      case AU_SPECIAL_SOUND_WARN2:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 900, 120, 40, PLAY_REPEAT(2));
-        break;
-      case AU_SPECIAL_SOUND_CHEEP:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 900, 80, 20, PLAY_REPEAT(2), 2);
-        break;
-      case AU_SPECIAL_SOUND_RING:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 750, 40, 20, PLAY_REPEAT(10));
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 750, 40, 80, PLAY_REPEAT(1));
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 750, 40, 20, PLAY_REPEAT(10));
-        break;
-      case AU_SPECIAL_SOUND_SCIFI:
-        audioQueue.playTone(2550, 80, 20, PLAY_REPEAT(2), -1);
-        audioQueue.playTone(1950, 80, 20, PLAY_REPEAT(2), 1);
-        audioQueue.playTone(2250, 80, 20, 0);
-        break;
-      case AU_SPECIAL_SOUND_ROBOT:
-        audioQueue.playTone(2250, 40, 20, PLAY_REPEAT(1));
-        audioQueue.playTone(1650, 120, 20, PLAY_REPEAT(1));
-        audioQueue.playTone(2550, 120, 20, PLAY_REPEAT(1));
-        break;
-      case AU_SPECIAL_SOUND_CHIRP:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1200, 40, 20, PLAY_REPEAT(2));
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1620, 40, 20, PLAY_REPEAT(3));
-        break;
-      case AU_SPECIAL_SOUND_TADA:
-        audioQueue.playTone(1650, 80, 40);
-        audioQueue.playTone(2850, 80, 40);
-        audioQueue.playTone(3450, 64, 36, PLAY_REPEAT(2));
-        break;
-      case AU_SPECIAL_SOUND_CRICKET:
-        audioQueue.playTone(2550, 40, 80, PLAY_REPEAT(3));
-        audioQueue.playTone(2550, 40, 160, PLAY_REPEAT(1));
-        audioQueue.playTone(2550, 40, 80, PLAY_REPEAT(3));
-        break;
-      case AU_SPECIAL_SOUND_SIREN:
-        audioQueue.playTone(450, 160, 40, PLAY_REPEAT(2), 2);
-        break;
-      case AU_SPECIAL_SOUND_ALARMC:
-        audioQueue.playTone(1650, 32, 68, PLAY_REPEAT(2));
-        audioQueue.playTone(2250, 64, 156, PLAY_REPEAT(1));
-        audioQueue.playTone(1650, 64, 76, PLAY_REPEAT(2));
-        audioQueue.playTone(2250, 32, 168, PLAY_REPEAT(1));
-        break;
-      case AU_SPECIAL_SOUND_RATATA:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 40, 80, PLAY_REPEAT(10));
-        break;
-      case AU_SPECIAL_SOUND_TICK:
-        audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 40, 400, PLAY_REPEAT(2));
-        break;
-      default:
-        break;
+    case AU_INACTIVITY:
+      audioQueue.playTone(2250, 80, 20, PLAY_REPEAT(2));
+      break;
+    case AU_TX_BATTERY_LOW:
+      audioQueue.playTone(1950, 160, 20, PLAY_REPEAT(2), 1);
+      audioQueue.playTone(2550, 160, 20, PLAY_REPEAT(2), -1);
+      break;
+    case AU_THROTTLE_ALERT:
+    case AU_SWITCH_ALERT:
+    case AU_ERROR:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ, 200, 20, PLAY_NOW);
+      break;
+    case AU_TRIM_MIDDLE:
+      audioQueue.playTone(120*16, 80, 20, PLAY_NOW);
+      break;
+    case AU_TRIM_MIN:
+      audioQueue.playTone(TRIM_MIN*8 + 120*16, 80, 20, PLAY_NOW);
+      break;
+    case AU_TRIM_MAX:
+      audioQueue.playTone(TRIM_MAX*8 + 120*16, 80, 20, PLAY_NOW);
+      break;
+    case AU_WARNING1:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ, 80, 20, PLAY_NOW);
+      break;
+    case AU_WARNING2:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ, 160, 20, PLAY_NOW);
+      break;
+    case AU_WARNING3:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ, 200, 20, PLAY_NOW);
+      break;
+      // TODO remove all these ones
+    case AU_STICK1_MIDDLE:
+    case AU_STICK2_MIDDLE:
+    case AU_STICK3_MIDDLE:
+    case AU_STICK4_MIDDLE:
+    case AU_POT1_MIDDLE:
+    case AU_POT2_MIDDLE:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 80, 20, PLAY_NOW);
+      break;
+    case AU_MIX_WARNING_1:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 1440, 48, 32);
+      break;
+    case AU_MIX_WARNING_2:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 1560, 48, 32, PLAY_REPEAT(1));
+      break;
+    case AU_MIX_WARNING_3:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 1680, 48, 32, PLAY_REPEAT(2));
+      break;
+    case AU_TIMER1_ELAPSED:
+    case AU_TIMER2_ELAPSED:
+    case AU_TIMER3_ELAPSED:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 150, 300, 20, PLAY_NOW);
+      break;
+    case AU_RSSI_ORANGE:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 800, 20, PLAY_NOW);
+      break;
+    case AU_RSSI_RED:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 1800, 800, 20, PLAY_REPEAT(1) | PLAY_NOW);
+      break;
+    case AU_RAS_RED:
+      audioQueue.playTone(450, 160, 40, PLAY_REPEAT(2), 1);
+      break;
+    case AU_SPECIAL_SOUND_BEEP1:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ, 60, 20);
+      break;
+    case AU_SPECIAL_SOUND_BEEP2:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ, 120, 20);
+      break;
+    case AU_SPECIAL_SOUND_BEEP3:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ, 200, 20);
+      break;
+    case AU_SPECIAL_SOUND_WARN1:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 600, 120, 40, PLAY_REPEAT(2));
+      break;
+    case AU_SPECIAL_SOUND_WARN2:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 900, 120, 40, PLAY_REPEAT(2));
+      break;
+    case AU_SPECIAL_SOUND_CHEEP:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 900, 80, 20, PLAY_REPEAT(2), 2);
+      break;
+    case AU_SPECIAL_SOUND_RING:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 750, 40, 20, PLAY_REPEAT(10));
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 750, 40, 80, PLAY_REPEAT(1));
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 750, 40, 20, PLAY_REPEAT(10));
+      break;
+    case AU_SPECIAL_SOUND_SCIFI:
+      audioQueue.playTone(2550, 80, 20, PLAY_REPEAT(2), -1);
+      audioQueue.playTone(1950, 80, 20, PLAY_REPEAT(2), 1);
+      audioQueue.playTone(2250, 80, 20, 0);
+      break;
+    case AU_SPECIAL_SOUND_ROBOT:
+      audioQueue.playTone(2250, 40, 20, PLAY_REPEAT(1));
+      audioQueue.playTone(1650, 120, 20, PLAY_REPEAT(1));
+      audioQueue.playTone(2550, 120, 20, PLAY_REPEAT(1));
+      break;
+    case AU_SPECIAL_SOUND_CHIRP:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 1200, 40, 20, PLAY_REPEAT(2));
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 1620, 40, 20, PLAY_REPEAT(3));
+      break;
+    case AU_SPECIAL_SOUND_TADA:
+      audioQueue.playTone(1650, 80, 40);
+      audioQueue.playTone(2850, 80, 40);
+      audioQueue.playTone(3450, 64, 36, PLAY_REPEAT(2));
+      break;
+    case AU_SPECIAL_SOUND_CRICKET:
+      audioQueue.playTone(2550, 40, 80, PLAY_REPEAT(3));
+      audioQueue.playTone(2550, 40, 160, PLAY_REPEAT(1));
+      audioQueue.playTone(2550, 40, 80, PLAY_REPEAT(3));
+      break;
+    case AU_SPECIAL_SOUND_SIREN:
+      audioQueue.playTone(450, 160, 40, PLAY_REPEAT(2), 2);
+      break;
+    case AU_SPECIAL_SOUND_ALARMC:
+      audioQueue.playTone(1650, 32, 68, PLAY_REPEAT(2));
+      audioQueue.playTone(2250, 64, 156, PLAY_REPEAT(1));
+      audioQueue.playTone(1650, 64, 76, PLAY_REPEAT(2));
+      audioQueue.playTone(2250, 32, 168, PLAY_REPEAT(1));
+      break;
+    case AU_SPECIAL_SOUND_RATATA:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 40, 80, PLAY_REPEAT(10));
+      break;
+    case AU_SPECIAL_SOUND_TICK:
+      audioQueue.playTone(BEEP_DEFAULT_FREQ + 1500, 40, 400, PLAY_REPEAT(2));
+      break;
+    default:
+      break;
     }
   }
 }

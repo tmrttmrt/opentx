@@ -85,7 +85,7 @@ void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, ui
         buff[i] = '*';
       }
     }
-    lcdDrawSizedText(x, y, buff, size, attr | mode);
+    lcdDrawSizedText(x, y, buff, size, mode);
   }
   else{
     lcdDrawSizedText(x, y, name, size, attr | mode);

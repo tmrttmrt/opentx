@@ -100,7 +100,7 @@ enum AudioBufferState
 };
 #endif
 
-#if defined(SIMU)
+#if defined(SIMU) || defined(PCBESP_WROOM_32)
   typedef uint16_t audio_data_t;
   #define AUDIO_DATA_SILENCE           0x8000
   #define AUDIO_DATA_MIN               0

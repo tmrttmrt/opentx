@@ -692,9 +692,9 @@ PACK(struct TrainerData {
     uint8_t  rotarySteps; \
     char switchNames[NUM_SWITCHES][LEN_SWITCH_NAME]; \
     char anaNames[NUM_STICKS+NUM_POTS+NUM_SLIDERS][LEN_ANA_NAME];\
-    NOBACKUP(char passwd[18]);\
-    NOBACKUP(char ssid[18]);\
-    NOBACKUP(char ftppass[18]);
+    NOBACKUP(char passwd[16]);\
+    NOBACKUP(char ssid[16]);\
+    NOBACKUP(char ftppass[16]);
 #else
   #define EXTRA_GENERAL_FIELDS
 #endif
