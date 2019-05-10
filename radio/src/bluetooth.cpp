@@ -30,6 +30,12 @@
 #define BLUETOOTH_COMMAND_BAUD_115200  "TTM:BPS-115200"
 #endif
 
+#if defined(_MSC_VER)
+  #define SWAP32(val)      (_byteswap_ulong(val))
+#elif defined(__GNUC__ )
+  #define SWAP32(val)      (__builtin_bswap32(val))
+#endif
+
 extern Fifo<uint8_t, BT_TX_FIFO_SIZE> btTxFifo;
 extern Fifo<uint8_t, BT_RX_FIFO_SIZE> btRxFifo;
 
@@ -596,9 +602,14 @@ enum {
   CMD_RET_SUCCESS = 0x40,
 };
 
-#define CC26XX_FLASH_BASE               0x00001000
-#define CC26XX_PAGE_ERASE_SIZE          4096
-#define CC26XX_MAX_BYTES_PER_TRANSFER   252
+constexpr uint32_t CC26XX_FLASH_SIZE = 0x00020000;
+constexpr uint32_t CC26XX_BOOTLOADER_SIZE = 0x00001000;
+constexpr uint32_t CC26XX_DATA_SIZE = 0x00001000;
+constexpr uint32_t CC26XX_FIRMWARE_BASE = CC26XX_BOOTLOADER_SIZE;
+constexpr uint32_t CC26XX_FIRMWARE_SIZE = CC26XX_FLASH_SIZE - CC26XX_DATA_SIZE - CC26XX_BOOTLOADER_SIZE;
+
+constexpr uint32_t CC26XX_PAGE_ERASE_SIZE = 0x1000;
+constexpr uint32_t CC26XX_MAX_BYTES_PER_TRANSFER = 252;
 
 const char * Bluetooth::bootloaderSendData(const uint8_t * data, uint8_t size)
 {
@@ -633,7 +644,7 @@ const char * Bluetooth::bootloaderEraseFlash(uint32_t start, uint32_t size)
   uint32_t address = start;
   uint32_t end = start + size;
   while (address < end) {
-    uint32_t addressBigEndian = __builtin_bswap32(address);
+    uint32_t addressBigEndian = SWAP32(address);
     bootloaderSendCommand(CMD_SECTOR_ERASE, &addressBigEndian, sizeof(addressBigEndian));
     const char * result = bootloaderWaitCommandResponse();
     if (result)
@@ -649,8 +660,8 @@ const char * Bluetooth::bootloaderEraseFlash(uint32_t start, uint32_t size)
 const char * Bluetooth::bootloaderStartWriteFlash(uint32_t start, uint32_t size)
 {
   uint32_t cmdArgs[2] = {
-    __builtin_bswap32(start),
-    __builtin_bswap32(size),
+    SWAP32(start),
+    SWAP32(size),
   };
   bootloaderSendCommand(CMD_DOWNLOAD, cmdArgs, sizeof(cmdArgs));
   const char * result = bootloaderWaitCommandResponse();
@@ -708,29 +719,29 @@ const char * Bluetooth::doFlashFirmware(const char * filename)
 
   drawProgressScreen(getBasename(filename), "Flash erase...", 0, 0);
 
-  result = bootloaderEraseFlash(CC26XX_FLASH_BASE, f_size(&file));
+  result = bootloaderEraseFlash(CC26XX_FIRMWARE_BASE, f_size(&file));
   if (result)
     return result;
 
-  uint32_t size = f_size(&file);
+  uint32_t size = min<uint32_t>(CC26XX_FIRMWARE_SIZE, f_size(&file));
   drawProgressScreen(getBasename(filename), "Flash write...", 0, size);
 
-  result = bootloaderStartWriteFlash(CC26XX_FLASH_BASE, size);
+  result = bootloaderStartWriteFlash(CC26XX_FIRMWARE_BASE, size);
   if (result)
     return result;
 
   uint32_t done = 0;
   while (1) {
-    done += count;
     drawProgressScreen(getBasename(filename), "Flash write...", done, size);
-    if (f_read(&file, buffer, sizeof(buffer), &count) != FR_OK) {
+    if (f_read(&file, buffer, min<uint32_t>(sizeof(buffer), size - done), &count) != FR_OK) {
       f_close(&file);
       return "Error reading file";
     }
     result = bootloaderWriteFlash(buffer, count);
     if (result)
       return result;
-    if (count < sizeof(buffer)) {
+    done += count;
+    if (done >= size) {
       f_close(&file);
       return nullptr;
     }

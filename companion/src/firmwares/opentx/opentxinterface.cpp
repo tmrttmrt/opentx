@@ -74,6 +74,8 @@ const char * OpenTxEepromInterface::getName()
       return "OpenTX for FrSky Taranis X9E";
     case BOARD_TARANIS_X7:
       return "OpenTX for FrSky Taranis X7";
+    case BOARD_TARANIS_X3:
+      return "OpenTX for FrSky Taranis X3";
     case BOARD_TARANIS_XLITE:
       return "OpenTX for FrSky Taranis X-Lite";
     case BOARD_SKY9X:
@@ -300,6 +302,8 @@ int OpenTxEepromInterface::save(uint8_t * eeprom, const RadioData & radioData, u
 {
   // TODO QMessageBox::warning should not be called here
 
+  qDebug() << "ICI";
+
   if (version == 0) {
     version = getLastDataVersion(board);
   }
@@ -313,6 +317,9 @@ int OpenTxEepromInterface::save(uint8_t * eeprom, const RadioData & radioData, u
   }
   else if (IS_TARANIS_X9E(board)) {
     variant |= TARANIS_X9E_VARIANT;
+  }
+  else if (IS_TARANIS_X3(board)) {
+    variant |= TARANIS_X3_VARIANT;
   }
   else if (IS_TARANIS_X7(board)) {
     variant |= TARANIS_X7_VARIANT;
@@ -692,6 +699,8 @@ int OpenTxFirmware::getCapability(::Capability capability)
         return SIMU_M128_VARIANTS;
       else if (IS_TARANIS_X9E(board))
         return TARANIS_X9E_VARIANT;
+      else if (IS_TARANIS_X3(board))
+        return TARANIS_X3_VARIANT;
       else if (IS_TARANIS_X7(board))
         return TARANIS_X7_VARIANT;
       else if (IS_TARANIS_XLITES(board))
@@ -1172,13 +1181,18 @@ void registerOpenTxFirmwares()
   addOpenTxTaranisOptions(firmware);
   registerOpenTxFirmware(firmware);
 
+  /* FrSky X3 board */
+  firmware = new OpenTxFirmware("opentx-x3", Firmware::tr("FrSky Taranis X3"), BOARD_TARANIS_X3);
+  addOpenTxTaranisOptions(firmware, false);
+  registerOpenTxFirmware(firmware);
+
   /* FrSky X7 board */
   firmware = new OpenTxFirmware("opentx-x7", Firmware::tr("FrSky Taranis X7 / X7S"), BOARD_TARANIS_X7);
   addOpenTxTaranisOptions(firmware, false);
   registerOpenTxFirmware(firmware);
 
   /* FrSky X-Lite S board */
-  firmware = new OpenTxFirmware("opentx-xlites", QCoreApplication::translate("Firmware", "FrSky Taranis X-Lite S"), BOARD_TARANIS_XLITES);
+  firmware = new OpenTxFirmware("opentx-xlites", QCoreApplication::translate("Firmware", "FrSky Taranis X-Lite S/PRO"), BOARD_TARANIS_XLITES);
   // firmware->addOption("stdr9m", QCoreApplication::translate("Firmware", "Use JR-sized R9M module"));
   addOpenTxTaranisOptions(firmware);
   registerOpenTxFirmware(firmware);
@@ -1251,6 +1265,7 @@ OpenTxEepromInterface * loadFromByteArray(T & dest, const QByteArray & data)
 template <class T, class M>
 bool saveToByteArray(const T & dest, QByteArray & data)
 {
+  qDebug() << "ICI SAVE";
   Board::Type board = getCurrentBoard();
   foreach(OpenTxEepromInterface * eepromInterface, opentxEEpromInterfaces) {
     if (eepromInterface->getBoard() == board) {

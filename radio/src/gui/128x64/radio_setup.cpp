@@ -159,9 +159,9 @@ void menuRadioSetup(event_t event)
     CASE_PWM_BACKLIGHT(0)
     0,
     CASE_SPLASH_PARAM(0)
-#if defined(PXX2)
-    0 /* owner registration ID */,
-#endif
+
+    CASE_PXX2(0) /* owner registration ID */
+
     CASE_GPS(0)
     0, CASE_GPS(0)
     CASE_PXX(0)
@@ -634,7 +634,7 @@ void menuRadioSetup(event_t event)
           g_eeGeneral.stickMode = reusableBuffer.generalSettings.stickMode;
           checkTHR();
           resumePulses();
-          clearKeyEvents();
+          waitKeysReleased();
         }
         MOVE_CURSOR_FROM_HERE();
         break;

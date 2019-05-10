@@ -269,7 +269,7 @@ void generalDefault()
     g_eeGeneral.vBatMax = BATTERY_MAX - 120;
 
 #if defined(DEFAULT_MODE)
-  g_eeGeneral.stickMode = DEFAULT_MODE-1;
+  g_eeGeneral.stickMode = DEFAULT_MODE - 1;
 #endif
 
 #if defined(PCBTARANIS)
@@ -873,7 +873,7 @@ void checkAll()
     readModelNotes();
   }
 
-  if (!clearKeyEvents()) {
+  if (!waitKeysReleased()) {
     showMessageBox(STR_KEYSTUCK);
     tmr10ms_t tgtime = get_tmr10ms() + 500;
     while (tgtime != get_tmr10ms()) {

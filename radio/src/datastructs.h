@@ -400,12 +400,13 @@ PACK(struct TelemetrySensor {
 
 PACK(struct TrainerModuleData {
   uint8_t mode:3;
-  uint8_t spare:5;
+  uint8_t spare1:5;
   uint8_t channelsStart;
   int8_t  channelsCount; // 0=8 channels
   int8_t frameLength;
   int8_t  delay:6;
   uint8_t pulsePol:1;
+  uint8_t spare2:1;
 });
 
 /*
@@ -539,6 +540,21 @@ PACK(struct CustomScreenData {
   uint8_t view;
 #endif
 
+#if defined(PCBX9)
+  #define TOPBAR_DATA \
+    NOBACKUP(uint8_t voltsSource); \
+    NOBACKUP(uint8_t altitudeSource);
+#else
+  #define TOPBAR_DATA
+#endif
+
+#if defined(PCBHORUS) || defined(PCBTARANIS)
+  #define SCRIPT_DATA \
+    NOBACKUP(ScriptData scriptsData[MAX_SCRIPTS]);
+#else
+  #define SCRIPT_DATA
+#endif
+
 PACK(struct ModelData {
   ModelHeader header;
   TimerData timers[MAX_TIMERS];
@@ -574,21 +590,19 @@ PACK(struct ModelData {
 
   NOBACKUP(VarioData varioData);
   NOBACKUP(uint8_t rssiSource);
-#if defined(PCBX9)
-  NOBACKUP(uint8_t voltsSource);
-  NOBACKUP(uint8_t altitudeSource);
-#endif
+
+  TOPBAR_DATA
+
   NOBACKUP(RssiAlarmData rssiAlarms);
 
   NOBACKUP(uint8_t spare1:6);
   NOBACKUP(uint8_t potsWarnMode:2);
+
   ModuleData moduleData[NUM_MODULES];
   int16_t failsafeChannels[MAX_OUTPUT_CHANNELS];
   TrainerModuleData trainerData;
 
-#if defined(PCBHORUS) || defined(PCBTARANIS)
-  NOBACKUP(ScriptData scriptsData[MAX_SCRIPTS]);
-#endif
+  SCRIPT_DATA
 
   NOBACKUP(char inputNames[MAX_INPUTS][LEN_INPUT_NAME]);
   NOBACKUP(uint8_t potsWarnEnabled);

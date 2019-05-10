@@ -25,8 +25,10 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <math.h>
 #include "definitions.h"
 #include "opentx_types.h"
+
 #if defined(STM32)
 #include "usbd_conf.h"
 #endif
@@ -131,6 +133,12 @@
   #define CASE_PXX(x) x,
 #else
   #define CASE_PXX(x)
+#endif
+
+#if defined(PXX2)
+  #define CASE_PXX2(x) x,
+#else
+  #define CASE_PXX2(x)
 #endif
 
 #if defined(SDCARD)
@@ -1171,7 +1179,7 @@ union ReusableBuffer
     uint16_t offset;
     uint16_t count;
     char originalName[SD_SCREEN_FILE_LENGTH+1];
-    BindInformation otaInformation;
+    OtaUpdateInformation otaUpdateInformation;
     char otaReceiverVersion[sizeof(TR_CURRENT_VERSION) + 12];
   } sdManager;
 #endif
@@ -1204,6 +1212,7 @@ union ReusableBuffer
     uint16_t freqDefault;
     uint16_t freqMax;
     uint16_t freqMin;
+    uint8_t dirty;
   } spectrumAnalyser;
 
   struct
@@ -1212,6 +1221,7 @@ union ReusableBuffer
     int16_t power;
     int16_t peak;
     uint8_t attn;
+    uint8_t dirty;
   } powerMeter;
 
   struct
@@ -1283,8 +1293,7 @@ enum TelemetryViews {
 extern uint8_t s_frsky_view;
 #endif
 
-#define EARTH_RADIUSKM ((uint32_t)6371)
-#define EARTH_RADIUS ((uint32_t)111194) // meters * pi / 180°
+constexpr uint32_t EARTH_RADIUS = 6371009;
 
 void getGpsPilotPosition();
 void getGpsDistance();
