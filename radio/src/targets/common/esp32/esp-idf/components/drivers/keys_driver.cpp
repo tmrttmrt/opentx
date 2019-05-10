@@ -262,7 +262,7 @@ void readKeysAndTrims()
 
 #if ROTARY_ENCODERS > 0
     keys_input = readI2CGPIO(MCP23017_ADDR_SW, 0x13) ;
-    keys[BTN_REa].input(keys_input & BIT(0));
+    keys[BTN_REa].input(keys_input & BIT(INP_J_ROT_ENC_1_PUSH));
 #endif
 }
 

@@ -146,7 +146,6 @@ void extmoduleSendNextFrame();
 // Rotary encoders driver
 #define INP_J_ROT_ENC_1_PUSH      0
 #define ROTARY_ENCODER_NAVIGATION
-#define REA_DOWN()                   (!(PIOB->PIO_PDSR & 0x40))
 
 #define IS_SHIFT_KEY(index)       (false)
 #define IS_SHIFT_PRESSED()        (false)
@@ -179,10 +178,6 @@ enum EnumKeys
   NUM_KEYS
 };
 
-#define IS_SHIFT_KEY(index)             (false)
-#define IS_SHIFT_PRESSED()              (false)
-
-
 enum CalibratedAnalogs {
   CALIBRATED_STICK1,
   CALIBRATED_STICK2,
@@ -198,15 +193,10 @@ enum CalibratedAnalogs {
 #define IS_POT(x)                      ((x)>=POT_FIRST && (x)<=POT_LAST)
 #define STICKS_PWM_ENABLED()          (false)
 
-// Buzzer driver
-#define buzzerOn()                
-#define buzzerOff()               
 
 // Speaker driver
 #if defined(AUDIO)
 #define AUD_DAC_GPIO   26
-#define speakerOn()               
-#define speakerOff()              
 #define VOLUME_LEVEL_MAX  23
 #define VOLUME_LEVEL_DEF  12
 #endif
@@ -215,8 +205,6 @@ enum CalibratedAnalogs {
 #define BATTERY_MIN                90  // 9V
 #define BATTERY_MAX                120 // 12V
 #define BATTERY_WARN               90  // 9V
-#define BATT_SCALE                    150
-#define BAT_AVG_SAMPLES       8
 
 // Analogs driver
 #define NUM_MOUSE_ANALOGS          0

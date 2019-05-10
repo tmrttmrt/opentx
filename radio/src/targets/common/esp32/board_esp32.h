@@ -57,12 +57,13 @@
 #define MIXER_STACK_SIZE       0x800
 #define AUDIO_STACK_SIZE       0x900
 #define PER10MS_STACK_SIZE     0x500
-#define ENC_STACK_SIZE         0x700
+#define ENC_STACK_SIZE         0xA00
 #define MIXER_TASK_PRIO mixerTaskPrio
 #define MENUS_TASK_PRIO menuTaskPrio
 #define AUDIO_TASK_PRIO audioTaskPrio
 #define MENU_TASK_CORE 0
 #define MIXER_TASK_CORE 1
+#define PULSES_TASK_CORE 1
 
 
 typedef struct TaskPrio
@@ -144,6 +145,7 @@ void initKeys();
 void eepromInit();
 void initAudio();
 void initFS();
+void initPulses();
 void setSampleRate(uint32_t frequency);
 void audioPlayTask(void * pdata);
 void encoderTask(void * pdata);
@@ -156,7 +158,6 @@ uint16_t mixerStackAvailable();
 uint16_t menusStackAvailable();
 uint16_t encStackAvailable();
 bool rEncDown(uint8_t mask);
-void sendToPulses();
 void mountSDCard();
 
 void backlightEnable();

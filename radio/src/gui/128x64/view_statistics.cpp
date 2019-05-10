@@ -229,8 +229,6 @@ void menuStatisticsDebug(event_t event)
   lcdDrawText(lcdLastRightPos, MENU_DEBUG_Y_MIXMAX, "ms");
 
 #if defined(CPUESP32)
-  lcdDrawTextAlignedLeft(1*FH, STR_TMIXMAXMS);  
-  lcdDrawNumber(MENU_DEBUG_COL1_OFS, 1*FH, DURATION_MS_PREC2(maxMixerDuration), PREC2);
   lcdDrawTextAlignedLeft(2*FH, STR_FREESTACKMINB);
   lcdDrawText(MENU_DEBUG_COL1_OFS, 2*FH, "    ");
   lcdDrawTextAlignedLeft( 3*FH, "  MNU/MIX/AUD/TMR/ENC");

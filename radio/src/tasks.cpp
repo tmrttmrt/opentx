@@ -77,6 +77,9 @@ bool isForcePowerOffRequested()
 
 bool isModuleSynchronous(uint8_t module)
 {
+#if defined(CPUESP32)
+  return true;
+#endif
   uint8_t protocol = moduleState[module].protocol;
   if (protocol == PROTOCOL_CHANNELS_PXX2 || protocol == PROTOCOL_CHANNELS_CROSSFIRE || protocol == PROTOCOL_CHANNELS_NONE)
     return true;
