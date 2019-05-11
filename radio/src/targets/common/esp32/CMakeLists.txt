@@ -161,7 +161,6 @@ set(SRC
 set(PULSES_SRC
   ${PULSES_SRC}
   pulses.cpp
-  ppm.cpp
   dsm2.cpp
   sbus.cpp
   )

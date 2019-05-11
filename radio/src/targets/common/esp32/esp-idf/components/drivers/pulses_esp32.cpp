@@ -32,63 +32,45 @@ static const char *TAG = "pulses_esp32.cpp";
 extern uint8_t s_pulses_paused;
 DRAM_ATTR uint8_t s_current_protocol[1] = { 255 };
 rmt_isr_handle_t handle = 0;
+TaskHandle_t xInitPulsesTaskId;
 static portMUX_TYPE rmt_spinlock = portMUX_INITIALIZER_UNLOCKED;
 QueueHandle_t xPulsesQueue;
 SemaphoreHandle_t xPPMSem = NULL;
 DRAM_ATTR int16_t locChannelOutputs[MAX_OUTPUT_CHANNELS] = {0};
-uint32_t testCount=0;
-uint8_t ppmPol;
+volatile uint32_t testCount=0;
+volatile uint32_t testTime=0;
 static bool ppmEnabled = false;
-static uint16_t ppmDelay = 600;
-
-
-void setExternalModulePolarity()
-{
-  ppmPol = GET_MODULE_PPM_POLARITY(EXTERNAL_MODULE);
-}
-
-void disable_main_ppm()
-{
-  ESP_LOGI(TAG, "'disable_main_ppm' called.");
-
-  ppmEnabled = false;
-}
-
-void disable_second_ppm()
-{
-
-}
+volatile uint64_t lastMixTime;
+volatile uint32_t ppmMixDly;
 
 void extmoduleSendNextFrame()
 {
   xQueueOverwrite( xPulsesQueue, channelOutputs );
-}
-
-void disable_ppm(uint32_t port)
-{
-  if (port == EXTERNAL_MODULE) {
-    disable_main_ppm();
-  }
-  else {
-    disable_second_ppm();
-  }
+  lastMixTime = esp_timer_get_time();
 }
 
 void init_main_ppm(uint32_t out_enable){
-  ESP_LOGI(TAG, "'init_main_ppm' called.");
-  if(ppmEnabled){
-    ppmDelay = GET_MODULE_PPM_DELAY(EXTERNAL_MODULE);
+  ESP_LOGI(TAG, "'init_main_ppm' called. out_enable:%d",out_enable);
+  if(out_enable){
     ppmEnabled = true;
-    setupPulses(EXTERNAL_MODULE);
+  } else {
+    ppmEnabled = false;
   }
 }
 
 void init_second_ppm(uint32_t period)
 {
+  ESP_LOGI(TAG, "'init_second_ppm' called. period:%d",period);
+}
+
+void disable_second_ppm()
+{
+  ESP_LOGI(TAG, "'disable_second_ppm' called.");
 }
 
 void init_ppm(uint32_t port)
 {
+  ESP_LOGI(TAG, "'init_ppm' called. port:%d",port);
   if (port == EXTERNAL_MODULE) {
     init_main_ppm(1);
   }
@@ -97,12 +79,23 @@ void init_ppm(uint32_t port)
   }
 }
 
+void disable_ppm(uint32_t port)
+{
+  ESP_LOGI(TAG, "'disable_ppm' called. port:%d",port);
+  if (port == EXTERNAL_MODULE) {
+      init_main_ppm(0);
+  }
+  else {
+    disable_second_ppm();
+  }
+}
+
 void extmoduleSerialStart(uint32_t baudrate, uint32_t period_half_us, bool inverted)
 {
+  ESP_LOGI(TAG, "'extmoduleSerialStart' called. baudrate:%d",baudrate);
   if (baudrate == 125000) {
     // TODO init_main_ppm could take the period as parameter?
     init_main_ppm(0);
-
   }
   else {
     init_main_ppm(0);
@@ -112,6 +105,7 @@ void extmoduleSerialStart(uint32_t baudrate, uint32_t period_half_us, bool inver
 
 void disable_serial(uint32_t port)
 {
+  ESP_LOGI(TAG, "'disable_serial' called. port:%d",port);
   if (port == EXTERNAL_MODULE) {
     disable_ppm(EXTERNAL_MODULE);
   }
@@ -121,9 +115,8 @@ void disable_serial(uint32_t port)
 }
 
 template<class T>
-void IRAM_ATTR setupPulsesPPM(PpmPulsesData<T> * ppmPulsesData, uint8_t channelsStart, int8_t channelsCount, int8_t frameLength)
+void setupPulsesPPM(PpmPulsesData<T> * ppmPulsesData, uint8_t channelsStart, int8_t channelsCount, int8_t frameLength)
 {
-  if( !ppmEnabled) return;
   int16_t PPM_range = g_model.extendedLimits ? (512*LIMIT_EXT_PERCENT/100) * 2 : 512 * 2; // range of 0.7 .. 1.7msec
 
   // Total frame length = 22.5msec
@@ -134,12 +127,10 @@ void IRAM_ATTR setupPulsesPPM(PpmPulsesData<T> * ppmPulsesData, uint8_t channels
   uint8_t lastCh = min<uint8_t>(MAX_OUTPUT_CHANNELS, firstCh + 8 + channelsCount);
   int32_t rest = 22500u * 2;
   rest += int32_t(frameLength) * 1000;
-  //The pulse tick is 2mhz that's why everything is multiplied by 2
-  uint8_t p = 8 + (channelsCount * 2); //Channels *2
-
   uint16_t pulseLevel;
   uint16_t idleLevel;
-  if(ppmPol) {
+  uint16_t ppmDelay = GET_MODULE_PPM_DELAY(EXTERNAL_MODULE);
+  if(GET_MODULE_PPM_POLARITY(EXTERNAL_MODULE)) {
     pulseLevel=1;
     idleLevel=0;
   } else {
@@ -157,7 +148,7 @@ void IRAM_ATTR setupPulsesPPM(PpmPulsesData<T> * ppmPulsesData, uint8_t channels
     pd->duration1 = (v - ppmDelay); // total pulse width includes stop phase
     pd->level1 = idleLevel;
     pd++;
-    j+=2;
+    j+=1;
   }
   pd->duration0 = ppmDelay;
   pd->level0 = pulseLevel;
@@ -171,26 +162,23 @@ void IRAM_ATTR setupPulsesPPM(PpmPulsesData<T> * ppmPulsesData, uint8_t channels
   pd->level0 = idleLevel;
   pd->duration1 = 0;
   pd->level1 = idleLevel;
-  RMT.tx_lim_ch[PPM_OUT_RMT_CHANNEL_0].limit = j; //Send interrupt SETUP_PULSES_DURATION before the end of the PPM packet
-  RMT.int_ena.val |= BIT(PPM_OUT_RMT_CHANNEL_0 + 24);
+//  RMT.tx_lim_ch[PPM_OUT_RMT_CHANNEL_0].limit = j; //Send interrupt SETUP_PULSES_DURATION before the end of the PPM packet
   testCount++;
   portEXIT_CRITICAL(&rmt_spinlock);
 }
 
-
 static void IRAM_ATTR rmt_driver_isr_PPM(void* arg)
-{
+{ 
+  BaseType_t mustYield=false;
   uint32_t intr_st = RMT.int_st.val;
-  if(intr_st & BIT(PPM_OUT_RMT_CHANNEL_0+24)) {
-    if (ppmEnabled){
-      setupPulses(EXTERNAL_MODULE);
-    }
-    RMT.int_clr.val = intr_st & (BIT(PPM_OUT_RMT_CHANNEL_0) |
-    BIT(PPM_OUT_RMT_CHANNEL_0+1)| BIT(PPM_OUT_RMT_CHANNEL_0+2)| BIT(PPM_OUT_RMT_CHANNEL_0+24));
+  if(intr_st & BIT(PPM_OUT_RMT_CHANNEL_0)) {
+    xSemaphoreGiveFromISR(xPPMSem, &mustYield);
   }
+  RMT.int_clr.val = intr_st;
+  if (mustYield) portYIELD_FROM_ISR();
 }
 
-void initPulsesTask(void * pdata)
+void ppmPulsesTask(void * pdata)
 {
     rmt_config_t config;
 
@@ -200,12 +188,18 @@ void initPulsesTask(void * pdata)
     } else {
         ESP_LOGI(TAG, "xPulsesQueue created");
     }
+    
+    xPPMSem = xSemaphoreCreateBinary();
+    if( xPPMSem == NULL ) {
+        ESP_LOGE(TAG,"Failed to create semaphore: xPPMSem.");
+    }
+    
     memset(&config, 0, sizeof(config));
     config.rmt_mode = RMT_MODE_TX;
     config.channel = PPM_OUT_RMT_CHANNEL_0;
     config.gpio_num = (gpio_num_t)PPM_TX_GPIO;
     config.mem_block_num = 1;
-    config.tx_config.loop_en = 1;
+//    config.tx_config.loop_en = 1;
     config.tx_config.carrier_en = 0;
     config.clk_div = 40; //2MHz tick
 
@@ -213,18 +207,31 @@ void initPulsesTask(void * pdata)
     if(ESP_OK != rmt_isr_register(rmt_driver_isr_PPM, NULL, ESP_INTR_FLAG_IRAM, &handle )){
         ESP_LOGE(TAG, "Failed to register rmt (PPM) interrupt");
     }
-    ppmEnabled = true;
-    setupPulsesPPMExternalModule();
-    if(ESP_OK != rmt_tx_start(PPM_OUT_RMT_CHANNEL_0,true)){
-        ESP_LOGE(TAG, "Failed to start PPM pulses!");
-    }
     ESP_LOGI(TAG, "PPM initialized.");
-    vTaskDelete(NULL);
+
+    while(1){
+      static uint64_t last;
+      last=esp_timer_get_time();
+      xSemaphoreTake(xPPMSem, 100/portTICK_PERIOD_MS);
+      xQueueReceive( xPulsesQueue, locChannelOutputs,0);
+      setupPulses(EXTERNAL_MODULE);
+      if(ppmEnabled){
+        ppmMixDly = esp_timer_get_time() - lastMixTime;
+        rmt_set_tx_intr_en(PPM_OUT_RMT_CHANNEL_0, true);
+        rmt_tx_start(PPM_OUT_RMT_CHANNEL_0,true);
+      }
+      testTime=((esp_timer_get_time()-last));
+    }
 }
 
+void setupPulsesPPMExternalModule()
+{
+  setupPulsesPPM(&extmodulePulsesData.ppm, g_model.moduleData[EXTERNAL_MODULE].channelsStart, g_model.moduleData[EXTERNAL_MODULE].channelsCount, g_model.moduleData[EXTERNAL_MODULE].ppm.frameLength);
+}
+
+
 void initPulses(){
-  TaskHandle_t xInitPulsesTaskId;
-  xTaskCreatePinnedToCore( initPulsesTask, "initPulsesTask", MENUS_STACK_SIZE, NULL, ESP_TASK_PRIO_MIN + 1,
+  xTaskCreatePinnedToCore( ppmPulsesTask, " ppmPulsesTask", PPM_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX - 1,
     &xInitPulsesTaskId, PULSES_TASK_CORE );
   configASSERT( xInitPulsesTaskId );
 }

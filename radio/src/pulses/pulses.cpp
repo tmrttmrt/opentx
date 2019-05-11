@@ -279,7 +279,7 @@ void setupPulsesInternalModule(uint8_t protocol)
   }
 }
 
-IRAM_ATTR void setupPulsesExternalModule(uint8_t protocol)
+void setupPulsesExternalModule(uint8_t protocol)
 {
   switch (protocol) {
 #if defined(PXX1)
@@ -341,7 +341,7 @@ IRAM_ATTR void setupPulsesExternalModule(uint8_t protocol)
   }
 }
 
-IRAM_ATTR void setupPulses(uint8_t module, uint8_t protocol)
+void setupPulses(uint8_t module, uint8_t protocol)
 {
   switch (module) {
 #if defined(HARDWARE_INTERNAL_MODULE)
@@ -356,7 +356,7 @@ IRAM_ATTR void setupPulses(uint8_t module, uint8_t protocol)
   }
 }
 
-IRAM_ATTR bool setupPulses(uint8_t module)
+bool setupPulses(uint8_t module)
 {
   uint8_t protocol = getRequiredProtocol(module);
 

@@ -35,10 +35,6 @@
 #define HASASSERT
 #include "opentx.h"
 
-
-
-
-#define MENU_TASK_PERIOD_TICKS      50/portTICK_PERIOD_MS    // 50ms
 #define AUDIO_TASK_CORE 0
 #define PER10MS_TASK_CORE 0
 #define ENC_TASK_CORE 0
@@ -55,11 +51,11 @@ TaskHandle_t xPer10msTaskHandle = NULL;
 TaskHandle_t xEncTaskHandle = NULL;
 extern TaskHandle_t wifiTaskHandle;
 extern TaskHandle_t otaTaskHandle;
+extern TaskHandle_t xInitPulsesTaskId;
 
 SemaphoreHandle_t xPer10msSem = NULL;
 extern SemaphoreHandle_t mixerMutex;
 extern SemaphoreHandle_t audioMutex;
-extern SemaphoreHandle_t xPPMSem;
 //uint16_t testDuration;
 
 uint16_t encStackAvailable()
@@ -117,11 +113,6 @@ void espTasksStart()
     BaseType_t ret;
 
     ESP_LOGI(TAG,"Starting tasks.");
-
-    xPPMSem = xSemaphoreCreateMutex();
-    if( xPPMSem == NULL ) {
-        ESP_LOGE(TAG,"Failed to create semaphore: xPPMSem.");
-    }
 
     ret=xTaskCreatePinnedToCore( per10msTask, "per10msTask", PER10MS_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX -5, &xPer10msTaskHandle, PER10MS_TASK_CORE );
     configASSERT( xPer10msTaskHandle );
@@ -216,7 +207,7 @@ void espLogI(const char * format, ...)
     va_end(arglist);
 }
 
-#define LOGBUFFLEN 50
+#define LOGBUFFLEN 255
 char logBuff[LOGBUFFLEN]="\0";
 void espLogPut(const char * format, ...)
 {
@@ -282,21 +273,24 @@ void vTaskGetRunTimeStatsA( )
 }
 #endif
 int main();
-extern uint32_t testCount;
+extern volatile uint32_t testCount;
+extern volatile uint32_t testTime;
+extern volatile uint32_t ppmMixDly;
 
 extern "C"   void app_main()
 {
     main();
     eeBackupAll();
-    TaskHandle_t *tasks[]= {&menusTaskId,&mixerTaskId,&audioTaskId,&xPer10msTaskHandle,&xEncTaskHandle,&wifiTaskHandle, &otaTaskHandle};
-    uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
     while(1) {
 //        isWiFiStarted();
         ESP_LOGD(TAG,"s_pulses_paused: %d",s_pulses_paused);
 //        ESP_LOGI(TAG,"");
 //        heap_caps_print_heap_info(MALLOC_CAP_INTERNAL);
 #if false
+        TaskHandle_t *tasks[]= {&menusTaskId,&mixerTaskId,&audioTaskId,&xPer10msTaskHandle,&xEncTaskHandle,&wifiTaskHandle, &otaTaskHandle, & xInitPulsesTaskId};
+        uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
         ESP_LOGI(TAG,"");
+        ESP_LOGI(TAG,"time elapsed %f ms:", esp_timer_get_time()/1000.);
         for(uint8_t i=0; i< nTasks; i++) {
             if( NULL != *tasks[i] ){
                 ESP_LOGI(TAG,"Min stack: %s: %d",pcTaskGetTaskName(*tasks[i]),uxTaskGetStackHighWaterMark(*tasks[i]));
@@ -308,8 +302,9 @@ extern "C"   void app_main()
             ESP_LOGI(TAG,"logPut:'%s'",logBuff);
             *logBuff=0;
         }
-        ESP_LOGD(TAG,"PPM frames count: %d",testCount);
-//        ESP_LOGI(TAG,"last 10ms task duration %d",testDuration);
+//        ESP_LOGI(TAG,"PPM frames: count: %d, delay: %d, ppmMixDly: %d",testCount,testTime,ppmMixDly);
+//        testCount=0;
+//        ESP_LOGD(TAG,"last 10ms task duration %d",testDuration);
 #if defined(CONFIG_FREERTOS_USE_TRACE_FACILITY) && defined(CONFIG_FREERTOS_USE_STATS_FORMATTING_FUNCTIONS)        
         ESP_LOGI(TAG,"");
         vTaskGetRunTimeStatsA();

@@ -43,11 +43,13 @@ void telemetryPortInit(uint32_t baudrate, uint8_t mode)
 
     uart_config.baud_rate = baudrate;
     if (mode & TELEMETRY_SERIAL_8E2) {
+      ESP_LOGI(TAG,"%d,8,2",baudrate);
       uart_config.data_bits = UART_DATA_8_BITS;
       uart_config.parity = UART_PARITY_EVEN;
       uart_config.stop_bits = UART_STOP_BITS_2;
     }
     else {
+      ESP_LOGI(TAG,"%d,8,1",baudrate);
       uart_config.data_bits = UART_DATA_8_BITS;
       uart_config.parity = UART_PARITY_DISABLE;
       uart_config.stop_bits = UART_STOP_BITS_1;

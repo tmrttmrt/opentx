@@ -162,7 +162,7 @@ bool eeModelExists(uint8_t id)
 
 bool eeCopyFile(char * dpath, char * spath)
 {
-    ESP_LOGI(TAG,"eeCopyFile(%s, %s).", dpath, spath);
+    ESP_LOGD(TAG,"eeCopyFile(%s, %s).", dpath, spath);
     FILE * fps = fopen ( spath, "rb" );
     bool ret=true;
     if (NULL==fps) { /* Check if the file has been opened */
@@ -193,7 +193,7 @@ bool eeCopyFile(char * dpath, char * spath)
 
 bool eeCopyModel(uint8_t dst, char *spath)
 {
-    ESP_LOGI(TAG,"eeCopyModel(%d, %s).", dst, spath);
+    ESP_LOGD(TAG,"eeCopyModel(%d, %s).", dst, spath);
     char * fn=makeModPath(dst);
     return eeCopyFile( fn, spath);
 
@@ -201,14 +201,14 @@ bool eeCopyModel(uint8_t dst, char *spath)
 
 bool eeCopyModel(char * dpath, uint8_t src)
 {
-    ESP_LOGI(TAG,"eeCopyModel(%s, %d).", dpath, src);
+    ESP_LOGD(TAG,"eeCopyModel(%s, %d).", dpath, src);
     char * fn=makeModPath(src);
     return eeCopyFile(dpath, fn);
 }
 
 bool eeCopyModel(uint8_t dst, uint8_t src)
 {
-    ESP_LOGI(TAG,"eeCopyModel(%d, %d).", dst, src);
+    ESP_LOGD(TAG,"eeCopyModel(%d, %d).", dst, src);
     char  fn[CONFIG_FATFS_MAX_LFN];
     strcpy(fn,makeModPath(dst));
     if(eeCopyModel(fn, src)) {

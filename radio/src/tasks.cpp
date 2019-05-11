@@ -77,9 +77,6 @@ bool isForcePowerOffRequested()
 
 bool isModuleSynchronous(uint8_t module)
 {
-#if defined(CPUESP32)
-  return true;
-#endif
   uint8_t protocol = moduleState[module].protocol;
   if (protocol == PROTOCOL_CHANNELS_PXX2 || protocol == PROTOCOL_CHANNELS_CROSSFIRE || protocol == PROTOCOL_CHANNELS_NONE)
     return true;
@@ -188,6 +185,9 @@ TASK_FUNCTION(mixerTask)
       if (t0 > maxMixerDuration) maxMixerDuration = t0;
 
       sendSynchronousPulses();
+#if defined(CPUESP32)
+      extmoduleSendNextFrame();
+#endif
     }
   }
 }
@@ -205,7 +205,11 @@ void scheduleNextMixerCalculation(uint8_t module, uint16_t period_ms)
   }
   else {
     // for now assume mixer calculation takes 2 ms.
+#if defined(PCBESP_WROOM_32)
+    nextMixerTime[module] = (uint32_t) RTOS_GET_TIME() + ((period_ms-MIXER_TIME_MS) / RTOS_MS_PER_TICK)  /* 1 tick in advance*/;
+#else    
     nextMixerTime[module] = (uint32_t) RTOS_GET_TIME() + (period_ms / RTOS_MS_PER_TICK) - 1 /* 1 tick in advance*/;
+#endif
   }
 
   DEBUG_TIMER_STOP(debugTimerMixerCalcToUsage);

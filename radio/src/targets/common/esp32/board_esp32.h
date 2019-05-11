@@ -45,7 +45,7 @@
 #define TASK_FUNCTION(f) void f(void * pdata)
 #define RTOS_LOCK_MUTEX(m) xSemaphoreTake(m, portMAX_DELAY);
 #define RTOS_UNLOCK_MUTEX(m) xSemaphoreGive(m)
-#define RTOS_MS_PER_TICK (1000./CONFIG_FREERTOS_HZ)
+#define RTOS_MS_PER_TICK portTICK_PERIOD_MS
 #define TASK_RETURN()
 #define RTOS_INIT() rtosInit()
 #define RTOS_START()
@@ -57,14 +57,18 @@
 #define MIXER_STACK_SIZE       0x800
 #define AUDIO_STACK_SIZE       0x900
 #define PER10MS_STACK_SIZE     0x500
-#define ENC_STACK_SIZE         0xA00
+#define ENC_STACK_SIZE         0x900
+#define PPM_STACK_SIZE         0x800
 #define MIXER_TASK_PRIO mixerTaskPrio
 #define MENUS_TASK_PRIO menuTaskPrio
 #define AUDIO_TASK_PRIO audioTaskPrio
 #define MENU_TASK_CORE 0
 #define MIXER_TASK_CORE 1
 #define PULSES_TASK_CORE 1
-
+#define AUDIO_TASK_CORE 0
+#define PER10MS_TASK_CORE 0
+#define ENC_TASK_CORE 0
+#define MIXER_TIME_MS 15
 
 typedef struct TaskPrio
 {
@@ -90,9 +94,7 @@ static inline uint32_t RTOS_GET_MS(void) {
   return (uint32_t)(esp_timer_get_time()/1000);
 }
 
-static inline uint32_t RTOS_GET_TIME(void) {
-  return (uint32_t)(esp_timer_get_time() / 2000);
-}
+#define RTOS_GET_TIME(a) xTaskGetTickCount ()
 
 
 //from 2.2
