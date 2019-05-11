@@ -278,6 +278,8 @@ const int Boards::getCapability(Board::Type board, Board::Capability capability)
     case Switches:
       if (IS_TARANIS_X9E(board))
         return 18;
+      else if (IS_TARANIS_X3(board))
+        return 5;
       else if (IS_TARANIS_X7(board))
         return 6;
       else if (IS_TARANIS_XLITES(board))
@@ -366,6 +368,16 @@ const QString Boards::getAnalogInputName(Board::Type board, int index)
       "S2",
       "LS",
       "RS"
+    };
+    if (index < DIM(pots))
+      return pots[index];
+  }
+  else if (IS_TARANIS_XLITE(board)) {
+    const QString pots[] = {
+      "S1",
+      "S2",
+      "GyrX",
+      "GyrY"
     };
     if (index < DIM(pots))
       return pots[index];

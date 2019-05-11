@@ -99,7 +99,7 @@ void convertModelData_218_to_219(ModelData &model)
   newModel.varioData.min = oldModel.frsky.varioMin;
   newModel.varioData.max = oldModel.frsky.varioMax;
 
-#if defined(PCBX9)
+#if defined(PCBX9D) || defined(PCBX9E)
   newModel.voltsSource = oldModel.frsky.voltsSource;
   newModel.altitudeSource = oldModel.frsky.altitudeSource;
 #endif
@@ -110,9 +110,9 @@ void convertModelData_218_to_219(ModelData &model)
   for (int i=0; i<NUM_MODULES; i++) {
     memcpy(&newModel.moduleData[i], &oldModel.moduleData[i], 4);
     memcpy(((uint8_t *)&newModel.moduleData[i]) + 4, ((uint8_t *)&oldModel.moduleData[i]) + 64 + 4, 2);
-    if (newModel.moduleData[i].type >= MODULE_TYPE_XJT2)
+    if (newModel.moduleData[i].type >= MODULE_TYPE_ACCESS_ISRM)
       newModel.moduleData[i].type += 1;
-    if (newModel.moduleData[i].type >= MODULE_TYPE_R9M2)
+    if (newModel.moduleData[i].type >= MODULE_TYPE_ACCESS_R9M)
       newModel.moduleData[i].type += 4;
   }
 
