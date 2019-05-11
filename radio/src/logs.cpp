@@ -104,7 +104,7 @@ const char * logsOpen()
   tmp = strAppendDate(&filename[len]);
 #endif
 
-  strcpy_P(tmp, STR_LOGS_EXT);
+  strcpy(tmp, STR_LOGS_EXT);
 #if defined(CPUESP32)
   g_oLogFile=fopen(filename,"a");
   if(NULL==g_oLogFile){

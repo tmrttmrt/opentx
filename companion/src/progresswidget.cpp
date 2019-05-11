@@ -113,8 +113,43 @@ void ProgressWidget::addText(const QString &text, const bool richText)
   cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
   if (richText)
     cursor.insertHtml(text);
-  else
-    cursor.insertText(text);
+  else{
+    QString qs = ui->textEdit->toPlainText();
+    int cPos = qs.length();
+    if(crFlag){
+      crFlag = false;
+      cPos = qs.lastIndexOf("\n");
+    }
+    if(text.contains("\r")){
+      QString txt(text);
+      txt.replace("\r\n", "\n");
+      while(txt.contains("\r")){
+        qDebug() << "txtb:" << txt;
+        int crPos = txt.indexOf("\r");
+        if( crPos > 0){
+            QString line = txt.left(crPos-1);
+            qs.truncate(cPos+1);
+            qs.append(line);
+            cPos = qs.lastIndexOf("\n");
+            qDebug() << "line:" << line;
+        }
+        txt = txt.mid(crPos+1);
+        qDebug() << "txta:" << txt;
+      }
+      if( txt.length() > 0){
+        qs.truncate(cPos+1);
+        qs.append(txt);
+      }
+      else {
+        crFlag = true;
+      }
+    }
+    else {
+      qs.truncate(cPos+1);
+      qs.append(text);
+    }
+    ui->textEdit->setPlainText(qs);
+  }
 
   if (atEnd) {
     ui->textEdit->verticalScrollBar()->triggerAction(QAbstractSlider::SliderToMaximum);

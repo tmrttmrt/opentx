@@ -1528,6 +1528,22 @@ void MdiChild::writeEeprom()  // write to Tx
       qDebug() << "MdiChild::writeEeprom(): saveFile error";
     }
   }
+  else if(IS_ESP32(board)){
+    QString tempFile = generateProcessUniqueTempFileName("eeprom.dir");
+    QDir dir(tempFile);
+    if(dir.exists()){
+      dir.removeRecursively();
+    }
+    dir.mkdir(tempFile);
+    tempFile = dir.absoluteFilePath("radio.eesp");
+    saveFile(tempFile, false);
+    if (!QFileInfo(tempFile).exists()) {
+      QMessageBox::critical(this, CPN_STR_TTL_ERROR, tr("Cannot write temporary file!"));
+      return;
+    }
+    FlashEEpromDialog * cd = new FlashEEpromDialog(this, tempFile);
+    cd->exec();
+  }
   else {
     QString tempFile = generateProcessUniqueTempFileName("temp.bin");
     saveFile(tempFile, false);

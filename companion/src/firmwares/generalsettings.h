@@ -172,6 +172,9 @@ class GeneralSettings {
     bool switchSourceAllowedTaranis(int index) const;
     bool isPotAvailable(int index) const;
     bool isSliderAvailable(int index) const;
+    char passwd[CPN_MAX_STR_FIELD];
+    char ssid[CPN_MAX_STR_FIELD];
+    char ftppasswd[CPN_MAX_STR_FIELD];
 };
 
 

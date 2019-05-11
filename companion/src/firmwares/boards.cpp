@@ -76,6 +76,8 @@ uint32_t Boards::getFourCC(Type board)
     case BOARD_MEGA2560:
     case BOARD_GRUVIN9X:
       return 0x3178746F;
+    case BOARD_ESP_WROOM_32:
+      return 0x3878746F;
     default:
       return 0;
   }
@@ -104,6 +106,8 @@ const int Boards::getEEpromSize(Board::Type board)
     case BOARD_TARANIS_X9DP:
     case BOARD_TARANIS_X9E:
       return EESIZE_TARANIS;
+    case BOARD_ESP_WROOM_32:
+      return EESIZE_MAX;
     case BOARD_UNKNOWN:
       return EESIZE_MAX;
     default:
@@ -137,6 +141,8 @@ const int Boards::getFlashSize(Type board)
     case BOARD_X12S:
     case BOARD_X10:
       return FSIZE_HORUS;
+    case BOARD_ESP_WROOM_32:
+      return FSIZE_MAX;
     case BOARD_UNKNOWN:
       return FSIZE_MAX;
     default:
@@ -237,6 +243,8 @@ const int Boards::getCapability(Board::Type board, Board::Capability capability)
         return 2;
       else if (IS_TARANIS_X9E(board))
         return 4;
+      else if (IS_ESP32(board))
+        return 2;
       else
         return 3;
 
@@ -349,7 +357,7 @@ const QString Boards::getAnalogInputName(Board::Type board, int index)
 
   index -= getCapability(board, Board::Sticks);
 
-  if (IS_9X(board) || IS_2560(board) || IS_SKY9X(board)) {
+  if (IS_9X(board) || IS_2560(board) || IS_ESP32(board) || IS_SKY9X(board)) {
     const QString pots[] = {
       "P1",
       "P2",
@@ -463,6 +471,8 @@ const QString Boards::getBoardName(Board::Type board)
       return "Horus X12S";
     case BOARD_X10:
       return "Horus X10/X10S";
+    case BOARD_ESP_WROOM_32:
+        return "ESP-WROOM-32";
     default:
       return tr("Unknown");
   }

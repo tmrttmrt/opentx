@@ -68,6 +68,7 @@ class ProgressWidget : public QWidget
 
   private:
     Ui::ProgressWidget *ui;
+    bool crFlag;
     bool m_forceOpen;
     bool m_hasDetails;
 };

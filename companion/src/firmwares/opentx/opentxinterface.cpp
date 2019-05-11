@@ -88,6 +88,8 @@ const char * OpenTxEepromInterface::getName()
       return "OpenTX for FrSky Horus";
     case BOARD_X10:
       return "OpenTX for FrSky X10";
+    case BOARD_ESP_WROOM_32:
+      return "OpenTX for ESP32";
     default:
       return "OpenTX for an unknown board";
   }
@@ -272,6 +274,8 @@ uint8_t OpenTxEepromInterface::getLastDataVersion(Board::Type board)
     case BOARD_MEGA2560:
     case BOARD_M128:
       return 217;
+    case BOARD_ESP_WROOM_32:
+      return 219;
     default:
       return 219;
   }
@@ -423,7 +427,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case Models:
       if (IS_HORUS(board))
         return 0;
-      else if (IS_ARM(board))
+      else if (IS_ARM(board) || IS_ESP32(board))
         return 60;
       else if (board == BOARD_M128)
         return 30;
@@ -439,22 +443,22 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case ModelImage:
       return (board == BOARD_TARANIS_X9D || IS_TARANIS_PLUS(board) || IS_HORUS(board));
     case HasBeeper:
-      return (!IS_ARM(board));
+      return (!IS_ARM(board) && !IS_ESP32(board));
     case HasPxxCountry:
       return 1;
     case HasGeneralUnits:
-      if (IS_ARM(board))
+      if (IS_ARM(board) || IS_ESP32(board))
         return 1;
       else
         return 0;
     case HasNegAndSwitches:
-      return IS_ARM(board);
+      return IS_ARM(board) || IS_ESP32(board);
     case PPMExtCtrl:
       return 1;
     case PPMFrameLength:
       return 40;
     case FlightModes:
-      if (IS_ARM(board))
+      if (IS_ARM(board) || IS_ESP32(board))
         return 9;
       else if (IS_2560(board))
         return 6;
@@ -471,7 +475,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
       if (IS_HORUS_OR_TARANIS(board))
         return id.contains("nogvars") ? 0 : 9;
       else if (id.contains("gvars"))
-        return IS_ARM(board) ? 9 : 5;
+        return IS_ARM(board) || IS_ESP32(board) ? 9 : 5;
       else
         return 0;
     case ModelName:
@@ -485,24 +489,24 @@ int OpenTxFirmware::getCapability(::Capability capability)
       return 1;
     case GvarsAreNamed:
     case GvarsFlightModes:
-      return ((IS_ARM(board) || IS_2560(board)) ? 1 : 0);
+      return ((IS_ARM(board) || IS_2560(board) || IS_ESP32(board)) ? 1 : 0);
     case Mixes:
-      return (IS_ARM(board) ? 64 : 32);
+      return (IS_ARM(board) || IS_ESP32(board) ? 64 : 32);
     case OffsetWeight:
-      return (IS_ARM(board) ? 500 : 245);
+      return (IS_ARM(board) || IS_ESP32(board) ? 500 : 245);
     case Timers:
-      return (IS_ARM(board) ? 3 : 2);
+      return (IS_ARM(board) || IS_ESP32(board) ? 3 : 2);
     case TimersName:
       if (HAS_LARGE_LCD(board))
         return 8;
-      else if (IS_ARM(board))
+      else if (IS_ARM(board) || IS_ESP32(board))
         return 3;
       else
         return 0;
     case PermTimers:
-      return (IS_2560(board) || IS_ARM(board));
+      return (IS_ESP32(board) || IS_2560(board) || IS_ARM(board));
     case CustomFunctions:
-      if (IS_ARM(board))
+      if (IS_ARM(board) || IS_ESP32(board))
         return 64;
       else if (IS_2560(board) || board == BOARD_M128)
         return 24;
@@ -511,12 +515,12 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case SafetyChannelCustomFunction:
       return id.contains("nooverridech") ? 0 : 1;
     case LogicalSwitches:
-      if (IS_ARM(board))
+      if (IS_ARM(board)  || IS_ESP32(board))
         return 64;
       else
         return 12;
     case CustomAndSwitches:
-      if (IS_ARM(board))
+      if (IS_ARM(board)  || IS_ESP32(board))
         return getCapability(LogicalSwitches);
       else
         return 15/*4bits*/- 9/*sw positions*/;
@@ -525,20 +529,20 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case RotaryEncoders:
       if (board == BOARD_GRUVIN9X)
         return 2;
-      else if (IS_SKY9X(board))
+      else if (IS_SKY9X(board) || IS_ESP32(board))
         return 1;
       else
         return 0;
     case Outputs:
-      return (IS_ARM(board) ? 32 : 16);
+      return (IS_ARM(board) || IS_ESP32(board) ? 32 : 16);
     case NumCurvePoints:
-      return (IS_ARM(board) ? 512 : 104);
+      return (IS_ARM(board)|| IS_ESP32(board) ? 512 : 104);
     case VoicesAsNumbers:
-      return (IS_ARM(board) ? 0 : 1);
+      return (IS_ARM(board) || IS_ESP32(board) ? 0 : 1);
     case VoicesMaxLength:
-      return (IS_ARM(board) ? (IS_TARANIS_X9(board) ? 8 : 6) : 0);
+      return (IS_ARM(board) ? (IS_TARANIS_X9(board) ? 8 : 6) : IS_ESP32(board) ? 6 : 0);
     case MultiLangVoice:
-      return (IS_ARM(board) ? 1 : 0);
+      return (IS_ARM(board) || IS_ESP32(board) ? 1 : 0);
     case SoundPitch:
       return 1;
     case Haptic:
@@ -549,7 +553,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
       else
         return 0;
     case MaxVolume:
-      return (IS_ARM(board) ? 23 : 7);
+      return (IS_ARM(board) || IS_ESP32(board) ? 23 : 7);
     case MaxContrast:
       if (IS_TARANIS_SMALL(board))
         return 30;
@@ -561,7 +565,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
       else
         return 10;
     case HasSoundMixer:
-      return (IS_ARM(board) ? 1 : 0);
+      return (IS_ARM(board) || IS_ESP32(board) ? 1 : 0);
     case ExtraInputs:
       return 1;
     case TrimsRange:
@@ -573,17 +577,17 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case NumCurves:
       return (HAS_LARGE_LCD(board) ? 32 : (IS_ARM(board) ? 16 : 8));
     case HasMixerNames:
-      return (IS_ARM(board) ? (IS_TARANIS_X9(board) ? 8 : 6) : false);
+      return (IS_ARM(board) || IS_ESP32(board) ? (IS_TARANIS_X9(board) ? 8 : 6) : false);
     case HasExpoNames:
-      return (IS_ARM(board) ? (IS_TARANIS_X9(board) ? 8 : 6) : false);
+      return (IS_ARM(board) || IS_ESP32(board) ? (IS_TARANIS_X9(board) ? 8 : 6) : false);
     case HasNoExpo:
       return (IS_HORUS_OR_TARANIS(board) ? false : true);
     case ChannelsName:
-      return (IS_ARM(board) ? (HAS_LARGE_LCD(board) ? 6 : 4) : 0);
+      return (IS_ARM(board) || IS_ESP32(board) ? (HAS_LARGE_LCD(board) ? 6 : 4) : 0);
     case HasCvNames:
-      return (IS_ARM(board) ? 1 : 0);
+      return (IS_ARM(board) || IS_ESP32(board) ? 1 : 0);
     case Telemetry:
-      if (IS_2560(board) || IS_ARM(board) || id.contains("frsky") || id.contains("telemetrez"))
+      if (IS_ESP32(board) || IS_2560(board) || IS_ARM(board) || id.contains("frsky") || id.contains("telemetrez"))
         return TM_HASTELEMETRY | TM_HASOFFSET | TM_HASWSHH;
       else
         return 0;
@@ -593,7 +597,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
       if (IS_HORUS(board))
         return 0;
       else
-        return IS_ARM(board) ? 4 : 2;
+        return IS_ARM(board) || IS_ESP32(board) ? 4 : 2;
     case TelemetryCustomScreensFieldsPerLine:
       return HAS_LARGE_LCD(board) ? 3 : 2;
     case NoTelemetryProtocol:
@@ -601,7 +605,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case TelemetryUnits:
       return 0;
     case TelemetryMaxMultiplier:
-      return (IS_ARM(board) ? 32 : 8);
+      return (IS_ARM(board) || IS_ESP32(board) ? 32 : 8);
     case PPMCenter:
       return (IS_HORUS_OR_TARANIS(board) ? 500 : (id.contains("ppmca") ? 125 : 0));
     case PPMUnitMicroseconds:
@@ -613,33 +617,33 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case HasVario:
       return 1;
     case HasVarioSink:
-      return ((IS_2560(board) || IS_ARM(board)) ? true : false);
+      return ((IS_ESP32(board) || IS_2560(board) || IS_ARM(board)) ? true : false);
     case HasFailsafe:
-      return (IS_ARM(board) ? 32 : 0);
+      return (IS_ARM(board) || IS_ESP32(board) ? 32 : 0);
     case NumModules:
-      return (IS_ARM(board) ? 2 : 1);
+      return (IS_ARM(board) || IS_ESP32(board) ? 2 : 1);
     case HasModuleR9MFlex:
       return id.contains("flexr9m");
     case HasModuleR9MMini:
       return IS_TARANIS_XLITE(board) && !id.contains("stdr9m");
     case HasPPMStart:
-      return (IS_ARM(board) ? true : false);
+      return (IS_ARM(board) || IS_ESP32(board) ? true : false);
     case HastxCurrentCalibration:
       return (IS_SKY9X(board) ? true : false);
     case HasVolume:
-      return (IS_ARM(board) ? true : false);
+      return (IS_ARM(board) || IS_ESP32(board) ? true : false);
     case HasBrightness:
       return (IS_ARM(board) ? true : false);
     case PerModelTimers:
       return 1;
     case SlowScale:
-      return (IS_ARM(board) ? 10 : 2);
+      return (IS_ARM(board) || IS_ESP32(board) ? 10 : 2);
     case SlowRange:
-      return (IS_ARM(board) ? 250 : 15);
+      return (IS_ARM(board) || IS_ESP32(board) ? 250 : 15);
     case CSFunc:
       return 18;
     case HasSDLogs:
-      return ((IS_2560(board) || IS_ARM(board)) ? true : false);
+      return ((IS_ESP32(board) || IS_2560(board) || IS_ARM(board)) ? true : false);
     case LcdWidth:
       if (IS_HORUS(board))
         return 480;
@@ -670,13 +674,13 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case HasTopLcd:
       return IS_TARANIS_X9E(board) ? 1 : 0;
     case GlobalFunctions:
-      return IS_ARM(board) ? 64 : 0;
+      return IS_ARM(board) || IS_ESP32(board) ? 64 : 0;
     case VirtualInputs:
       return IS_ARM(board) ? 32 : 0;
     case InputsLength:
       return HAS_LARGE_LCD(board) ? 4 : 3;
     case TrainerInputs:
-      return IS_ARM(board) ? 16 : 8;
+      return IS_ARM(board) || IS_ESP32(board) ? 16 : 8;
     case RtcTime:
       return IS_ARM(board) || IS_2560(board) ? 1 : 0;
     case LuaScripts:
@@ -687,7 +691,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
       return IS_HORUS_OR_TARANIS(board) ? 6 : 0;
     case LimitsPer1000:
     case EnhancedCurves:
-      return IS_ARM(board);
+      return IS_ARM(board) || IS_ESP32(board);
     case HasFasOffset:
       return (IS_STOCK(board) ? false : true);
     case HasMahPersistent:
@@ -712,7 +716,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case MavlinkTelemetry:
       return id.contains("mavlink") ? 1 : 0;
     case SportTelemetry:
-      return IS_ARM(board) ? 1 : 0;
+      return IS_ARM(board) || IS_ESP32(board) ? 1 : 0;
     case HasInputDiff:
     case HasMixerExpo:
       return (IS_HORUS_OR_TARANIS(board) ? true : false);
@@ -1238,6 +1242,12 @@ void registerOpenTxFirmwares()
   addOpenTxArm9xOptions(firmware);
   registerOpenTxFirmware(firmware);
 
+    /* ESP Wroom 32 board */
+  firmware = new OpenTxFirmware("opentx-esp_wroom_32", Firmware::tr("9X with Sky9x board"), BOARD_ESP_WROOM_32);
+  addOpenTxArm9xOptions(firmware);
+  registerOpenTxFirmware(firmware);
+
+  
   // These are kept only for import purposes, marked as deprecated to hide from UI.
   registerOpenTxFirmware(new OpenTxFirmware("opentx-9xr",      Firmware::tr("Turnigy 9XR"),                       BOARD_STOCK),    true);
   registerOpenTxFirmware(new OpenTxFirmware("opentx-9xr128",   Firmware::tr("Turnigy 9XR with m128 chip"),        BOARD_M128),     true);

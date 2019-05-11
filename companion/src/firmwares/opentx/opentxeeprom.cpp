@@ -2262,7 +2262,7 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
     internalField.Append(new SignedField<8>(this, modelData.potPosition[i]));
   }
 
-  if (IS_SKY9X(board)) {
+  if (IS_SKY9X(board) || IS_ESP32(board)) {
     internalField.Append(new SpareBitsField<8>(this));
     internalField.Append(new SpareBitsField<8>(this));
   }
@@ -2564,7 +2564,7 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
       internalField.Append(new UnsignedField<8>(this, generalData.backlightColor));
     }
   }
-  else if (IS_SKY9X(board) && version >= 218) {
+  else if (IS_SKY9X(board)  && version >= 218) {
     internalField.Append(new SignedField<8>(this, generalData.txCurrentCalibration));
     internalField.Append(new SignedField<8>(this, generalData.temperatureWarn));
     internalField.Append(new UnsignedField<8>(this, generalData.mAhWarn));
@@ -2637,6 +2637,11 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
     for (int i=0; i<5; i++) {
       internalField.Append(new CharField<8>(this, (char *)generalData.themeOptionValue[i], true, "Theme blob"));
     }
+  }
+  if (IS_ESP32(board)){
+    internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.passwd, "WiFi password")); 
+    internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.ssid, "WiFi SSID"));
+    internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.ftppasswd, "ftp password"));
   }
 
 }

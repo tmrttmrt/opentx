@@ -54,7 +54,7 @@ fwName(g.profile[g.id()].fwName())
     ui->useProfileSplash->setDisabled(true);
   }
 
-  if (IS_STM32(getCurrentBoard())) {
+  if (IS_STM32(getCurrentBoard()) || IS_ESP32(getCurrentBoard())) {
     // No backup on Taranis ... could be done if in massstorage
     ui->backupEEprom->hide();
     ui->backupEEprom->setCheckState(Qt::Unchecked);
@@ -71,7 +71,16 @@ fwName(g.profile[g.id()].fwName())
     ui->backupEEprom->setEnabled(false);
   }
 
+  if(IS_ESP32(getCurrentBoard())){
+    ui->checkHardwareCompatibility->hide();
+    ui->checkHardwareCompatibility->setCheckState(Qt::Unchecked);
+    ui->useProfileSplash->setDisabled(true);
+    ui->useLibrarySplash->setDisabled(true);
+    ui->useExternalSplash->setDisabled(true);
+  }
+  else {
   ui->checkHardwareCompatibility->setChecked(g.checkHardwareCompatibility());
+  }
 
   updateUI();
 
@@ -305,7 +314,15 @@ void FlashFirmwareDialog::startFlash(const QString &filename)
     if (backupPath.isEmpty()) {
       backupPath=g.backupDir();
     }
+    if(IS_ESP32(getCurrentBoard())){
+        backupFilename = backupPath + "/backup-" + QDateTime().currentDateTime().toString("yyyy-MM-dd-HHmmss") + ".edir";
+        QDir dir(backupFilename);
+        dir.mkdir(backupFilename);
+        backupFilename = dir.absoluteFilePath("radio.eesp");
+    }
+    else {
     backupFilename = backupPath + "/backup-" + QDateTime().currentDateTime().toString("yyyy-MM-dd-HHmmss") + ".bin";
+    }
     result = readEeprom(backupFilename, progressDialog.progress());
     sleep(2);
   }
