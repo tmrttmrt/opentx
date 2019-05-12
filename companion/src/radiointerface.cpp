@@ -426,7 +426,6 @@ bool readEeprom(const QString & filename, ProgressWidget * progress)
         }
         return QFileInfo(filename).exists();
     }
-
     if (!IS_STM32(board)) {
       FlashProcess flashProcess(getRadioInterfaceCmd(), getReadEEpromCmd(filename), progress);
       if (!flashProcess.run()) {
@@ -461,7 +460,6 @@ bool writeEeprom(const QString & filename, ProgressWidget * progress)
     DnldProcess dnldProcess(getRadioInterfaceCmd(), getWriteEEpromCmd(filename), progress, DnldProcess::WRITING);
     return dnldProcess.run();
   }
-
   if (!IS_TARANIS(board)) {
     FlashProcess flashProcess(getRadioInterfaceCmd(), getWriteEEpromCmd(filename), progress);
     return flashProcess.run();

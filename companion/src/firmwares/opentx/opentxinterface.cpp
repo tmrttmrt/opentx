@@ -525,7 +525,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
       else
         return 15/*4bits*/- 9/*sw positions*/;
     case LogicalSwitchesExt:
-      return (IS_ARM(board) ? true : false);
+      return (IS_ARM(board) || IS_ESP32(board) ? true : false);
     case RotaryEncoders:
       if (board == BOARD_GRUVIN9X)
         return 2;
@@ -575,7 +575,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case Simulation:
       return 1;
     case NumCurves:
-      return (HAS_LARGE_LCD(board) ? 32 : (IS_ARM(board) ? 16 : 8));
+      return (HAS_LARGE_LCD(board) || IS_ESP32(board) ? 32 : (IS_ARM(board) ? 16 : 8));
     case HasMixerNames:
       return (IS_ARM(board) || IS_ESP32(board) ? (IS_TARANIS_X9(board) ? 8 : 6) : false);
     case HasExpoNames:
@@ -676,7 +676,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case GlobalFunctions:
       return IS_ARM(board) || IS_ESP32(board) ? 64 : 0;
     case VirtualInputs:
-      return IS_ARM(board) ? 32 : 0;
+      return IS_ARM(board) || IS_ESP32(board) ? 32 : 0;
     case InputsLength:
       return HAS_LARGE_LCD(board) ? 4 : 3;
     case TrainerInputs:

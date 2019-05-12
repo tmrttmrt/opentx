@@ -887,6 +887,15 @@ void MainWindow::readEeprom()
     tempFile = generateProcessUniqueTempFileName("temp.otx");
   else if (IS_ARM(board))
     tempFile = generateProcessUniqueTempFileName("temp.bin");
+  else if (IS_ESP32(board)){
+    tempFile = generateProcessUniqueTempFileName("eeprom.dir");
+    QDir dir(tempFile);
+    if(dir.exists()){
+        dir.removeRecursively();
+    }
+    dir.mkdir(tempFile);
+    tempFile = dir.absoluteFilePath("radio.eesp");
+  }
   else
     tempFile = generateProcessUniqueTempFileName("temp.hex");
 
@@ -897,7 +906,13 @@ void MainWindow::readEeprom()
     child->newFile(false);
     child->loadFile(tempFile, false);
     child->show();
-    qunlink(tempFile);
+    if(IS_ESP32(board)){
+        QDir dir(generateProcessUniqueTempFileName("eeprom.dir"));
+        dir.removeRecursively();
+    }
+    else {
+        qunlink(tempFile);
+    }
   }
 }
 
@@ -949,6 +964,21 @@ void MainWindow::readBackup()
     QMessageBox::information(this, CPN_STR_APP_NAME, tr("This function is not yet implemented"));
     return;
     // TODO implementation
+  }
+  else if (IS_ESP32(getCurrentBoard())){
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Radio Backup to Folder"), g.eepromDir(), EESP_RAD_MOD_DIR_FILTER, nullptr, QFileDialog::ShowDirsOnly);
+    if (!fileName.isEmpty()){
+      QDir dir(fileName);
+      if(dir.exists()){
+          QMessageBox::information(this, CPN_STR_APP_NAME, tr("Select nonexisting folder"));
+      } else {
+          dir.mkdir(fileName);
+          fileName = dir.absoluteFilePath("radio.eesp");
+          if (!readEepromFromRadio(fileName))
+            return;
+      }
+    }
+    return;
   }
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save Radio Backup to File"), g.eepromDir(), EXTERNAL_EEPROM_FILES_FILTER);
   if (!fileName.isEmpty()) {

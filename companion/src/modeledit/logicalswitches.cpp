@@ -475,7 +475,7 @@ void LogicalSwitchesPanel::populateCSWCB(QComboBox *b)
     int func = order[i];
     if (func == LS_FN_NEQUAL || func == LS_FN_EGREATER || func == LS_FN_ELESS)
       continue;
-    if (!IS_ARM(firmware->getBoard())) {
+    if (!IS_ARM(firmware->getBoard()) && !IS_ESP32(firmware->getBoard()) ) {
       if (func == LS_FN_VEQUAL || func == LS_FN_EDGE)
         continue;
     }
@@ -486,7 +486,7 @@ void LogicalSwitchesPanel::populateCSWCB(QComboBox *b)
 
 void LogicalSwitchesPanel::populateAndSwitchCB(QComboBox *b)
 {
-  if (IS_ARM(firmware->getBoard())) {
+  if (IS_ARM(firmware->getBoard()) ||IS_ESP32(firmware->getBoard())) {
     b->setModel(rawSwitchItemModel);
   }
   else {
