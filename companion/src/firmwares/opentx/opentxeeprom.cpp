@@ -2282,6 +2282,7 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
     internalField.Append(new CharField<216>(this, modelData.topbarData, false, "Top bar blob"));
     internalField.Append(new SpareBitsField<8>(this)); // current view
   }
+  internalField.Append(new CharField<8>(this,modelData.modelRegistrationID,"Model Registration ID"));
 }
 
 void OpenTxModelData::beforeExport()
@@ -2574,6 +2575,9 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
     internalField.Append(new UnsignedField<8>(this, generalData.sticksGain));
     internalField.Append(new UnsignedField<8>(this, generalData.rotarySteps));
   }
+  else if (IS_ESP32(board)  ) {
+        internalField.Append(new UnsignedField<8>(this, generalData.rotarySteps));
+  }
 
   if (IS_TARANIS_X9E(board))
     internalField.Append(new SpareBitsField<64>(this)); // switchUnlockStates
@@ -2621,7 +2625,20 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
       internalField.Append(new ZCharField<3>(this, generalData.sliderName[i], "Slider name"));
     }
   }
-
+  else if (IS_ESP32(board)) {
+      for (int i=0; i<MAX_SWITCHES(board, version); ++i) {
+        internalField.Append(new ZCharField<3>(this, generalData.switchName[i], "Switch name"));
+      }
+      for (int i=0; i<CPN_MAX_STICKS; ++i) {
+        internalField.Append(new ZCharField<3>(this, generalData.stickName[i], "Stick name"));
+      }
+      for (int i=0; i<Boards::getCapability(board, Board::Pots); ++i) {
+        internalField.Append(new ZCharField<3>(this, generalData.potName[i], "Pot name"));
+      }
+      for (int i=0; i<MAX_SLIDERS(board); ++i) {
+        internalField.Append(new ZCharField<3>(this, generalData.sliderName[i], "Slider name"));
+      }
+  }
   if (IS_HORUS(board)) {
     internalField.Append(new SpareBitsField<1>(this));
     internalField.Append(new UnsignedField<7>(this, generalData.backlightOffBright));
@@ -2643,7 +2660,7 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
     internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.ssid, "WiFi SSID"));
     internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.ftppasswd, "ftp password"));
   }
-
+  internalField.Append(new ZCharField<8>(this, generalData.ownerName, "owner registration ID"));
 }
 
 void OpenTxGeneralData::beforeExport()

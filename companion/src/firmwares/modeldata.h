@@ -202,6 +202,8 @@ class ModelData {
     CustomScreenData customScreenData[5];
 
     TopbarData topbarData;
+    
+    char modelRegistrationID[8];
 
     void clear();
     bool isEmpty() const;

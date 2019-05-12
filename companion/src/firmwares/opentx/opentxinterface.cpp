@@ -1243,7 +1243,7 @@ void registerOpenTxFirmwares()
   registerOpenTxFirmware(firmware);
 
     /* ESP Wroom 32 board */
-  firmware = new OpenTxFirmware("opentx-esp_wroom_32", Firmware::tr("9X with Sky9x board"), BOARD_ESP_WROOM_32);
+  firmware = new OpenTxFirmware("opentx-esp_wroom_32", Firmware::tr("ESP WROOM 32 based board"), BOARD_ESP_WROOM_32);
   addOpenTxArm9xOptions(firmware);
   registerOpenTxFirmware(firmware);
 
