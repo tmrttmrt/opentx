@@ -48,7 +48,7 @@ using namespace Board;
 #define MAX_SCRIPTS(board)                    (IS_HORUS(board) ? 9 : 7)
 #define MAX_TELEMETRY_SENSORS(board, version) (version <= 218 ? 32 : ((IS_HORUS(board) || IS_TARANIS_X9(board)) ? 60 : 40))
 #define NUM_PPM_INPUTS(board, version)        16
-#define ROTENC_COUNT(board, version)          ((IS_STM32(board) && version >= 218) ? 0 : 1)
+#define ROTENC_COUNT(board, version)          (((IS_STM32(board) || IS_ESP32(board)) && version >= 218) ? 0 : 1)
 #define MAX_AUX_TRIMS(board)                  (IS_HORUS(board) ? 2 : 0)
 
 inline int switchIndex(int i, Board::Type board, unsigned int version)
@@ -1938,15 +1938,27 @@ class SensorField: public TransformedField {
       internalField.Append(new UnsignedField<16>(this, _id, "id/persistentValue"));
       internalField.Append(new UnsignedField<8>(this, _instance, "instance/formula"));
       internalField.Append(new ZCharField<4>(this, sensor.label));
-      internalField.Append(new UnsignedField<1>(this, sensor.type, "type"));
-      internalField.Append(new UnsignedField<5>(this, sensor.unit, "unit"));
+      if (version<219){
+        internalField.Append(new UnsignedField<1>(this, sensor.type, "type"));
+        internalField.Append(new UnsignedField<5>(this, sensor.unit, "unit"));
+      }
+      else {
+        internalField.Append(new SpareBitsField<8>(this)); //subId
+        internalField.Append(new UnsignedField<2>(this, sensor.type, "type"));
+        internalField.Append(new UnsignedField<6>(this, sensor.unit, "unit"));
+      }
       internalField.Append(new UnsignedField<2>(this, sensor.prec, "prec"));
       internalField.Append(new BoolField<1>(this, sensor.autoOffset));
       internalField.Append(new BoolField<1>(this, sensor.filter));
       internalField.Append(new BoolField<1>(this, sensor.logs));
       internalField.Append(new BoolField<1>(this, sensor.persistent));
       internalField.Append(new BoolField<1>(this, sensor.onlyPositive));
-      internalField.Append(new UnsignedField<3>(this, _subid, "subid"));
+      if (version>=219){
+        internalField.Append(new SpareBitsField<1>(this));
+      }
+      else {
+        internalField.Append(new UnsignedField<3>(this, _subid, "subid"));
+      }
       internalField.Append(new UnsignedField<32>(this, _param, "param"));
     }
 
@@ -2193,7 +2205,7 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
     internalField.Append(new SignedField<8>(this, modelData.moduleData[module].ppm.frameLength));
     if (version >= 219) {
       // TODO ACCESS
-      internalField.Append(new SpareBitsField<(1 + 3 * 8 - 2) * 8>(this));
+      internalField.Append(new SpareBitsField<8+3*8*8-16>(this));
     }
   }
 
@@ -2262,7 +2274,7 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
     internalField.Append(new SignedField<8>(this, modelData.potPosition[i]));
   }
 
-  if (IS_SKY9X(board) || IS_ESP32(board)) {
+  if (IS_SKY9X(board)) {
     internalField.Append(new SpareBitsField<8>(this));
     internalField.Append(new SpareBitsField<8>(this));
   }
@@ -2282,7 +2294,18 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
     internalField.Append(new CharField<216>(this, modelData.topbarData, false, "Top bar blob"));
     internalField.Append(new SpareBitsField<8>(this)); // current view
   }
-  internalField.Append(new CharField<8>(this,modelData.modelRegistrationID,"Model Registration ID"));
+  if (IS_ESP32(board)) {
+    for (int i = 0; i < 4; i++) {
+      internalField.Append(new UnsignedField<2>(this, modelData.frsky.screens[i].type));
+    }
+    for (int i = 0; i < 4; i++) {
+      internalField.Append(new FrskyScreenField(this, modelData.frsky.screens[i], board, version, variant));
+    }
+    internalField.Append(new SpareBitsField<8>(this));
+  }
+  if (version >= 219){
+    internalField.Append(new CharField<8>(this,modelData.modelRegistrationID,"Model Registration ID"));
+  }
 }
 
 void OpenTxModelData::beforeExport()
@@ -2660,7 +2683,9 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
     internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.ssid, "WiFi SSID"));
     internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.ftppasswd, "ftp password"));
   }
-  internalField.Append(new ZCharField<8>(this, generalData.ownerName, "owner registration ID"));
+  if (version>=219){
+    internalField.Append(new ZCharField<8>(this, generalData.ownerName, "owner registration ID"));
+  }
 }
 
 void OpenTxGeneralData::beforeExport()
