@@ -218,7 +218,7 @@ void extmoduleSendNextFrame();
 #define SLAVE_MODE()                    (g_model.trainerData.mode == TRAINER_MODE_SLAVE)
 #if defined(PCBX9E)
   #define TRAINER_CONNECTED()           (true)
-#elif defined(PCBX7) || defined(PCBX3)
+#elif defined(PCBX7) || defined(PCBX9LITE)
   #define TRAINER_CONNECTED()           (GPIO_ReadInputDataBit(TRAINER_DETECT_GPIO, TRAINER_DETECT_GPIO_PIN) == Bit_SET)
 #elif defined(PCBXLITES)
   enum JackState
@@ -342,7 +342,7 @@ enum EnumSwitchesPositions
   SW_SC0,
   SW_SC1,
   SW_SC2,
-#if !defined(PCBX3)
+#if !defined(PCBX9LITE)
   SW_SD0,
   SW_SD1,
   SW_SD2,
@@ -357,15 +357,23 @@ enum EnumSwitchesPositions
   SW_SF1,
   SW_SF2,
 #endif
-#if defined(PCBX9D) || defined(PCBX9E)
+#if defined(PCBX9D) || defined(PCBX9DP) || defined(PCBX9E)
   SW_SG0,
   SW_SG1,
   SW_SG2,
 #endif
-#if defined(PCBX9D) || defined(PCBX9E) || defined(PCBX7)
+#if defined(PCBX9D) || defined(PCBX9DP) || defined(PCBX9E) || defined(PCBX7)
   SW_SH0,
   SW_SH1,
   SW_SH2,
+#endif
+#if defined(PCBX7)
+  SW_SI0,
+  SW_SI1,
+  SW_SI2,
+  SW_SJ0,
+  SW_SJ1,
+  SW_SJ2,
 #endif
 #if defined(PCBX9E)
   SW_SI0,
@@ -406,14 +414,19 @@ enum EnumSwitchesPositions
 #elif defined(PCBXLITE)
   #define NUM_SWITCHES                  4
 #elif defined(PCBX7)
-  #define NUM_SWITCHES                  6
-#elif defined(PCBX3)
+  #define NUM_SWITCHES                  8
+#elif defined(PCBX9LITE)
   #define NUM_SWITCHES                  5
 #elif defined(PCBX9E)
   #define NUM_SWITCHES                  18 // yes, it's a lot!
 #else
   #define NUM_SWITCHES                  8
 #endif
+
+#if defined(__cplusplus)
+static_assert(NUM_SWITCHES_POSITIONS == NUM_SWITCHES * 3, "Wrong switches positions count");
+#endif
+
 void keysInit(void);
 uint8_t keyState(uint8_t index);
 uint32_t switchState(uint8_t index);
@@ -422,7 +435,7 @@ uint32_t readTrims(void);
 #define TRIMS_PRESSED()                 (readTrims())
 #define KEYS_PRESSED()                  (readKeys())
 
-#if defined(PCBX9E) || defined(PCBX7) || defined(PCBX3)
+#if defined(PCBX9E) || defined(PCBX7) || defined(PCBX9LITE)
 // Rotary Encoder driver
 #define ROTARY_ENCODER_NAVIGATION
 void rotaryEncoderInit(void);
@@ -452,7 +465,7 @@ enum Analogs {
   STICK4,
   POT_FIRST,
   POT1 = POT_FIRST,
-#if defined(PCBX3)
+#if defined(PCBX9LITE)
   POT_LAST = POT1,
 #elif defined(PCBXLITE) || defined(PCBX7)
   POT2,
@@ -513,7 +526,7 @@ extern HardwareOptions hardwareOptions;
 #if !defined(PXX2)
   #define IS_PXX2_INTERNAL_ENABLED()            (false)
   #define IS_PXX1_INTERNAL_ENABLED()            (true)
-#elif !defined(PXX1) || defined(PCBXLITES) || defined(PCBX3)
+#elif !defined(PXX1) || defined(PCBXLITES) || defined(PCBX9LITE)
   #define IS_PXX2_INTERNAL_ENABLED()            (true)
   #define IS_PXX1_INTERNAL_ENABLED()            (false)
 #else
@@ -571,7 +584,7 @@ uint16_t getBatteryVoltage();   // returns current battery voltage in 10mV steps
   #define BATT_SCALE                    131
 #elif defined(PCBX7)
   #define BATT_SCALE                    123
-#elif defined(PCBX3)
+#elif defined(PCBX9LITE)
   #define BATT_SCALE                    117
 #else
   #define BATT_SCALE                    150
@@ -646,7 +659,7 @@ uint8_t telemetryGetByte(uint8_t * byte);
 extern uint32_t telemetryErrors;
 
 // PCBREV driver
-#if defined(PCBXLITE) || defined(PCBX3)
+#if defined(PCBXLITE) || defined(PCBX9LITE)
   #define HAS_SPORT_UPDATE_CONNECTOR()  true
 #elif defined(PCBX7)
   #define IS_PCBREV_40()                (GPIO_ReadInputDataBit(PCBREV_GPIO, PCBREV_GPIO_PIN) == Bit_SET)
@@ -742,7 +755,7 @@ void bluetoothInit(uint32_t baudrate, bool enable);
 void bluetoothWriteWakeup(void);
 uint8_t bluetoothIsWriting(void);
 void bluetoothDisable(void);
-#if defined(PCBX3)
+#if defined(PCBX9LITE)
   #define IS_BLUETOOTH_CHIP_PRESENT()     (false)
 #elif (defined(PCBX7) || defined(PCBXLITE)) && !defined(SIMU)
   extern volatile uint8_t btChipPresent;
