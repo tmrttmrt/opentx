@@ -78,7 +78,6 @@ void selectModel(uint8_t sub)
   eeLoadModel(sub);
 }
 
-#if defined(CPUARM) || defined(CPUESP32)
 ModelHeader modelHeaders[MAX_MODELS];
 void eeLoadModelHeaders()
 {
@@ -86,7 +85,6 @@ void eeLoadModelHeaders()
     eeLoadModelHeader(i, &modelHeaders[i]);
   }
 }
-#endif
 
 #if !defined(CPUESP32)
 void storageReadRadioSettings()
@@ -98,14 +96,12 @@ void storageReadRadioSettings()
     eeLoadModelHeaders();
   }
 
-#if defined(CPUARM)
   for (uint8_t i=0; languagePacks[i]!=NULL; i++) {
     if (!strncmp(g_eeGeneral.ttsLanguage, languagePacks[i]->id, 2)) {
       currentLanguagePackIdx = i;
       currentLanguagePack = languagePacks[i];
     }
   }
-#endif
 }
 #endif
 

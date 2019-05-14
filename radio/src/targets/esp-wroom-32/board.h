@@ -46,8 +46,6 @@ uint16_t getBatteryVoltage();   // returns current battery voltage in 10mV steps
 #define ADC1_NAVG 20
 
 
-#define TIMERS 2
-
 // Switches driver
 #define INP_ID2                 7
 #define INP_ID1                 6
@@ -72,6 +70,7 @@ enum EnumSwitches
 };
 #define IS_3POS(sw)                    ((sw) == 0)
 #define IS_TOGGLE(sw)                  ((sw) == SWSRC_TRN)
+
 uint8_t keyState(uint8_t index);
 uint8_t switchState(uint8_t index);
 
@@ -116,7 +115,18 @@ void lcdInit(void);
   #define UNEXPECTED_SHUTDOWN()   0//(mcusr & (1 << WDRF))
 #endif
 
-//PPM
+
+// Pulses driver
+void init_no_pulses(uint32_t port);
+void init_ppm(uint32_t port);
+void disable_ppm(uint32_t port);
+void init_pxx1_pulses(uint32_t port);
+void disable_pxx1_pulses(uint32_t port);
+void disable_serial(uint32_t port);
+void init_module_timer( uint32_t module_index, uint32_t period, uint8_t state);
+void disable_module_timer( uint32_t module_index);
+void extmoduleSerialStart(uint32_t baudrate, uint32_t period_half_us, bool inverted);
+void extmoduleSendNextFrame();
 //#define INP_E_PPM_IN              4
 #define PPM_TX_GPIO               15
 
@@ -135,11 +145,7 @@ void lcdInit(void);
 
 // Rotary encoders driver
 #define INP_J_ROT_ENC_1_PUSH      0
-#define INP_J_ROT_ENC_2_PUSH      4
-#define REA_DOWN()                rEncDown(INP_J_ROT_ENC_1_PUSH)
-#define REB_DOWN()                rEncDown(INP_J_ROT_ENC_2_PUSH)
-#define ROTENC_DOWN()             (REA_DOWN() || REB_DOWN())
-//#define ROTENC_DIV2                 // rotary encoders resolution/2
+#define ROTARY_ENCODER_NAVIGATION
 
 #define IS_SHIFT_KEY(index)       (false)
 #define IS_SHIFT_PRESSED()        (false)
@@ -157,7 +163,7 @@ enum EnumKeys
   KEY_PLUS = KEY_UP,
   KEY_RIGHT,
   KEY_LEFT,
-  
+
   TRM_BASE,
   TRM_LH_DWN = TRM_BASE,
   TRM_LH_UP,
@@ -169,17 +175,8 @@ enum EnumKeys
   TRM_RH_UP,
   TRM_LAST = TRM_RH_UP,
 
-#if ROTARY_ENCODERS > 0 || defined(ROTARY_ENCODER_NAVIGATION)
-  BTN_REa,
-#endif
-#if ROTARY_ENCODERS > 0
-  BTN_REb,
-#endif
-  
   NUM_KEYS
 };
-
-
 
 enum CalibratedAnalogs {
   CALIBRATED_STICK1,
@@ -193,15 +190,13 @@ enum CalibratedAnalogs {
   NUM_CALIBRATED_ANALOGS
 };
 
-// Buzzer driver
-#define buzzerOn()                
-#define buzzerOff()               
+#define IS_POT(x)                      ((x)>=POT_FIRST && (x)<=POT_LAST)
+#define STICKS_PWM_ENABLED()          (false)
+
 
 // Speaker driver
 #if defined(AUDIO)
 #define AUD_DAC_GPIO   26
-#define speakerOn()               
-#define speakerOff()              
 #define VOLUME_LEVEL_MAX  23
 #define VOLUME_LEVEL_DEF  12
 #endif
@@ -210,8 +205,6 @@ enum CalibratedAnalogs {
 #define BATTERY_MIN                90  // 9V
 #define BATTERY_MAX                120 // 12V
 #define BATTERY_WARN               90  // 9V
-#define BATT_SCALE                    150
-#define BAT_AVG_SAMPLES       8
 
 // Analogs driver
 #define NUM_MOUSE_ANALOGS          0

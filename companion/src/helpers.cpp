@@ -33,6 +33,7 @@
 #include "simulatormainwindow.h"
 #include "storage/sdcard.h"
 
+#include <QFileDialog>
 #include <QLabel>
 #include <QMessageBox>
 
@@ -464,83 +465,22 @@ void Helpers::getFileComboBoxValue(QComboBox * b, char * dest, int length)
   }
 }
 
-void Helpers::addRawSourceItems(QStandardItemModel * itemModel, const RawSourceType & type, int count, const GeneralSettings * const generalSettings,
-                                const ModelData * const model, const int start)
+void Helpers::exportAppSettings(QWidget * dlgParent)
 {
-  for (int i = start; i < start + count; i++) {
-    RawSource src = RawSource(type, i);
-    if (!src.isAvailable(model, generalSettings, getCurrentBoard()))
-      continue;
+  static QString lastExpFile = CPN_SETTINGS_INI_PATH.arg(QDateTime::currentDateTime().toString("dd-MMM-yy"));
+  const QString expFile = QFileDialog::getSaveFileName(dlgParent, QCoreApplication::translate("Companion", "Select or create a file for exported Settings:"), lastExpFile, CPN_STR_APP_SETTINGS_FILTER);
+  if (expFile.isEmpty())
+    return;
 
-    QStandardItem * modelItem = new QStandardItem(src.toString(model, generalSettings));
-    modelItem->setData(src.toValue(), Qt::UserRole);
-    itemModel->appendRow(modelItem);
+  lastExpFile = expFile;
+  QString resultMsg;
+  if (g.exportSettingsToFile(expFile, resultMsg)) {
+    QMessageBox::information(dlgParent, CPN_STR_APP_NAME, resultMsg);
+    return;
   }
-}
-
-QStandardItemModel * Helpers::getRawSourceItemModel(const GeneralSettings * const generalSettings, const ModelData * const model, unsigned int flags)
-{
-  QStandardItemModel * itemModel = new QStandardItemModel();
-  Boards board = Boards(getCurrentBoard());
-  Firmware * fw = getCurrentFirmware();
-
-  if (flags & POPULATE_NONE) {
-    addRawSourceItems(itemModel, SOURCE_TYPE_NONE, 1, generalSettings, model);
-  }
-
-  if (flags & POPULATE_SCRIPT_OUTPUTS) {
-    for (int i=0; i < getCurrentFirmware()->getCapability(LuaScripts); i++) {
-      addRawSourceItems(itemModel, SOURCE_TYPE_LUA_OUTPUT, fw->getCapability(LuaOutputsPerScript), generalSettings, model, i * 16);
-    }
-  }
-
-  if (model && (flags & POPULATE_VIRTUAL_INPUTS)) {
-    addRawSourceItems(itemModel, SOURCE_TYPE_VIRTUAL_INPUT, fw->getCapability(VirtualInputs), generalSettings, model);
-  }
-
-  if (flags & POPULATE_SOURCES) {
-    int totalSources = CPN_MAX_STICKS + board.getCapability(Board::Pots) + board.getCapability(Board::Sliders) +  board.getCapability(Board::MouseAnalogs);
-    addRawSourceItems(itemModel, SOURCE_TYPE_STICK, totalSources, generalSettings, model);
-    addRawSourceItems(itemModel, SOURCE_TYPE_ROTARY_ENCODER, fw->getCapability(RotaryEncoders), generalSettings, model);
-  }
-
-  if (flags & POPULATE_TRIMS) {
-    addRawSourceItems(itemModel, SOURCE_TYPE_TRIM, board.getCapability(Board::NumTrims), generalSettings, model);
-  }
-
-  if (flags & POPULATE_SOURCES) {
-    addRawSourceItems(itemModel, SOURCE_TYPE_MAX, 1, generalSettings, model);
-  }
-
-  if (flags & POPULATE_SWITCHES) {
-    addRawSourceItems(itemModel, SOURCE_TYPE_SWITCH, board.getCapability(Board::Switches), generalSettings, model);
-    addRawSourceItems(itemModel, SOURCE_TYPE_CUSTOM_SWITCH, fw->getCapability(LogicalSwitches), generalSettings, model);
-  }
-
-  if (flags & POPULATE_SOURCES) {
-    addRawSourceItems(itemModel, SOURCE_TYPE_CYC, CPN_MAX_CYC, generalSettings, model);
-    addRawSourceItems(itemModel, SOURCE_TYPE_PPM, fw->getCapability(TrainerInputs), generalSettings, model);
-    addRawSourceItems(itemModel, SOURCE_TYPE_CH, fw->getCapability(Outputs), generalSettings, model);
-  }
-
-  if (flags & POPULATE_TELEMETRY) {
-    int count = 0;
-    if (IS_ARM(board.getBoardType())) {
-      addRawSourceItems(itemModel, SOURCE_TYPE_SPECIAL, 5, generalSettings, model);
-      count = CPN_MAX_SENSORS * 3;
-    }
-    else {
-      count = ((flags & POPULATE_TELEMETRYEXT) ? TELEMETRY_SOURCES_STATUS_COUNT : TELEMETRY_SOURCES_COUNT);
-    }
-    if (model && count)
-      addRawSourceItems(itemModel, SOURCE_TYPE_TELEMETRY, count, generalSettings, model);
-  }
-
-  if (flags & POPULATE_GVARS) {
-    addRawSourceItems(itemModel, SOURCE_TYPE_GVAR, fw->getCapability(Gvars), generalSettings, model);
-  }
-
-  return itemModel;
+  resultMsg.append("\n" % QCoreApplication::translate("Companion", "Press the 'Retry' button to choose another file."));
+  if (QMessageBox::warning(dlgParent, CPN_STR_APP_NAME, resultMsg, QMessageBox::Cancel, QMessageBox::Retry) == QMessageBox::Retry)
+    exportAppSettings(dlgParent);
 }
 
 void startSimulation(QWidget * parent, RadioData & radioData, int modelIdx)

@@ -43,6 +43,16 @@ void chainMenu(MenuHandlerFunc newMenu);
 void pushMenu(MenuHandlerFunc newMenu);
 void popMenu();
 
+inline bool isRadioMenuDisplayed()
+{
+  return menuVerticalPositions[0] == 1;
+}
+
+inline bool isModelMenuDisplayed()
+{
+  return menuVerticalPositions[0] == 0;
+}
+
 void onMainViewMenu(const char * result);
 
 void menuFirstCalib(event_t event);
@@ -63,13 +73,13 @@ void menuTraceBuffer(event_t event);
 enum MenuRadioIndexes {
   MENU_RADIO_SETUP,
   MENU_RADIO_SD_MANAGER,
+#if defined(PXX2)
+  MENU_RADIO_TOOLS,
+#endif
   MENU_RADIO_SPECIAL_FUNCTIONS,
   MENU_RADIO_TRAINER,
-  MENU_RADIO_VERSION,
-  MENU_RADIO_SWITCHES_TEST,
-  MENU_RADIO_ANALOGS_TEST,
   MENU_RADIO_HARDWARE,
-  MENU_RADIO_CALIBRATION,
+  MENU_RADIO_VERSION,
   MENU_RADIO_PAGES_COUNT
 };
 
@@ -81,7 +91,10 @@ void menuRadioVersion(event_t event);
 void menuRadioDiagKeys(event_t event);
 void menuRadioDiagAnalogs(event_t event);
 void menuRadioHardware(event_t event);
+void menuRadioTools(event_t event);
 void menuRadioCalibration(event_t event);
+void menuRadioSpectrumAnalyser(event_t event);
+void menuRadioPowerMeter(event_t event);
 
 extern const MenuHandlerFunc menuTabGeneral[MENU_RADIO_PAGES_COUNT];
 
@@ -93,7 +106,7 @@ enum MenuModelIndexes {
   MENU_MODEL_INPUTS,
   MENU_MODEL_MIXES,
   MENU_MODEL_OUTPUTS,
-  CASE_CURVES(MENU_MODEL_CURVES)
+  MENU_MODEL_CURVES,
   CASE_GVARS(MENU_MODEL_GVARS)
   MENU_MODEL_LOGICAL_SWITCHES,
   MENU_MODEL_SPECIAL_FUNCTIONS,
@@ -101,7 +114,6 @@ enum MenuModelIndexes {
   MENU_MODEL_CUSTOM_SCRIPTS,
 #endif
   MENU_MODEL_TELEMETRY_FRSKY,
-  CASE_MAVLINK(MENU_MODEL_TELEMETRY_MAVLINK)
   MENU_MODEL_DISPLAY,
   MENU_MODEL_PAGES_COUNT
 };
@@ -109,6 +121,8 @@ enum MenuModelIndexes {
 void menuModelSelect(event_t event);
 void menuModelSetup(event_t event);
 void menuModelFailsafe(event_t event);
+void menuModelModuleOptions(event_t event);
+void menuModelReceiverOptions(event_t event);
 void menuModelHeli(event_t event);
 void menuModelFlightModesAll(event_t event);
 void menuModelExpoOne(event_t event);
@@ -123,6 +137,7 @@ void menuModelLogicalSwitches(event_t event);
 void menuModelSpecialFunctions(event_t event);
 void menuModelCustomScripts(event_t event);
 void menuModelTelemetryFrsky(event_t event);
+void menuModelSensor(event_t event);
 void menuModelDisplay(event_t event);
 
 extern const MenuHandlerFunc menuTabModel[MENU_MODEL_PAGES_COUNT];

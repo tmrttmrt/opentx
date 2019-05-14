@@ -4,8 +4,9 @@
 set -e
 set -x
 
-# Allow variable core usage, default uses two cores, to set 8 cores for example : commit-tests.sh -j8
-: ${CORES:=2}
+# Allow variable core usage, default uses all cpu cores, to set 8 cores for example : commit-tests.sh -j8
+num_cpus=`grep 'physical id' /proc/cpuinfo | sort -u | wc -l`
+: ${CORES:=$num_cpus}
 # Default build treats warnings as errors, set -Wno-error to override, e.g.: commit-tests.sh -Wno-error
 : ${WERROR:=1}
 # A board name to build for, or ALL
@@ -59,54 +60,10 @@ COMMON_OPTIONS+=${EXTRA_OPTIONS}
 mkdir build || true
 cd build
 
-if [[ " 9X AVR9X ALL " =~ " ${FLAVOR} " ]] ; then
-  # OpenTX on 9X stock with FrSky telemetry
-  rm -rf *
-  cmake ${COMMON_OPTIONS} -DPCB=9X -DHELI=YES -DTEMPLATES=YES -DGVARS=YES -DTELEMETRY=FRSKY ${SRCDIR}
-  make -j${CORES} ${FIRMARE_TARGET}
-  make -j${CORES} libsimulator
-  make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
-
-  # OpenTX on 9X stock with Ardupilot telemetry
-  rm -rf *
-  cmake ${COMMON_OPTIONS} -DPCB=9X -DHELI=YES -DTEMPLATES=YES -DGVARS=YES -DTELEMETRY=ARDUPILOT ${SRCDIR}
-  make -j${CORES} ${FIRMARE_TARGET}
-
-  # OpenTX on 9X stock with JETI telemetry
-  rm -rf *
-  cmake ${COMMON_OPTIONS} -DPCB=9X -DHELI=YES -DTEMPLATES=YES -DGVARS=YES -DTELEMETRY=JETI ${SRCDIR}
-  make -j${CORES} ${FIRMARE_TARGET}
-fi
-
-if [[ " MEGA2560 AVR9X ALL " =~ " ${FLAVOR} " ]] ; then
-  # OpenTX on Mega2560
-  rm -rf *
-  cmake ${COMMON_OPTIONS} -DPCB=MEGA2560 -DTEMPLATES=YES -DGVARS=YES -DHELI=YES ${SRCDIR}
-  make -j${CORES} ${FIRMARE_TARGET}
-  make -j${CORES} libsimulator
-  make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
-
-  # OpenTX on Mega2560 with Mavlink telemetry
-  rm -rf *
-  cmake ${COMMON_OPTIONS} -DPCB=MEGA2560 -DTELEMETRY=MAVLINK -DHELI=YES -DTEMPLATES=YES -DAUDIO=YES -DVOICE=YES -DGVARS=YES ${SRCDIR}
-  make -j${CORES} ${FIRMARE_TARGET}
-  make -j${CORES} libsimulator
-  make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
-fi
-
-if [[ " GRUVIN9X AVR9X ALL " =~ " ${FLAVOR} " ]] ; then
-  # OpenTX on gruvin9x board
-  rm -rf *
-  cmake ${COMMON_OPTIONS} -DPCB=GRUVIN9X -DHELI=YES -DTEMPLATES=YES -DAUDIO=YES -DVOICE=YES -DGVARS=YES ${SRCDIR}
-  make -j${CORES} ${FIRMARE_TARGET}
-  make -j${CORES} libsimulator
-  make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
-fi
-
 if [[ " SKY9X ARM9X ALL " =~ " ${FLAVOR} " ]] ; then
   # OpenTX on Sky9x
   rm -rf *
-  cmake ${COMMON_OPTIONS} -DPCB=SKY9X -DHELI=YES DLUA=YES -DMULTIMODULE=YES -DTELEMETRY=FRSKY -DPPM_LIMITS_SYMETRICAL=YES -DVARIO=YES -DGAUGES=YES -DAUTOSWITCH=YES -DAUTOSOURCE=YES -DAUDIO=YES -DGPS=YES -DPPM_CENTER_ADJUSTABLE=YES -DFLIGHT_MODES=YES -DOVERRIDE_CHANNEL_FUNCTION=YES -DFRSKY_STICKS=YES -DGVARS=YES ${SRCDIR}
+  cmake ${COMMON_OPTIONS} -DPCB=SKY9X -DHELI=YES DLUA=YES -DMULTIMODULE=YES -DTELEMETRY=FRSKY -DPPM_LIMITS_SYMETRICAL=YES -DVARIO=YES -DAUTOSWITCH=YES -DAUTOSOURCE=YES -DAUDIO=YES -DGPS=YES -DPPM_CENTER_ADJUSTABLE=YES -DFLIGHT_MODES=YES -DOVERRIDE_CHANNEL_FUNCTION=YES -DFRSKY_STICKS=YES -DGVARS=YES ${SRCDIR}
   make -j${CORES} ${FIRMARE_TARGET}
   make -j${CORES} libsimulator
   make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
@@ -130,6 +87,15 @@ if [[ " 9XRPRO ARM9X ALL " =~ " ${FLAVOR} " ]] ; then
   make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
 fi
 
+if [[ " X9LITE ALL " =~ " ${FLAVOR} " ]] ; then
+  # OpenTX on X9LITE
+  rm -rf *
+  cmake ${COMMON_OPTIONS} -DPCB=X9LITE -DHELI=YES -DGVARS=YES ${SRCDIR}
+  make -j${CORES} ${FIRMARE_TARGET}
+  make -j${CORES} libsimulator
+  make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
+fi
+
 if [[ " X7 ALL " =~ " ${FLAVOR} " ]] ; then
   # OpenTX on X7
   rm -rf *
@@ -143,6 +109,15 @@ if [[ " XLITE ALL " =~ " ${FLAVOR} " ]] ; then
   # OpenTX on X-Lite
   rm -rf *
   cmake ${COMMON_OPTIONS} -DPCB=XLITE -DHELI=YES -DGVARS=YES ${SRCDIR}
+  make -j${CORES} ${FIRMARE_TARGET}
+  make -j${CORES} libsimulator
+  make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
+fi
+
+if [[ " XLITES ALL " =~ " ${FLAVOR} " ]] ; then
+  # OpenTX on X-Lites
+  rm -rf *
+  cmake ${COMMON_OPTIONS} -DPCB=XLITES -DHELI=YES -DGVARS=YES ${SRCDIR}
   make -j${CORES} ${FIRMARE_TARGET}
   make -j${CORES} libsimulator
   make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}

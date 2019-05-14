@@ -34,7 +34,7 @@
 #include "opentx.h"
 #undef DIR
 
-const pm_char * CopyConvertModel_M217(uint8_t i_fileDst, char * path);
+const char * CopyConvertModel_M217(uint8_t i_fileDst, char * path);
 
 const char * const eepromDname = "/flash/eeprom.dir";
 const char * const eeGeneralName = "radio.eesp";
@@ -162,7 +162,7 @@ bool eeModelExists(uint8_t id)
 
 bool eeCopyFile(char * dpath, char * spath)
 {
-    ESP_LOGI(TAG,"eeCopyFile(%s, %s).", dpath, spath);
+    ESP_LOGD(TAG,"eeCopyFile(%s, %s).", dpath, spath);
     FILE * fps = fopen ( spath, "rb" );
     bool ret=true;
     if (NULL==fps) { /* Check if the file has been opened */
@@ -193,7 +193,7 @@ bool eeCopyFile(char * dpath, char * spath)
 
 bool eeCopyModel(uint8_t dst, char *spath)
 {
-    ESP_LOGI(TAG,"eeCopyModel(%d, %s).", dst, spath);
+    ESP_LOGD(TAG,"eeCopyModel(%d, %s).", dst, spath);
     char * fn=makeModPath(dst);
     return eeCopyFile( fn, spath);
 
@@ -201,14 +201,14 @@ bool eeCopyModel(uint8_t dst, char *spath)
 
 bool eeCopyModel(char * dpath, uint8_t src)
 {
-    ESP_LOGI(TAG,"eeCopyModel(%s, %d).", dpath, src);
+    ESP_LOGD(TAG,"eeCopyModel(%s, %d).", dpath, src);
     char * fn=makeModPath(src);
     return eeCopyFile(dpath, fn);
 }
 
 bool eeCopyModel(uint8_t dst, uint8_t src)
 {
-    ESP_LOGI(TAG,"eeCopyModel(%d, %d).", dst, src);
+    ESP_LOGD(TAG,"eeCopyModel(%d, %d).", dst, src);
     char  fn[CONFIG_FATFS_MAX_LFN];
     strcpy(fn,makeModPath(dst));
     if(eeCopyModel(fn, src)) {
@@ -467,7 +467,7 @@ void storageReadRadioSettings()
 
 #if defined(SDCARD)
 
-const pm_char * eeBackupAll()
+const char * eeBackupAll()
 {
     char * buf = reusableBuffer.modelsel.mainname;
     char * tail = &buf[sizeof(BACKUP_PATH)];
@@ -534,7 +534,7 @@ const pm_char * eeBackupAll()
 }
 
 
-const pm_char * eeBackupModel(uint8_t i_fileSrc)
+const char * eeBackupModel(uint8_t i_fileSrc)
 {
     char * buf = reusableBuffer.modelsel.mainname;
     ESP_LOGI(TAG, "eeBackupModel:i_fileSrc: %d",(int) i_fileSrc);
@@ -559,7 +559,7 @@ const pm_char * eeBackupModel(uint8_t i_fileSrc)
     return NULL;
 }
 
-const pm_char * eeRestoreModel(uint8_t i_fileDst, char *model_name)
+const char * eeRestoreModel(uint8_t i_fileDst, char *model_name)
 {
     char * buf = reusableBuffer.modelsel.mainname;
     storageCheck(true);
@@ -579,7 +579,8 @@ const pm_char * eeRestoreModel(uint8_t i_fileDst, char *model_name)
         return STR_INCOMPATIBLE;
     }
     if( FIRST_CONV_EEPROM_VER == version  ){
-        return CopyConvertModel_M217(i_fileDst, buf);
+//        return CopyConvertModel_M217(i_fileDst, buf);
+        return STR_INCOMPATIBLE;
     } else {       
         if(0 == eeCopyModel(i_fileDst, buf)) {
             return STR_SDCARD_ERROR;

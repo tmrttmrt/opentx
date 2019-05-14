@@ -30,7 +30,6 @@ FILE *g_oLogFile;
 
 FIL g_oLogFile __DMA;
 #endif
-const pm_char * g_logError = NULL;
 uint8_t logDelay;
 
 void writeHeader();
@@ -49,7 +48,7 @@ void logsInit()
   memset(&g_oLogFile, 0, sizeof(g_oLogFile));
 }
 
-const pm_char * logsOpen()
+const char * logsOpen()
 {
   // Determine and set log file filename
   FRESULT result;
@@ -62,7 +61,7 @@ const pm_char * logsOpen()
     return STR_SDCARD_FULL;
 
   // check and create folder here
-  strcpy_P(filename, STR_LOGS_PATH);
+  strcpy(filename, STR_LOGS_PATH);
   const char * error = sdCheckAndCreateDirectory(filename);
   if (error) {
     return error;
@@ -79,7 +78,7 @@ const pm_char * logsOpen()
       len = i+1;
     if (len) {
       if (filename[i])
-        filename[i] = idx2char(filename[i]);
+        filename[i] = zchar2char(filename[i]);
       else
         filename[i] = '_';
     }
@@ -93,7 +92,7 @@ const pm_char * logsOpen()
     // TODO
     uint8_t num = 1;
 #endif
-    strcpy_P(&filename[sizeof(LOGS_PATH)], STR_MODEL);
+    strcpy(&filename[sizeof(LOGS_PATH)], STR_MODEL);
     filename[sizeof(LOGS_PATH) + PSIZE(TR_MODEL)] = (char)((num / 10) + '0');
     filename[sizeof(LOGS_PATH) + PSIZE(TR_MODEL) + 1] = (char)((num % 10) + '0');
     len = sizeof(LOGS_PATH) + PSIZE(TR_MODEL) + 2;
@@ -105,7 +104,7 @@ const pm_char * logsOpen()
   tmp = strAppendDate(&filename[len]);
 #endif
 
-  strcpy_P(tmp, STR_LOGS_EXT);
+  strcpy(tmp, STR_LOGS_EXT);
 #if defined(CPUESP32)
   g_oLogFile=fopen(filename,"a");
   if(NULL==g_oLogFile){
@@ -145,13 +144,6 @@ void logsClose()
   }
 }
 
-#if !defined(CPUARM)
-getvalue_t getConvertedTelemetryValue(getvalue_t val, uint8_t unit)
-{
-  convertUnit(val, unit);
-  return val;
-}
-#endif
 
 void writeHeader()
 {
@@ -162,23 +154,7 @@ void writeHeader()
 #endif
 
 #if defined(TELEMETRY_FRSKY)
-#if !defined(CPUARM)
-  f_puts("Buffer,RX,TX,A1,A2,", &g_oLogFile);
-#if defined(FRSKY_HUB)
-  if (IS_USR_PROTO_FRSKY_HUB()) {
-    f_puts("GPS Date,GPS Time,Long,Lat,Course,GPS Speed(kts),GPS Alt,Baro Alt(", &g_oLogFile);
-    f_puts(TELEMETRY_BARO_ALT_UNIT, &g_oLogFile);
-    f_puts("),Vertical Speed,Air Speed(kts),Temp1,Temp2,RPM,Fuel," TELEMETRY_CELLS_LABEL "Current,Consumption,Vfas,AccelX,AccelY,AccelZ,", &g_oLogFile);
-  }
-#endif
-#if defined(WS_HOW_HIGH)
-  if (IS_USR_PROTO_WS_HOW_HIGH()) {
-    f_puts("WSHH Alt,", &g_oLogFile);
-  }
-#endif
-#endif
 
-#if defined(CPUARM)
   char label[TELEM_LABEL_LEN+7];
   for (int i=0; i<MAX_TELEMETRY_SENSORS; i++) {
     if (isTelemetryFieldAvailable(i)) {
@@ -199,7 +175,6 @@ void writeHeader()
     }
   }
 #endif
-#endif
 
 #if defined(PCBTARANIS) || defined(PCBHORUS)
   for (uint8_t i=1; i<NUM_STICKS+NUM_POTS+NUM_SLIDERS+1; i++) {
@@ -215,6 +190,10 @@ void writeHeader()
   #define STR_SWITCHES_LOG_HEADER  "SA,SB,SC,SD,SF,SH"
 #elif defined(PCBXLITE)
   #define STR_SWITCHES_LOG_HEADER  "SA,SB,SC,SD"
+#elif defined(PCBXLITES)
+  #define STR_SWITCHES_LOG_HEADER  "SA,SB,SC,SD,SE,SF"
+#elif defined(PCBX9LITE)
+  #define STR_SWITCHES_LOG_HEADER  "SA,SB,SC,SE,SF"
 #else
   #define STR_SWITCHES_LOG_HEADER  "SA,SB,SC,SD,SE,SF,SG,SH"
 #endif
@@ -239,7 +218,7 @@ uint32_t getLogicalSwitchesStates(uint8_t first)
 
 void logsWrite()
 {
-  static const pm_char * error_displayed = NULL;
+  static const char * error_displayed = NULL;
 
   if (isFunctionActive(FUNCTION_LOGS) && logDelay > 0) {
     tmr10ms_t tmr10ms = get_tmr10ms();
@@ -251,7 +230,7 @@ void logsWrite()
 #else
       if (!g_oLogFile.obj.fs) {
 #endif
-        const pm_char * result = logsOpen();
+        const char * result = logsOpen();
         if (result != NULL) {
           if (result != error_displayed) {
             error_displayed = result;
@@ -276,59 +255,7 @@ void logsWrite()
 #endif
 
 #if defined(TELEMETRY_FRSKY)
-#if !defined(CPUARM)
-      f_printf(&g_oLogFile, "%d,%d,%d,", telemetryStreaming, RAW_FRSKY_MINMAX(telemetryData.rssi[0]), RAW_FRSKY_MINMAX(telemetryData.rssi[1]));
-      for (uint8_t i=0; i<MAX_FRSKY_A_CHANNELS; i++) {
-        int16_t converted_value = applyChannelRatio(i, RAW_FRSKY_MINMAX(telemetryData.analog[i]));
-        f_printf(&g_oLogFile, "%d.%02d,", converted_value/100, converted_value%100);
-      }
 
-#if defined(FRSKY_HUB)
-      TELEMETRY_BARO_ALT_PREPARE();
-
-      if (IS_USR_PROTO_FRSKY_HUB()) {
-        f_printf(&g_oLogFile, "%4d-%02d-%02d,%02d:%02d:%02d,%03d.%04d%c,%03d.%04d%c,%03d.%02d," TELEMETRY_GPS_SPEED_FORMAT TELEMETRY_GPS_ALT_FORMAT TELEMETRY_BARO_ALT_FORMAT TELEMETRY_VSPEED_FORMAT TELEMETRY_ASPEED_FORMAT "%d,%d,%d,%d," TELEMETRY_CELLS_FORMAT TELEMETRY_CURRENT_FORMAT "%d," TELEMETRY_VFAS_FORMAT "%d,%d,%d,",
-            telemetryData.hub.year+2000,
-            telemetryData.hub.month,
-            telemetryData.hub.day,
-            telemetryData.hub.hour,
-            telemetryData.hub.min,
-            telemetryData.hub.sec,
-            telemetryData.hub.gpsLongitude_bp,
-            telemetryData.hub.gpsLongitude_ap,
-            telemetryData.hub.gpsLongitudeEW ? telemetryData.hub.gpsLongitudeEW : '-',
-            telemetryData.hub.gpsLatitude_bp,
-            telemetryData.hub.gpsLatitude_ap,
-            telemetryData.hub.gpsLatitudeNS ? telemetryData.hub.gpsLatitudeNS : '-',
-            telemetryData.hub.gpsCourse_bp,
-            telemetryData.hub.gpsCourse_ap,
-            TELEMETRY_GPS_SPEED_ARGS
-            TELEMETRY_GPS_ALT_ARGS
-            TELEMETRY_BARO_ALT_ARGS
-            TELEMETRY_VSPEED_ARGS
-            TELEMETRY_ASPEED_ARGS
-            telemetryData.hub.temperature1,
-            telemetryData.hub.temperature2,
-            telemetryData.hub.rpm,
-            telemetryData.hub.fuelLevel,
-            TELEMETRY_CELLS_ARGS
-            TELEMETRY_CURRENT_ARGS
-            telemetryData.hub.currentConsumption,
-            TELEMETRY_VFAS_ARGS
-            telemetryData.hub.accelX,
-            telemetryData.hub.accelY,
-            telemetryData.hub.accelZ);
-      }
-#endif
-
-#if defined(WS_HOW_HIGH)
-      if (IS_USR_PROTO_WS_HOW_HIGH()) {
-        f_printf(&g_oLogFile, "%d,", TELEMETRY_RELATIVE_BARO_ALT_BP);
-      }
-#endif
-#endif
-
-#if defined(CPUARM)
       for (int i=0; i<MAX_TELEMETRY_SENSORS; i++) {
         if (isTelemetryFieldAvailable(i)) {
           TelemetrySensor & sensor = g_model.telemetrySensors[i];
@@ -367,14 +294,22 @@ void logsWrite()
         }
       }
 #endif
-#endif
 
       for (uint8_t i=0; i<NUM_STICKS+NUM_POTS+NUM_SLIDERS; i++) {
         f_printf(&g_oLogFile, "%d,", calibratedAnalogs[i]);
       }
 
 // TODO: use hardware config to populate
-#if defined(PCBXLITE)
+#if defined(PCBX9LITE)
+f_printf(&g_oLogFile, "%d,%d,%d,%d,0x%08X%08X,",
+          GET_3POS_STATE(SA),
+          GET_3POS_STATE(SB),
+          GET_3POS_STATE(SC),
+          GET_2POS_STATE(SE),
+          GET_2POS_STATE(SF),
+          getLogicalSwitchesStates(32),
+          getLogicalSwitchesStates(0));
+#elif defined(PCBXLITE)
       f_printf(&g_oLogFile, "%d,%d,%d,%d,0x%08X%08X,",
           GET_3POS_STATE(SA),
           GET_3POS_STATE(SB),

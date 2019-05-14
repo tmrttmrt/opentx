@@ -22,31 +22,19 @@
 
 #include "opentx.h"
 
-const pm_uchar sticks[] PROGMEM = {
+const unsigned char sticks[]  = {
 #include "sticks.lbm"
 };
 
-#define RADIO_SETUP_2ND_COLUMN  (LCD_W-6*FW-3)
-#define RADIO_SETUP_DATE_COLUMN (FW*15+7)
-#define RADIO_SETUP_TIME_COLUMN (FW*15+9)
+#define RADIO_SETUP_2ND_COLUMN  79
 
-#if !defined(CPUM64)
-  #define SLIDER_5POS(y, value, label, event, attr) { \
-    int8_t tmp = value; \
-    drawSlider(RADIO_SETUP_2ND_COLUMN, y, 2+tmp, 4, attr); \
-    value = editChoice(RADIO_SETUP_2ND_COLUMN, y, label, NULL, tmp, -2, +2, attr, event); \
-  }
-#elif defined(GRAPHICS)
-  #define SLIDER_5POS(y, value, label, event, attr) { \
-    int8_t tmp = value; \
-    display5posSlider(RADIO_SETUP_2ND_COLUMN, y, tmp, attr); \
-    value = editChoice(RADIO_SETUP_2ND_COLUMN, y, label, NULL, tmp, -2, +2, attr, event); \
-  }
-#else
-  #define SLIDER_5POS(y, value, label, event, attr) value = editChoice(RADIO_SETUP_2ND_COLUMN, y, label, STR_VBEEPLEN, value, -2, +2, attr, event)
-#endif
+#define SLIDER_5POS(y, value, label, event, attr) { \
+  int8_t tmp = value; \
+  drawSlider(RADIO_SETUP_2ND_COLUMN, y, LCD_W - 2 - RADIO_SETUP_2ND_COLUMN, 2+tmp, 4, attr); \
+  value = editChoice(RADIO_SETUP_2ND_COLUMN, y, label, NULL, tmp, -2, +2, attr, event); \
+}
 
-#if defined(SPLASH) && !defined(FSPLASH)
+#if defined(SPLASH)
   #define CASE_SPLASH_PARAM(x) x,
 #else
   #define CASE_SPLASH_PARAM(x)
@@ -65,24 +53,24 @@ enum MenuRadioSetupItems {
   ITEM_SETUP_SOUND_LABEL,
   CASE_AUDIO(ITEM_SETUP_BEEP_MODE)
   CASE_BUZZER(ITEM_SETUP_BUZZER_MODE)
-  CASE_VOICE(ITEM_SETUP_SPEAKER_VOLUME)
-  CASE_CPUARM(ITEM_SETUP_BEEP_VOLUME)
-  CASE_CPUESP32(ITEM_SETUP_BEEP_VOLUME)
+  ITEM_SETUP_SPEAKER_VOLUME,
+  ITEM_SETUP_BEEP_VOLUME,
   ITEM_SETUP_BEEP_LENGTH,
   CASE_AUDIO(ITEM_SETUP_SPEAKER_PITCH)
-  CASE_CPUARM(ITEM_SETUP_WAV_VOLUME)
-  CASE_CPUESP32(ITEM_SETUP_WAV_VOLUME)
-  CASE_CPUARM(ITEM_SETUP_BACKGROUND_VOLUME)
-  CASE_CPUESP32(ITEM_SETUP_BACKGROUND_VOLUME)
-  CASE_VARIO_CPUARM(ITEM_SETUP_VARIO_LABEL)
-  CASE_VARIO_CPUARM(ITEM_SETUP_VARIO_VOLUME)
-  CASE_VARIO_CPUARM(ITEM_SETUP_VARIO_PITCH)
-  CASE_VARIO_CPUARM(ITEM_SETUP_VARIO_RANGE)
-  CASE_VARIO_CPUARM(ITEM_SETUP_VARIO_REPEAT)
+  ITEM_SETUP_WAV_VOLUME,
+  ITEM_SETUP_BACKGROUND_VOLUME,
+  CASE_VARIO(ITEM_SETUP_VARIO_LABEL)
+  CASE_VARIO(ITEM_SETUP_VARIO_VOLUME)
+  CASE_VARIO(ITEM_SETUP_VARIO_PITCH)
+  CASE_VARIO(ITEM_SETUP_VARIO_RANGE)
+  CASE_VARIO(ITEM_SETUP_VARIO_REPEAT)
   CASE_HAPTIC(ITEM_SETUP_HAPTIC_LABEL)
   CASE_HAPTIC(ITEM_SETUP_HAPTIC_MODE)
   CASE_HAPTIC(ITEM_SETUP_HAPTIC_LENGTH)
   CASE_HAPTIC(ITEM_SETUP_HAPTIC_STRENGTH)
+  CASE_GYRO(ITEM_SETUP_GYRO_LABEL)
+  CASE_GYRO(ITEM_SETUP_GYRO_MAX)
+  CASE_GYRO(ITEM_SETUP_GYRO_OFFSET)
   ITEM_SETUP_CONTRAST,
   ITEM_SETUP_ALARMS_LABEL,
   ITEM_SETUP_BATTERY_WARNING,
@@ -91,26 +79,28 @@ enum MenuRadioSetupItems {
   ITEM_SETUP_INACTIVITY_ALARM,
   ITEM_SETUP_MEMORY_WARNING,
   ITEM_SETUP_ALARM_WARNING,
-  CASE_CPUARM(ITEM_SETUP_RSSI_POWEROFF_ALARM)
-  IF_ROTARY_ENCODERS(ITEM_SETUP_RE_NAVIGATION)
+  ITEM_SETUP_RSSI_POWEROFF_ALARM,
   ITEM_SETUP_BACKLIGHT_LABEL,
   ITEM_SETUP_BACKLIGHT_MODE,
   ITEM_SETUP_BACKLIGHT_DELAY,
-  CASE_CPUARM(ITEM_SETUP_BRIGHTNESS)
+  ITEM_SETUP_BRIGHTNESS,
   CASE_PWM_BACKLIGHT(ITEM_SETUP_BACKLIGHT_BRIGHTNESS_OFF)
   CASE_PWM_BACKLIGHT(ITEM_SETUP_BACKLIGHT_BRIGHTNESS_ON)
   ITEM_SETUP_FLASH_BEEP,
   CASE_SPLASH_PARAM(ITEM_SETUP_DISABLE_SPLASH)
+#if defined(PXX2)
+  ITEM_RADIO_OWNER_ID,
+#endif
   CASE_GPS(ITEM_SETUP_TIMEZONE)
-  CASE_CPUARM(ITEM_SETUP_ADJUST_RTC)
+  ITEM_SETUP_ADJUST_RTC,
   CASE_GPS(ITEM_SETUP_GPSFORMAT)
   CASE_PXX(ITEM_SETUP_COUNTRYCODE)
-  CASE_CPUARM(ITEM_SETUP_LANGUAGE)
-  CASE_CPUARM(ITEM_SETUP_IMPERIAL)
+  ITEM_SETUP_LANGUAGE,
+  ITEM_SETUP_IMPERIAL,
   IF_FAI_CHOICE(ITEM_SETUP_FAI)
-  CASE_MAVLINK(ITEM_MAVLINK_BAUD)
-  CASE_CPUARM(ITEM_SETUP_SWITCHES_DELAY)
+  ITEM_SETUP_SWITCHES_DELAY,
   CASE_STM32(ITEM_SETUP_USB_MODE)
+  CASE_JACK_DETECT(ITEM_SETUP_JACK_MODE)
   ITEM_SETUP_RX_CHANNEL_ORD,
   ITEM_SETUP_STICK_MODE_LABELS,
   ITEM_SETUP_STICK_MODE,
@@ -145,7 +135,41 @@ void menuRadioSetup(event_t event)
   }
 #endif
 
-  MENU(STR_MENURADIOSETUP, menuTabGeneral, MENU_RADIO_SETUP, HEADER_LINE+ITEM_SETUP_MAX, { HEADER_LINE_COLUMNS CASE_RTCLOCK(2) CASE_RTCLOCK(2) CASE_BATTGRAPH(1) LABEL(SOUND), CASE_AUDIO(0) CASE_BUZZER(0) CASE_VOICE(0) CASE_CPUESP32(0) CASE_CPUESP32(0) CASE_CPUESP32(0) CASE_CPUARM(0) CASE_CPUARM(0) CASE_CPUARM(0) 0, CASE_AUDIO(0) CASE_VARIO_CPUARM(LABEL(VARIO)) CASE_VARIO_CPUARM(0) CASE_VARIO_CPUARM(0) CASE_VARIO_CPUARM(0) CASE_VARIO_CPUARM(0) CASE_HAPTIC(LABEL(HAPTIC)) CASE_HAPTIC(0) CASE_HAPTIC(0) CASE_HAPTIC(0) 0, LABEL(ALARMS), 0, CASE_CAPACITY(0) CASE_PCBSKY9X(0) 0, 0, 0, CASE_CPUARM(0) IF_ROTARY_ENCODERS(0) LABEL(BACKLIGHT), 0, 0, CASE_CPUARM(0) CASE_PWM_BACKLIGHT(0) CASE_PWM_BACKLIGHT(0) 0, CASE_SPLASH_PARAM(0) CASE_GPS(0) CASE_CPUARM(0) CASE_GPS(0) CASE_PXX(0) CASE_CPUARM(0) CASE_CPUARM(0) IF_FAI_CHOICE(0) CASE_MAVLINK(0) CASE_CPUARM(0) CASE_STM32(0) 0, COL_TX_MODE, 0, 1/*to force edit mode*/});
+  MENU(STR_MENURADIOSETUP, menuTabGeneral, MENU_RADIO_SETUP, HEADER_LINE+ITEM_SETUP_MAX, {
+    HEADER_LINE_COLUMNS CASE_RTCLOCK(2) CASE_RTCLOCK(2) CASE_BATTGRAPH(1)
+    LABEL(SOUND), CASE_AUDIO(0)
+    CASE_BUZZER(0)
+    0, 0, 0, 0, 0, CASE_AUDIO(0)
+    CASE_VARIO(LABEL(VARIO))
+    CASE_VARIO(0)
+    CASE_VARIO(0)
+    CASE_VARIO(0)
+    CASE_VARIO(0)
+    CASE_HAPTIC(LABEL(HAPTIC))
+    CASE_HAPTIC(0)
+    CASE_HAPTIC(0)
+    CASE_HAPTIC(0)
+    CASE_GYRO(LABEL(GYRO))
+    CASE_GYRO(0)
+    CASE_GYRO(0)
+    0, LABEL(ALARMS), 0, CASE_CAPACITY(0)
+    CASE_PCBSKY9X(0)
+    0, 0, 0, 0,
+    LABEL(BACKLIGHT), 0, 0, 0, CASE_PWM_BACKLIGHT(0)
+    CASE_PWM_BACKLIGHT(0)
+    0,
+    CASE_SPLASH_PARAM(0)
+
+    CASE_PXX2(0) /* owner registration ID */
+
+    CASE_GPS(0)
+    0, CASE_GPS(0)
+    CASE_PXX(0)
+    0, 0, IF_FAI_CHOICE(0)
+    0,
+    CASE_STM32(0) // USB mode
+    CASE_JACK_DETECT(0) // Jack mode
+    0, COL_TX_MODE, 0, 1/*to force edit mode*/});
 
   if (event == EVT_ENTRY) {
     reusableBuffer.generalSettings.stickMode = g_eeGeneral.stickMode;
@@ -163,27 +187,27 @@ void menuRadioSetup(event_t event)
 #if defined(RTCLOCK)
       case ITEM_SETUP_DATE:
         lcdDrawTextAlignedLeft(y, STR_DATE);
-        lcdDrawChar(RADIO_SETUP_DATE_COLUMN, y, '-');
-        lcdDrawChar(RADIO_SETUP_DATE_COLUMN+3*FW-2, y, '-');
         for (uint8_t j=0; j<3; j++) {
           uint8_t rowattr = (menuHorizontalPosition==j ? attr : 0);
           switch (j) {
             case 0:
-              lcdDrawNumber(RADIO_SETUP_DATE_COLUMN, y, t.tm_year+TM_YEAR_BASE, rowattr|RIGHT);
-              if (rowattr && (s_editMode>0 || p1valdiff)) t.tm_year = checkIncDec(event, t.tm_year, 112, 200, 0);
+              lcdDrawNumber(RADIO_SETUP_2ND_COLUMN, y, t.tm_year+TM_YEAR_BASE, rowattr);
+              lcdDrawChar(lcdNextPos, y, '-');
+              if (rowattr && s_editMode > 0) t.tm_year = checkIncDec(event, t.tm_year, 112, 200, 0);
               break;
             case 1:
-              lcdDrawNumber(RADIO_SETUP_DATE_COLUMN+3*FW-2, y, t.tm_mon+1, rowattr|LEADING0|RIGHT, 2);
-              if (rowattr && (s_editMode>0 || p1valdiff)) t.tm_mon = checkIncDec(event, t.tm_mon, 0, 11, 0);
+              lcdDrawNumber(lcdNextPos, y, t.tm_mon+1, rowattr|LEADING0, 2);
+              lcdDrawChar(lcdNextPos, y, '-');
+              if (rowattr && s_editMode > 0) t.tm_mon = checkIncDec(event, t.tm_mon, 0, 11, 0);
               break;
             case 2:
             {
               int16_t year = TM_YEAR_BASE + t.tm_year;
               int8_t dlim = (((((year%4==0) && (year%100!=0)) || (year%400==0)) && (t.tm_mon==1)) ? 1 : 0);
-              static const pm_uint8_t dmon[] PROGMEM = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-              dlim += pgm_read_byte(&dmon[t.tm_mon]);
-              lcdDrawNumber(RADIO_SETUP_DATE_COLUMN+6*FW-4, y, t.tm_mday, rowattr|LEADING0|RIGHT, 2);
-              if (rowattr && (s_editMode>0 || p1valdiff)) t.tm_mday = checkIncDec(event, t.tm_mday, 1, dlim, 0);
+              static const uint8_t dmon[]  = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+              dlim += dmon[t.tm_mon];
+              lcdDrawNumber(lcdNextPos, y, t.tm_mday, rowattr|LEADING0, 2);
+              if (rowattr && s_editMode > 0) t.tm_mday = checkIncDec(event, t.tm_mday, 1, dlim, 0);
               break;
             }
           }
@@ -195,21 +219,22 @@ void menuRadioSetup(event_t event)
 
       case ITEM_SETUP_TIME:
         lcdDrawTextAlignedLeft(y, STR_TIME);
-        lcdDrawChar(RADIO_SETUP_TIME_COLUMN+1, y, ':'); lcdDrawChar(RADIO_SETUP_TIME_COLUMN+3*FW-2, y, ':');
         for (uint8_t j=0; j<3; j++) {
           uint8_t rowattr = (menuHorizontalPosition==j ? attr : 0);
           switch (j) {
             case 0:
-              lcdDrawNumber(RADIO_SETUP_TIME_COLUMN, y, t.tm_hour, rowattr|LEADING0|RIGHT, 2);
-              if (rowattr && (s_editMode>0 || p1valdiff)) t.tm_hour = checkIncDec(event, t.tm_hour, 0, 23, 0);
+              lcdDrawNumber(RADIO_SETUP_2ND_COLUMN, y, t.tm_hour, rowattr|LEADING0, 2);
+              lcdDrawChar(lcdNextPos + 1, y, ':');
+              if (rowattr && s_editMode > 0) t.tm_hour = checkIncDec(event, t.tm_hour, 0, 23, 0);
               break;
             case 1:
-              lcdDrawNumber(RADIO_SETUP_TIME_COLUMN+3*FWNUM, y, t.tm_min, rowattr|LEADING0|RIGHT, 2);
-              if (rowattr && (s_editMode>0 || p1valdiff)) t.tm_min = checkIncDec(event, t.tm_min, 0, 59, 0);
+              lcdDrawNumber(lcdNextPos + 1, y, t.tm_min, rowattr|LEADING0, 2);
+              lcdDrawChar(lcdNextPos + 1, y, ':');
+              if (rowattr && s_editMode > 0) t.tm_min = checkIncDec(event, t.tm_min, 0, 59, 0);
               break;
             case 2:
-              lcdDrawNumber(RADIO_SETUP_TIME_COLUMN+6*FWNUM, y, t.tm_sec, rowattr|LEADING0|RIGHT, 2);
-              if (rowattr && (s_editMode>0 || p1valdiff)) t.tm_sec = checkIncDec(event, t.tm_sec, 0, 59, 0);
+              lcdDrawNumber(lcdNextPos + 1, y, t.tm_sec, rowattr|LEADING0, 2);
+              if (rowattr && s_editMode > 0) t.tm_sec = checkIncDec(event, t.tm_sec, 0, 59, 0);
               break;
           }
         }
@@ -241,25 +266,16 @@ void menuRadioSetup(event_t event)
 #if defined(AUDIO)
       case ITEM_SETUP_BEEP_MODE:
         g_eeGeneral.beepMode = editChoice(RADIO_SETUP_2ND_COLUMN, y, STR_SPEAKER, STR_VBEEPMODE, g_eeGeneral.beepMode, -2, 1, attr, event);
-#if defined(TELEMETRY_FRSKY)
-        if (attr && checkIncDec_Ret) frskySendAlarms();
-#endif
         break;
 
 #if defined(BUZZER) // AUDIO + BUZZER
       case ITEM_SETUP_BUZZER_MODE:
         g_eeGeneral.buzzerMode = editChoice(RADIO_SETUP_2ND_COLUMN, y, STR_BUZZER, STR_VBEEPMODE, g_eeGeneral.buzzerMode, -2, 1, attr, event);
-#if defined(TELEMETRY_FRSKY)
-        if (attr && checkIncDec_Ret) frskySendAlarms();
-#endif
         break;
 #endif
 #elif defined(BUZZER) // BUZZER only
       case ITEM_SETUP_BUZZER_MODE:
         g_eeGeneral.beepMode = editChoice(RADIO_SETUP_2ND_COLUMN, y, STR_SPEAKER, STR_VBEEPMODE, g_eeGeneral.beepMode, -2, 1, attr, event);
-#if defined(TELEMETRY_FRSKY)
-        if (attr && checkIncDec_Ret) frskySendAlarms();
-#endif
         break;
 #endif
 
@@ -268,21 +284,17 @@ void menuRadioSetup(event_t event)
       {
         lcdDrawTextAlignedLeft(y, STR_SPEAKER_VOLUME);
         uint8_t b = g_eeGeneral.speakerVolume+VOLUME_LEVEL_DEF;
-        drawSlider(RADIO_SETUP_2ND_COLUMN, y, b, VOLUME_LEVEL_MAX, attr);
+        drawSlider(RADIO_SETUP_2ND_COLUMN, y, LCD_W - 2 - RADIO_SETUP_2ND_COLUMN, b, VOLUME_LEVEL_MAX, attr);
         if (attr) {
           CHECK_INCDEC_GENVAR(event, b, 0, VOLUME_LEVEL_MAX);
           if (checkIncDec_Ret) {
             g_eeGeneral.speakerVolume = (int8_t)b-VOLUME_LEVEL_DEF;
-#if !defined(CPUARM) && !defined(CPUESP32)
-            setScaledVolume(b);
-#endif
           }
         }
         break;
       }
 #endif
 
-#if defined(CPUARM) || defined(CPUESP32)
       case ITEM_SETUP_BEEP_VOLUME:
         SLIDER_5POS(y, g_eeGeneral.beepVolume, STR_BEEP_VOLUME, event, attr);
         break;
@@ -292,7 +304,6 @@ void menuRadioSetup(event_t event)
       case ITEM_SETUP_BACKGROUND_VOLUME:
         SLIDER_5POS(y, g_eeGeneral.backgroundVolume, STR_BG_VOLUME, event, attr);
         break;
-#endif
 
       case ITEM_SETUP_BEEP_LENGTH:
         SLIDER_5POS(y, g_eeGeneral.beepLength, STR_BEEP_LENGTH, event, attr);
@@ -301,20 +312,16 @@ void menuRadioSetup(event_t event)
 #if defined(AUDIO)
       case ITEM_SETUP_SPEAKER_PITCH:
         lcdDrawTextAlignedLeft( y, STR_SPKRPITCH);
-#if defined(CPUARM) || defined(CPUESP32)
         lcdDrawChar(RADIO_SETUP_2ND_COLUMN, y, '+', attr);
         lcdDrawNumber(RADIO_SETUP_2ND_COLUMN+FW, y, g_eeGeneral.speakerPitch*15, attr|LEFT);
         lcdDrawText(lcdLastRightPos, y, "Hz", attr);
-#else
-        lcdDrawNumber(RADIO_SETUP_2ND_COLUMN, y, g_eeGeneral.speakerPitch, attr|LEFT);
-#endif
         if (attr) {
           CHECK_INCDEC_GENVAR(event, g_eeGeneral.speakerPitch, 0, 20);
         }
         break;
 #endif
 
-#if defined(CPUARM) && defined(VARIO)
+#if defined(VARIO)
       case ITEM_SETUP_VARIO_LABEL:
         lcdDrawTextAlignedLeft(y, STR_VARIO);
         break;
@@ -358,7 +365,37 @@ void menuRadioSetup(event_t event)
         SLIDER_5POS(y, g_eeGeneral.hapticStrength, STR_HAPTICSTRENGTH, event, attr);
         break;
 #endif
+        
+#if defined(GYRO)
+      case ITEM_SETUP_GYRO_LABEL:
+        lcdDrawTextAlignedLeft(y, STR_GYRO_LABEL);
+        break;
 
+      case ITEM_SETUP_GYRO_MAX:
+        lcdDrawText(INDENT_WIDTH, y, STR_GYRO_MAX);
+        lcdDrawNumber(RADIO_SETUP_2ND_COLUMN, y, GYRO_MAX_DEFAULT + g_eeGeneral.gyroMax, attr|LEFT);
+        lcdDrawChar(lcdLastRightPos, y, '@', attr);
+        if (attr) {
+          CHECK_INCDEC_GENVAR(event, g_eeGeneral.gyroMax, GYRO_MAX_DEFAULT - GYRO_MAX_RANGE, GYRO_MAX_DEFAULT + GYRO_MAX_RANGE);
+          lcdDrawText(LCD_W-4*FW, y, "(");
+          lcdDrawNumber(lcdLastRightPos, y, max(abs(gyro.outputs[0]), abs(gyro.outputs[1])) * 180 / 1024);
+          lcdDrawText(lcdLastRightPos, y, ")");
+        }
+        break;
+
+      case ITEM_SETUP_GYRO_OFFSET:
+        lcdDrawText(INDENT_WIDTH, y, STR_GYRO_OFFSET);
+        lcdDrawNumber(RADIO_SETUP_2ND_COLUMN, y, g_eeGeneral.gyroOffset, attr|LEFT);
+        lcdDrawChar(lcdLastRightPos, y, '@', attr);
+        if (attr) {
+          CHECK_INCDEC_GENVAR(event, g_eeGeneral.gyroOffset, GYRO_OFFSET_MIN, GYRO_OFFSET_MAX);
+          lcdDrawText(LCD_W-4*FW, y, "(");
+          lcdDrawNumber(lcdLastRightPos, y, gyro.outputs[0] * 180 / 1024);
+          lcdDrawText(lcdLastRightPos, y, ")");
+        }
+        break;
+#endif
+        
       case ITEM_SETUP_CONTRAST:
         lcdDrawTextAlignedLeft(y, STR_CONTRAST);
         lcdDrawNumber(RADIO_SETUP_2ND_COLUMN, y, g_eeGeneral.contrast, attr|LEFT);
@@ -392,14 +429,12 @@ void menuRadioSetup(event_t event)
         break;
       }
 
-#if defined(CPUARM)
       case ITEM_SETUP_RSSI_POWEROFF_ALARM:
       {
         uint8_t b = 1 - g_eeGeneral.disableRssiPoweroffAlarm;
         g_eeGeneral.disableRssiPoweroffAlarm = 1 - editCheckBox(b, RADIO_SETUP_2ND_COLUMN, y, STR_RSSISHUTDOWNALARM, attr, event);
         break;
       }
-#endif
 
 #if defined(TX_CAPACITY_MEASUREMENT)
       case ITEM_SETUP_CAPACITY_WARNING:
@@ -424,15 +459,6 @@ void menuRadioSetup(event_t event)
         if(attr) g_eeGeneral.inactivityTimer = checkIncDec(event, g_eeGeneral.inactivityTimer, 0, 250, EE_GENERAL); //0..250minutes
         break;
 
-#if defined(ROTARY_ENCODERS)
-      case ITEM_SETUP_RE_NAVIGATION:
-        g_eeGeneral.reNavigation = editChoice(RADIO_SETUP_2ND_COLUMN, y, STR_RENAVIG, STR_VRENAVIG, g_eeGeneral.reNavigation, 0, NUM_ROTARY_ENCODERS, attr, event);
-        if (attr && checkIncDec_Ret) {
-          ROTARY_ENCODER_NAVIGATION_VALUE = 0;
-        }
-        break;
-#endif
-
       case ITEM_SETUP_BACKLIGHT_LABEL:
         lcdDrawTextAlignedLeft(y, STR_BACKLIGHT_LABEL);
         break;
@@ -452,7 +478,6 @@ void menuRadioSetup(event_t event)
         if (attr) CHECK_INCDEC_GENVAR(event, g_eeGeneral.lightAutoOff, 0, 600/5);
         break;
 
-#if defined(CPUARM)
       case ITEM_SETUP_BRIGHTNESS:
         lcdDrawTextAlignedLeft(y, STR_BRIGHTNESS);
         lcdDrawNumber(RADIO_SETUP_2ND_COLUMN, y, 100-g_eeGeneral.backlightBright, attr|LEFT) ;
@@ -462,7 +487,6 @@ void menuRadioSetup(event_t event)
           g_eeGeneral.backlightBright = 100 - b;
         }
         break;
-#endif
 
 #if defined(PWM_BACKLIGHT)
       case ITEM_SETUP_BACKLIGHT_BRIGHTNESS_OFF:
@@ -478,10 +502,9 @@ void menuRadioSetup(event_t event)
         break;
 #endif
 
-#if defined(SPLASH) && !defined(FSPLASH)
+#if defined(SPLASH)
       case ITEM_SETUP_DISABLE_SPLASH:
       {
-#if defined(CPUARM)
         lcdDrawTextAlignedLeft(y, STR_SPLASHSCREEN);
         if (SPLASH_NEEDED()) {
           lcdDrawNumber(RADIO_SETUP_2ND_COLUMN, y, SPLASH_TIMEOUT/100, attr|LEFT);
@@ -492,26 +515,25 @@ void menuRadioSetup(event_t event)
         }
         if (attr) g_eeGeneral.splashMode = -checkIncDecGen(event, -g_eeGeneral.splashMode, -3, 4);
         break;
-#else
-        uint8_t b = 1-g_eeGeneral.splashMode;
-        g_eeGeneral.splashMode = 1 - editCheckBox(b, RADIO_SETUP_2ND_COLUMN, y, STR_SPLASHSCREEN, attr, event);
-        break;
-#endif
       }
 #endif
 
-#if defined(TELEMETRY_FRSKY) && defined(FRSKY_HUB) && defined(GPS)
+#if defined(PXX2)
+      case ITEM_RADIO_OWNER_ID:
+        editSingleName(RADIO_SETUP_2ND_COLUMN, y, STR_OWNER_ID, g_eeGeneral.ownerRegistrationID, PXX2_LEN_REGISTRATION_ID, event, attr);
+        break;
+#endif
+
+#if defined(TELEMETRY_FRSKY) && defined(GPS)
       case ITEM_SETUP_TIMEZONE:
         lcdDrawTextAlignedLeft(y, STR_TIMEZONE);
         lcdDrawNumber(RADIO_SETUP_2ND_COLUMN, y, g_eeGeneral.timezone, attr|LEFT);
         if (attr) CHECK_INCDEC_GENVAR(event, g_eeGeneral.timezone, -12, 12);
         break;
 
-#if defined(CPUARM)
       case ITEM_SETUP_ADJUST_RTC:
         g_eeGeneral.adjustRTC = editCheckBox(g_eeGeneral.adjustRTC, RADIO_SETUP_2ND_COLUMN, y, STR_ADJUST_RTC, attr, event);
         break;
-#endif
 
       case ITEM_SETUP_GPSFORMAT:
         g_eeGeneral.gpsFormat = editChoice(RADIO_SETUP_2ND_COLUMN, y, STR_GPSCOORD, STR_GPSFORMAT, g_eeGeneral.gpsFormat, 0, 1, attr, event);
@@ -524,7 +546,6 @@ void menuRadioSetup(event_t event)
         break;
 #endif
 
-#if defined(CPUARM)
       case ITEM_SETUP_LANGUAGE:
         lcdDrawTextAlignedLeft(y, STR_VOICELANG);
         lcdDrawText(RADIO_SETUP_2ND_COLUMN, y, currentLanguagePack->name, attr);
@@ -540,39 +561,39 @@ void menuRadioSetup(event_t event)
       case ITEM_SETUP_IMPERIAL:
         g_eeGeneral.imperial = editChoice(RADIO_SETUP_2ND_COLUMN, y, STR_UNITSSYSTEM, STR_VUNITSSYSTEM, g_eeGeneral.imperial, 0, 1, attr, event);
         break;
-#endif
 
 #if defined(FAI_CHOICE)
       case ITEM_SETUP_FAI:
-        editCheckBox(g_eeGeneral.fai, RADIO_SETUP_2ND_COLUMN, y, PSTR("FAI Mode"), attr, event);
+        editCheckBox(g_eeGeneral.fai, RADIO_SETUP_2ND_COLUMN, y, "FAI Mode", attr, event);
         if (attr && checkIncDec_Ret) {
           if (g_eeGeneral.fai)
-            POPUP_WARNING(PSTR("FAI\001mode blocked!"));
+            POPUP_WARNING("FAI\001mode blocked!");
           else
-            POPUP_CONFIRMATION(PSTR("FAI mode?"));
+            POPUP_CONFIRMATION("FAI mode?", nullptr);
         }
         break;
 #endif
 
-#if defined(TELEMETRY_MAVLINK)
-      case ITEM_MAVLINK_BAUD:
-        g_eeGeneral.mavbaud = editChoice(RADIO_SETUP_2ND_COLUMN, y, STR_MAVLINK_BAUD_LABEL, STR_MAVLINK_BAUDS, g_eeGeneral.mavbaud, 0, 7, attr, event);
-        break;
-#endif
 
-#if defined(CPUARM)
       case ITEM_SETUP_SWITCHES_DELAY:
         lcdDrawTextAlignedLeft(y, STR_SWITCHES_DELAY);
         lcdDrawNumber(RADIO_SETUP_2ND_COLUMN, y, 10*SWITCHES_DELAY(), attr|LEFT);
         lcdDrawText(lcdLastRightPos, y, STR_MS, attr);
         if (attr) CHECK_INCDEC_GENVAR(event, g_eeGeneral.switchesDelay, -15, 100-15);
         break;
-#endif
+
 #if defined(STM32)
       case ITEM_SETUP_USB_MODE:
         g_eeGeneral.USBMode = editChoice(RADIO_SETUP_2ND_COLUMN, y, STR_USBMODE, STR_USBMODES, g_eeGeneral.USBMode, USB_UNSELECTED_MODE, USB_MAX_MODE, attr, event);
         break;
 #endif
+
+#if defined(JACK_DETECT_GPIO)
+      case ITEM_SETUP_JACK_MODE:
+        g_eeGeneral.jackMode = editChoice(RADIO_SETUP_2ND_COLUMN, y, STR_JACKMODE, STR_JACKMODES, g_eeGeneral.jackMode, JACK_UNSELECTED_MODE, JACK_MAX_MODE, attr, event);
+        break;
+#endif
+
       case ITEM_SETUP_RX_CHANNEL_ORD:
         lcdDrawTextAlignedLeft(y, STR_RXCHANNELORD); // RAET->AETR
         for (uint8_t i=1; i<=4; i++) {
@@ -603,7 +624,7 @@ void menuRadioSetup(event_t event)
       case ITEM_SETUP_STICK_MODE:
         lcdDrawChar(2*FW, y, '1'+reusableBuffer.generalSettings.stickMode, attr);
         for (uint8_t i=0; i<NUM_STICKS; i++) {
-          drawSource((5*FW-3)+i*(4*FW+2), y, MIXSRC_Rud + pgm_read_byte(modn12x3 + 4*reusableBuffer.generalSettings.stickMode + i), 0);
+          drawSource((5*FW-3)+i*(4*FW+2), y, MIXSRC_Rud + *(modn12x3 + 4*reusableBuffer.generalSettings.stickMode + i), 0);
         }
         if (attr && s_editMode>0) {
           CHECK_INCDEC_GENVAR(event, reusableBuffer.generalSettings.stickMode, 0, 3);
@@ -613,7 +634,7 @@ void menuRadioSetup(event_t event)
           g_eeGeneral.stickMode = reusableBuffer.generalSettings.stickMode;
           checkTHR();
           resumePulses();
-          clearKeyEvents();
+          waitKeysReleased();
         }
         MOVE_CURSOR_FROM_HERE();
         break;

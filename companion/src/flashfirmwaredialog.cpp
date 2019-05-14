@@ -79,7 +79,7 @@ fwName(g.profile[g.id()].fwName())
     ui->useExternalSplash->setDisabled(true);
   }
   else {
-    ui->checkHardwareCompatibility->setChecked(g.checkHardwareCompatibility());
+  ui->checkHardwareCompatibility->setChecked(g.checkHardwareCompatibility());
   }
 
   updateUI();
@@ -321,10 +321,10 @@ void FlashFirmwareDialog::startFlash(const QString &filename)
         backupFilename = dir.absoluteFilePath("radio.eesp");
     }
     else {
-        backupFilename = backupPath + "/backup-" + QDateTime().currentDateTime().toString("yyyy-MM-dd-HHmmss") + ".bin";
+    backupFilename = backupPath + "/backup-" + QDateTime().currentDateTime().toString("yyyy-MM-dd-HHmmss") + ".bin";
     }
     result = readEeprom(backupFilename, progressDialog.progress());
-    sleep(20);
+    sleep(2);
   }
 
   // flash

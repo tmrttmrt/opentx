@@ -357,7 +357,7 @@ QString RawSource::toString(const ModelData * model, const GeneralSettings * con
 
     case SOURCE_TYPE_VIRTUAL_INPUT:
     {
-      const char * name = NULL;
+      const char * name = nullptr;
       if (model)
         name = model->inputNames[index];
       return RadioData::getElementName(tr("I", "as in Input"), index + 1, name);
@@ -495,7 +495,7 @@ bool RawSource::isTimeBased(Board::Type board) const
     return (type==SOURCE_TYPE_TELEMETRY && (index==TELEMETRY_SOURCE_TX_TIME || index==TELEMETRY_SOURCE_TIMER1 || index==TELEMETRY_SOURCE_TIMER2 || index==TELEMETRY_SOURCE_TIMER3));
 }
 
-bool RawSource::isAvailable(const ModelData * const model, const GeneralSettings * const gs, Board::Type board)
+bool RawSource::isAvailable(const ModelData * const model, const GeneralSettings * const gs, Board::Type board) const
 {
   if (board == Board::BOARD_UNKNOWN)
     board = getCurrentBoard();

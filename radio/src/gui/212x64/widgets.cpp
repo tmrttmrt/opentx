@@ -20,7 +20,7 @@
 
 #include "opentx.h"
 
-const pm_uchar SLEEP_BITMAP[] PROGMEM = {
+const unsigned char SLEEP_BITMAP[]  = {
   #include "../../bitmaps/212x64/sleep.lbm"
 };
 
@@ -34,7 +34,7 @@ void drawSleepBitmap()
 }
 
 #if defined(PWR_BUTTON_PRESS)
-const pm_uchar SHUTDOWN_BITMAP[] PROGMEM = {
+const unsigned char SHUTDOWN_BITMAP[]  = {
   #include "../../bitmaps/212x64/shutdown.lbm"
 };
 
@@ -98,22 +98,6 @@ void drawVerticalScrollbar(coord_t x, coord_t y, coord_t h, uint16_t offset, uin
   lcdDrawVerticalLine(x, y + yofs, yhgt, SOLID, FORCE);
 }
 
-void drawProgressBar(const char * label, int num, int den)
-{
-  lcdClear();
-  if (label) {
-    lcdDrawTextAlignedLeft(4*FH, label);
-  }
-  lcdDrawRect(4, 6*FH+4, LCD_W-8, 7);
-  if (num > 0 && den > 0) {
-    int width = ((LCD_W-12)*num)/den;
-    lcdDrawSolidHorizontalLine(6, 6*FH+6, width, FORCE);
-    lcdDrawSolidHorizontalLine(6, 6*FH+7, width, FORCE);
-    lcdDrawSolidHorizontalLine(6, 6*FH+8, width, FORCE);
-  }
-  lcdRefresh();
-}
-
 void drawGauge(coord_t x, coord_t y, coord_t w, coord_t h, int32_t val, int32_t max)
 {
   lcdDrawRect(x, y, w+1, h);
@@ -125,20 +109,20 @@ void drawGauge(coord_t x, coord_t y, coord_t w, coord_t h, int32_t val, int32_t 
   }
 }
 
-void title(const pm_char * s)
+void title(const char * s)
 {
   lcdDrawText(0, 0, s, INVERS);
 }
 
-choice_t editChoice(coord_t x, coord_t y, const pm_char * label, const pm_char *values, choice_t value, choice_t min, choice_t max, LcdFlags attr, event_t event)
+choice_t editChoice(coord_t x, coord_t y, const char * label, const char *values, choice_t value, choice_t min, choice_t max, LcdFlags attr, event_t event)
 {
   drawFieldLabel(x, y, label);
   if (values) lcdDrawTextAtIndex(x, y, values, value-min, attr);
-  if (attr & (~RIGHT)) value = checkIncDec(event, value, min, max, (menuVerticalPositions[0] == 0) ? EE_MODEL : EE_GENERAL);
+  if (attr & (~RIGHT)) value = checkIncDec(event, value, min, max, (isModelMenuDisplayed()) ? EE_MODEL : EE_GENERAL);
   return value;
 }
 
-uint8_t editCheckBox(uint8_t value, coord_t x, coord_t y, const pm_char *label, LcdFlags attr, event_t event )
+uint8_t editCheckBox(uint8_t value, coord_t x, coord_t y, const char *label, LcdFlags attr, event_t event )
 {
   drawCheckBox(x, y, value, attr);
   return editChoice(x, y, label, NULL, value, 0, 1, attr, event);

@@ -24,5 +24,5 @@ clean:
 ${COMPONENT_BUILD_DIR}/configured:
 	echo $(RADIO_SRCDIR)
 	mkdir -p ${COMPONENT_BUILD_DIR}/build && \
-	env -i HOME="${HOME}" IDF_PATH="${IDF_PATH}" CC="/usr/bin/gcc" CXX="/usr/bin/g++" /bin/bash -l -c 'cd ${COMPONENT_BUILD_DIR}/build && pwd && cmake -G "MinGW Makefiles" $(RADIO_SRCDIR)/../.. -DPCB=ESP_WROOM_32 -DTELEMETRY=FRSKY -DTEMPLATES=ON -DCMAKE_MAKE_PROGRAM=mingw32-make' &&\
+	env -i HOME="${HOME}" IDF_PATH="${IDF_PATH}" CC="/usr/bin/gcc" CXX="/usr/bin/g++" /bin/bash -l -c 'cd ${COMPONENT_BUILD_DIR}/build && pwd && cmake -G "MinGW Makefiles" $(RADIO_SRCDIR)/../.. -DPCB=ESP_WROOM_32 -DTELEMETRY=FRSKY -DFONT=STD -DCMAKE_MAKE_PROGRAM=mingw32-make' &&\
 	touch ${COMPONENT_BUILD_DIR}/configured

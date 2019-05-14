@@ -30,6 +30,7 @@ void boardInit()
     initKeys();
     initADC();
     timer10msInit();
+    initPulses();
     initWiFi();
 #endif
 }

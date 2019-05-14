@@ -20,7 +20,84 @@
 
 #ifndef _BOARD_ESP32_H_
 #define _BOARD_ESP32_H_
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_task.h"
+#include "esp_attr.h"
+#include "sdkconfig.h"
+#if defined(SDCARD)
+#include <stdio.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <fcntl.h>
+#include <errno.h>
 #include "esp-idf/components/drivers/fs_wrappers.h"
+#endif
+
+//added 2.3
+
+
+#define RTOS_WAIT_TICKS(a) vTaskDelay(a);
+#define RTOS_WAIT_MS(a) vTaskDelay((a)/portTICK_PERIOD_MS);
+#define RTOS_TASK_HANDLE TaskHandle_t
+#define RTOS_MUTEX_HANDLE SemaphoreHandle_t
+#define RTOS_DEFINE_STACK(stack, size) 
+#define TASK_FUNCTION(f) void f(void * pdata)
+#define RTOS_LOCK_MUTEX(m) xSemaphoreTake(m, portMAX_DELAY);
+#define RTOS_UNLOCK_MUTEX(m) xSemaphoreGive(m)
+#define RTOS_MS_PER_TICK portTICK_PERIOD_MS
+#define TASK_RETURN()
+#define RTOS_INIT() rtosInit()
+#define RTOS_START()
+#define RTOS_CREATE_TASK(taskId, task, taskName, taskStack, stackSize, taskPrio) \
+  xTaskCreatePinnedToCore( task, taskName , stackSize, NULL, taskPrio.prio, &taskId, taskPrio.core );\
+  configASSERT( taskId );
+#define RTOS_CREATE_MUTEX(mh) mh = xSemaphoreCreateMutex();
+#define MENUS_STACK_SIZE       0x1D00
+#define MIXER_STACK_SIZE       0x800
+#define AUDIO_STACK_SIZE       0x900
+#define PER10MS_STACK_SIZE     0x500
+#define ENC_STACK_SIZE         0x900
+#define PPM_STACK_SIZE         0x800
+#define MIXER_TASK_PRIO mixerTaskPrio
+#define MENUS_TASK_PRIO menuTaskPrio
+#define AUDIO_TASK_PRIO audioTaskPrio
+#define MENU_TASK_CORE 0
+#define MIXER_TASK_CORE 1
+#define PULSES_TASK_CORE 1
+#define AUDIO_TASK_CORE 0
+#define PER10MS_TASK_CORE 0
+#define ENC_TASK_CORE 0
+#define MIXER_TIME_MS 15
+
+typedef struct TaskPrio
+{
+  UBaseType_t prio;
+  BaseType_t core;
+} TaskPrio;
+
+extern TaskPrio mixerTaskPrio;
+extern TaskPrio menuTaskPrio;
+extern TaskPrio audioTaskPrio;
+
+#define usbPlugged() false
+#define checkTrainerSettings()
+#define eepromIsWriting() (false)
+#define eepromWriteProcess()
+#define isForcePowerOffRequested() false
+#define resetForcePowerOffRequest()
+
+void telemetryPortInit(uint32_t baudrate, uint8_t mode);
+void rtosInit();
+
+static inline uint32_t RTOS_GET_MS(void) {
+  return (uint32_t)(esp_timer_get_time()/1000);
+}
+
+#define RTOS_GET_TIME(a) xTaskGetTickCount ()
+
+
+//from 2.2
 #define strcpy_P strcpy
 
 void espLogI(const char * format, ...);
@@ -50,18 +127,18 @@ uint16_t eeModelSize(uint8_t index);
 #define _MAX_LFN      CONFIG_FATFS_MAX_LFN
 #define SD_PATH "/sdcard"
 #define sdPoll10ms()
+#define SD_CARD_PRESENT() sdMounted()
 
 void sdInit(void);
 uint32_t sdIsHC(void);
 uint32_t sdGetSpeed(void);
 uint32_t sdMounted(void);
 void sdMountPoll();
+void sdDone();
 const char * eeBackupModel(uint8_t i_fileSrc);
 const char * eeRestoreModel(uint8_t i_fileDst, char *model_name);
 const char * eeBackupAll();
 #endif
-
-
 
 uint16_t getTmr1MHz();
 void timer10msInit();
@@ -70,24 +147,20 @@ void initKeys();
 void eepromInit();
 void initAudio();
 void initFS();
+void initPulses();
 void setSampleRate(uint32_t frequency);
 void audioPlayTask(void * pdata);
 void encoderTask(void * pdata);
 uint8_t telemetryGetByte(uint8_t * byte);
-void telemetryPortInit();
+
 void telemetryTransmitBuffer(uint8_t * data, uint8_t len);
-void mixEnterCritical();
-void mixExitCritical();
 uint16_t audioStackAvailable();
 uint16_t per10msStackAvailable();
 uint16_t mixerStackAvailable();
 uint16_t menusStackAvailable();
 uint16_t encStackAvailable();
 bool rEncDown(uint8_t mask);
-void sendToPulses();
 void mountSDCard();
-
-
 
 void backlightEnable();
 void backlightDisable();
@@ -111,7 +184,5 @@ enum Analogs {
   TX_VOLTAGE,
   NUM_ANALOGS
 };
-
-
 
 #endif

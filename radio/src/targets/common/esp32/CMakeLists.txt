@@ -1,114 +1,167 @@
-set(LCD_TYPES DEFAULT ST7565P)
-set(LCD "DEFAULT" CACHE STRING "LCD type (${LCD_TYPES})")
-set_property(CACHE LCD PROPERTY STRINGS ${LCD_TYPES})
-option(GRAPHICS "Additional graphics" ON)
-option(BOLD "Bold font" ON)
-set(TELEMETRY_TYPES NONE MAVLINK ARDUPILOT FRSKY FRSKY_SPORT TELEMETREZ NMEA)
-set(TELEMETRY "NONE" CACHE STRING "Telemetry Type (${TELEMETRY_TYPES})")
-set_property(CACHE TELEMETRY PROPERTY STRINGS ${TELEMETRY_TYPES})
-add_definitions(-DLCD_${LCD})
 include_directories(targets/common/esp32 targets/common/esp32/esp-idf/build/include)
 include_directories($ENV{IDF_PATH}/components/esp32/include $ENV{IDF_PATH}/components/soc/include $ENV{IDF_PATH}/components/soc/esp32/include)
-include_directories($ENV{IDF_PATH}/components/vfs/include $ENV{IDF_PATH}/components/freertos/include $ENV{IDF_PATH}/components/heap/include $ENV{IDF_PATH}/components/driver/include $ENV{IDF_PATH}/components/fatfs/src $ENV{IDF_PATH}/components/wear_levelling/include $ENV{IDF_PATH}/components/log/include $ENV{IDF_PATH}/components/spi_flash/include)
+include_directories($ENV{IDF_PATH}/components/vfs/include $ENV{IDF_PATH}/components/freertos/include $ENV{IDF_PATH}/components/heap/include $ENV{IDF_PATH}/components/driver/include $ENV{IDF_PATH}/components/fatfs/src $ENV{IDF_PATH}/components/wear_levelling/include $ENV{IDF_PATH}/components/log/include $ENV{IDF_PATH}/components/spi_flash/include $ENV{IDF_PATH}/components/sdmmc/include )
 #include_directories($ENV{IDF_PATH}/components/fatfs/src $ENV{IDF_PATH}/components/freertos/include $ENV{IDF_PATH}/components/soc/esp32/include $ENV{IDF_PATH}/components/heap/include $ENV{IDF_PATH}/components/driver/include)
-set(TTS_LANGUAGES EN)
+set(TIMERS 3 CACHE STRING "Timers count (2 or 3)")
+set_property(CACHE TIMERS PROPERTY STRINGS 2 3)
+option(CLI "Command Line Interface" OFF)
+option(DEBUG "Debug mode" OFF)
+option(LOG_TELEMETRY "Telemetry Logs on SD card" OFF)
+option(TRACE_SD_CARD "Traces SD enabled" OFF)
+option(TRACE_FATFS "Traces FatFS enabled" OFF)
+option(TRACE_AUDIO "Traces audio enabled" OFF)
+option(DEBUG_TRACE_BUFFER "Debug Trace Screen" OFF)
+option(MULTIMODULE "DIY Multiprotocol TX Module (https://github.com/pascallanger/DIY-Multiprotocol-TX-Module)" OFF)
+option(CROSSFIRE "Crossfire TX Module" OFF)
+option(SUPPORT_D16_EU_ONLY "XJT module only supports D16-EU and LR12-EU" OFF) # TODO rename to XJT_EU_ONLY
+option(DEBUG_INTERRUPTS "Count interrupts" OFF)
+option(DEBUG_USB_INTERRUPTS "Count individual USB interrupts" OFF)
+option(DEBUG_TASKS "Task switching statistics" OFF)
+option(DEBUG_TIMERS "Time critical parts of the code" OFF)
+
+add_definitions(-DCPUESP32)
+
+set(GUI_SRC ${GUI_SRC}
+    radio_hardware_esp32.cpp
+)
+if(TIMERS EQUAL 3)
+  add_definitions(-DTIMERS=3)
+else()
+  add_definitions(-DTIMERS=2)
+endif()
+
+if(LOG_TELEMETRY)
+  add_definitions(-DLOG_TELEMETRY)
+endif()
+
+if(TRACE_SD_CARD)
+  add_definitions(-DTRACE_SD_CARD)
+  set(DEBUG ON)
+  set(DEBUG_TRACE_BUFFER ON)
+endif()
+
+if(TRACE_FATFS)
+  add_definitions(-DTRACE_FATFS)
+  set(DEBUG ON)
+  set(DEBUG_TRACE_BUFFER ON)
+endif()
+
+if(TRACE_AUDIO)
+  add_definitions(-DTRACE_AUDIO)
+  set(DEBUG ON)
+  set(DEBUG_TRACE_BUFFER ON)
+endif()
+
+if(DEBUG_TRACE_BUFFER)
+  add_definitions(-DDEBUG_TRACE_BUFFER)
+endif()
+
+if(DEBUG_INTERRUPTS)
+  add_definitions(-DDEBUG_INTERRUPTS)
+  set(DEBUG ON)
+  if(DEBUG_USB_INTERRUPTS)
+    add_definitions(-DDEBUG_USB_INTERRUPTS)
+  endif()
+endif()
+
+if(DEBUG_TASKS)
+  add_definitions(-DDEBUG_TASKS)
+  set(DEBUG ON)
+endif()
+
+if(DEBUG_TIMERS)
+  add_definitions(-DDEBUG_TIMERS)
+  set(DEBUG ON)
+endif()
+
+if(CLI)
+  add_definitions(-DCLI)
+  set(FIRMWARE_SRC ${FIRMWARE_SRC} cli.cpp)
+  set(SRC ${SRC} dump.cpp)
+elseif(DEBUG)
+  set(SRC ${SRC} dump.cpp)
+endif()
+
+if(DEBUG)
+  add_definitions(-DDEBUG)
+endif()
+
+if(SUPPORT_D16_EU_ONLY)
+  add_definitions(-DMODULE_D16_EU_ONLY_SUPPORT)
+endif()
+
+if(HAPTIC)
+  add_definitions(-DHAPTIC)
+  set(SRC ${SRC} haptic.cpp)
+  set(TARGET_SRC ${TARGET_SRC} haptic_driver.cpp)
+endif()
+
+# Protocols supported
+
+add_definitions(-DDSM2 -DSBUS)
+
+if(PXX1)
+  add_definitions(-DPXX -DPXX1)
+  set(PULSES_SRC
+    ${PULSES_SRC}
+    pxx1.cpp
+    )
+endif()
+
+if(PXX2)
+  add_definitions(-DPXX -DPXX2)
+  set(PULSES_SRC
+    ${PULSES_SRC}
+    pxx2.cpp
+    )
+endif()
+
+if(MULTIMODULE)
+  add_definitions(-DMULTIMODULE)
+  set(SRC ${SRC} pulses/multi.cpp telemetry/spektrum.cpp telemetry/flysky_ibus.cpp telemetry/multi.cpp)
+endif()
+
+if(CROSSFIRE)
+  add_definitions(-DCROSSFIRE)
+  set(PULSES_SRC
+    ${PULSES_SRC}
+    crossfire.cpp
+    )
+  set(SRC
+    ${SRC}
+    telemetry/crossfire.cpp
+    )
+endif()
+
+add_definitions(-DTELEMETRY_FRSKY -DTELEMETRY_FRSKY_SPORT -DGPS)
+
+add_definitions(-DBOLD_FONT -DBATTGRAPH -DTHRTRACE)
+add_definitions(-DREQUIRED_SDCARD_VERSION="${SDCARD_VERSION}")
+include_directories(${COOS_DIR} ${COOS_DIR}/kernel ${COOS_DIR}/portable)
 foreach(LANGUAGE ${TTS_LANGUAGES})
   string(TOLOWER ${LANGUAGE} lang_lower)
   set(SRC ${SRC} translations/tts_${lang_lower}.cpp)
 endforeach()
 
-set(GUI_SRC ${GUI_SRC}
-    radio_hardware_esp32.cpp
-)
+set(SRC
+  ${SRC}
+  main.cpp
+  tasks.cpp
+  gui/common/arm/widgets.cpp
+  telemetry/telemetry.cpp
+  telemetry/telemetry_sensors.cpp
+  telemetry/frsky.cpp
+  telemetry/frsky_d.cpp
+  telemetry/frsky_sport.cpp
+  telemetry/frsky_pxx2.cpp
+  crc16.cpp
+  vario.cpp
+  )
 
-set(GVAR_SCREEN model_gvars.cpp)
+set(PULSES_SRC
+  ${PULSES_SRC}
+  pulses.cpp
+  dsm2.cpp
+  sbus.cpp
+  )
 
-add_definitions(-DAUDIO)
-
-if(SDCARD)
-  add_definitions(-DSDCARD -DVOICE)
-  set(SRC ${SRC} rtc.cpp logs.cpp)
-endif()
-
-if(GVARS)
-  set(GUI_SRC
-    ${GUI_SRC}
-    ${GVAR_SCREEN}
-    )
-endif()
-
-if(GRAPHICS)
-  add_definitions(-DGRAPHICS)
-endif()
-if(BOLD)
-  add_definitions(-DBOLD_FONT)
-endif()
-if(BATTGRAPH)
-  add_definitions(-DBATTGRAPH)
-endif()
-if(HAPTIC)
-  add_definitions(-DHAPTIC)
-  set(SRC ${SRC} haptic.cpp)
-endif()
-if(${TELEMETRY} STREQUAL OFF)
-  add_definitions(-DTELEMETRY_NONE)
-elseif(TELEMETRY STREQUAL ARDUPILOT)
-  add_definitions(-DTELEMETRY_ARDUPILOT)
-  set(SRC ${SRC} telemetry/ardupilot.cpp)
-elseif(TELEMETRY STREQUAL NMEA)
-  add_definitions(-DTELEMETRY_NMEA)
-  set(SRC ${SRC} telemetry/nmea.cpp)
-elseif(TELEMETRY STREQUAL JETI)
-  add_definitions(-DTELEMETRY_JETI)
-  set(SRC ${SRC} telemetry/jeti.cpp)
-elseif(TELEMETRY STREQUAL MAVLINK)
-  add_definitions(-DTELEMETRY_MAVLINK)
-  include_directories(${THIRDPARTY_DIR} gui/${GUI_DIR})
-  if(NOT EXISTS ${THIRDPARTY_DIR}/GCS_MAVLink/include_v1.0/mavlink_types.h)
-      message(WARNING "Warning: ${THIRDPARTY_DIR}/GCS_MAVLink/include_v1.0 is empty, trying to clone submodules")
-      execute_process(COMMAND git submodule update --init
-                              RESULT_VARIABLE GIT_SUBMODULE_RESULT
-                              WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-      if(NOT ${GIT_SUBMODULE_RESULT} EQUAL 0)
-          message(FATAL_ERROR "Error: Cannot clone submodule at ${THIRDPARTY_DIR}/GCS_MAVLink/include_v1.0
-If you downloaded this project as a ZIP file, please instead run
-'git clone --recursive https://github.com/opentx/opentx.git'")
-      endif()
-  endif()
-  set(SRC ${SRC} telemetry/mavlink.cpp)
-  set(GUI_SRC ${GUI_SRC} view_mavlink.cpp)
-  math(EXPR EEPROM_VARIANT ${EEPROM_VARIANT}+${MAVLINK_VARIANT})
-elseif(TELEMETRY STREQUAL TELEMETREZ)
-  add_definitions(-DTELEMETRY_TELEMETREZ)
-elseif(TELEMETRY STREQUAL FRSKY_SPORT)
-  add_definitions(-DTELEMETRY_FRSKY_SPORT)
-  set(SRC ${SRC} crc16.cpp telemetry/frsky_sport.cpp)
-endif()
-if(TELEMETRY STREQUAL FRSKY OR TELEMETRY STREQUAL FRSKY_SPORT OR TELEMETRY STREQUAL TELEMETREZ)
-  option(FRSKY_HUB "FrSky Hub support" ON)
-  option(WS_HOW_HIGH "Winged Shadow sensors support" ON)
-  option(GAUGES "Telemetry gauges" OFF)
-  option(GPS "GPS support" ON)
-  option(VARIO "Vario support" ON)
-  add_definitions(-DTELEMETRY_FRSKY)
-  set(SRC ${SRC} telemetry/telemetry.cpp telemetry/telemetry_holders.cpp telemetry/frsky.cpp telemetry/frsky_d.cpp)
-  set(GUI_SRC ${GUI_SRC} view_telemetry.cpp)
-  if(FRSKY_HUB)
-    add_definitions(-DFRSKY_HUB)
-  endif()
-  if(WS_HOW_HIGH)
-    add_definitions(-DWS_HOW_HIGH)
-  endif()
-  if(GAUGES)
-    add_definitions(-DGAUGES)
-  endif()
-  if(GPS)
-    add_definitions(-DGPS)
-  endif()
-  if(VARIO)
-    add_definitions(-DVARIO)
-    set(SRC ${SRC} vario.cpp)
-  endif()
-  math(EXPR EEPROM_VARIANT ${EEPROM_VARIANT}+${FRSKY_VARIANT})
-endif()
-add_definitions(-DTIMERS=2)

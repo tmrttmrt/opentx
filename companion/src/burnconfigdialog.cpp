@@ -218,7 +218,7 @@ void burnConfigDialog::getSettings()
 
     ui->samba_location->setText(getSAMBA());
     ui->samba_port->setText(getSambaPort());
-    
+
     ui->curl_location->setText(getCURL());
     ui->curl_ip->setText(getCurlIP());
     ui->ftp_passwd->setText(getFtpPasswd());

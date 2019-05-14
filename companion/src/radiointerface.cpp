@@ -317,7 +317,7 @@ bool readFirmware(const QString & filename, ProgressWidget * progress)
                          QCoreApplication::translate("RadioInterface", "Could not delete temporary file: %1").arg(filename));
     return false;
   }
-  
+
   if (IS_ESP32(getCurrentBoard())) {
      QMessageBox::warning(NULL, CPN_STR_TTL_ERROR,
                            QCoreApplication::translate("RadioInterface", "Not implemented for current board"));
@@ -356,7 +356,7 @@ bool writeFirmware(const QString & filename, ProgressWidget * progress)
       return copyProcess.run();
     }
   }
-  
+
   if (IS_ESP32(getCurrentBoard())) {
     DnldProcess dnldProcess(getRadioInterfaceCmd(), getCurlFlashArgs(filename), progress, DnldProcess::FLASHING);
     return dnldProcess.run();

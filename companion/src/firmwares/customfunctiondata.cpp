@@ -19,14 +19,13 @@
  */
 
 #include "customfunctiondata.h"
-
 #include "eeprominterface.h"
 #include "radiodata.h"
 #include "radiodataconversionstate.h"
 
 void CustomFunctionData::clear()
 {
-  memset(this, 0, sizeof(CustomFunctionData));
+  memset(reinterpret_cast<void *>(this), 0, sizeof(CustomFunctionData));
   if (!getCurrentFirmware()->getCapability(SafetyChannelCustomFunction)) {
     func = FuncTrainer;
   }
@@ -132,11 +131,11 @@ void CustomFunctionData::populateResetParams(const ModelData * model, QComboBox 
     b->setCurrentIndex(value);
   }
   if (model && IS_ARM(board)) {
-    for (int i=0; i<CPN_MAX_SENSORS; ++i) {
+    for (unsigned i=0; i<CPN_MAX_SENSORS; ++i) {
       if (model->sensorData[i].isAvailable()) {
         RawSource item = RawSource(SOURCE_TYPE_TELEMETRY, 3*i);
         b->addItem(item.toString(model), val+i);
-        if ((int)value == val+i) {
+        if (value == val+i) {
           b->setCurrentIndex(b->count()-1);
         }
       }

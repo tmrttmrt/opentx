@@ -60,9 +60,10 @@ void encoderTask(void * pdata)
         uint8_t gpio = readI2CGPIO(MCP23017_ADDR_SW,0x11); //INTCAPB
         ESP_LOGD(TAG,"encoder interrupt: %x",gpio);
         addr= (old & 0b110) << 1 | (gpio & 0b110)>>1;
-        incRotaryEncoder(0, lookup_table[addr]);
-        addr= (old & 0b110000) >>2  | (gpio & 0b110000) >> 4;
-        incRotaryEncoder(1, lookup_table[addr]);
+//        incRotaryEncoder(0, lookup_table[addr]);
+        rotencValue += lookup_table[addr];
+//        addr= (old & 0b110000) >>2  | (gpio & 0b110000) >> 4;
+//        incRotaryEncoder(1, lookup_table[addr]);
         old = gpio;
     }
 }
@@ -261,7 +262,7 @@ void readKeysAndTrims()
 
 #if ROTARY_ENCODERS > 0
     keys_input = readI2CGPIO(MCP23017_ADDR_SW, 0x13) ;
-    keys[BTN_REa].input(keys_input & BIT(0));
+    keys[BTN_REa].input(keys_input & BIT(INP_J_ROT_ENC_1_PUSH));
 #endif
 }
 

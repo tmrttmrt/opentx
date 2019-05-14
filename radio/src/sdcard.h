@@ -21,7 +21,7 @@
 #ifndef _SDCARD_H_
 #define _SDCARD_H_
 
-#if !defined(SIMU) && !defined(CPUESP32)
+#if !defined(SIMU)
 #include "ff.h"
 #endif
 
@@ -72,6 +72,7 @@ const char RADIO_SETTINGS_PATH[] = RADIO_PATH "/radio.bin";
 #define FIRMWARE_EXT        ".bin"
 #define EEPROM_EXT          ".bin"
 #define SPORT_FIRMWARE_EXT  ".frk"
+#define BLUETOOTH_FIRMWARE_EXT  ".bin"
 
 #define LEN_FILE_EXTENSION_MAX  5  // longest used, including the dot, excluding null term.
 
@@ -112,8 +113,8 @@ uint32_t sdGetSize();
 uint32_t sdGetFreeSectors();
 const char * sdCheckAndCreateDirectory(const char * path);
 
-#if !defined(BOOT) && !defined(CPUESP32)
-inline const pm_char * SDCARD_ERROR(FRESULT result)
+#if !defined(BOOT)
+inline const char * SDCARD_ERROR(FRESULT result)
 {
   if (result == FR_NOT_READY)
     return STR_NO_SDCARD;
@@ -124,6 +125,7 @@ inline const pm_char * SDCARD_ERROR(FRESULT result)
 
 // NOTE: 'size' must = 0 or be a valid character position within 'filename' array -- it is NOT validated
 const char * getFileExtension(const char * filename, uint8_t size=0, uint8_t extMaxLen=0, uint8_t *fnlen=NULL, uint8_t *extlen=NULL);
+const char * getBasename(const char * path);
 
 // TODO REMOVE THE O9X FOURCC in 2.3
 #if defined(PCBX12S)
@@ -135,21 +137,24 @@ const char * getFileExtension(const char * filename, uint8_t size=0, uint8_t ext
 #elif defined(PCBX9E)
   #define OTX_FOURCC 0x3578746F // otx for Taranis X9E
   #define O9X_FOURCC 0x3378396F // o9x for Taranis X9E
+#elif defined(PCBXLITES)
+  #define OTX_FOURCC 0x3B78746F // otx for Taranis X-Lite S
+  #define O9X_FOURCC 0x3B78396F // o9x for Taranis X-Lite S
 #elif defined(PCBXLITE)
   #define OTX_FOURCC 0x3978746F // otx for Taranis X-Lite
   #define O9X_FOURCC 0x3978396F // o9x for Taranis X-Lite
 #elif defined(PCBX7)
   #define OTX_FOURCC 0x3678746F // otx for Taranis X7
   #define O9X_FOURCC 0x3378396F // o9x for Taranis X7
+#elif defined(PCBX9LITE)
+  #define OTX_FOURCC 0x3C78746F // otx for Taranis X9-Lite
+  #define O9X_FOURCC 0x3C78396F // o9x for Taranis X9-Lite
 #elif defined(PCBX9D) || defined(PCBX9DP)
   #define OTX_FOURCC 0x3378746F // otx for Taranis X9D
   #define O9X_FOURCC 0x3378396F // o9x for Taranis X9D
 #elif defined(PCBSKY9X)
   #define OTX_FOURCC 0x3278746F // otx for sky9x
   #define O9X_FOURCC 0x3278396F // o9x for sky9x
-#elif defined(PCBGRUVIN9X) || defined(PCBMEGA2560)
-  #define OTX_FOURCC 0x3178746F // otx for gruvin9x/MEGA2560
-  #define O9X_FOURCC 0x3178396F // o9x for gruvin9x/MEGA2560
 #elif defined(PCBESP_WROOM_32)
   #define OTX_FOURCC 0x3878746F // otx for ESP32
   #define O9X_FOURCC 0x3878396F // o9x for ESP32
@@ -169,7 +174,6 @@ const char * sdCopyFile(const char * srcFilename, const char * srcDir, const cha
 bool sdListFiles(const char * path, const char * extension, const uint8_t maxlen, const char * selection, uint8_t flags=0);
 
 bool isCwdAtRoot();
-#if !defined(CPUESP32)
 FRESULT sdReadDir(DIR * dir, FILINFO * fno, bool & firstTime);
-#endif
+
 #endif // _SDCARD_H_

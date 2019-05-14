@@ -27,8 +27,9 @@
 #define CLI_COMMAND_MAX_ARGS           8
 #define CLI_COMMAND_MAX_LEN            256
 
-OS_TID cliTaskId;
-TaskStack<CLI_STACK_SIZE> _ALIGNED(8) cliStack; // stack must be aligned to 8 bytes otherwise printf for %f does not work!
+RTOS_TASK_HANDLE cliTaskId;
+RTOS_DEFINE_STACK(cliStack, CLI_STACK_SIZE);
+
 Fifo<uint8_t, 256> cliRxFifo;
 uint8_t cliTracesEnabled = true;
 char cliLastLine[CLI_COMMAND_MAX_LEN+1];
@@ -308,7 +309,7 @@ int cliTestNew()
 {
   char * tmp = 0;
   serialPrint("Allocating 1kB with new()");
-  CoTickDelay(100);
+  RTOS_WAIT_MS(200);
   tmp = new char[1024];
   if (tmp) {
     serialPrint("\tsuccess");
@@ -320,7 +321,7 @@ int cliTestNew()
   }
 
   serialPrint("Allocating 10MB with (std::nothrow) new()");
-  CoTickDelay(100);
+  RTOS_WAIT_MS(200);
   tmp = new (std::nothrow) char[1024*1024*10];
   if (tmp) {
     serialPrint("\tFAILURE, tmp = %p", tmp);
@@ -332,7 +333,7 @@ int cliTestNew()
   }
 
   serialPrint("Allocating 10MB with new()");
-  CoTickDelay(100);
+  RTOS_WAIT_MS(200);
   tmp = new char[1024*1024*10];
   if (tmp) {
     serialPrint("\tFAILURE, tmp = %p", tmp);
@@ -349,7 +350,7 @@ int cliTestNew()
 #if defined(COLORLCD)
 
 extern bool perMainEnabled;
-typedef void (*graphichTestFunc)(void);
+typedef void (*timedTestFunc_t)(void);
 
 void testDrawSolidFilledRectangle()
 {
@@ -420,31 +421,30 @@ void testClear()
   lcdClear();
 }
 
-#define GRAPHICS_TEST_RUN_STEP    100
-#define RUN_GRAPHICS_TEST(name, runtime)   runGraphicsTest(name, #name, runtime)
+#define RUN_GRAPHICS_TEST(name, runtime)   runTimedFunctionTest(name, #name, runtime, 100)
 
-float runGraphicsTest(graphichTestFunc func, const char * name, uint32_t runtime)
+float runTimedFunctionTest(timedTestFunc_t func, const char * name, uint32_t runtime, uint16_t step)
 {
-  uint32_t start = (uint32_t)CoGetOSTime();
+  const uint32_t start = RTOS_GET_MS();
   uint32_t noRuns = 0;
-  while (((uint32_t)CoGetOSTime() - start) < runtime/2 ) {
-    for (int n=0; n<GRAPHICS_TEST_RUN_STEP; n++) {
+  uint32_t actualRuntime = 0;
+  while ((actualRuntime = RTOS_GET_MS() - start) < runtime ) {
+    for (uint16_t n=0; n < step; n++) {
       func();
     }
     lcdRefresh();
-    noRuns += GRAPHICS_TEST_RUN_STEP;
+    noRuns += step;
   }
-  uint32_t actualRuntime = (uint32_t)CoGetOSTime() - start;
-  float result = (noRuns * 500.0f) / (float)actualRuntime;     // runs/second
-  serialPrint("Test %s speed: %0.2f, (%d runs in %d ms)", name, result, noRuns, actualRuntime*2);
-  CoTickDelay(100);
+  const float result = (noRuns * 500.0f) / (float)actualRuntime;     // runs/second
+  serialPrint("Test %s speed: %lu.%02u, (%lu runs in %lu ms)", name, uint32_t(result), uint16_t((result - uint32_t(result)) * 100.0f), noRuns, actualRuntime);
+  RTOS_WAIT_MS(200);
   return result;
 }
 
 int cliTestGraphics()
 {
   serialPrint("Starting graphics performance test...");
-  CoTickDelay(100);
+  RTOS_WAIT_MS(200);
 
   watchdogSuspend(6000/*60s*/);
   if (pulsesStarted()) {
@@ -469,7 +469,7 @@ int cliTestGraphics()
   result += RUN_GRAPHICS_TEST(testDrawTextVertical, 1000);
   result += RUN_GRAPHICS_TEST(testClear, 1000);
 
-  serialPrint("Total speed: %0.2f", result);
+  serialPrint("Total speed: %lu.%02u", uint32_t(result), uint16_t((result - uint32_t(result)) * 100.0f));
 
   perMainEnabled = true;
   if (pulsesStarted()) {
@@ -565,31 +565,12 @@ void testMemoryCopyFrom_SDRAM_to_SDRAM_8bit()
   memoryCopy((uint8_t *)LCD_FIRST_FRAME_BUFFER, (const uint8_t * )LCD_SECOND_FRAME_BUFFER, MEMORY_SPEED_BLOCK_SIZE);
 }
 
-#define MEMORY_TEST_RUN_STEP    100
-#define RUN_MEMORY_TEST(name, runtime)   runMemoryTest(name, #name, runtime)
-
-float runMemoryTest(graphichTestFunc func, const char * name, uint32_t runtime)
-{
-  uint32_t start = (uint32_t)CoGetOSTime();
-  uint32_t noRuns = 0;
-  while (((uint32_t)CoGetOSTime() - start) < runtime/2 ) {
-    for (int n=0; n<MEMORY_TEST_RUN_STEP; n++) {
-      func();
-    }
-    noRuns += MEMORY_TEST_RUN_STEP;
-  }
-  uint32_t actualRuntime = (uint32_t)CoGetOSTime() - start;
-  float result = (noRuns * 500.0f) / (float)actualRuntime;     // runs/second
-  serialPrint("Test %s speed: %0.2f, (%d runs in %d ms)", name, result, noRuns, actualRuntime*2);
-  CoTickDelay(100);
-  return result;
-}
-
+#define RUN_MEMORY_TEST(name, runtime)   runTimedFunctionTest(name, #name, runtime, 100)
 
 int cliTestMemorySpeed()
 {
   serialPrint("Starting memory speed test...");
-  CoTickDelay(100);
+  RTOS_WAIT_MS(200);
 
   watchdogSuspend(6000/*60s*/);
   if (pulsesStarted()) {
@@ -599,29 +580,29 @@ int cliTestMemorySpeed()
   perMainEnabled = false;
 
   float result = 0;
-  result += RUN_GRAPHICS_TEST(testMemoryReadFrom_RAM_8bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryReadFrom_RAM_32bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryReadFrom_SDRAM_8bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryReadFrom_SDRAM_32bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryCopyFrom_RAM_to_SDRAM_8bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryCopyFrom_RAM_to_SDRAM_32bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryCopyFrom_SDRAM_to_SDRAM_8bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryCopyFrom_SDRAM_to_SDRAM_32bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryReadFrom_RAM_8bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryReadFrom_RAM_32bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryReadFrom_SDRAM_8bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryReadFrom_SDRAM_32bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryCopyFrom_RAM_to_SDRAM_8bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryCopyFrom_RAM_to_SDRAM_32bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryCopyFrom_SDRAM_to_SDRAM_8bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryCopyFrom_SDRAM_to_SDRAM_32bit, 200);
 
   LTDC_Cmd(DISABLE);
   serialPrint("Disabling LCD...");
-  CoTickDelay(100);
+  RTOS_WAIT_MS(200);
 
-  result += RUN_GRAPHICS_TEST(testMemoryReadFrom_RAM_8bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryReadFrom_RAM_32bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryReadFrom_SDRAM_8bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryReadFrom_SDRAM_32bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryCopyFrom_RAM_to_SDRAM_8bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryCopyFrom_RAM_to_SDRAM_32bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryCopyFrom_SDRAM_to_SDRAM_8bit, 200);
-  result += RUN_GRAPHICS_TEST(testMemoryCopyFrom_SDRAM_to_SDRAM_32bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryReadFrom_RAM_8bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryReadFrom_RAM_32bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryReadFrom_SDRAM_8bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryReadFrom_SDRAM_32bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryCopyFrom_RAM_to_SDRAM_8bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryCopyFrom_RAM_to_SDRAM_32bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryCopyFrom_SDRAM_to_SDRAM_8bit, 200);
+  result += RUN_MEMORY_TEST(testMemoryCopyFrom_SDRAM_to_SDRAM_32bit, 200);
 
-  serialPrint("Total speed: %0.2f", result);
+  serialPrint("Total speed: %lu.%02u", uint32_t(result), uint16_t((result - uint32_t(result)) * 100.0f));
 
   LTDC_Cmd(ENABLE);
 
@@ -646,7 +627,7 @@ int cliTestModelsList()
   int count=0;
 
   serialPrint("Starting fetching RF data 100x...");
-  uint32_t start = (uint32_t)CoGetOSTime();
+  const uint32_t start = RTOS_GET_MS();
 
   const list<ModelsCategory*>& cats = modList.getCategories();
   while(1) {
@@ -668,8 +649,7 @@ int cliTestModelsList()
   }
 
  done:
-  uint32_t actualRuntime = (uint32_t)CoGetOSTime() - start;
-  serialPrint("Done fetching %ix RF data: %d ms", count, actualRuntime*2);
+  serialPrint("Done fetching %ix RF data: %lu ms", count, (RTOS_GET_MS() - start));
 
   return 0;
 }
@@ -936,7 +916,7 @@ void printDebugTimers()
 #endif
 
 #include "OsMutex.h"
-extern OS_MutexID audioMutex;
+extern RTOS_MUTEX_HANDLE audioMutex;
 
 void printAudioVars()
 {
@@ -983,7 +963,7 @@ int cliDisplay(const char ** argv)
       serialPrint("[%s] = %s", name, keyState(i) ? "on" : "off");
     }
 #if defined(ROTARY_ENCODER_NAVIGATION)
-    serialPrint("[Enc.] = %d", rotencValue[0] / ROTARY_ENCODER_GRANULARITY);
+    serialPrint("[Enc.] = %d", rotencValue / ROTARY_ENCODER_GRANULARITY);
 #endif
     for (int i=TRM_BASE; i<=TRM_LAST; i++) {
       serialPrint("[Trim%d] = %s", i-TRM_BASE, keyState(i) ? "on" : "off");
@@ -1124,7 +1104,7 @@ int cliRepeat(const char ** argv)
     counter = interval;
     uint8_t c;
     while (!cliRxFifo.pop(c) || !(c == '\r' || c == '\n' || c == ' ')) {
-      CoTickDelay(10); // 20ms
+      RTOS_WAIT_MS(20); // 20ms
       if (++counter >= interval) {
         cliExecCommand(&argv[2]);
         counter = 0;
@@ -1184,20 +1164,18 @@ int cliBlueTooth(const char ** argv)
 {
   int baudrate = 0;
   if (!strncmp(argv[1], "AT", 2) || !strncmp(argv[1], "TTM", 3)) {
-    char command[32];
-    strAppend(strAppend(command, argv[1]), "\r\n");
-    bluetoothWriteString(command);
-    char * line = bluetoothReadline();
+    bluetooth.writeString(argv[1]);
+    char * line = bluetooth.readline();
     serialPrint("<BT %s", line);
   }
   else if (toInt(argv, 1, &baudrate) > 0) {
     if (baudrate > 0) {
-      bluetoothInit(baudrate);
-      char * line = bluetoothReadline();
+      bluetoothInit(baudrate, true);
+      char * line = bluetooth.readline();
       serialPrint("<BT %s", line);
     }
     else {
-      bluetoothDone();
+      bluetoothDisable();
       serialPrint("BT turned off");
     }
   }
@@ -1299,7 +1277,7 @@ void cliTask(void * pdata)
     uint8_t c;
 
     while (!cliRxFifo.pop(c)) {
-      CoTickDelay(10); // 20ms
+      RTOS_WAIT_MS(20); // 20ms
     }
 
     if (c == 12) {
@@ -1339,5 +1317,5 @@ void cliTask(void * pdata)
 
 void cliStart()
 {
-  cliTaskId = CoCreateTaskEx(cliTask, NULL, 10, &cliStack.stack[CLI_STACK_SIZE-1], CLI_STACK_SIZE, 1, false);
+  RTOS_CREATE_TASK(cliTaskId, cliTask, "CLI", cliStack, CLI_STACK_SIZE, CLI_TASK_PRIO);
 }

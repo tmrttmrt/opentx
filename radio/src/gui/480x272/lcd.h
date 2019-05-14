@@ -105,7 +105,7 @@ enum FontSizeIndex {
 #include "colors.h"
 
 #define DISPLAY_PIXELS_COUNT           (LCD_W*LCD_H)
-#define DISPLAY_BUFFER_SIZE            (sizeof(display_t)*DISPLAY_PIXELS_COUNT)
+#define DISPLAY_BUFFER_SIZE            (DISPLAY_PIXELS_COUNT)
 
 #if defined(SIMU)
 extern display_t displayBuf[DISPLAY_BUFFER_SIZE];
@@ -120,7 +120,7 @@ extern coord_t lcdNextPos;
 
 void lcdDrawChar(coord_t x, coord_t y, char c, LcdFlags flags=0);
 
-void lcdDrawTextAtIndex(coord_t x, coord_t y, const pm_char * s, uint8_t idx, LcdFlags flags=0);
+void lcdDrawTextAtIndex(coord_t x, coord_t y, const char * s, uint8_t idx, LcdFlags flags=0);
 
 inline void lcdClear()
 {
@@ -132,7 +132,12 @@ inline void lcdDrawText(coord_t x, coord_t y, const char * s, LcdFlags attr=0)
   lcd->drawText(x, y, s, attr);
 }
 
-inline void lcdDrawSizedText(coord_t x, coord_t y, const pm_char * s, uint8_t len, LcdFlags attr=0)
+inline void lcdDrawCenteredText(coord_t y, const char * s, LcdFlags attr=0)
+{
+  lcd->drawText(LCD_W/2, y, s, attr | CENTERED);
+}
+
+inline void lcdDrawSizedText(coord_t x, coord_t y, const char * s, uint8_t len, LcdFlags attr=0)
 {
   lcd->drawSizedText(x, y, s, len, attr);
 }
@@ -146,6 +151,7 @@ void lcdDrawNumber(coord_t x, coord_t y, int32_t val, LcdFlags flags=0, uint8_t 
 
 void drawRtcTime(coord_t x, coord_t y, LcdFlags att=0);
 void drawTimer(coord_t x, coord_t y, putstime_t tme, LcdFlags att=0);
+void drawReceiverName(coord_t x, coord_t y, uint8_t moduleIdx, uint8_t receiverIdx, LcdFlags flags=0);
 
 void putsModelName(coord_t x, coord_t y, char *name, uint8_t id, LcdFlags att);
 void putsStickName(coord_t x, coord_t y, uint8_t idx, LcdFlags att=0);

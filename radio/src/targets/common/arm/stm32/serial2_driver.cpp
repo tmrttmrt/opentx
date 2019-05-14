@@ -97,10 +97,12 @@ void serial2Init(unsigned int mode, unsigned int protocol)
       break;
 #endif
     case UART_MODE_TELEMETRY:
-      if (protocol == PROTOCOL_FRSKY_D_SECONDARY) {
+      if (protocol == PROTOCOL_TELEMETRY_FRSKY_D_SECONDARY) {
         uart3Setup(FRSKY_D_BAUDRATE, true);
       }
       break;
+    case UART_MODE_LUA:
+      uart3Setup(DEBUG_BAUDRATE, false);
   }
 }
 

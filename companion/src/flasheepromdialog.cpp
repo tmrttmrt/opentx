@@ -266,11 +266,11 @@ void FlashEEpromDialog::on_burnButton_clicked()
         backupFilename = dir.absoluteFilePath("radio.eesp");
     }
     else {
-        backupFilename = backupPath + "/backup-" + QDateTime().currentDateTime().toString("yyyy-MM-dd-HHmmss") + ".bin";
-    }
+    backupFilename = backupPath + "/backup-" + QDateTime().currentDateTime().toString("yyyy-MM-dd-HHmmss") + ".bin";
+  }
   }
   else if (ui->checkFirmwareCompatibility->isChecked()) {
-        backupFilename = generateProcessUniqueTempFileName("eeprom.bin");
+    backupFilename = generateProcessUniqueTempFileName("eeprom.bin");
   }
   if (!backupFilename.isEmpty()) {
     if (!readEeprom(backupFilename, progressDialog.progress())) {

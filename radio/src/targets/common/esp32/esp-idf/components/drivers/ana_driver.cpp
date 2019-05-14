@@ -34,6 +34,20 @@ static_assert(sizeof(analogPorts)/sizeof(adc1_channel_t)==NUM_ANALOGS,"Analog pi
 
 static const char *TAG = "ana_driver.cpp";
 
+uint16_t getBatteryVoltage()
+{
+  int32_t instant_vbat = anaIn(TX_VOLTAGE);  // using filtered ADC value on purpose
+  instant_vbat = (instant_vbat + instant_vbat*(g_eeGeneral.txVoltageCalibration)/128) * 4191;
+  instant_vbat /= 5530;
+  return (uint16_t)instant_vbat;
+}
+
+uint16_t anaIn(uint8_t chan)
+{
+  return s_anaFilt[chan];
+}
+
+
 void getADC()
 {
     int     read_raw;

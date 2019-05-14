@@ -33,6 +33,13 @@ void popMenu()
   TRACE("popMenu(%d)", menuLevel);
 }
 
+void abortPopMenu()
+{
+  menuLevel = menuLevel + 1;
+  menuEvent = 0;
+  TRACE("popMenu(%d) aborted", menuLevel);
+}
+
 void chainMenu(MenuHandlerFunc newMenu)
 {
   menuHandlers[menuLevel] = newMenu;
@@ -63,7 +70,6 @@ void pushMenu(MenuHandlerFunc newMenu)
   TRACE("pushMenu(%d, %p)", menuLevel, newMenu);
 }
 
-#if defined(CPUARM)
 void menuModelNotes(event_t event)
 {
   if (event == EVT_ENTRY) {
@@ -79,4 +85,3 @@ void pushModelNotes()
 {
   pushMenu(menuModelNotes);
 }
-#endif

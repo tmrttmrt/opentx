@@ -19,8 +19,9 @@
  */
 
 #include "opentx.h"
+#include <math.h>
 
-void drawStringWithIndex(coord_t x, coord_t y, const pm_char * str, uint8_t idx, LcdFlags flags)
+void drawStringWithIndex(coord_t x, coord_t y, const char * str, uint8_t idx, LcdFlags flags)
 {
   if (flags & RIGHT) {
     lcdDrawNumber(x, y, idx, flags);
@@ -32,11 +33,10 @@ void drawStringWithIndex(coord_t x, coord_t y, const pm_char * str, uint8_t idx,
   }
 }
 
-#if defined(CPUARM)
 FlightModesType editFlightModes(coord_t x, coord_t y, event_t event, FlightModesType value, uint8_t attr)
 {
   int posHorz = menuHorizontalPosition;
-  
+
   for (uint8_t p=0; p<MAX_FLIGHT_MODES; p++) {
     LcdFlags flags = 0;
     if (attr) {
@@ -49,7 +49,7 @@ FlightModesType editFlightModes(coord_t x, coord_t y, event_t event, FlightModes
       lcdDrawChar(x, y, '0'+p, flags);
     x += FW;
   }
-  
+
   if (attr) {
     if (s_editMode && event==EVT_KEY_BREAK(KEY_ENTER)) {
       s_editMode = 0;
@@ -57,13 +57,15 @@ FlightModesType editFlightModes(coord_t x, coord_t y, event_t event, FlightModes
       storageDirty(EE_MODEL);
     }
   }
-  
+
   return value;
 }
-#endif
 
-#if defined(CPUARM) || defined(CPUESP32)
+#if defined(CPUESP32)
+void editNameMask(coord_t x, coord_t y, char * name, uint8_t size, uint8_t mask, event_t event, uint8_t active, LcdFlags attr)
+#else
 void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, uint8_t active, LcdFlags attr)
+#endif
 {
   uint8_t mode = 0;
   if (active) {
@@ -72,16 +74,33 @@ void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, ui
     else
       mode = FIXEDWIDTH;
   }
-  
+#if defined(CPUESP32)
+  if(mask){
+    char buff[size];
+    for (int i=0; i<size; ++i) {
+      if (!name[i]) {
+        buff[i] = 0;
+      } 
+      else {
+        buff[i] = '*';
+      }
+    }
+    lcdDrawSizedText(x, y, buff, size, mode);
+  }
+  else{
+    lcdDrawSizedText(x, y, name, size, attr | mode);
+  }
+#else
   lcdDrawSizedText(x, y, name, size, attr | mode);
+#endif
   coord_t backupNextPos = lcdNextPos;
-  
+
   if (active) {
     uint8_t cur = editNameCursorPos;
     if (s_editMode > 0) {
       int8_t c = name[cur];
       int8_t v = c;
-      
+
       if (IS_NEXT_EVENT(event) || IS_PREVIOUS_EVENT(event)) {
         if (attr == ZCHAR) {
           v = checkIncDec(event, abs(v), 0, ZCHAR_MAX, 0);
@@ -91,7 +110,7 @@ void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, ui
           v = checkIncDec(event, abs(v), '0', 'z', 0);
         }
       }
-      
+
       switch (event) {
         case EVT_KEY_BREAK(KEY_ENTER):
           if (s_editMode == EDIT_MODIFY_FIELD) {
@@ -108,7 +127,7 @@ void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, ui
         case EVT_KEY_BREAK(KEY_LEFT):
           if (cur>0) cur--;
           break;
-          
+
         case EVT_KEY_BREAK(KEY_RIGHT):
           if (cur<size-1) cur++;
           break;
@@ -122,7 +141,7 @@ void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, ui
         case EVT_KEY_LONG(KEY_LEFT):
         case EVT_KEY_LONG(KEY_RIGHT):
 #endif
-          
+
           if (attr & ZCHAR) {
 #if defined(PCBTARANIS) && !defined(PCBXLITE)
             if (v == 0) {
@@ -156,14 +175,14 @@ void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, ui
 #endif
           break;
       }
-      
+
       if (c != v) {
         name[cur] = v;
-        storageDirty(menuVerticalPositions[0] == 0 ? EE_MODEL : EE_GENERAL);
+        storageDirty(isModelMenuDisplayed() ? EE_MODEL : EE_GENERAL);
       }
-      
+
       if (attr == ZCHAR) {
-        lcdDrawChar(x+editNameCursorPos*FW, y, idx2char(v), ERASEBG|INVERS|FIXEDWIDTH);
+        lcdDrawChar(x+editNameCursorPos*FW, y, zchar2char(v), ERASEBG|INVERS|FIXEDWIDTH);
       }
       else {
         lcdDrawChar(x+editNameCursorPos*FW, y, v, ERASEBG|INVERS|FIXEDWIDTH);
@@ -176,7 +195,6 @@ void editName(coord_t x, coord_t y, char * name, uint8_t size, event_t event, ui
     lcdNextPos = backupNextPos;
   }
 }
-#endif
 
 void gvarWeightItem(coord_t x, coord_t y, MixData * md, LcdFlags attr, event_t event)
 {
@@ -186,23 +204,35 @@ void gvarWeightItem(coord_t x, coord_t y, MixData * md, LcdFlags attr, event_t e
   MD_UNION_TO_WEIGHT(weight, md);
 }
 
-#if defined(CPUARM)
 void drawGVarName(coord_t x, coord_t y, int8_t idx, LcdFlags flags)
 {
   char s[8];
   getGVarString(s, idx);
   lcdDrawText(x, y, s, flags);
 }
-#endif
-#if defined(CPUESP32)
-void drawGVarName(coord_t x, coord_t y, int8_t idx, LcdFlags flags)
+
+void drawPower(coord_t x, coord_t y, int8_t dBm, LcdFlags att)
 {
-  char s[8];
-  getGVarString(s, idx);
-  if(IS_LEFT_ALIGNED(flags)){
-    lcdDrawText(x, y, s, flags);
-  } else {
-    lcdDrawText(x-strlen(s)*FW, y, s, flags);
+  float power_W_PREC1 = pow(10.0, (dBm - 30.0) / 10.0) * 10;
+  if (dBm >= 30) {
+    lcdDrawNumber(x, y, power_W_PREC1, PREC1 | att);
+    lcdDrawText(lcdNextPos, y, "W", att);
+  }
+  else if (dBm < 10) {
+    uint16_t power_MW_PREC1 = round(power_W_PREC1 * 1000);
+    lcdDrawNumber(x, y, power_MW_PREC1, PREC1 | att);
+    lcdDrawText(lcdNextPos, y, "mW", att);
+  }
+  else {
+    uint16_t power_MW = round(power_W_PREC1 * 100);
+    if (power_MW >= 50) {
+      power_MW = (power_MW / 5) * 5;
+      lcdDrawNumber(x, y, power_MW, att);
+      lcdDrawText(lcdNextPos, y, "mW", att);
+    }
+    else {
+      lcdDrawNumber(x, y, power_MW, att);
+      lcdDrawText(lcdNextPos, y, "mW", att);
+    }
   }
 }
-#endif

@@ -879,14 +879,8 @@ Text Label 700  4400 0    42   ~ 0
 Stick_RV
 Text Label 700  4500 0    42   ~ 0
 Stick_LH
-Text Label 3950 7600 1    42   ~ 0
-Rot_2_B
-Text Label 4050 7600 1    42   ~ 0
-Rot_2_A
 Text Label 700  4900 0    42   ~ 0
 AUDIO
-Text Label 4150 7650 1    42   ~ 0
-Rot_2_Push
 Text Label 4450 7650 1    42   ~ 0
 Rot_1_Push
 Text Label 3550 4750 2    42   ~ 0
@@ -1692,10 +1686,6 @@ Wire Wire Line
 Wire Wire Line
 	4350 7250 4350 7600
 Wire Wire Line
-	3950 7250 3950 7600
-Wire Wire Line
-	4050 7250 4050 7600
-Wire Wire Line
 	3450 7250 3450 7600
 Wire Wire Line
 	3950 5050 3950 4550
@@ -1752,8 +1742,6 @@ Text Label 3300 5050 0    42   ~ 0
 N_RESET
 Wire Wire Line
 	4450 7250 4450 7650
-Wire Wire Line
-	4150 7250 4150 7650
 Wire Wire Line
 	5450 3650 5850 3650
 Wire Wire Line

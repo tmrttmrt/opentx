@@ -41,9 +41,7 @@ void storageDirty(uint8_t msk)
 
 void preModelLoad()
 {
-#if defined(CPUARM)
   watchdogSuspend(500/*5s*/);
-#endif
 
 #if defined(SDCARD)
   logsClose();
@@ -59,7 +57,7 @@ void preModelLoad()
 static void fixUpModel()
 {
   // Ensure that when rfProtocol is RF_PROTO_OFF the type of the module is MODULE_TYPE_NONE
-  if (g_model.moduleData[INTERNAL_MODULE].type == MODULE_TYPE_XJT && g_model.moduleData[INTERNAL_MODULE].rfProtocol == RF_PROTO_OFF)
+  if (g_model.moduleData[INTERNAL_MODULE].type == MODULE_TYPE_PXX_XJT && g_model.moduleData[INTERNAL_MODULE].rfProtocol == RF_PROTO_OFF)
     g_model.moduleData[INTERNAL_MODULE].type = MODULE_TYPE_NONE;
 }
 #endif
@@ -76,7 +74,6 @@ void postModelLoad(bool alarms)
 
   restoreTimers();
 
-#if defined(CPUARM)
   for (int i=0; i<MAX_TELEMETRY_SENSORS; i++) {
     TelemetrySensor & sensor = g_model.telemetrySensors[i];
     if (sensor.type == TELEM_TYPE_CALCULATED && sensor.persistent) {
@@ -84,7 +81,6 @@ void postModelLoad(bool alarms)
       telemetryItems[i].lastReceived = TELEMETRY_VALUE_OLD;   // #3595: make value visible even before the first new value is received)
     }
   }
-#endif
 
   LOAD_MODEL_CURVES();
 
@@ -99,11 +95,7 @@ void postModelLoad(bool alarms)
     resumePulses();
   }
 
-#if defined(TELEMETRY_FRSKY)
-  frskySendAlarms();
-#endif
-
-#if defined(CPUARM) && defined(SDCARD)
+#if defined(SDCARD)
   referenceModelAudioFiles();
 #endif
 
@@ -120,7 +112,6 @@ void storageFlushCurrentModel()
 {
   saveTimers();
 
-#if defined(CPUARM)
   for (int i=0; i<MAX_TELEMETRY_SENSORS; i++) {
     TelemetrySensor & sensor = g_model.telemetrySensors[i];
     if (sensor.type == TELEM_TYPE_CALCULATED && sensor.persistent && sensor.persistentValue != telemetryItems[i].value) {
@@ -128,9 +119,7 @@ void storageFlushCurrentModel()
       storageDirty(EE_MODEL);
     }
   }
-#endif
 
-#if defined(CPUARM)
   if (g_model.potsWarnMode == POTS_WARN_AUTO) {
     for (int i=0; i<NUM_POTS+NUM_SLIDERS; i++) {
       if (!(g_model.potsWarnEnabled & (1 << i))) {
@@ -139,5 +128,4 @@ void storageFlushCurrentModel()
     }
     storageDirty(EE_MODEL);
   }
-#endif
 }

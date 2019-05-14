@@ -21,6 +21,9 @@
 #ifndef _KEYS_H_
 #define _KEYS_H_
 
+#include <inttypes.h>
+#include "board.h"
+
 #define EVT_KEY_MASK(e)                ((e) & 0x1f)
 
 #if defined(PCBHORUS)
@@ -103,25 +106,16 @@ class Key
 extern Key keys[NUM_KEYS];
 extern event_t s_evt;
 
-#define putEvent(evt) s_evt = evt
+inline void putEvent(event_t evt)
+{
+  s_evt = evt;
+}
 
 void pauseEvents(event_t event);
 void killEvents(event_t event);
-
-#if defined(CPUARM)
-  bool clearKeyEvents();
-  event_t getEvent(bool trim=false);
-  bool keyDown();
-#elif defined(CPUESP32)
-  void clearKeyEvents();
-  event_t getEvent();
-  bool keyDown();
-#else
-  void clearKeyEvents();
-  event_t getEvent();
-  uint8_t keyDown();
-#endif
-
-
+void killAllEvents();
+bool waitKeysReleased();
+event_t getEvent(bool trim=false);
+bool keyDown();
 
 #endif // _KEYS_H_

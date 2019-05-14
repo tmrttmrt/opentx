@@ -77,7 +77,7 @@ QString RawSwitch::toString(Board::Type board, const GeneralSettings * const gen
           if (generalSettings)
             swName = QString(generalSettings->switchName[qr.quot]);
           if (swName.isEmpty())
-            swName = getSwitchInfo(board, qr.quot).name;
+            swName = Boards::getSwitchInfo(board, qr.quot).name;
           return swName + directionIndicators.at(qr.rem > -1 && qr.rem < directionIndicators.size() ? qr.rem : 1);
         }
         else {
@@ -142,7 +142,7 @@ QString RawSwitch::toString(Board::Type board, const GeneralSettings * const gen
   }
 }
 
-bool RawSwitch::isAvailable(const ModelData * const model, const GeneralSettings * const gs, Board::Type board)
+bool RawSwitch::isAvailable(const ModelData * const model, const GeneralSettings * const gs, Board::Type board) const
 {
   if (board == Board::BOARD_UNKNOWN)
     board = getCurrentBoard();
