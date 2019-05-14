@@ -4,15 +4,15 @@ ESP32 is a powerful and cheap processor with a number of analog inputs (max 8 if
 
 The project is still in development. The radio firmware has most of the functionality working. Implemented features are:
 
-- basic functionality (6 analog sticks + Vbatt (when WiFi is off), navigation keys, trims, switches, 2 rotary encoders, model storage in SPI flash)
+- basic functionality (6 analog sticks + Vbatt (when WiFi is off), navigation keys, trims, switches, model storage in SPI flash)
 - ST7565P 128x64 SPI display with LED back light
 - audio output (needs additional speaker driver)
 - 8 channel PPM output
 - Frsky RS232 telemetry input. (some others might work but were not tested)
-- sdcard support, sound messages work from downloaded Taranis X9 (2.2V0018) SD card
-- import of MEGA2560 exported model files
+- sdcard support, sound messages work from downloaded Taranis X9 (2.2V0020) SD card
 - WiFi ftp server to download/upload files
 - OTA firmware update
+- integration into Companion through WiFi
 - Only English version of translation files (en.h.txt)
 - compiles under MinGW 
 
@@ -35,10 +35,8 @@ make ota ESP32_IP=[radio IP]
 Todo list:
 
 - translation to other languages
-- integration into Companion through WiFi
 - finding if any concurrency issues will arise due to symmetric multiprocessing architecture (task priorities are an initial guess that probably needs more tunning)
 - Lua
 - additional radio modules support
-- ESP32 sources and CMakeLists.txt still include some old code that is unnecessary
 - converting build system to CMake
 - compilation on linux

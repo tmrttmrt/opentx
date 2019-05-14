@@ -1369,7 +1369,7 @@ void MainWindow::createMenus()
   burnMenu->addAction(readFlashAct);
   burnMenu->addSeparator();
   burnMenu->addSeparator();
-  if (!IS_ARM(getCurrentBoard())) {
+  if (!IS_ARM(getCurrentBoard()) && !IS_ESP32(getCurrentBoard())) {
     burnMenu->addAction(burnFusesAct);
     burnMenu->addAction(burnListAct);
   }
