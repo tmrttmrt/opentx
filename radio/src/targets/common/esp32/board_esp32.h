@@ -31,7 +31,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "esp-idf/components/drivers/fs_wrappers.h"
+#include "fs_wrappers.h"
 #endif
 
 //added 2.3

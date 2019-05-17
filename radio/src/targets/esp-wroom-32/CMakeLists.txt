@@ -12,13 +12,7 @@ set(FIRMWARE_DEPENDENCIES ${FIRMWARE_DEPENDENCIES} 9x_bitmaps)
 set(PPM_LIMITS_SYMETRICAL YES)
 set(PXX1 NO)
 
-set(FLAVOUR espWroom32)
-set(TARGET_SRC
-${TARGET_SRC}
-#    coproc_driver.cpp
-#    rotenc_driver.cpp
-#    rtc_driver.cpp
-    )
+set(FLAVOUR esp32-wroom)
 
 add_definitions(-DPCBESP_WROOM_32 -DPPM_PIN_SERIAL -DAUDIO_DUAL_BUFFER)
 add_definitions(-DAUDIO -DVOICE -DVARIO)

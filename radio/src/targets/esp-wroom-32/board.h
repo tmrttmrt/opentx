@@ -22,7 +22,7 @@
 #ifndef _BOARD_ESP_WROOM_32_H_
 #define _BOARD_ESP_WROOM_32_H_
 
-#include "../common/esp32/board_esp32.h"
+#include "board_esp32.h"
 
 // Stubs
 #define wdt_reset()

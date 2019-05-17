@@ -1,7 +1,7 @@
-include_directories(targets/common/esp32 targets/common/esp32/esp-idf/build/include)
-include_directories($ENV{IDF_PATH}/components/esp32/include $ENV{IDF_PATH}/components/soc/include $ENV{IDF_PATH}/components/soc/esp32/include)
-include_directories($ENV{IDF_PATH}/components/vfs/include $ENV{IDF_PATH}/components/freertos/include $ENV{IDF_PATH}/components/heap/include $ENV{IDF_PATH}/components/driver/include $ENV{IDF_PATH}/components/fatfs/src $ENV{IDF_PATH}/components/wear_levelling/include $ENV{IDF_PATH}/components/log/include $ENV{IDF_PATH}/components/spi_flash/include $ENV{IDF_PATH}/components/sdmmc/include )
-#include_directories($ENV{IDF_PATH}/components/fatfs/src $ENV{IDF_PATH}/components/freertos/include $ENV{IDF_PATH}/components/soc/esp32/include $ENV{IDF_PATH}/components/heap/include $ENV{IDF_PATH}/components/driver/include)
+set(IDF_TARGET "esp32")
+include_directories(targets/common/esp32) 
+include_directories(targets/common/esp32/ota_server/include)
+include_directories(targets/common/esp32/drivers)
 set(TIMERS 3 CACHE STRING "Timers count (2 or 3)")
 set_property(CACHE TIMERS PROPERTY STRINGS 2 3)
 option(CLI "Command Line Interface" OFF)
@@ -133,11 +133,10 @@ if(CROSSFIRE)
     )
 endif()
 
-add_definitions(-DTELEMETRY_FRSKY -DTELEMETRY_FRSKY_SPORT -DGPS)
+add_definitions(-DTELEMETRY_FRSKY -DTELEMETRY_FRSKY_SPORT)
 
 add_definitions(-DBOLD_FONT -DBATTGRAPH -DTHRTRACE)
 add_definitions(-DREQUIRED_SDCARD_VERSION="${SDCARD_VERSION}")
-include_directories(${COOS_DIR} ${COOS_DIR}/kernel ${COOS_DIR}/portable)
 foreach(LANGUAGE ${TTS_LANGUAGES})
   string(TOLOWER ${LANGUAGE} lang_lower)
   set(SRC ${SRC} translations/tts_${lang_lower}.cpp)
@@ -156,6 +155,23 @@ set(SRC
   telemetry/frsky_pxx2.cpp
   crc16.cpp
   vario.cpp
+  targets/common/esp32/main/startup.cpp
+  targets/common/esp32/drivers/ana_driver.cpp
+  targets/common/esp32/drivers/audio_driver.cpp
+  targets/common/esp32/drivers/audio_esp32.cpp
+  targets/common/esp32/drivers/eeprom_conversions.cpp.dis
+  targets/common/esp32/drivers/eeprom_driver.cpp
+  targets/common/esp32/drivers/fs_driver.cpp
+  targets/common/esp32/drivers/fs_wrappers.cpp
+  targets/common/esp32/drivers/keys_driver.cpp
+  targets/common/esp32/drivers/lcd_driver.cpp
+  targets/common/esp32/drivers/pulses_esp32.cpp
+  targets/common/esp32/drivers/sdcard.cpp
+  targets/common/esp32/drivers/telemetry_driver.cpp
+  targets/common/esp32/ftp-server/ftp.c         
+  targets/common/esp32/ftp-server/WiFi.c
+  targets/common/esp32/ftp-server/initWiFi.cpp  
+  targets/common/esp32/ota_server/ota_server.c  
   )
 
 set(PULSES_SRC

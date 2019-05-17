@@ -28,7 +28,6 @@
 #include "esp_vfs.h"
 #include "esp_vfs_fat.h"
 #include "esp_system.h"
-#include "esp_spiffs.h"
 #include "board_esp32.h"
 #include "driver/sdspi_host.h"
 #include "sdmmc_cmd.h"

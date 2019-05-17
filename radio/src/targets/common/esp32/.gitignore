@@ -1,9 +1,0 @@
-esp-idf/sdkconfig
-esp-idf/components/startup/defines.mk
-esp-idf/components/startup/includes.mk
-esp-idf/log.txt
-esp-idf/sdkconfig.old
-esp-idf/components/otxcore/includes.mk
-esp-idf/components/otxcore/defines.mk
-esp-idf/sdkconfig.old
-esp-idf/components/otxcore/defines.mk

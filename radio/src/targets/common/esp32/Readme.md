@@ -18,17 +18,24 @@ The project is still in development. The radio firmware has most of the function
 
 Compilation
 
-To build radio firmware ESP-IDF environment is needed (only tested on Windows with ESP-IDF 4.0-dev). Due to peculiarities of ESP-IDF (and since I am not familiar with CMake) the compilation is different than for ATMEL and ARM based systems:
+To build radio firmware ESP-IDF environment is needed (only tested on Windows with ESP-IDF 4.0-dev). 
+
+In Windows:
 ```
-cd [OpenTX root folder]/firmware/opentx/radio/src/targets/common/esp32/esp-idf
-make flash 
+cd [build-folder]
+cmake -G "MinGW Makefiles" [OpenTX source folder]  -DPCB=ESP_WROOM_32  -DCMAKE_MAKE_PROGRAM=mingw32-make -DCMAKE_TOOLCHAIN_FILE=$IDF_PATH/tools/cmake/toolchain-esp32.cmake
+mingw32-make flash ESPPORT=[serial-port]  
 ```
-This will start also menuconfig where proper serial port needs to chosen, other necessary options are (hopefully) all set in sdkconfig.defaults.
+In Linux(not tested):
+```
+cd [build-folder]
+cmake  [OpenTX source folder] -DPCB=ESP_WROOM_32 -DCMAKE_TOOLCHAIN_FILE=$IDF_PATH/tools/cmake/toolchain-esp32.cmake
+make flash ESPPORT=[serial-port]  
+```
 
 OTA firmware upload:
 First enable WiFi on the radio. Radio IP will be shown on LCD upon succesfull connection.
 ```
-cd [OpenTX root folder]/firmware/opentx/radio/src/targets/common/esp32/esp-idf
 make ota ESP32_IP=[radio IP]
 ```
 
@@ -38,5 +45,3 @@ Todo list:
 - finding if any concurrency issues will arise due to symmetric multiprocessing architecture (task priorities are an initial guess that probably needs more tunning)
 - Lua
 - additional radio modules support
-- converting build system to CMake
-- compilation on linux

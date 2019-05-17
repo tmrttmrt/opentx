@@ -396,30 +396,34 @@ if(NOT FIRMWARE_TARGET)
   return()
 endif()
 
-set(CMAKE_EXECUTABLE_SUFFIX ".elf")
-# trick to remove the -rdynamic and --out-implib issues
-set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
-set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
-# similar for -mmacosx-version-min="
-set(CMAKE_C_OSX_DEPLOYMENT_TARGET_FLAG "")
-set(CMAKE_CXX_OSX_DEPLOYMENT_TARGET_FLAG "")
-# reset some CMake default flags which assume optimization levels/etc
-set(CMAKE_C_FLAGS "${FIRMWARE_C_FLAGS}")
-set(CMAKE_C_FLAGS_DEBUG "${FIRMWARE_C_FLAGS_DEBUG}")
-set(CMAKE_C_FLAGS_RELEASE "")
-set(CMAKE_C_FLAGS_MINSIZEREL "")
-set(CMAKE_C_FLAGS_RELWITHDEBINFO "")
-set(CMAKE_CXX_FLAGS "${FIRMWARE_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${FIRMWARE_CXX_FLAGS_DEBUG}")
-set(CMAKE_CXX_FLAGS_RELEASE "")
-set(CMAKE_CXX_FLAGS_MINSIZEREL "")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "")
-# customize linker command
-set(CMAKE_EXE_LINKER_FLAGS "")
-set(CMAKE_C_LINK_EXECUTABLE "<CMAKE_C_COMPILER> <FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET>")
-set(CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_CXX_COMPILER> <FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET>")
+if(ARCH STREQUAL ESP32)
+    #has to be defined on commnd line by -DCMAKE_TOOLCHAIN_FILE=$IDF_PATH/tools/cmake/toolchain-esp32.cmake
+else()
+    set(CMAKE_EXECUTABLE_SUFFIX ".elf")
+    # trick to remove the -rdynamic and --out-implib issues
+    set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+    set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
+    # similar for -mmacosx-version-min="
+    set(CMAKE_C_OSX_DEPLOYMENT_TARGET_FLAG "")
+    set(CMAKE_CXX_OSX_DEPLOYMENT_TARGET_FLAG "")
+    # reset some CMake default flags which assume optimization levels/etc
+    set(CMAKE_C_FLAGS "${FIRMWARE_C_FLAGS}")
+    set(CMAKE_C_FLAGS_DEBUG "${FIRMWARE_C_FLAGS_DEBUG}")
+    set(CMAKE_C_FLAGS_RELEASE "")
+    set(CMAKE_C_FLAGS_MINSIZEREL "")
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO "")
+    set(CMAKE_CXX_FLAGS "${FIRMWARE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS_DEBUG "${FIRMWARE_CXX_FLAGS_DEBUG}")
+    set(CMAKE_CXX_FLAGS_RELEASE "")
+    set(CMAKE_CXX_FLAGS_MINSIZEREL "")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "")
+    # customize linker command
+    set(CMAKE_EXE_LINKER_FLAGS "")
+    set(CMAKE_C_LINK_EXECUTABLE "<CMAKE_C_COMPILER> <FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET>")
+    set(CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_CXX_COMPILER> <FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET>")
 
-use_cxx11()  # ensure gnu++11 in CXX_FLAGS with CMake < 3.1
+    use_cxx11()  # ensure gnu++11 in CXX_FLAGS with CMake < 3.1
+endif()
 
 find_program(BASH bash HINTS "c:/cygwin/bin/" "c:/msys/bin/" DOC "bash shell for firmware size report (eg. c:/cygwin/bin/bash.exe on Windows).")
 
@@ -507,27 +511,41 @@ if(NOT MSVC)
 
   elseif(ARCH STREQUAL ESP32)
 
-    enable_language(ASM)
-    set(CMAKE_C_COMPILER xtensa-esp32-elf-gcc)
-    set(CMAKE_CXX_COMPILER xtensa-esp32-elf-g++)
-    set(CMAKE_ASM_COMPILER xtensa-esp32-elf-as)
+    add_executable(firmware.elf ${SRC} ${FIRMWARE_HEADERS})
+    add_dependencies(firmware.elf ${FIRMWARE_DEPENDENCIES} )
 
-    set(CMAKE_SYSTEM_NAME Generic)
-    set(CMAKE_SYSTEM_VERSION 1)
-    set(CMAKE_ASM_COMPILE_OBJECT "<CMAKE_ASM_COMPILER> -o <OBJECT> <SOURCE>")
+    cmake_policy(SET CMP0057 NEW)
 
-    set(COMMON_FLAGS "-mlongcalls -fomit-frame-pointer -fverbose-asm -Wa,-ahlms=firmware.lst -O${OPT} -gdwarf-2 -DHSE_VALUE=${HSE_VALUE} -fno-exceptions -fdata-sections -ffunction-sections ${WARNING_FLAGS} -fmax-errors=2" )
-    set(COMMON_FLAGS "${COMMON_FLAGS} ${FPU_FLAGS}")
+    include($ENV{IDF_PATH}/tools/cmake/idf_functions.cmake)
 
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_FLAGS} -Wimplicit")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_FLAGS}")
+    # Create artifacts used for flashing the project to target chip
+    set(IDF_BUILD_ARTIFACTS ON)
+    set(IDF_PROJECT_EXECUTABLE firmware.elf)
+    set(IDF_BUILD_ARTIFACTS_DIR ${CMAKE_BINARY_DIR})
+    set(IDF_SDKCONFIG_DEFAULTS ${CMAKE_CURRENT_SOURCE_DIR}/targets/common/esp32/esp-idf/sdkconfig.defaults)
 
-    # these are in addition to CMAKE_CXX_FLAGS
-    set(CMAKE_EXE_LINKER_FLAGS "-lm -T${RADIO_SRC_DIRECTORY}/${LINKER_SCRIPT} -Wl,-Map=firmware.map,--cref,--no-warn-mismatch,--gc-sections")
-    add_library(otxcore ${SRC} ${FIRMWARE_HEADERS})
-    link_libraries(otxcore -lstdc++)
-    add_dependencies(otxcore ${FIRMWARE_DEPENDENCIES})
+    # Trim down components included in the build. Although freertos and spi_flash are the ones needed by the application
+    # itself, the bootloader and esptool_py components are also needed in order to create the artifacts to be used
+    # for flashing to the target chip
+    set(IDF_COMPONENTS freertos spi_flash fatfs spiffs bootloader esptool_py)
+    
+    get_property(OTX_INCLUDE_DIRECTORIES DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES "")
+    
+    # Wraps add_subdirectory() to create library targets for components, and then return them using the specified variable
+    idf_import_components(components $ENV{IDF_PATH} esp-idf)
+    target_include_directories(firmware.elf PRIVATE "${OTX_INCLUDE_DIRECTORIES}")
+    target_include_directories(firmware.elf PRIVATE $<TARGET_PROPERTY:idf_component_esp32,INCLUDE_DIRECTORIES>)
+        
+    # Wraps target_link_libraries() to link processed components by idf_import_components to target
+    idf_link_components(firmware.elf "${components}")
+    
 
+    add_custom_target(ota
+        DEPENDS app
+        COMMAND echo "OTA to: \$(ESP32_IP):8032" & curl "\$(ESP32_IP):8032" --data-binary @- < firmware.bin
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
   endif()  # ARM or ESP32
 
   if(CPU_FAMILY STREQUAL STM32)
