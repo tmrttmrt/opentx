@@ -198,7 +198,7 @@ void disable_serial(uint8_t module);
 void intmoduleStop();
 void intmodulePxxStart();
 void intmoduleSerialStart(uint32_t baudrate, uint8_t rxEnable);
-#if defined(TARANIS_INTERNAL_PPM)
+#if defined(INTERNAL_MODULE_PPM)
 void intmodulePpmStart(void);
 #endif
 void intmoduleSendBuffer(const uint8_t * data, uint8_t size);
@@ -493,10 +493,12 @@ enum Analogs {
 
 #define NUM_POTS                        (POT_LAST-POT_FIRST+1)
 #define NUM_XPOTS                       NUM_POTS
+#define STORAGE_NUM_POTS                NUM_POTS
 #define NUM_SLIDERS                     (TX_VOLTAGE-POT_LAST-1)
+#define STORAGE_NUM_SLIDERS             NUM_SLIDERS
 #define NUM_TRIMS                       4
 #define NUM_MOUSE_ANALOGS               0
-#define NUM_DUMMY_ANAS                  0
+#define STORAGE_NUM_MOUSE_ANALOGS       0
 
 #if defined(STICKS_PWM)
   #define NUM_PWMSTICKS                 4

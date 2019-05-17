@@ -272,7 +272,7 @@ void generalDefault()
   g_eeGeneral.stickMode = DEFAULT_MODE - 1;
 #endif
 
-#if defined(PCBTARANIS)
+#if defined(FRSKY_RELEASE)
   g_eeGeneral.templateSetup = 17; /* TAER */
 #endif
 
@@ -1854,7 +1854,7 @@ void opentxInit()
     opentxStart();
   }
 
-	// TODO Horus does not need this
+  // TODO Horus does not need this
   if (!g_eeGeneral.unexpectedShutdown) {
     g_eeGeneral.unexpectedShutdown = 1;
     storageDirty(EE_GENERAL);

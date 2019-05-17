@@ -39,8 +39,11 @@ uint16_t getBatteryVoltage();   // returns current battery voltage in 10mV steps
 
 // ADC driver
 #define NUM_POTS                       2
+#define STORAGE_NUM_POTS               2
 #define NUM_SLIDERS                    0
+#define STORAGE_NUM_SLIDERS            0
 #define NUM_XPOTS                      0
+#define STORAGE_NUM_MOUSE_ANALOGS      0
 #define ADC_CHAN {ADC1_CHANNEL_0,ADC1_CHANNEL_3,ADC1_CHANNEL_6,ADC1_CHANNEL_7,ADC1_CHANNEL_4,ADC1_CHANNEL_5,(adc1_channel_t)ADC2_CHANNEL_8}
 #define NUM_ADC2 1
 #define ADC1_NAVG 20
