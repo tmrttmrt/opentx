@@ -373,17 +373,6 @@ bool isCwdAtRoot()
     return false;
 }
 
-
-const char * sdCopyFile(const char * srcPath, const char * destPath)
-{
-  return NULL;
-}
-
-const char * sdCopyFile(const char * srcFilename, const char * srcDir, const char * destFilename, const char * destDir)
-{
-  return NULL;
-}
-
 #if defined(SDCARD) 
 void checkSDVersion()
 {
@@ -407,40 +396,38 @@ void checkSDVersion()
     }
   }
 }
-#endif
 
-#if defined(CPUARM) && defined(SDCARD)
 const char * sdCopyFile(const char * srcPath, const char * destPath)
 {
-    FIL srcFile;
-    FIL destFile;
+    int srcFile;
+    int destFile;
     char buf[256];
-    UINT read = sizeof(buf);
-    UINT written = sizeof(buf);
+    UINT br = sizeof(buf);
+    UINT bw = sizeof(buf);
 
-    FRESULT result = f_open(&srcFile, srcPath, FA_OPEN_EXISTING | FA_READ);
-    if (result != FR_OK) {
-        return SDCARD_ERROR(result);
+    srcFile = open(srcPath, O_RDONLY);
+    if (srcFile == -1) {
+        return STR_SDCARD_ERROR;
     }
 
-    result = f_open(&destFile, destPath, FA_CREATE_ALWAYS | FA_WRITE);
-    if (result != FR_OK) {
-        f_close(&srcFile);
-        return SDCARD_ERROR(result);
+    destFile = open(destPath, O_CREAT|O_WRONLY|O_TRUNC);
+    if (destFile == -1) {
+        close(srcFile);
+        return STR_SDCARD_ERROR;
     }
 
-    while (result==FR_OK && read==sizeof(buf) && written==sizeof(buf)) {
-        result = f_read(&srcFile, buf, sizeof(buf), &read);
-        if (result == FR_OK) {
-            result = f_write(&destFile, buf, read, &written);
+    while (br==sizeof(buf) && bw==sizeof(buf)) {
+        br = read(srcFile, buf, sizeof(buf));
+        if (br > 0) {
+            bw = write(destFile, buf, br);
         }
     }
 
-    f_close(&destFile);
-    f_close(&srcFile);
+    close(destFile);
+    close(srcFile);
 
-    if (result != FR_OK) {
-        return SDCARD_ERROR(result);
+    if (br == -1) {
+        return STR_SDCARD_ERROR;
     }
 
     return NULL;
