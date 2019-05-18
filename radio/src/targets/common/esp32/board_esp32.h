@@ -34,9 +34,6 @@
 #include "fs_wrappers.h"
 #endif
 
-//added 2.3
-
-
 #define RTOS_WAIT_TICKS(a) vTaskDelay(a);
 #define RTOS_WAIT_MS(a) vTaskDelay((a)/portTICK_PERIOD_MS);
 #define RTOS_TASK_HANDLE TaskHandle_t
@@ -96,16 +93,11 @@ static inline uint32_t RTOS_GET_MS(void) {
 
 #define RTOS_GET_TIME(a) xTaskGetTickCount ()
 
-
-//from 2.2
-#define strcpy_P strcpy
-
 void espLogI(const char * format, ...);
 void espLogPut(const char * format, ...);
 
 #define eeFlush()
 #define DISPLAY_PROGRESS_BAR(x)
-
 
 size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size, uint8_t &version);
 size_t fsLoadModelData(uint8_t index, uint8_t *buff, size_t size);
@@ -135,6 +127,7 @@ uint32_t sdGetSpeed(void);
 uint32_t sdMounted(void);
 void sdMountPoll();
 void sdDone();
+void checkSDVersion();
 const char * eeBackupModel(uint8_t i_fileSrc);
 const char * eeRestoreModel(uint8_t i_fileDst, char *model_name);
 const char * eeBackupAll();

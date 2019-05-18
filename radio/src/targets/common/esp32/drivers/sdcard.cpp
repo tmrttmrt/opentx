@@ -384,6 +384,31 @@ const char * sdCopyFile(const char * srcFilename, const char * srcDir, const cha
   return NULL;
 }
 
+#if defined(SDCARD) 
+void checkSDVersion()
+{
+  if (sdMounted()) {
+    int versionFile;
+    char version[sizeof(REQUIRED_SDCARD_VERSION)-1];
+    char error[sizeof(TR_WRONG_SDCARDVERSION)+ sizeof(version)];
+
+    strAppend(strAppend(error, STR_WRONG_SDCARDVERSION, sizeof(TR_WRONG_SDCARDVERSION)), REQUIRED_SDCARD_VERSION, sizeof(REQUIRED_SDCARD_VERSION));
+    versionFile = open("/sdcard/opentx.sdcard.version", O_RDONLY);
+    if (versionFile != -1) {
+      if (read(versionFile,  &version, sizeof(version)) != sizeof(version) ||
+          strncmp(version, REQUIRED_SDCARD_VERSION, sizeof(version)) != 0) {
+        ESP_LOGI(TAG,"SD card version mismatch:  %.*s, %s", sizeof(REQUIRED_SDCARD_VERSION)-1, version, REQUIRED_SDCARD_VERSION);
+        ALERT(STR_SD_CARD, error, AU_ERROR);
+      }
+      close(versionFile);
+    }
+    else {
+      ALERT(STR_SD_CARD, error, AU_ERROR);
+    }
+  }
+}
+#endif
+
 #if defined(CPUARM) && defined(SDCARD)
 const char * sdCopyFile(const char * srcPath, const char * destPath)
 {

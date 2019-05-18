@@ -801,7 +801,7 @@ void doSplash()
 #define doSplash()
 #endif
 
-#if defined(SDCARD)
+#if defined(SDCARD) && !defined(CPUESP32)
 void checkSDVersion()
 {
   if (sdMounted()) {
