@@ -2,6 +2,8 @@ I wanted to revive an old Futaba FC-16 transmitter, but I did not want to use al
 
 ESP32 is a powerful and cheap processor with a number of analog inputs (max 8 if WiFi radio is used, WROOM based boards have only 6 WiFi compatible ADC pins broken out), but it is a bit short on digital IO pins. Digital ports therefore need to be expanded. A couple MCP23017 I2C 16 IO port ICs was selected. 
 
+The code is heavily based on the SKY9X board code.
+
 The project is still in development. The radio firmware has most of the functionality working. Implemented features are:
 
 - basic functionality (6 analog sticks + Vbatt (when WiFi is off), navigation keys, trims, switches, model storage in SPI flash)
@@ -45,3 +47,4 @@ Todo list:
 - finding if any concurrency issues will arise due to symmetric multiprocessing architecture (task priorities are an initial guess that probably needs more tunning)
 - Lua
 - additional radio modules support
+- remove nonrelevant menu options
