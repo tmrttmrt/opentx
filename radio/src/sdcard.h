@@ -158,8 +158,6 @@ const char * getBasename(const char * path);
 #elif defined(PCBESP_WROOM_32)
   #define OTX_FOURCC 0x3878746F // otx for ESP32
   #define O9X_FOURCC 0x3878396F // o9x for ESP32
-  #define OTX_FOURCC_MEGA2560 0x3178746F // otx for gruvin9x/MEGA2560
-  #define O9X_FOURCC_MEGA2560 0x3178396F // o9x for gruvin9x/MEGA2560  
 #endif
 
 bool isFileAvailable(const char * filename, bool exclDir = false);

@@ -269,7 +269,7 @@ size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size,  uint8_t &versio
         return 0;
     }
     version = (uint8_t)head[4];
-    if ((*(uint32_t*)&head[0] != OTX_FOURCC && *(uint32_t*)&head[0] != O9X_FOURCC && *(uint32_t*)&head[0] != OTX_FOURCC_MEGA2560&& *(uint32_t*)&head[0] != O9X_FOURCC_MEGA2560) || (version != FIRST_CONV_EEPROM_VER && version != EEPROM_VER) || head[5] != 'M') {
+    if ((*(uint32_t*)&head[0] != OTX_FOURCC && *(uint32_t*)&head[0] != O9X_FOURCC) || (version != FIRST_CONV_EEPROM_VER && version != EEPROM_VER) || head[5] != 'M') {
         fclose(fp);
         ESP_LOGE(TAG,"Incompatible model header from '%s'.", mpath);
         ESP_LOGI(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0],version);

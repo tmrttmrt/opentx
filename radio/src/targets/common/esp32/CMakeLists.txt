@@ -98,7 +98,7 @@ endif()
 
 # Protocols supported
 
-add_definitions(-DDSM2 -DSBUS)
+add_definitions(-DDSM2 -DSBUS -DPPM -DEXTERNAL_MODULE_PPM)
 
 if(PXX1)
   add_definitions(-DPXX -DPXX1)

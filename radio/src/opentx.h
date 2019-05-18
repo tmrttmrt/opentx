@@ -546,7 +546,7 @@ int getTrimValue(uint8_t phase, uint8_t idx);
 
 bool setTrimValue(uint8_t phase, uint8_t idx, int trim);
 
-#if defined(PCBSKY9X)
+#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
   #define ROTARY_ENCODER_GRANULARITY (2 << g_eeGeneral.rotarySteps)
 #elif defined(PCBHORUS)
   #define ROTARY_ENCODER_GRANULARITY (1)

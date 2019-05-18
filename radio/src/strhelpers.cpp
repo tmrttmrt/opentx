@@ -294,7 +294,7 @@ char * getSwitchString(char * dest, swsrc_t idx)
   }
 #endif
 
-#if defined(PCBSKY9X)
+#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
   else if (idx <= SWSRC_REa) {
     getStringAtIndex(s, STR_VSWITCHES, IDX_TRIMS_IN_STR_VSWITCHES+idx-SWSRC_FIRST_TRIM);
   }
