@@ -118,7 +118,7 @@ class SwitchesConversionTable: public ConversionTable {
       if (version >= 218) {
         addConversion(RawSwitch(SWITCH_TYPE_TELEMETRY, -1), -val+offset);
         addConversion(RawSwitch(SWITCH_TYPE_TELEMETRY, 1), val++);
-        for (unsigned i=1; i<=CPN_MAX_SENSORS; i++) {
+        for (int i=1; i<=CPN_MAX_SENSORS; i++) {
           addConversion(RawSwitch(SWITCH_TYPE_SENSOR, -i), -val+offset);
           addConversion(RawSwitch(SWITCH_TYPE_SENSOR, i), val++);
         }
@@ -2667,8 +2667,8 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
     internalField.Append(new UnsignedField<7>(this, generalData.backlightOffBright));
     internalField.Append(new ZCharField<10>(this, generalData.bluetoothName, "Bluetooth name"));
   }
-  else if (IS_TARANIS_X9E(board)) {
-    internalField.Append(new UnsignedField<8>(this, generalData.bluetoothMode));
+  else if (IS_TARANIS_X9E(board) || IS_TARANIS_X7(board) || IS_TARANIS_XLITE(board) || IS_TARANIS_XLITES(board)) {
+    internalField.Append(new SpareBitsField<8>(this));
     internalField.Append(new ZCharField<10>(this, generalData.bluetoothName, "Bluetooth name"));
   }
 
@@ -2684,7 +2684,11 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
     internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.ftppasswd, "ftp password"));
   }
   if (version>=219){
-    internalField.Append(new ZCharField<8>(this, generalData.ownerName, "owner registration ID"));
+    internalField.Append(new ZCharField<8>(this, generalData.registrationId, "PXX2 Registration ID"));
+  }
+  if(IS_TARANIS_XLITES(board) || IS_HORUS(board)) {
+    internalField.Append(new SignedField<8>(this, generalData.gyroMax, "Gyro full scale"));
+    internalField.Append(new SignedField<8>(this, generalData.gyroOffset, "Gyro Offset"));
   }
 }
 

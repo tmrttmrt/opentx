@@ -651,7 +651,7 @@ PACK(struct TrainerData {
   #define SPLASH_MODE int8_t splashMode:3
 #endif
 
-#if defined(GYRO)
+#if defined(PCBXLITES) || defined(PCBHORUS)
   #define GYRO_FIELDS \
     int8_t   gyroMax; \
     int8_t   gyroOffset;
@@ -935,7 +935,7 @@ static inline void check_struct()
   CHKSIZE(RadioData, 766);
   CHKSIZE(ModelData, 5300);  
 #elif defined(PCBHORUS)
-  CHKSIZE(RadioData, 881);
+  CHKSIZE(RadioData, 883);
   CHKSIZE(ModelData, 9736);
 #endif
 

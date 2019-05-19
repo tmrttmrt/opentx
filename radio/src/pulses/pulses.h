@@ -110,7 +110,6 @@ class ModuleSettings {
   public:
     uint8_t state;  // 0x00 = READ 0x40 = WRITE
     tmr10ms_t retryTime;
-    uint8_t rfProtocol;
     uint8_t externalAntenna;
     int8_t txPower;
 };
@@ -328,6 +327,10 @@ inline void startPulses()
   setupPulses(EXTERNAL_MODULE);
 #else
   setupPulses(EXTERNAL_MODULE);
+#endif
+
+#if defined(PCBSKY9X)
+  init_ppm(EXTRA_MODULE);
 #endif
 
 #if defined(HUBSAN)
