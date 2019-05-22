@@ -473,7 +473,10 @@ void modelDefault(uint8_t id)
 #if defined(PCBTARANIS) || defined(PCBHORUS)
   g_model.moduleData[INTERNAL_MODULE].type = IS_PXX2_INTERNAL_ENABLED() ? MODULE_TYPE_ACCESS_ISRM : MODULE_TYPE_PXX_XJT;
   g_model.moduleData[INTERNAL_MODULE].channelsCount = defaultModuleChannels_M8(INTERNAL_MODULE);
-#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
+#elif defined(PCBSKY9X)
+  g_model.moduleData[EXTERNAL_MODULE].type = MODULE_TYPE_PPM;
+#elif defined(PCBESP_WROOM_32)
+  g_model.moduleData[INTERNAL_MODULE].type = MODULE_TYPE_ESPNOW;
   g_model.moduleData[EXTERNAL_MODULE].type = MODULE_TYPE_PPM;
 #endif
 

@@ -220,9 +220,9 @@ enum BeeperMode {
   #define TRAINER_MODE_MAX()             HAS_WIRELESS_TRAINER_HARDWARE() ? TRAINER_MODE_MASTER_BATTERY_COMPARTMENT : TRAINER_MODE_MASTER_CPPM_EXTERNAL_MODULE
 #endif
 
-#if defined(PCBTARANIS) || defined(PCBHORUS)
+#if defined(PCBTARANIS) || defined(PCBHORUS) || defined(PCBESP_WROOM_32)
   #define IS_INTERNAL_MODULE_ENABLED() (g_model.moduleData[INTERNAL_MODULE].type != MODULE_TYPE_NONE)
-#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
+#elif defined(PCBSKY9X)
   #define IS_INTERNAL_MODULE_ENABLED() (false)
 #endif
 

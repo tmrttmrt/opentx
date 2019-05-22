@@ -547,6 +547,9 @@ bool isModuleUSingSport(uint8_t moduleBay, uint8_t moduleType)
     case MODULE_TYPE_MULTIMODULE:
     case MODULE_TYPE_ACCESS_R9M_LITE:
     case MODULE_TYPE_ACCESS_R9M_LITE_PRO:
+#if defined(CPUESP32)
+    case MODULE_TYPE_ESPNOW:
+#endif
       return false;
 
     case MODULE_TYPE_ACCESS_ISRM:
@@ -583,6 +586,11 @@ bool isInternalModuleAvailable(int moduleType)
 #else
     return (!isModuleUSingSport(EXTERNAL_MODULE, g_model.moduleData[EXTERNAL_MODULE].type));
 #endif
+#endif
+
+#if defined(CPUESP32)
+  if (moduleType == MODULE_TYPE_ESPNOW)
+    return true;
 #endif
 
   return false;

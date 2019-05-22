@@ -102,6 +102,14 @@ inline bool isModulePPM(uint8_t idx)
 }
 #endif
 
+#if defined(CPUESP32)
+inline bool isModuleESPNOW(uint8_t idx)
+{
+  return isExtraModule(idx) ||
+         (idx == INTERNAL_MODULE && g_model.moduleData[INTERNAL_MODULE].type == MODULE_TYPE_ESPNOW);
+}
+#endif 
+
 inline bool isModuleR9M(uint8_t idx)
 {
   return g_model.moduleData[idx].type == MODULE_TYPE_PXX_R9M || g_model.moduleData[idx].type == MODULE_TYPE_PXX_R9M_LITE;

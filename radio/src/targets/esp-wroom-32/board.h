@@ -133,6 +133,14 @@ void extmoduleSendNextFrame();
 //#define INP_E_PPM_IN              4
 #define PPM_TX_GPIO               15
 
+// Internal Module
+#define HARDWARE_INTERNAL_MODULE
+void intmoduleStop();
+//void intmoduleSerialStart(uint32_t baudrate, uint8_t rxEnable);
+//void intmodulePxxStart();
+void intmoduleSendBuffer(const uint8_t * data, uint8_t size);
+void intmoduleSendNextFrame();
+
 // Trims
 #define NUM_TRIMS                 4
 #define NUM_TRIMS_KEYS            (NUM_TRIMS * 2)

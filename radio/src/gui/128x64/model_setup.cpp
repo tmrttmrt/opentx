@@ -79,6 +79,10 @@ enum MenuModelSetupItems {
 #if !defined(PCBESP_WROOM_32)
   ITEM_MODEL_SETUP_REGISTRATION_ID,
 #endif
+#if defined(PCBESP_WROOM_32)
+  ITEM_MODEL_SETUP_INTERNAL_MODULE_LABEL,
+  ITEM_MODEL_SETUP_INTERNAL_MODULE_MODE,
+#endif
 #if defined(PCBTARANIS)
   ITEM_MODEL_SETUP_INTERNAL_MODULE_LABEL,
   ITEM_MODEL_SETUP_INTERNAL_MODULE_MODE,
@@ -584,6 +588,10 @@ void menuModelSetup(event_t event)
   });
 #else
   MENU_TAB({ HEADER_LINE_COLUMNS 0, TIMER_ROWS, TIMER_ROWS, TIMER_ROWS, 0, 1, 0, 0, 0, 0, 0, LABEL(PreflightCheck), 0, 0, NUM_SWITCHES-1, NUM_STICKS+NUM_POTS+NUM_SLIDERS-1, 0,
+#if defined(CPUESP32)
+    LABEL(InternalModule),
+    INTERNAL_MODULE_MODE_ROWS,
+#endif
     LABEL(ExternalModule),
     EXTERNAL_MODULE_MODE_ROWS,
     MULTIMODULE_SUBTYPE_ROWS(EXTERNAL_MODULE)
@@ -997,7 +1005,21 @@ void menuModelSetup(event_t event)
         if (attr) g_model.noGlobalFunctions = !checkIncDecModel(event, !g_model.noGlobalFunctions, 0, 1);
         break;
 
-#if defined(HARDWARE_INTERNAL_MODULE)
+#if defined(CPUESP32)
+      case ITEM_MODEL_SETUP_INTERNAL_MODULE_LABEL:
+        lcdDrawTextAlignedLeft(y, TR_INTERNALRF);
+        break;
+        
+      case ITEM_MODEL_SETUP_INTERNAL_MODULE_MODE:
+        lcdDrawTextAlignedLeft(y, STR_MODE);
+        lcdDrawTextAtIndex(MODEL_SETUP_2ND_COLUMN, y, STR_MODULE_PROTOCOLS, g_model.moduleData[INTERNAL_MODULE].type, menuHorizontalPosition==0 ? attr : 0);
+        if (attr) {
+          espLogPut("ITEM_MODEL_INTERNAL_MODULE_MODE\n");
+          g_model.moduleData[INTERNAL_MODULE].type = checkIncDec(event, g_model.moduleData[INTERNAL_MODULE].type, MODULE_TYPE_NONE, MODULE_TYPE_ESPNOW, EE_MODEL, isInternalModuleAvailable);        
+        }
+      break;
+        
+#elif defined(HARDWARE_INTERNAL_MODULE)
       case ITEM_MODEL_SETUP_INTERNAL_MODULE_LABEL:
         lcdDrawTextAlignedLeft(y, TR_INTERNALRF);
         break;
@@ -1453,7 +1475,10 @@ void menuModelSetup(event_t event)
 #if defined(PCBSKY9X)
       case ITEM_MODEL_SETUP_EXTRA_MODULE_BIND:
 #endif
-#if defined(PCBTARANIS)
+#if defined(PCBESP_WROOM_32)
+      case ITEM_MODEL_SETUP_EXTERNAL_MODULE_NPXX2_BIND:
+#endif
+#if defined(PCBTARANIS) 
       case ITEM_MODEL_SETUP_INTERNAL_MODULE_NPXX2_BIND:
       case ITEM_MODEL_SETUP_EXTERNAL_MODULE_NPXX2_BIND:
 #endif
