@@ -198,10 +198,16 @@ enum BeeperMode {
     TRAINER_MODE_SLAVE_BLUETOOTH,
 #endif
   };
-#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
+#elif defined(PCBSKY9X)
   enum ModuleIndex {
     EXTERNAL_MODULE,
     EXTRA_MODULE,
+    SPORT_MODULE
+  };
+#elif defined(PCBESP_WROOM_32)
+  enum ModuleIndex {
+    INTERNAL_MODULE,
+    EXTERNAL_MODULE,
     SPORT_MODULE
   };
 #endif

@@ -2678,24 +2678,18 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
       internalField.Append(new CharField<8>(this, (char *)generalData.themeOptionValue[i], true, "Theme blob"));
     }
   }
-<<<<<<< HEAD
+
   if (IS_ESP32(board)){
     internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.passwd, "WiFi password")); 
     internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.ssid, "WiFi SSID"));
     internalField.Append(new ZCharField<CPN_MAX_STR_FIELD>(this, generalData.ftppasswd, "ftp password"));
   }
-  if (version>=219){
-    internalField.Append(new ZCharField<8>(this, generalData.registrationId, "PXX2 Registration ID"));
-  }
-  if(IS_TARANIS_XLITES(board) || IS_HORUS(board)) {
-=======
-
+  
   if (version >= 219) {
     internalField.Append(new ZCharField<8>(this, generalData.registrationId, "PXX2 Registration ID"));
   }
   
   if (version >= 219 && (IS_TARANIS_XLITES(board) || IS_HORUS(board))) {
->>>>>>> 2.3
     internalField.Append(new SignedField<8>(this, generalData.gyroMax, "Gyro full scale"));
     internalField.Append(new SignedField<8>(this, generalData.gyroOffset, "Gyro Offset"));
   }

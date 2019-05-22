@@ -74,17 +74,11 @@ enum MenuModelSetupItems {
   ITEM_MODEL_SETUP_SWITCHES_WARNING2,
   ITEM_MODEL_SETUP_POTS_WARNING,
 #endif
-<<<<<<< HEAD
-  ITEM_MODEL_BEEP_CENTER,
-  ITEM_MODEL_USE_GLOBAL_FUNCTIONS,
-#if !defined(PCBESP_WROOM_32)
-  ITEM_MODEL_REGISTRATION_ID,
-#endif
-=======
   ITEM_MODEL_SETUP_BEEP_CENTER,
   ITEM_MODEL_SETUP_USE_GLOBAL_FUNCTIONS,
+#if !defined(PCBESP_WROOM_32)
   ITEM_MODEL_SETUP_REGISTRATION_ID,
->>>>>>> 2.3
+#endif
 #if defined(PCBTARANIS)
   ITEM_MODEL_SETUP_INTERNAL_MODULE_LABEL,
   ITEM_MODEL_SETUP_INTERNAL_MODULE_MODE,
@@ -108,19 +102,11 @@ enum MenuModelSetupItems {
   ITEM_MODEL_SETUP_EXTERNAL_MODULE_STATUS,
   ITEM_MODEL_SETUP_EXTERNAL_MODULE_SYNCSTATUS,
 #endif
-<<<<<<< HEAD
-  ITEM_MODEL_EXTERNAL_MODULE_CHANNELS,
-  ITEM_MODEL_EXTERNAL_MODULE_NPXX2_BIND,
-  ITEM_MODEL_EXTERNAL_MODULE_PXX2_MODEL_NUM,
-#if defined(PCBSKY9X) && defined(REVX) 
-  ITEM_MODEL_EXTERNAL_MODULE_OUTPUT_TYPE,
-=======
   ITEM_MODEL_SETUP_EXTERNAL_MODULE_CHANNELS,
   ITEM_MODEL_SETUP_EXTERNAL_MODULE_NPXX2_BIND,
   ITEM_MODEL_SETUP_EXTERNAL_MODULE_PXX2_MODEL_NUM,
 #if defined(PCBSKY9X) && defined(REVX)
   ITEM_MODEL_SETUP_EXTERNAL_MODULE_OUTPUT_TYPE,
->>>>>>> 2.3
 #endif
   ITEM_MODEL_SETUP_EXTERNAL_MODULE_OPTIONS,
 #if defined(MULTIMODULE)
@@ -191,13 +177,8 @@ enum MenuModelSetupItems {
 #define EXTERNAL_MODULE_BIND_ROWS()    ((isModuleXJT(EXTERNAL_MODULE) && IS_D8_RX(EXTERNAL_MODULE)) || isModuleSBUS(EXTERNAL_MODULE)) ? (uint8_t)1 : (isModulePPM(EXTERNAL_MODULE) || isModulePXX(EXTERNAL_MODULE) || isModuleDSM2(EXTERNAL_MODULE) || isModuleMultimodule(EXTERNAL_MODULE)) ? (uint8_t)2 : HIDDEN_ROW
 
 #if defined(PCBSKY9X) && defined(REVX)
-<<<<<<< HEAD
-  #define OUTPUT_TYPE_ROWS()             (isModulePPM(EXTERNAL_MODULE) ? (uint8_t)0 : HIDDEN_ROW) ,
-#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
-=======
   #define OUTPUT_TYPE_ROWS()           (isModulePPM(EXTERNAL_MODULE) ? (uint8_t)0 : HIDDEN_ROW) ,
-#elif defined(PCBSKY9X)
->>>>>>> 2.3
+#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
   #define OUTPUT_TYPE_ROWS()
 #endif
 
@@ -1303,15 +1284,9 @@ void menuModelSetup(event_t event)
         }
         break;
       }
-<<<<<<< HEAD
-      
-#if defined(PCBX7) || defined(PCBX3)
-      case ITEM_MODEL_TRAINER_PARAMS:
-=======
 
 #if defined(PCBX7) || defined(PCBX9LITE) || defined(PCBXLITE)
       case ITEM_MODEL_SETUP_TRAINER_PARAMS:
->>>>>>> 2.3
         lcdDrawTextAlignedLeft(y, STR_PPMFRAME);
         lcdDrawText(MODEL_SETUP_2ND_COLUMN+3*FW, y, STR_MS);
         lcdDrawNumber(MODEL_SETUP_2ND_COLUMN, y, (int16_t)g_model.trainerData.frameLength*5 + 225, (menuHorizontalPosition<=0 ? attr : 0) | PREC1|LEFT);
@@ -1479,15 +1454,8 @@ void menuModelSetup(event_t event)
       case ITEM_MODEL_SETUP_EXTRA_MODULE_BIND:
 #endif
 #if defined(PCBTARANIS)
-<<<<<<< HEAD
-      case ITEM_MODEL_INTERNAL_MODULE_NPXX2_BIND:
-#endif
-#if defined(PCBTARANIS)|| defined(PCBESP_WROOM_32)
-      case ITEM_MODEL_EXTERNAL_MODULE_NPXX2_BIND:
-=======
       case ITEM_MODEL_SETUP_INTERNAL_MODULE_NPXX2_BIND:
       case ITEM_MODEL_SETUP_EXTERNAL_MODULE_NPXX2_BIND:
->>>>>>> 2.3
 #endif
       {
         uint8_t moduleIdx = CURRENT_MODULE_EDITED(k);
@@ -1909,13 +1877,8 @@ void menuModelSetup(event_t event)
           checkModelIdUnique(g_eeGeneral.currModel, EXTRA_MODULE);
         break;
 #endif
-<<<<<<< HEAD
-//      case ITEM_MODEL_EXTERNAL_MODULE_NPXX2_BIND:
-      case ITEM_MODEL_EXTERNAL_MODULE_PXX2_MODEL_NUM:
-=======
       case ITEM_MODEL_SETUP_EXTERNAL_MODULE_NPXX2_BIND:
       case ITEM_MODEL_SETUP_EXTERNAL_MODULE_PXX2_MODEL_NUM:
->>>>>>> 2.3
         if (menuHorizontalPosition == 0)
           checkModelIdUnique(g_eeGeneral.currModel, EXTERNAL_MODULE);
         break;
