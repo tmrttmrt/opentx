@@ -138,7 +138,7 @@ bool OpenTxEepromInterface::saveToByteArray(const T & src, QByteArray & data, ui
   QByteArray raw;
   T srcCopy(src); // work on a copy of radio data, because Export() will modify it!
   M manager(srcCopy, board, version, 0);
-  // manager.Dump();
+  // manager.dump();
   manager.Export(raw);
   data.resize(8);
   *((uint32_t*)&data.data()[0]) = Boards::getFourCC(board);
@@ -156,7 +156,7 @@ bool OpenTxEepromInterface::loadFromByteArray(T & dest, const QByteArray & data,
   if (manager.Import(data) != 0) {
     return false;
   }
-  // manager.Dump(); // Dumps the structure so that it's easy to check with firmware datastructs.h
+  // manager.dump(); // Dumps the structure so that it's easy to check with firmware datastructs.h
   return true;
 }
 
@@ -337,7 +337,7 @@ int OpenTxEepromInterface::save(uint8_t * eeprom, const RadioData & radioData, u
   }
 
   OpenTxGeneralData generator((GeneralSettings &)radioData.generalSettings, board, version, variant);
-  // generator.Dump();
+  // generator.dump();
   QByteArray data;
   generator.Export(data);
   int sz = efile->writeRlc2(FILE_GENERAL, FILE_TYP_GENERAL, (const uint8_t *)data.constData(), data.size());
@@ -349,7 +349,7 @@ int OpenTxEepromInterface::save(uint8_t * eeprom, const RadioData & radioData, u
   for (int i = 0; i < getCurrentFirmware()->getCapability(Models); i++) {
     if (i < (int)radioData.models.size() && !radioData.models[i].isEmpty()) {
       OpenTxModelData generator((ModelData &)radioData.models[i], board, version, variant);
-      // generator.Dump();
+      // generator.dump();
       QByteArray data;
       generator.Export(data);
       int sz = efile->writeRlc2(FILE_MODEL(i), FILE_TYP_MODEL, (const uint8_t *)data.constData(), data.size());
@@ -396,7 +396,7 @@ int OpenTxEepromInterface::getSize(const GeneralSettings &settings)
 
   GeneralSettings srcCopy(settings); // work on a copy of settings data, because Export() may modify it!
   OpenTxGeneralData open9xGeneral(srcCopy, board, 255, getCurrentFirmware()->getVariantNumber());
-  // open9xGeneral.Dump();
+  // open9xGeneral.dump();
 
   QByteArray eeprom;
   open9xGeneral.Export(eeprom);
@@ -783,11 +783,12 @@ int OpenTxFirmware::isAvailable(PulsesProtocol proto, int port)
           case PULSES_LP45:
           case PULSES_DSM2:
           case PULSES_DSMX:
-          case PULSES_CROSSFIRE:
           case PULSES_SBUS:
             return 1;
           case PULSES_MULTIMODULE:
             return id.contains("multimodule") ? 1 : 0;
+          case PULSES_CROSSFIRE:
+            return id.contains("crossfire") ? 1 : 0;
           case PULSES_ACCESS_R9M_LITE:
           case PULSES_ACCESS_R9M_LITE_PRO:
             return (IS_TARANIS_XLITES(board) || IS_TARANIS_X9LITE(board)) ? 1 : 0;
@@ -1148,6 +1149,7 @@ void addOpenTxFrskyOptions(OpenTxFirmware * firmware)
   firmware->addOption("nogvars", Firmware::tr("Disable Global variables"));
   firmware->addOption("lua", Firmware::tr("Enable Lua custom scripts screen"));
   firmware->addOption("luac", Firmware::tr("Enable Lua compiler"));
+  firmware->addOption("crossfire", Firmware::tr("Support for Crossfire TX Module"));
   addOpenTxRfOptions(firmware);
 }
 
