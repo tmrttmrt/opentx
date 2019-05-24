@@ -76,12 +76,11 @@ enum MenuModelSetupItems {
 #endif
   ITEM_MODEL_SETUP_BEEP_CENTER,
   ITEM_MODEL_SETUP_USE_GLOBAL_FUNCTIONS,
-#if !defined(PCBESP_WROOM_32)
   ITEM_MODEL_SETUP_REGISTRATION_ID,
-#endif
 #if defined(PCBESP_WROOM_32)
   ITEM_MODEL_SETUP_INTERNAL_MODULE_LABEL,
   ITEM_MODEL_SETUP_INTERNAL_MODULE_MODE,
+  ITEM_MODEL_SETUP_INTERNAL_MODULE_BIND,
 #endif
 #if defined(PCBTARANIS)
   ITEM_MODEL_SETUP_INTERNAL_MODULE_LABEL,
@@ -165,6 +164,8 @@ enum MenuModelSetupItems {
   #define CURRENT_RECEIVER_EDITED(k)      (k - (k >= ITEM_MODEL_SETUP_EXTERNAL_MODULE_LABEL ? ITEM_MODEL_SETUP_EXTERNAL_MODULE_PXX2_RECEIVER_1 : ITEM_MODEL_SETUP_INTERNAL_MODULE_PXX2_RECEIVER_1))
 #elif defined(PCBSKY9X)
   #define CURRENT_MODULE_EDITED(k)       (k >= ITEM_MODEL_SETUP_EXTRA_MODULE_LABEL ? EXTRA_MODULE : EXTERNAL_MODULE)
+#elif defined(PCBESP_WROOM_32)
+  #define CURRENT_MODULE_EDITED(k)        (k >= ITEM_MODEL_SETUP_EXTERNAL_MODULE_LABEL ? EXTERNAL_MODULE : INTERNAL_MODULE)
 #else
   #define CURRENT_MODULE_EDITED(k)       (EXTERNAL_MODULE)
 #endif
@@ -589,8 +590,10 @@ void menuModelSetup(event_t event)
 #else
   MENU_TAB({ HEADER_LINE_COLUMNS 0, TIMER_ROWS, TIMER_ROWS, TIMER_ROWS, 0, 1, 0, 0, 0, 0, 0, LABEL(PreflightCheck), 0, 0, NUM_SWITCHES-1, NUM_STICKS+NUM_POTS+NUM_SLIDERS-1, 0,
 #if defined(CPUESP32)
+    HIDDEN_ROW,
     LABEL(InternalModule),
     INTERNAL_MODULE_MODE_ROWS,
+    isModuleESPNOW(INTERNAL_MODULE)?(uint8_t)1:HIDDEN_ROW,
 #endif
     LABEL(ExternalModule),
     EXTERNAL_MODULE_MODE_ROWS,
@@ -1014,7 +1017,6 @@ void menuModelSetup(event_t event)
         lcdDrawTextAlignedLeft(y, STR_MODE);
         lcdDrawTextAtIndex(MODEL_SETUP_2ND_COLUMN, y, STR_MODULE_PROTOCOLS, g_model.moduleData[INTERNAL_MODULE].type, menuHorizontalPosition==0 ? attr : 0);
         if (attr) {
-          espLogPut("ITEM_MODEL_INTERNAL_MODULE_MODE\n");
           g_model.moduleData[INTERNAL_MODULE].type = checkIncDec(event, g_model.moduleData[INTERNAL_MODULE].type, MODULE_TYPE_NONE, MODULE_TYPE_ESPNOW, EE_MODEL, isInternalModuleAvailable);        
         }
       break;
@@ -1477,6 +1479,7 @@ void menuModelSetup(event_t event)
 #endif
 #if defined(PCBESP_WROOM_32)
       case ITEM_MODEL_SETUP_EXTERNAL_MODULE_NPXX2_BIND:
+      case ITEM_MODEL_SETUP_INTERNAL_MODULE_BIND:
 #endif
 #if defined(PCBTARANIS) 
       case ITEM_MODEL_SETUP_INTERNAL_MODULE_NPXX2_BIND:
@@ -1523,6 +1526,31 @@ void menuModelSetup(event_t event)
             }
           }
         }
+#if defined(CPUESP32)
+        else if (isModuleESPNOW(moduleIdx)) {
+          static uint8_t val=0;
+          lcdDrawText(1*FW, y, STR_CH);
+          lcdDrawNumber(5*FW, y, (int16_t)moduleData.espnow.ch, (menuHorizontalPosition<=0 ? attr : 0) | LEFT);
+          if(val && menuHorizontalPosition==1){
+            lcdDrawText(MODEL_SETUP_2ND_COLUMN, y, STR_MODULE_BINDING, attr );
+          }
+          else {
+            val = 0;
+            lcdDrawText(MODEL_SETUP_2ND_COLUMN, y, STR_MODULE_BIND,menuHorizontalPosition==1 ? attr : 0);
+          }
+
+          if (attr && s_editMode>0) {
+            switch (menuHorizontalPosition) {
+              case 0:
+                CHECK_INCDEC_MODELVAR(event, moduleData.espnow.ch, 1, 11);
+                break;
+              case 1:
+                val = checkIncDec(event, val, 0, 1, 0);
+                break;
+            }
+          }
+        }
+#endif        
         else {
           horzpos_t l_posHorz = menuHorizontalPosition;
           coord_t xOffsetBind = MODEL_SETUP_BIND_OFS;
@@ -1569,7 +1597,7 @@ void menuModelSetup(event_t event)
                   if (isModuleR9M(moduleIdx) || (isModuleXJT(moduleIdx) && g_model.moduleData[moduleIdx].rfProtocol== ACCST_RF_PROTO_D16)) {
 #if defined(PCBXLITE)
                     if (EVT_KEY_MASK(event) == KEY_ENTER) {
-#elif defined(PCBSKY9X) || defined(PCBAR9X) || defined(PCBESP_WROOM_32)
+#elif defined(PCBSKY9X) || defined(PCBAR9X)
                     if (event ==  EVT_KEY_FIRST(KEY_ENTER)) {
 #else
                     if (event == EVT_KEY_BREAK(KEY_ENTER)) {

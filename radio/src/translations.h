@@ -402,6 +402,8 @@ extern const char STR_MULTI_SERVOFREQ[];
 #if LCD_W < 212
 extern const char STR_SUBTYPE[];
 #endif
+#elif defined(CPUESP32)
+  extern const char STR_MODULE_BINDING[];
 #endif
 
 #if defined(DSM2) || defined(PXX)

@@ -72,6 +72,20 @@ exit:
     vTaskDelete(NULL);
 }
 
+void startWiFiESPNow(uint8_t ch){
+    tcpip_adapter_init();
+    wifi_init_sta((char *)"", (char *)"");
+    ESP_ERROR_CHECK( esp_wifi_set_channel(ch, (wifi_second_chan_t)0) );
+}
+
+void stopWiFiESPNow(){
+    ESP_LOGI(TAG, "Stopping WiFi ...");
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_stop());
+    vTaskDelay(100/ portTICK_PERIOD_MS);
+    ESP_LOGI(TAG, "Deinit WiFi ...");
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_deinit());
+}
+
 void startWiFi( char *ssid_zchar, char *passwd_zchar, char* ftppass_zchar)
 {
     if(!(wifiState & WIFI_IDLE)) return;

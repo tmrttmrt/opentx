@@ -10,15 +10,15 @@
 #include "esp_task.h"
 #include "rom/ets_sys.h"
 #include "rom/crc.h"
-#include "esprc.h"
 #include "opentx.h"
+#include "esprc.h"
 
 #define EVT_QUEUE_SIZE 
 
 static const char *TAG = "tx.cpp";
 static xQueueHandle evtQueue;
 static esp_now_peer_info_t rxPeer;
-static uint8_t rx_mac_addr[ESP_NOW_ETH_ALEN] = { 0x84, 0x0d, 0x8e, 0x81, 0xe7, 0x4a };
+uint8_t rx_mac_addr[ESP_NOW_ETH_ALEN] = { 0x84, 0x0d, 0x8e, 0x81, 0xe7, 0x4a };
 static DRAM_ATTR int16_t locChannelOutputs[MAX_OUTPUT_CHANNELS] = {0};
 static QueueHandle_t xPulsesQueue;
 static volatile TXPacket_t packet;
@@ -26,6 +26,7 @@ static volatile LinkState_t linkState = IDLE;
 uint32_t volatile packSent = 0;
 uint32_t volatile packAckn = 0;
 uint32_t volatile sendPeriod = 0;
+static bool volatile pulsesON = false;
 
 void espnow_packet_prepare()
 {
@@ -41,7 +42,7 @@ static void tx_task(void *pvParameter)
 {
   Event_t evt;
   vTaskDelay(5000 / portTICK_RATE_MS);
-  while (true) {
+  while (pulsesON) {
     if(xQueueReceive(evtQueue, &evt, TX_PERIOD_MS/portTICK_RATE_MS) == pdTRUE) {
       switch (evt.id) {
         case TX:
@@ -89,6 +90,9 @@ static void tx_task(void *pvParameter)
       }
     }
   }
+  esp_now_deinit();
+  stopWiFiESPNow();
+  vTaskDelete(NULL);
 }
 
 static void send_cb(const uint8_t *mac_addr, esp_now_send_status_t status) {
@@ -131,13 +135,17 @@ static void recv_cb(const uint8_t *mac_addr, const uint8_t *data, int len)
 }
 
 esp_err_t initTX(){
-  evtQueue = xQueueCreate(ESPNOW_QUEUE_SIZE, sizeof(Event_t));
+  if (evtQueue != NULL) {
+    evtQueue = xQueueCreate(ESPNOW_QUEUE_SIZE, sizeof(Event_t));
+  }
   if (evtQueue == NULL) {
     ESP_LOGE(TAG, "Create queue failed.");
     return ESP_FAIL;
   }
   
-  xPulsesQueue=xQueueCreate( 1, sizeof( locChannelOutputs ) );
+  if(xPulsesQueue != NULL) {
+    xPulsesQueue=xQueueCreate( 1, sizeof( locChannelOutputs ) );
+  }
   if(NULL == xPulsesQueue){
       ESP_LOGE(TAG, "Failed to create queue: xPulsesQueue!");
   }
@@ -147,12 +155,13 @@ esp_err_t initTX(){
   ESP_ERROR_CHECK( esp_now_register_send_cb(send_cb) );
   ESP_ERROR_CHECK( esp_now_register_recv_cb(recv_cb) );
   
-  rxPeer.channel = ESPNOW_CHANNEL;
+  rxPeer.channel = g_model.moduleData[INTERNAL_MODULE].espnow.ch;
   rxPeer.ifidx = ESP_IF_WIFI_AP;
   rxPeer.encrypt = false;
+  memcpy(rx_mac_addr, g_model.moduleData[INTERNAL_MODULE].espnow.rx_mac_addr, ESP_NOW_ETH_ALEN);
   memcpy(rxPeer.peer_addr, rx_mac_addr, ESP_NOW_ETH_ALEN);
   ESP_ERROR_CHECK( esp_now_add_peer(&rxPeer) );
-  
+  pulsesON = true;
   xTaskCreate(tx_task, "tx_task", 2048, NULL, ESP_TASK_PRIO_MAX-6, NULL);
 
   return ESP_OK;
@@ -170,4 +179,17 @@ void intmoduleSendNextFrame()
     default:
       break;
   }
+}
+
+void init_espnow(uint32_t port)
+{
+  ESP_LOGI(TAG, "init_espnow(%d)", port);
+  startWiFiESPNow(g_model.moduleData[INTERNAL_MODULE].espnow.ch);
+  initTX();
+}
+
+void disable_espnow(uint32_t port)
+{
+  ESP_LOGI(TAG, "disable_espnow(%d)", port);
+  pulsesON = false;
 }

@@ -114,6 +114,12 @@ uint8_t getRequiredProtocol(uint8_t module)
       break;
 #endif
 
+#if defined(CPUESP32)
+    case MODULE_TYPE_ESPNOW:
+      protocol = PROTOCOL_CHANNELS_ESPNOW;
+      break;
+#endif
+
     default:
       protocol = PROTOCOL_CHANNELS_NONE;
       break;
@@ -185,6 +191,12 @@ void disablePulses(uint8_t module, uint8_t protocol)
       disable_ppm(module);
       break;
 #endif
+
+#if defined(CPUESP32)
+    case PROTOCOL_CHANNELS_ESPNOW:
+      disable_espnow(module);
+      break;
+#endif
   }
 }
 
@@ -240,6 +252,12 @@ void enablePulses(uint8_t module, uint8_t protocol)
 #if defined(PPM)
     case PROTOCOL_CHANNELS_PPM:
       init_ppm(module);
+      break;
+#endif
+
+#if defined(CPUESP32)
+    case PROTOCOL_CHANNELS_ESPNOW:
+      init_espnow(module);
       break;
 #endif
 

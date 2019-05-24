@@ -84,6 +84,10 @@ bool isModuleSynchronous(uint8_t module)
   if (protocol == PROTOCOL_CHANNELS_PXX1_SERIAL)
     return true;
 #endif
+#if defined(CPUESP32)
+  if (protocol == PROTOCOL_CHANNELS_ESPNOW)
+    return true;
+#endif
   return false;
 }
 

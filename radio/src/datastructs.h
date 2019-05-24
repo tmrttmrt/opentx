@@ -462,6 +462,12 @@ PACK(struct ModuleData {
       uint8_t receivers; // 5 bits spare
       char receiverName[PXX2_MAX_RECEIVERS_PER_MODULE][PXX2_LEN_RX_NAME];
     }) pxx2);
+#if defined(CPUESP32)
+    NOBACKUP(PACK(struct {
+      uint8_t ch;
+      uint8_t rx_mac_addr[ESP_NOW_ETH_ALEN];
+    }) espnow);
+#endif
   };
 
   // Helper functions to set both of the rfProto protocol at the same time

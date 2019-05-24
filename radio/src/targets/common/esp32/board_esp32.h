@@ -20,11 +20,12 @@
 
 #ifndef _BOARD_ESP32_H_
 #define _BOARD_ESP32_H_
+#include "sdkconfig.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_task.h"
 #include "esp_attr.h"
-#include "sdkconfig.h"
+#include "esp_now.h"
 #if defined(SDCARD)
 #include <stdio.h>
 #include <unistd.h>
@@ -164,6 +165,14 @@ void startWiFi( char *ssid_zchar, char *passwd_zchar, char* ftppass_zchar);
 void stopWiFi();
 const char* getWiFiStatus();
 bool isWiFiStarted(uint32_t expire=500);
+
+// Internal Module
+#define HARDWARE_INTERNAL_MODULE
+void intmoduleSendNextFrame();
+void startWiFiESPNow(uint8_t ch);
+void stopWiFiESPNow();
+void init_espnow(uint32_t port);
+void disable_espnow(uint32_t port);
 
 enum Analogs {
   STICK1,

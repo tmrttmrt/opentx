@@ -3,7 +3,6 @@
 
 #define ESPNOW_CHANNEL 1
 #define ESPNOW_QUEUE_SIZE           6
-#define MAX_OUTPUT_CHANNELS 16
 #define TX_PERIOD_MS 20
 
 enum LinkState_t {

@@ -135,10 +135,7 @@ void extmoduleSendNextFrame();
 
 // Internal Module
 #define HARDWARE_INTERNAL_MODULE
-void intmoduleStop();
-//void intmoduleSerialStart(uint32_t baudrate, uint8_t rxEnable);
-//void intmodulePxxStart();
-void intmoduleSendBuffer(const uint8_t * data, uint8_t size);
+//void intmoduleStop();
 void intmoduleSendNextFrame();
 
 // Trims
