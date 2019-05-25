@@ -26,12 +26,8 @@
 #endif
 
 #include "opentx.h"
-#if defined(CPUESP32) 
-#define ROOT_PATH           SD_PATH "/"
-#define BACKUP_PATH         ROOT_PATH "BACKUP"
-#else
+
 #define ROOT_PATH           "/"
-#endif
 #define MODELS_PATH         ROOT_PATH "MODELS"      // no trailing slash = important
 #define RADIO_PATH          ROOT_PATH "RADIO"       // no trailing slash = important
 #define LOGS_PATH           ROOT_PATH "LOGS"
@@ -97,10 +93,8 @@ const char RADIO_SETTINGS_PATH[] = RADIO_PATH "/radio.bin";
   filename[sizeof(path)+sizeof(var)] = '\0'; \
   strcat(&filename[sizeof(path)], ext)
 
-#if !defined(CPUESP32)
 extern FATFS g_FATFS_Obj;
 extern FIL g_oLogFile;
-#endif
 
 extern uint8_t logDelay;
 void logsInit();
@@ -127,37 +121,24 @@ inline const char * SDCARD_ERROR(FRESULT result)
 const char * getFileExtension(const char * filename, uint8_t size=0, uint8_t extMaxLen=0, uint8_t *fnlen=NULL, uint8_t *extlen=NULL);
 const char * getBasename(const char * path);
 
-// TODO REMOVE THE O9X FOURCC in 2.3
 #if defined(PCBX12S)
   #define OTX_FOURCC 0x3478746F // otx for X12S
-  #define O9X_FOURCC 0x3178396F // we forgot it in 2.2 RC ..
 #elif defined(PCBX10)
   #define OTX_FOURCC 0x3778746F // otx for X10
-  #define O9X_FOURCC 0x3478746F // match X12S, we forgot OTX_FOURCC before 2.2.1 RC2
 #elif defined(PCBX9E)
   #define OTX_FOURCC 0x3578746F // otx for Taranis X9E
-  #define O9X_FOURCC 0x3378396F // o9x for Taranis X9E
 #elif defined(PCBXLITES)
   #define OTX_FOURCC 0x3B78746F // otx for Taranis X-Lite S
-  #define O9X_FOURCC 0x3B78396F // o9x for Taranis X-Lite S
 #elif defined(PCBXLITE)
   #define OTX_FOURCC 0x3978746F // otx for Taranis X-Lite
-  #define O9X_FOURCC 0x3978396F // o9x for Taranis X-Lite
 #elif defined(PCBX7)
   #define OTX_FOURCC 0x3678746F // otx for Taranis X7
-  #define O9X_FOURCC 0x3378396F // o9x for Taranis X7
 #elif defined(PCBX9LITE)
   #define OTX_FOURCC 0x3C78746F // otx for Taranis X9-Lite
-  #define O9X_FOURCC 0x3C78396F // o9x for Taranis X9-Lite
 #elif defined(PCBX9D) || defined(PCBX9DP)
   #define OTX_FOURCC 0x3378746F // otx for Taranis X9D
-  #define O9X_FOURCC 0x3378396F // o9x for Taranis X9D
 #elif defined(PCBSKY9X)
   #define OTX_FOURCC 0x3278746F // otx for sky9x
-  #define O9X_FOURCC 0x3278396F // o9x for sky9x
-#elif defined(PCBESP_WROOM_32)
-  #define OTX_FOURCC 0x3878746F // otx for ESP32
-  #define O9X_FOURCC 0x3878396F // o9x for ESP32
 #endif
 
 bool isFileAvailable(const char * filename, bool exclDir = false);

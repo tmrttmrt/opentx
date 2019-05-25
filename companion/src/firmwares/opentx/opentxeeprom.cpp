@@ -118,7 +118,7 @@ class SwitchesConversionTable: public ConversionTable {
       if (version >= 218) {
         addConversion(RawSwitch(SWITCH_TYPE_TELEMETRY, -1), -val+offset);
         addConversion(RawSwitch(SWITCH_TYPE_TELEMETRY, 1), val++);
-        for (int i=1; i<=CPN_MAX_SENSORS; i++) {
+        for (int i=1; i<=MAX_TELEMETRY_SENSORS(board, version); i++) {
           addConversion(RawSwitch(SWITCH_TYPE_SENSOR, -i), -val+offset);
           addConversion(RawSwitch(SWITCH_TYPE_SENSOR, i), val++);
         }
@@ -248,7 +248,7 @@ class SourcesConversionTable: public ConversionTable {
         addConversion(RawSource(SOURCE_TYPE_SPECIAL, 2), val++); // Timer1
         addConversion(RawSource(SOURCE_TYPE_SPECIAL, 3), val++); // Timer2
         addConversion(RawSource(SOURCE_TYPE_SPECIAL, 4), val++); // Timer3
-        for (unsigned i=0; i<CPN_MAX_SENSORS*3; ++i) {
+        for (unsigned i=0; i<MAX_TELEMETRY_SENSORS(board, version)*3; ++i) {
           addConversion(RawSource(SOURCE_TYPE_TELEMETRY, i), val++);
         }
       }
@@ -1938,25 +1938,27 @@ class SensorField: public TransformedField {
       internalField.Append(new UnsignedField<16>(this, _id, "id/persistentValue"));
       internalField.Append(new UnsignedField<8>(this, _instance, "instance/formula"));
       internalField.Append(new ZCharField<4>(this, sensor.label));
-      if (version<219){
-        internalField.Append(new UnsignedField<1>(this, sensor.type, "type"));
-        internalField.Append(new UnsignedField<5>(this, sensor.unit, "unit"));
-      }
-      else {
-        internalField.Append(new SpareBitsField<8>(this)); //subId
+      if (version >= 219) {
+        internalField.Append(new UnsignedField<8>(this, _subid, "subid"));
         internalField.Append(new UnsignedField<2>(this, sensor.type, "type"));
         internalField.Append(new UnsignedField<6>(this, sensor.unit, "unit"));
-      }
-      internalField.Append(new UnsignedField<2>(this, sensor.prec, "prec"));
-      internalField.Append(new BoolField<1>(this, sensor.autoOffset));
-      internalField.Append(new BoolField<1>(this, sensor.filter));
-      internalField.Append(new BoolField<1>(this, sensor.logs));
-      internalField.Append(new BoolField<1>(this, sensor.persistent));
-      internalField.Append(new BoolField<1>(this, sensor.onlyPositive));
-      if (version>=219){
+        internalField.Append(new UnsignedField<2>(this, sensor.prec, "prec"));
+        internalField.Append(new BoolField<1>(this, sensor.autoOffset));
+        internalField.Append(new BoolField<1>(this, sensor.filter));
+        internalField.Append(new BoolField<1>(this, sensor.logs));
+        internalField.Append(new BoolField<1>(this, sensor.persistent));
+        internalField.Append(new BoolField<1>(this, sensor.onlyPositive));
         internalField.Append(new SpareBitsField<1>(this));
       }
       else {
+        internalField.Append(new UnsignedField<1>(this, sensor.type, "type"));
+        internalField.Append(new UnsignedField<5>(this, sensor.unit, "unit"));
+        internalField.Append(new UnsignedField<2>(this, sensor.prec, "prec"));
+        internalField.Append(new BoolField<1>(this, sensor.autoOffset));
+        internalField.Append(new BoolField<1>(this, sensor.filter));
+        internalField.Append(new BoolField<1>(this, sensor.logs));
+        internalField.Append(new BoolField<1>(this, sensor.persistent));
+        internalField.Append(new BoolField<1>(this, sensor.onlyPositive));
         internalField.Append(new UnsignedField<3>(this, _subid, "subid"));
       }
       internalField.Append(new UnsignedField<32>(this, _param, "param"));
@@ -2294,7 +2296,7 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
     internalField.Append(new CharField<216>(this, modelData.topbarData, false, "Top bar blob"));
     internalField.Append(new SpareBitsField<8>(this)); // current view
   }
-  if (IS_ESP32(board)) {
+  else if (version >= 219) {
     for (int i = 0; i < 4; i++) {
       internalField.Append(new UnsignedField<2>(this, modelData.frsky.screens[i].type));
     }
@@ -2302,9 +2304,7 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
       internalField.Append(new FrskyScreenField(this, modelData.frsky.screens[i], board, version, variant));
     }
     internalField.Append(new SpareBitsField<8>(this));
-  }
-  if (version >= 219){
-    internalField.Append(new CharField<8>(this,modelData.modelRegistrationID,"Model Registration ID"));
+    internalField.Append(new SpareBitsField<64>(this));
   }
 }
 
@@ -2688,7 +2688,7 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
   if (version >= 219) {
     internalField.Append(new ZCharField<8>(this, generalData.registrationId, "PXX2 Registration ID"));
   }
-  
+
   if (version >= 219 && (IS_TARANIS_XLITES(board) || IS_HORUS(board))) {
     internalField.Append(new SignedField<8>(this, generalData.gyroMax, "Gyro full scale"));
     internalField.Append(new SignedField<8>(this, generalData.gyroOffset, "Gyro Offset"));
