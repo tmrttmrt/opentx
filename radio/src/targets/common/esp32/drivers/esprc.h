@@ -4,6 +4,10 @@
 #define ESPNOW_CHANNEL 1
 #define ESPNOW_QUEUE_SIZE           6
 #define TX_PERIOD_MS 20
+#if !defined(MAX_OUTPUT_CHANNELS)
+#define MAX_OUTPUT_CHANNELS 32
+#endif
+#define IS_BROADCAST_ADDR(addr) (memcmp(addr, broadcast_mac, ESP_NOW_ETH_ALEN) == 0)
 
 enum LinkState_t {
   IDLE,
@@ -14,28 +18,36 @@ enum LinkState_t {
   ACKNSENT
 };
 
-typedef struct {
-  uint8_t idx:4;
-  uint8_t type:4;
-  uint16_t crc;
-  uint16_t ch[MAX_OUTPUT_CHANNELS];
-} __attribute__((packed)) TXPacket_t;
-
-enum RXPacketType_t {
-  ACK,
-  TELE
+enum PacketType_t {
+  DATA,
+  TELE,
+  BIND,
+  ACK
 };
 
-typedef struct {
-  uint8_t idx:4;
-  RXPacketType_t type:4;
-  uint16_t crc;
-} __attribute__((packed)) RXPacket_t;
+enum TXState_t {
+  PAUSED,
+  PULSES,
+  BINDING
+};
 
 enum EventId_t {
   TX,
   RX
 };
+
+typedef struct {
+  PacketType_t type:4;
+  uint8_t idx:4;
+  uint16_t crc;
+  uint16_t ch[MAX_OUTPUT_CHANNELS];
+} __attribute__((packed)) TXPacket_t;
+
+typedef struct {
+  PacketType_t type:4;
+  uint8_t idx:4;
+  uint16_t crc;
+} __attribute__((packed)) RXPacket_t;
 
 typedef struct {
   EventId_t id;

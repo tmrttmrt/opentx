@@ -194,7 +194,7 @@ void disablePulses(uint8_t module, uint8_t protocol)
 
 #if defined(CPUESP32)
     case PROTOCOL_CHANNELS_ESPNOW:
-      disable_espnow(module);
+      disable_espnow();
       break;
 #endif
   }
@@ -257,7 +257,7 @@ void enablePulses(uint8_t module, uint8_t protocol)
 
 #if defined(CPUESP32)
     case PROTOCOL_CHANNELS_ESPNOW:
-      init_espnow(module);
+      init_espnow();
       break;
 #endif
 

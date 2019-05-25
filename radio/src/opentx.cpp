@@ -477,6 +477,8 @@ void modelDefault(uint8_t id)
   g_model.moduleData[EXTERNAL_MODULE].type = MODULE_TYPE_PPM;
 #elif defined(PCBESP_WROOM_32)
   g_model.moduleData[INTERNAL_MODULE].type = MODULE_TYPE_ESPNOW;
+  memset(g_model.moduleData[INTERNAL_MODULE].espnow.rx_mac_addr, 0xFF, ESP_NOW_ETH_ALEN);
+  g_model.moduleData[INTERNAL_MODULE].espnow.ch = 1;
   g_model.moduleData[EXTERNAL_MODULE].type = MODULE_TYPE_PPM;
 #endif
 

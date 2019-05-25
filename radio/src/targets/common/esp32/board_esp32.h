@@ -52,7 +52,7 @@
   configASSERT( taskId );
 #define RTOS_CREATE_MUTEX(mh) mh = xSemaphoreCreateMutex();
 #define MENUS_STACK_SIZE       0x1D00
-#define MIXER_STACK_SIZE       0x800
+#define MIXER_STACK_SIZE       0xA00
 #define AUDIO_STACK_SIZE       0x900
 #define PER10MS_STACK_SIZE     0x500
 #define ENC_STACK_SIZE         0x900
@@ -169,10 +169,15 @@ bool isWiFiStarted(uint32_t expire=500);
 // Internal Module
 #define HARDWARE_INTERNAL_MODULE
 void intmoduleSendNextFrame();
-void startWiFiESPNow(uint8_t ch);
+void startWiFiESPNow();
 void stopWiFiESPNow();
-void init_espnow(uint32_t port);
-void disable_espnow(uint32_t port);
+void init_espnow();
+void disable_espnow();
+void pause_espnow();
+void resume_espnow();
+void init_bind_espnow();
+void stop_bind_espnow();
+bool is_binding_espnow();
 
 enum Analogs {
   STICK1,

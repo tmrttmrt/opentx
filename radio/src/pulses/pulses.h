@@ -322,7 +322,7 @@ inline void startPulses()
 {
   s_pulses_paused = false;
 
-#if defined(PCBTARANIS) || defined(PCBHORUS)
+#if defined(PCBTARANIS) || defined(PCBHORUS) || defined(PCBESP_WROOM_32)
   setupPulses(INTERNAL_MODULE);
   setupPulses(EXTERNAL_MODULE);
 #else

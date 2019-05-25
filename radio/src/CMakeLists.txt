@@ -522,7 +522,7 @@ if(NOT MSVC)
     set(IDF_BUILD_ARTIFACTS ON)
     set(IDF_PROJECT_EXECUTABLE firmware.elf)
     set(IDF_BUILD_ARTIFACTS_DIR ${CMAKE_BINARY_DIR})
-    set(IDF_SDKCONFIG_DEFAULTS ${CMAKE_CURRENT_SOURCE_DIR}/targets/common/esp32/esp-idf/sdkconfig.defaults)
+    set(IDF_SDKCONFIG_DEFAULTS "${CMAKE_CURRENT_SOURCE_DIR}/targets/common/esp32/esp-idf/sdkconfig.defaults")
 
     # Trim down components included in the build. Although freertos and spi_flash are the ones needed by the application
     # itself, the bootloader and esptool_py components are also needed in order to create the artifacts to be used

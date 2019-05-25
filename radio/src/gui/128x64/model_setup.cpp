@@ -1528,24 +1528,32 @@ void menuModelSetup(event_t event)
         }
 #if defined(CPUESP32)
         else if (isModuleESPNOW(moduleIdx)) {
-          static uint8_t val=0;
           lcdDrawText(1*FW, y, STR_CH);
-          lcdDrawNumber(5*FW, y, (int16_t)moduleData.espnow.ch, (menuHorizontalPosition<=0 ? attr : 0) | LEFT);
-          if(val && menuHorizontalPosition==1){
-            lcdDrawText(MODEL_SETUP_2ND_COLUMN, y, STR_MODULE_BINDING, attr );
-          }
+          lcdDrawNumber(5*FW, y, (int16_t)moduleData.espnow.ch, (menuHorizontalPosition==0 ? attr : 0) | LEFT);
+          if (is_binding_espnow()) {
+            lcdDrawText(MODEL_SETUP_2ND_COLUMN, y, STR_MODULE_BINDING, menuHorizontalPosition==1 ? attr : 0);
+          } 
           else {
-            val = 0;
-            lcdDrawText(MODEL_SETUP_2ND_COLUMN, y, STR_MODULE_BIND,menuHorizontalPosition==1 ? attr : 0);
+            lcdDrawText(MODEL_SETUP_2ND_COLUMN, y, STR_MODULE_BIND, menuHorizontalPosition==1 ? attr : 0);
           }
-
-          if (attr && s_editMode>0) {
+          if (attr) {
             switch (menuHorizontalPosition) {
               case 0:
-                CHECK_INCDEC_MODELVAR(event, moduleData.espnow.ch, 1, 11);
+                if (s_editMode>0) {
+                  CHECK_INCDEC_MODELVAR(event, moduleData.espnow.ch, 1, 11);
+                }
                 break;
               case 1:
-                val = checkIncDec(event, val, 0, 1, 0);
+                if (s_editMode>0){
+                  if( event == EVT_KEY_FIRST(KEY_ENTER)) {
+                    killEvents(KEY_ENTER);
+                    init_bind_espnow();
+                  }
+                  if (!is_binding_espnow()) s_editMode = 0;
+                } 
+                else if(s_editMode == 0 && is_binding_espnow()) {
+                    stop_bind_espnow();
+                }                  
                 break;
             }
           }

@@ -186,8 +186,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 
 void wifi_init_sta(char *ssid, char *passwd)
 {
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_stop());
     wifi_config_t wifi_config = {
         .sta = {
             .ssid = "",
@@ -196,9 +195,9 @@ void wifi_init_sta(char *ssid, char *passwd)
     };
     strcpy((char *)wifi_config.sta.ssid, ssid);
     strcpy((char *)wifi_config.sta.password, passwd);
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
-    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
-    ESP_ERROR_CHECK(esp_wifi_start() );
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_set_mode(WIFI_MODE_STA) );
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_start() );
     ESP_LOGI(TAG, "wifi_init_sta finished.");
     ESP_LOGI(TAG, "connect to ap SSID:%s password:%s",
     ssid, passwd);
@@ -208,8 +207,6 @@ void wifi_init_softap()
 {
     ESP_LOGI(TAG, "Initializing access point '%s'",DEFAULT_ESP_WIFI_SSID);
 
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
     wifi_config_t wifi_config = {
         .ap = {
             .ssid = DEFAULT_ESP_WIFI_SSID,
@@ -223,9 +220,9 @@ void wifi_init_softap()
         wifi_config.ap.authmode = WIFI_AUTH_OPEN;
     }
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
-    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
-    ESP_ERROR_CHECK(esp_wifi_start());
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_set_mode(WIFI_MODE_AP));
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_start());
     ESP_LOGI(TAG, "wifi_init_softap finished.SSID:%s password:%s", DEFAULT_ESP_WIFI_SSID, DEFAULT_ESP_WIFI_PASS);
     wifiState = WIFI_CONNECTED;
 }
@@ -234,12 +231,14 @@ void init_wifi(){
     //Initialize NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
+        ESP_ERROR_CHECK_WITHOUT_ABORT(nvs_flash_erase());
         ret = nvs_flash_init();
     }
-    ESP_ERROR_CHECK(ret);
+    ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
     tcpip_adapter_init();
-    ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL));
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_event_loop_init(event_handler, NULL));
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_init(&cfg));
 }
 
 

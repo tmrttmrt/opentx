@@ -365,9 +365,7 @@ bool eeLoadGeneral()
     FILE * fp = fopen ( fn, "rb" );
     if (NULL==fp) { /* Check if the file has been opened */
         ESP_LOGE(TAG,"Failed to open ' %s'.", fn);
-        generalDefault();
-        modelDefault(0);
-        return true;
+        return false;
     }
     char head[8];
     if(1!=fread((uint8_t*)head, 8,1,fp)) {

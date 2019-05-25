@@ -57,7 +57,6 @@ void menuRadioHardware(event_t event)
     switch(k) {
       case ITEM_RADIO_HARDWARE_WIFI:
         {
-//            uint8_t val = editCheckBox(isWiFiStarted(),  WIFI_COL, y, "WiFi", attr, event);
             uint8_t val = isWiFiStarted();
             drawCheckBox(WIFI_COL, y, val, attr);
             drawFieldLabel(WIFI_COL, y, "WiFi");

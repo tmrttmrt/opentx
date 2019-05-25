@@ -46,6 +46,4 @@ extern volatile uint32_t expireTimer_ms;
 extern TaskHandle_t wifiTaskHandle;
 extern SemaphoreHandle_t wifi_mutex;
 
-
-
-#endif
+#endif //_WIFI_H_

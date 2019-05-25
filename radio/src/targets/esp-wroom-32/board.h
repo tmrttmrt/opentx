@@ -130,13 +130,9 @@ void init_module_timer( uint32_t module_index, uint32_t period, uint8_t state);
 void disable_module_timer( uint32_t module_index);
 void extmoduleSerialStart(uint32_t baudrate, uint32_t period_half_us, bool inverted);
 void extmoduleSendNextFrame();
+
 //#define INP_E_PPM_IN              4
 #define PPM_TX_GPIO               15
-
-// Internal Module
-#define HARDWARE_INTERNAL_MODULE
-//void intmoduleStop();
-void intmoduleSendNextFrame();
 
 // Trims
 #define NUM_TRIMS                 4
