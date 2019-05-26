@@ -19,7 +19,6 @@
 static const char *TAG = "tx.cpp";
 static xQueueHandle evtQueue;
 static esp_now_peer_info_t rxPeer;
-uint8_t rx_mac_addr[ESP_NOW_ETH_ALEN] = { 0x84, 0x0d, 0x8e, 0x81, 0xe7, 0x4a };
 static DRAM_ATTR int16_t locChannelOutputs[MAX_OUTPUT_CHANNELS] = {0};
 static QueueHandle_t xPulsesQueue;
 static volatile TXPacket_t packet;
@@ -51,7 +50,7 @@ void bind_packet_prepare()
 }
 
 inline void process_data(Event_t &evt) {
-  if (!memcmp(evt.mac_addr,rx_mac_addr, sizeof(ESP_NOW_ETH_ALEN))) {
+  if (!memcmp(evt.mac_addr,rxPeer.peer_addr, sizeof(ESP_NOW_ETH_ALEN))) {
     RXPacket_t *rp = (RXPacket_t *) evt.data;
     switch (rp->type){
       case ACK:
@@ -83,13 +82,12 @@ inline void process_bind(Event_t &evt) {
     rp->crc = crc16_le(0, (uint8_t const *) rp, sizeof(RXPacket_t));
     if(crc == rp->crc){
       ESP_LOGI(TAG, "Got bind MAC: " MACSTR, MAC2STR(evt.mac_addr));
-      memcpy(rx_mac_addr, evt.mac_addr, ESP_NOW_ETH_ALEN);
-      memcpy(g_model.moduleData[INTERNAL_MODULE].espnow.rx_mac_addr, rx_mac_addr,  ESP_NOW_ETH_ALEN);
-      if (esp_now_is_peer_exist(rx_mac_addr) == false) {
+      memcpy(rxPeer.peer_addr, evt.mac_addr, ESP_NOW_ETH_ALEN);
+      memcpy(g_model.moduleData[INTERNAL_MODULE].espnow.rx_mac_addr, rxPeer.peer_addr,  ESP_NOW_ETH_ALEN);
+      if (esp_now_is_peer_exist(rxPeer.peer_addr) == false) {
         rxPeer.channel = g_model.moduleData[INTERNAL_MODULE].espnow.ch;
         rxPeer.ifidx = ESP_IF_WIFI_STA;
         rxPeer.encrypt = false;
-        memcpy(rxPeer.peer_addr, rx_mac_addr, ESP_NOW_ETH_ALEN);
         esp_now_add_peer(&rxPeer);
       }
       txState = PULSES;
@@ -144,7 +142,7 @@ static void tx_task(void *pvParameter)
       switch (txState) {
         case PULSES:
           {
-            if(IS_BROADCAST_ADDR(rx_mac_addr)) break;
+            if(IS_BROADCAST_ADDR(rxPeer.peer_addr)) break;
             ESP_LOGD(TAG, "Sending data packet: linkState: %d", linkState);
             static uint64_t last_send_time = 0;
             uint64_t curr_time = esp_timer_get_time();
@@ -152,7 +150,7 @@ static void tx_task(void *pvParameter)
             last_send_time = curr_time;
             if( linkState != QUEUED){
               packet_prepare();
-              esp_err_t ret = esp_now_send(rx_mac_addr, (const uint8_t *) &packet, sizeof(packet));
+              esp_err_t ret = esp_now_send(rxPeer.peer_addr, (const uint8_t *) &packet, sizeof(packet));
               if ( ret != ESP_OK) {
                 ESP_LOGE(TAG, "Send txPacket error: %s", esp_err_to_name(ret));
               } 
@@ -246,10 +244,9 @@ esp_err_t initTX(){
   rxPeer.channel = g_model.moduleData[INTERNAL_MODULE].espnow.ch;
   rxPeer.ifidx = ESP_IF_WIFI_STA;
   rxPeer.encrypt = false;
-  memcpy(rx_mac_addr, g_model.moduleData[INTERNAL_MODULE].espnow.rx_mac_addr, ESP_NOW_ETH_ALEN);
-  memcpy(rxPeer.peer_addr, rx_mac_addr, ESP_NOW_ETH_ALEN);
-  ESP_ERROR_CHECK_WITHOUT_ABORT(esp_now_add_peer(&rxPeer));
   memcpy(rxPeer.peer_addr, broadcast_mac, ESP_NOW_ETH_ALEN);
+  ESP_ERROR_CHECK_WITHOUT_ABORT(esp_now_add_peer(&rxPeer));
+  memcpy(rxPeer.peer_addr, g_model.moduleData[INTERNAL_MODULE].espnow.rx_mac_addr, ESP_NOW_ETH_ALEN);
   ESP_ERROR_CHECK_WITHOUT_ABORT(esp_now_add_peer(&rxPeer));
 
   pulsesON = true;
