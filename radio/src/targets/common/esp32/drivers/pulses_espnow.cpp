@@ -89,6 +89,8 @@ inline void process_bind(Event_t &evt) {
         rxPeer.ifidx = ESP_IF_WIFI_STA;
         rxPeer.encrypt = false;
         esp_now_add_peer(&rxPeer);
+      } else {
+        esp_now_mod_peer(&rxPeer);
       }
       txState = PULSES;
     }
@@ -255,16 +257,10 @@ esp_err_t initTX(){
   return ESP_OK;
 }
 
-void moduleSendNextFrame(int16_t *channelOutputs)
-{
-  xQueueOverwrite( xPulsesQueue, channelOutputs );
-}
-
 void intmoduleSendNextFrame()
 {
-  switch (moduleState[INTERNAL_MODULE].protocol) {
-    default:
-      break;
+  if (xPulsesQueue){
+    xQueueOverwrite( xPulsesQueue, channelOutputs );
   }
 }
 
