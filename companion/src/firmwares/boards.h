@@ -48,7 +48,8 @@ namespace Board {
     BOARD_TARANIS_XLITE,
     BOARD_ESP_WROOM_32,
     BOARD_TARANIS_XLITES,
-    BOARD_TARANIS_X9LITE
+    BOARD_TARANIS_X9LITE,
+    BOARD_JUMPER_T12
   };
 
   constexpr int BOARD_TYPE_MAX = BOARD_TARANIS_X9LITE ;
@@ -191,6 +192,7 @@ class Boards
 #define IS_2560(board)                 (board==Board::BOARD_GRUVIN9X || board==Board::BOARD_MEGA2560)
 #define IS_SKY9X(board)                (board==Board::BOARD_SKY9X || board==Board::BOARD_9XRPRO || board==Board::BOARD_AR9X)
 #define IS_9XRPRO(board)               (board==Board::BOARD_9XRPRO)
+#define IS_JUMPER_T12(board)           (board==Board::BOARD_JUMPER_T12)
 #define IS_TARANIS_XLITE(board)        (board==Board::BOARD_TARANIS_XLITE || board==Board::BOARD_TARANIS_XLITES)
 #define IS_TARANIS_XLITES(board)       (board==Board::BOARD_TARANIS_XLITES)
 #define IS_TARANIS_X7(board)           (board==Board::BOARD_TARANIS_X7)

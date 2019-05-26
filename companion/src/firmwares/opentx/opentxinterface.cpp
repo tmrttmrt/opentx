@@ -66,6 +66,8 @@ const char * OpenTxEepromInterface::getName()
       return "OpenTX for MEGA2560 board";
     case BOARD_GRUVIN9X:
       return "OpenTX for Gruvin9x board / 9X";
+    case BOARD_JUMPER_T12:
+      return "OpenTX for Jumper T12";
     case BOARD_TARANIS_X9D:
       return "OpenTX for FrSky Taranis X9D";
     case BOARD_TARANIS_X9DP:
@@ -335,6 +337,9 @@ int OpenTxEepromInterface::save(uint8_t * eeprom, const RadioData & radioData, u
   else if (IS_TARANIS_XLITE(board)) {
     variant |= TARANIS_XLITE_VARIANT;
   }
+  else if (IS_JUMPER_T12(board)) {
+    variant |= JUMPER_T12_VARIANT;
+  }
 
   OpenTxGeneralData generator((GeneralSettings &)radioData.generalSettings, board, version, variant);
   // generator.dump();
@@ -547,7 +552,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case SoundPitch:
       return 1;
     case Haptic:
-      return (IS_2560(board) || IS_SKY9X(board) || IS_TARANIS_PLUS(board) || IS_TARANIS_SMALL(board) || IS_TARANIS_X9E(board) || IS_HORUS(board) || id.contains("haptic"));
+      return (IS_2560(board) || IS_SKY9X(board) || IS_TARANIS_PLUS(board) || IS_TARANIS_SMALL(board) || IS_TARANIS_X9E(board) || IS_HORUS(board) || IS_JUMPER_T12(board) || id.contains("haptic"));
     case ModelTrainerEnable:
       if (IS_HORUS_OR_TARANIS(board))
         return 1;
@@ -556,7 +561,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case MaxVolume:
       return (IS_ARM(board) || IS_ESP32(board) ? 23 : 7);
     case MaxContrast:
-      if (IS_TARANIS_SMALL(board))
+      if (IS_TARANIS_SMALL(board) || IS_JUMPER_T12(board))
         return 30;
       else
         return 45;
@@ -648,7 +653,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case LcdWidth:
       if (IS_HORUS(board))
         return 480;
-      else if (IS_TARANIS_SMALL(board))
+      else if (IS_TARANIS_SMALL(board) || IS_JUMPER_T12(board))
         return 128;
       else if (IS_TARANIS(board))
         return 212;
@@ -662,7 +667,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case LcdDepth:
       if (IS_HORUS(board))
         return 16;
-      else if (IS_TARANIS_SMALL(board))
+      else if (IS_TARANIS_SMALL(board) || IS_JUMPER_T12(board))
         return 1;
       else if (IS_TARANIS(board))
         return 4;
@@ -712,6 +717,8 @@ int OpenTxFirmware::getCapability(::Capability capability)
         return TARANIS_XLITES_VARIANT;
       else if (IS_TARANIS_XLITE(board))
         return TARANIS_XLITE_VARIANT;
+      else if (IS_JUMPER_T12(board))
+        return JUMPER_T12_VARIANT;
       else
         return 0;
     case MavlinkTelemetry:
@@ -974,6 +981,11 @@ bool OpenTxEepromInterface::checkVariant(unsigned int version, unsigned int vari
   }
   else if (IS_TARANIS(board)) {
     if (variant != 0) {
+      variantError = true;
+    }
+  }
+  else if (IS_JUMPER_T12(board)) {
+    if (variant != JUMPER_T12_VARIANT) {
       variantError = true;
     }
   }
@@ -1244,6 +1256,17 @@ void registerOpenTxFirmwares()
   firmware = new OpenTxFirmware("opentx-x12s", Firmware::tr("FrSky Horus X12S"), BOARD_X12S);
   addOpenTxFrskyOptions(firmware);
   firmware->addOption("pcbdev", Firmware::tr("Use ONLY with first DEV pcb version"));
+  registerOpenTxFirmware(firmware);
+
+  /* Jumper T12 board */
+  firmware = new OpenTxFirmware("opentx-t12", QCoreApplication::translate("Firmware", "Jumper T12"), BOARD_JUMPER_T12);
+  addOpenTxCommonOptions(firmware);
+  firmware->addOption("noheli", Firmware::tr("Disable HELI menu and cyclic mix support"));
+  firmware->addOption("nogvars", Firmware::tr("Disable Global variables"));
+  firmware->addOption("lua", Firmware::tr("Enable Lua custom scripts screen"));
+  firmware->addOption("luac", Firmware::tr("Enable Lua compiler"));
+  firmware->addOption("crossfire", Firmware::tr("Support for Crossfire TX Module"));
+  addOpenTxFontOptions(firmware);
   registerOpenTxFirmware(firmware);
 
   /* 9XR-Pro */

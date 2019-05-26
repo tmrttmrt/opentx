@@ -253,8 +253,10 @@ void generalDefault()
   g_eeGeneral.switchConfig = (SWITCH_TOGGLE << 10) + (SWITCH_TOGGLE << 8) + (SWITCH_2POS << 6) + (SWITCH_2POS << 4) + (SWITCH_3POS << 2) + (SWITCH_3POS << 0);
 #elif defined(PCBXLITE)
   g_eeGeneral.switchConfig = (SWITCH_2POS << 6) + (SWITCH_2POS << 4) + (SWITCH_3POS << 2) + (SWITCH_3POS << 0);
-#elif defined(PCBX7)
+#elif defined(RADIO_X7)
   g_eeGeneral.switchConfig = 0x000006ff; // 4x3POS, 1x2POS, 1xTOGGLE
+#elif defined(RADIO_T12)
+  g_eeGeneral.switchConfig = (SWITCH_2POS << 10) + (SWITCH_2POS << 8) + (SWITCH_3POS << 6) + (SWITCH_3POS << 4) + (SWITCH_3POS << 2) + (SWITCH_3POS << 0);
 #elif defined(PCBX9LITE)
   g_eeGeneral.switchConfig = (SWITCH_TOGGLE << 8) + (SWITCH_2POS << 6) + (SWITCH_3POS << 4) + (SWITCH_3POS << 2) + (SWITCH_3POS << 0);
 #elif defined(PCBTARANIS) || defined(PCBHORUS)
@@ -470,7 +472,7 @@ void modelDefault(uint8_t id)
   }
 #endif
 
-#if defined(PCBTARANIS) || defined(PCBHORUS)
+#if defined(HARDWARE_INTERNAL_MODULE) && !defined(PCBESP_WROOM_32)
   g_model.moduleData[INTERNAL_MODULE].type = IS_PXX2_INTERNAL_ENABLED() ? MODULE_TYPE_ACCESS_ISRM : MODULE_TYPE_PXX_XJT;
   g_model.moduleData[INTERNAL_MODULE].channelsCount = defaultModuleChannels_M8(INTERNAL_MODULE);
 #elif defined(PCBSKY9X)
@@ -480,6 +482,9 @@ void modelDefault(uint8_t id)
   memset(g_model.moduleData[INTERNAL_MODULE].espnow.rx_mac_addr, 0xFF, ESP_NOW_ETH_ALEN);
   g_model.moduleData[INTERNAL_MODULE].espnow.ch = 1;
   g_model.moduleData[EXTERNAL_MODULE].type = MODULE_TYPE_PPM;
+#elif defined(RADIO_T12)
+  g_model.moduleData[EXTERNAL_MODULE].type = MODULE_TYPE_NONE;
+  g_model.moduleData[EXTERNAL_MODULE].type = MODULE_TYPE_MULTIMODULE;
 #endif
 
 #if defined(PCBXLITE)

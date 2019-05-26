@@ -167,6 +167,9 @@ enum EnumKeys
   KEY_PLUS = KEY_UP,
   KEY_RIGHT,
   KEY_LEFT,
+  
+  KEY_COUNT,
+  KEY_MAX = KEY_COUNT - 1,  
 
   TRM_BASE,
   TRM_LH_DWN = TRM_BASE,
