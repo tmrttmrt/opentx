@@ -472,8 +472,8 @@ void modelDefault(uint8_t id)
   }
 #endif
 
-#if defined(HARDWARE_INTERNAL_MODULE) && !defined(PCBESP_WROOM_32)
-  g_model.moduleData[INTERNAL_MODULE].type = IS_PXX2_INTERNAL_ENABLED() ? MODULE_TYPE_ACCESS_ISRM : MODULE_TYPE_PXX_XJT;
+#if defined(HARDWARE_INTERNAL_MODULE)  && !defined(PCBESP_WROOM_32)
+  g_model.moduleData[INTERNAL_MODULE].type = IS_PXX2_INTERNAL_ENABLED() ? MODULE_TYPE_PXX2_ISRM : MODULE_TYPE_PXX1_XJT;
   g_model.moduleData[INTERNAL_MODULE].channelsCount = defaultModuleChannels_M8(INTERNAL_MODULE);
 #elif defined(PCBSKY9X)
   g_model.moduleData[EXTERNAL_MODULE].type = MODULE_TYPE_PPM;

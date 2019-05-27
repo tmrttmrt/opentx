@@ -94,9 +94,8 @@ extern "C" {
 }
 #endif
 
-#if defined(PCBX9E) || defined(RADIO_X7) || defined(PCBX9LITE)
+#if defined(ROTARY_ENCODER_NAVIGATION)
 // Rotary Encoder driver
-#define ROTARY_ENCODER_NAVIGATION
 void rotaryEncoderInit(void);
 void rotaryEncoderCheck(void);
 #endif
@@ -441,23 +440,32 @@ enum EnumSwitchesPositions
 #endif
   NUM_SWITCHES_POSITIONS
 };
+
 #if defined(PCBXLITES)
   #define NUM_SWITCHES                  6
+  #define STORAGE_NUM_SWITCHES          NUM_SWITCHES
 #elif defined(PCBXLITE)
   #define NUM_SWITCHES                  4
+  #define STORAGE_NUM_SWITCHES          6
+#elif defined(PCBT12)
+  #define NUM_SWITCHES                  6
+  #define STORAGE_NUM_SWITCHES          8
 #elif defined(PCBX7)
   #define NUM_SWITCHES                  8
+  #define STORAGE_NUM_SWITCHES          NUM_SWITCHES
 #elif defined(PCBX9LITE)
   #define NUM_SWITCHES                  5
+  #define STORAGE_NUM_SWITCHES          NUM_SWITCHES
 #elif defined(PCBX9E)
-  #define NUM_SWITCHES                  18 // yes, it's a lot!
+  #define NUM_SWITCHES                  18 // yes, it's perfect like that !
+  #define STORAGE_NUM_SWITCHES          NUM_SWITCHES
 #else
   #define NUM_SWITCHES                  8
+  #define STORAGE_NUM_SWITCHES          NUM_SWITCHES
 #endif
 
-#if defined(__cplusplus)
-static_assert(NUM_SWITCHES_POSITIONS == NUM_SWITCHES * 3, "Wrong switches positions count");
-#endif
+#define STORAGE_NUM_SWITCHES_POSITIONS  (STORAGE_NUM_SWITCHES * 3)
+#define NUM_SWITCHES_POSITIONS          (NUM_SWITCHES * 3)
 
 void keysInit(void);
 uint8_t keyState(uint8_t index);
@@ -676,7 +684,9 @@ void debugPutc(const char c);
 
 // Telemetry driver
 void telemetryPortInit(uint32_t baudrate, uint8_t mode);
+void telemetryPortSetDirectionInput(void);
 void telemetryPortSetDirectionOutput(void);
+void sportSendByte(uint8_t byte);
 void sportSendBuffer(const uint8_t * buffer, uint32_t count);
 uint8_t telemetryGetByte(uint8_t * byte);
 extern uint32_t telemetryErrors;
@@ -795,15 +805,7 @@ void ledGreen(void);
 void ledBlue(void);
 
 // LCD driver
-#if defined(STATUS_LEDS)
-#define LCD_W                           128
-#define LCD_H                           64
-#define LCD_DEPTH                       1
-#define IS_LCD_RESET_NEEDED()           true
-#define LCD_CONTRAST_MIN                10
-#define LCD_CONTRAST_MAX                30
-#define LCD_CONTRAST_DEFAULT            20
-#else
+#if defined(PCBX9D) || defined(PCBX9DP) || defined(PCBX9E)
 #define LCD_W                           212
 #define LCD_H                           64
 #define LCD_DEPTH                       4
@@ -811,6 +813,14 @@ void ledBlue(void);
 #define LCD_CONTRAST_MIN                0
 #define LCD_CONTRAST_MAX                45
 #define LCD_CONTRAST_DEFAULT            25
+#else
+#define LCD_W                           128
+#define LCD_H                           64
+#define LCD_DEPTH                       1
+#define IS_LCD_RESET_NEEDED()           true
+#define LCD_CONTRAST_MIN                10
+#define LCD_CONTRAST_MAX                30
+#define LCD_CONTRAST_DEFAULT            20
 #endif
 void lcdInit(void);
 void lcdInitFinish(void);

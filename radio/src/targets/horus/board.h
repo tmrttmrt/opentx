@@ -285,7 +285,7 @@ enum EnumSwitches
   NUM_SWITCHES
 };
 
-#define STORAGE_NUM_SWITCHES           10
+#define STORAGE_NUM_SWITCHES           NUM_SWITCHES
 #define IS_3POS(x)                     ((x) != SW_SF && (x) != SW_SH)
 
 enum EnumSwitchesPositions
@@ -320,12 +320,12 @@ enum EnumSwitchesPositions
   SW_SGMBR0,
   SW_SGMBR1,
   SW_SGMBR2,
-  NUM_SWITCHES_POSITIONS
+  STORAGE_NUM_SWITCHES_POSITIONS
 };
 
 
 #if defined(__cplusplus)
-static_assert(NUM_SWITCHES_POSITIONS == NUM_SWITCHES * 3, "Wrong switches positions count");
+static_assert(STORAGE_NUM_SWITCHES_POSITIONS == NUM_SWITCHES * 3, "Wrong switches positions count");
 #endif
 
 void keysInit(void);
@@ -595,7 +595,9 @@ int32_t getVolume(void);
 // Telemetry driver
 #define TELEMETRY_FIFO_SIZE            512
 void telemetryPortInit(uint32_t baudrate, uint8_t mode);
+void telemetryPortSetDirectionInput(void);
 void telemetryPortSetDirectionOutput(void);
+void sportSendByte(uint8_t byte);
 void sportSendBuffer(const uint8_t * buffer, uint32_t count);
 uint8_t telemetryGetByte(uint8_t * byte);
 extern uint32_t telemetryErrors;

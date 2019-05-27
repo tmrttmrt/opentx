@@ -692,7 +692,7 @@ PACK(struct TrainerData {
     uint8_t  backlightColor; \
     swarnstate_t switchUnlockStates; \
     swconfig_t switchConfig; \
-    char switchNames[NUM_SWITCHES][LEN_SWITCH_NAME]; \
+    char switchNames[STORAGE_NUM_SWITCHES][LEN_SWITCH_NAME]; \
     char anaNames[NUM_STICKS+NUM_POTS+NUM_SLIDERS][LEN_ANA_NAME]; \
     BLUETOOTH_FIELDS
 #elif defined(PCBSKY9X)
@@ -705,7 +705,7 @@ PACK(struct TrainerData {
     uint8_t  optrexDisplay; \
     uint8_t  sticksGain; \
     uint8_t  rotarySteps; \
-    char switchNames[NUM_SWITCHES][LEN_SWITCH_NAME]; \
+    char switchNames[STORAGE_NUM_SWITCHES][LEN_SWITCH_NAME]; \
     char anaNames[NUM_STICKS+NUM_POTS+NUM_SLIDERS][LEN_ANA_NAME];
 #elif defined(CPUESP32)
   #define EXTRA_GENERAL_FIELDS \
@@ -923,7 +923,7 @@ static inline void check_struct()
   CHKSIZE(RadioData, 860);
   CHKSIZE(ModelData, 6157);
 #elif defined(PCBXLITE)
-  CHKSIZE(RadioData, 852);
+  CHKSIZE(RadioData, 858);
   CHKSIZE(ModelData, 6157);
 #elif defined(PCBX7)
   CHKSIZE(RadioData, 864);
