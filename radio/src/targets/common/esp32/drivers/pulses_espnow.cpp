@@ -13,8 +13,7 @@
 #include "rom/crc.h"
 #include "opentx.h"
 #include "esprc.h"
-
-#define EVT_QUEUE_SIZE 
+#include "esprc_packet.h"
 
 static const char *TAG = "tx.cpp";
 static xQueueHandle evtQueue;

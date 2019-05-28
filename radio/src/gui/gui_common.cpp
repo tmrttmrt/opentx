@@ -514,7 +514,7 @@ bool isSourceAvailableInResetSpecialFunction(int index)
 #if defined(PCBXLITE)
 bool isR9MModeAvailable(int mode)
 {
-#if defined(MODULE_R9M_FLEX)
+#if defined(R9M_PROTO_FLEX)
   return mode >= MODULE_SUBTYPE_R9M_EUPLUS;
 #else
   return mode <= MODULE_SUBTYPE_R9M_EU;
@@ -524,7 +524,7 @@ bool isR9MModeAvailable(int mode)
 #else
 bool isR9MModeAvailable(int mode)
 {
-#if defined(MODULE_R9M_FLEX)
+#if defined(R9M_PROTO_FLEX)
   return mode < MODULE_SUBTYPE_R9M_EUPLUS;
 #else
   return true;
@@ -558,11 +558,11 @@ bool isModuleUSingSport(uint8_t moduleBay, uint8_t moduleType)
 #if defined(CPUESP32)
     case MODULE_TYPE_ESPNOW:
 #endif
-    case MODULE_TYPE_PXX2_R9M_LITE:
-    case MODULE_TYPE_PXX2_R9M_LITE_PRO:
+    case MODULE_TYPE_R9M_LITE_PXX2:
+    case MODULE_TYPE_R9M_LITE_PRO_PXX2:
       return false;
 
-    case MODULE_TYPE_PXX2_ISRM:
+    case MODULE_TYPE_ISRM_PXX2:
       if (moduleBay == EXTERNAL_MODULE)
         return false;
 
@@ -582,15 +582,15 @@ bool isInternalModuleAvailable(int moduleType)
     return true;
 
 #if defined(PXX1) && defined(INTERNAL_MODULE_PXX1)
-  if (moduleType == MODULE_TYPE_PXX1_XJT)
+  if (moduleType == MODULE_TYPE_XJT_PXX1)
     return !isModuleUSingSport(EXTERNAL_MODULE, g_model.moduleData[EXTERNAL_MODULE].type);
 #else
-  if (moduleType == MODULE_TYPE_PXX1_XJT)
+  if (moduleType == MODULE_TYPE_XJT_PXX1)
     return false;
 #endif
 
 #if defined(PXX2)
-  if (moduleType == MODULE_TYPE_PXX2_ISRM)
+  if (moduleType == MODULE_TYPE_ISRM_PXX2)
 #if defined(INTMODULE_USART)
     return true;
 #else
@@ -610,25 +610,30 @@ bool isInternalModuleAvailable(int moduleType)
 bool isExternalModuleAvailable(int moduleType)
 {
 #if !defined(PCBXLITE) && !defined(PCBX9LITE)
-  if (moduleType == MODULE_TYPE_PXX1_R9M_LITE || moduleType == MODULE_TYPE_PXX2_R9M_LITE || moduleType == MODULE_TYPE_PXX2_R9M_LITE_PRO)
+  if (moduleType == MODULE_TYPE_R9M_LITE_PXX1 || moduleType == MODULE_TYPE_R9M_LITE_PXX2 || moduleType == MODULE_TYPE_R9M_LITE_PRO_PXX2)
     return false;
 #endif
 
 #if !defined(PXX1)
-  if (moduleType == MODULE_TYPE_PXX1_XJT || moduleType == MODULE_TYPE_PXX1_R9M || moduleType == MODULE_TYPE_PXX1_R9M_LITE)
+  if (moduleType == MODULE_TYPE_XJT_PXX1 || moduleType == MODULE_TYPE_R9M_PXX1 || moduleType == MODULE_TYPE_R9M_LITE_PXX1)
     return false;
 #endif
 
-#if defined(FRSKY_RELEASE)
-  if (moduleType == MODULE_TYPE_PXX1_R9M)
+#if !defined(XJT)
+  if (moduleType == MODULE_TYPE_XJT_PXX1)
     return false;
 #endif
 
-  if (moduleType == MODULE_TYPE_PXX2_ISRM || moduleType == MODULE_TYPE_PXX2_R9M)
+#if !defined(R9M_SIZE_STD)
+  if (moduleType == MODULE_TYPE_R9M_PXX1)
+    return false;
+#endif
+
+  if (moduleType == MODULE_TYPE_ISRM_PXX2 || moduleType == MODULE_TYPE_R9M_PXX2)
     return false;
 
 #if !defined(PXX2)
-  if (moduleType == MODULE_TYPE_PXX2_R9M || moduleType == MODULE_TYPE_PXX2_R9M_LITE || moduleType == MODULE_TYPE_PXX2_R9M_LITE_PRO) {
+  if (moduleType == MODULE_TYPE_R9M_PXX2 || moduleType == MODULE_TYPE_R9M_LITE_PXX2 || moduleType == MODULE_TYPE_R9M_LITE_PRO_PXX2) {
     return false;
   }
 #endif
@@ -679,10 +684,10 @@ bool isRfProtocolAvailable(int protocol)
   }
 #endif
 #if defined(PCBTARANIS) || defined(PCBHORUS)
-  if (protocol != MODULE_SUBTYPE_PXX1_OFF && g_model.moduleData[EXTERNAL_MODULE].type == MODULE_TYPE_PXX1_R9M) {
+  if (protocol != MODULE_SUBTYPE_PXX1_OFF && g_model.moduleData[EXTERNAL_MODULE].type == MODULE_TYPE_R9M_PXX1) {
     return false;
   }
-  if (protocol != MODULE_SUBTYPE_PXX1_OFF && g_model.moduleData[EXTERNAL_MODULE].type == MODULE_TYPE_PXX2_R9M) {
+  if (protocol != MODULE_SUBTYPE_PXX1_OFF && g_model.moduleData[EXTERNAL_MODULE].type == MODULE_TYPE_R9M_PXX2) {
     return false;
   }
 #endif
