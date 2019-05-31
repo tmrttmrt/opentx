@@ -814,7 +814,7 @@
 #if !defined(RADIO_T12)
   #define HARDWARE_INTERNAL_MODULE
 #endif
-#if !(defined(PCBXLITES) && !defined(PCBX9LITE))
+#if !defined(PCBXLITES) && !defined(PCBX9LITE)
   #define INTERNAL_MODULE_PXX1
 #endif
 #if defined(PCBXLITE) || defined(PCBX9LITE)
@@ -918,6 +918,7 @@
 #define EXTMODULE_PULSES
 
 #if defined(PCBXLITE) || defined(PCBX9LITE)
+  #define HARDWARE_EXTERNAL_MODULE_SIZE_SML
   #define EXTMODULE_RCC_APB2Periph      (RCC_APB2Periph_TIM8 | RCC_APB2Periph_USART6)
   #if defined(PCBX9LITE)
     #define EXTMODULE_RCC_AHB1Periph    (RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_DMA2)

@@ -902,7 +902,7 @@
 #define TR_FLASH_EXTERNAL_DEVICE "Sflashuj Moduł Zewnętrzny"
 #define TR_FLASH_RECEIVER_OTA          "Flash receiver OTA"
 #define TR_FLASH_BLUETOOTH_MODULE      TR("Flash BT module", "Flash Bluetooth module")
-#define TR_FLASH_POWER_CONTROL_CHIP          "Flash battery chip"
+#define TR_FLASH_POWER_CONTROL_CHIP          "Flash power chip"
 #define TR_CURRENT_VERSION             TR("Current vers. ", "Current version: ")
 #define TR_FLASH_INTERNAL_MODULE "Sflashuj Moduł Wewnętrzny"
 #define TR_FLASH_EXTERNAL_MODULE       "Flash external module"
@@ -1000,8 +1000,10 @@
 #define TR_ANTENNASELECTION    TR(INDENT "Antenna", INDENT "Antenna selection")
 #define TR_ANTENNACONFIRM1     "Really switch?"
 #define TR_ANTENNACONFIRM2     TR("Check antenna", "Make sure antenna is installed!")
-#define TR_R9MFLEXWARN1                "Requires non"
-#define TR_R9MFLEXWARN2                "certified R9M firm."
+#define TR_R9M_PROTO_FLEX_WARN1                "Requires non"
+#define TR_R9M_PROTO_FCC_WARN1         "Requires FCC"
+#define TR_R9M_PROTO_EU_WARN1          "Requires EU"
+#define TR_R9M_PROTO_WARN2                "certified firmware"
 #define TR_LOWALARM            INDENT "Alarm niski"
 #define TR_CRITICALALARM       INDENT "Alarm krytyczny"
 #define TR_RSSIALARM_WARN             TR("RSSI","TELEMETRY RSSI")

@@ -576,24 +576,6 @@ void lcdDrawVerticalLine(coord_t x, scoord_t y, scoord_t h, uint8_t pat, LcdFlag
   }
 }
 
-void drawReceiverName(coord_t x, coord_t y, uint8_t moduleIdx, uint8_t receiverIdx, LcdFlags flags)
-{
-  if (isModulePXX2(moduleIdx)) {
-    if (g_model.moduleData[moduleIdx].pxx2.receiverName[receiverIdx][0] != '\0')
-      lcdDrawSizedText(x, y, g_model.moduleData[moduleIdx].pxx2.receiverName[receiverIdx], effectiveLen(g_model.moduleData[moduleIdx].pxx2.receiverName[receiverIdx], PXX2_LEN_RX_NAME), flags);
-    else
-      lcdDrawText(x, y, "---", flags);
-  }
-#if defined(HARDWARE_INTERNAL_MODULE)
-  else if (moduleIdx == INTERNAL_MODULE) {
-    lcdDrawText(x, y, "Internal", flags);
-  }
-#endif
-  else {
-    lcdDrawText(x, y, "External", flags);
-  }
-}
-
 void lcdDrawSolidVerticalLine(coord_t x, scoord_t y, scoord_t h, LcdFlags att)
 {
   lcdDrawVerticalLine(x, y, h, SOLID, att);
@@ -1029,20 +1011,3 @@ void lcdDrawHorizontalLine(coord_t x, coord_t y, coord_t w, uint8_t pat, LcdFlag
     p++;
   }
 }
-
-#if defined(PWR_BUTTON_PRESS)
-void drawShutdownAnimation(uint32_t index, const char * message)
-{
-  lcdClear();
-  int quarter = index / (PWR_PRESS_SHUTDOWN_DELAY / 5);
-  for (int i=1; i<=4; i++) {
-    if (4 - quarter >= i) {
-      lcdDrawFilledRect(LCD_W / 2 - 28 + 10 * i, LCD_H / 2 - 3, 6, 6, SOLID, 0);
-    }
-  }
-  if (message) {
-    lcdDrawText((LCD_W - getTextWidth(message)) / 2, LCD_H-2*FH, message);
-  }
-  lcdRefresh();
-}
-#endif

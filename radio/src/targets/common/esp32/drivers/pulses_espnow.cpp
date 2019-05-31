@@ -7,6 +7,7 @@
 #include "freertos/semphr.h"
 #include "freertos/timers.h"
 #include "esp_log.h"
+#include "esp_wifi.h"
 #include "esp_now.h"
 #include "esp_task.h"
 #include "rom/ets_sys.h"
@@ -83,14 +84,15 @@ inline void process_bind(Event_t &evt) {
       ESP_LOGI(TAG, "Got bind MAC: " MACSTR, MAC2STR(evt.mac_addr));
       memcpy(rxPeer.peer_addr, evt.mac_addr, ESP_NOW_ETH_ALEN);
       memcpy(g_model.moduleData[INTERNAL_MODULE].espnow.rx_mac_addr, rxPeer.peer_addr,  ESP_NOW_ETH_ALEN);
+      rxPeer.channel = g_model.moduleData[INTERNAL_MODULE].espnow.ch;
+      rxPeer.ifidx = ESP_IF_WIFI_STA;
+      rxPeer.encrypt = false;
       if (esp_now_is_peer_exist(rxPeer.peer_addr) == false) {
-        rxPeer.channel = g_model.moduleData[INTERNAL_MODULE].espnow.ch;
-        rxPeer.ifidx = ESP_IF_WIFI_STA;
-        rxPeer.encrypt = false;
         esp_now_add_peer(&rxPeer);
       } else {
         esp_now_mod_peer(&rxPeer);
       }
+      esp_wifi_set_channel(g_model.moduleData[INTERNAL_MODULE].espnow.ch, (wifi_second_chan_t)0);
       txState = PULSES;
     }
     else {
@@ -270,11 +272,13 @@ void pause_espnow(){
 
 void init_bind_espnow(){
   ESP_LOGI(TAG, "ESP-NOW init binding.");
+  esp_wifi_set_channel(BIND_CH, (wifi_second_chan_t)0);
   txState = BINDING;
 }
 
 void stop_bind_espnow(){
   ESP_LOGI(TAG, "ESP-NOW stop binding.");
+  esp_wifi_set_channel(g_model.moduleData[INTERNAL_MODULE].espnow.ch, (wifi_second_chan_t)0);
   txState = PULSES;
 }
 

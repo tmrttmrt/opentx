@@ -5,11 +5,13 @@
 #if !defined(MAX_OUTPUT_CHANNELS)
 #define MAX_OUTPUT_CHANNELS  32
 #endif
+#define BIND_CH 1
 
 enum PacketType_t {
   DATA,
   TELE,
   BIND,
+  FSAFE,
   ACK
 };
 
