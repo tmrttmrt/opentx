@@ -1346,7 +1346,10 @@ void menuModelSetup(event_t event)
                     killEvents(KEY_ENTER);
                     init_bind_espnow();
                   }
-                  if (!is_binding_espnow()) s_editMode = 0;
+                  if (!is_binding_espnow()) {
+                    s_editMode = 0;
+                    storageDirty(EE_MODEL);
+                  }
                 } 
                 else if(s_editMode == 0 && is_binding_espnow()) {
                     stop_bind_espnow();
