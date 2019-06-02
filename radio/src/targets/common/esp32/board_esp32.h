@@ -123,6 +123,7 @@ uint16_t eeModelSize(uint8_t index);
 #define SD_CARD_PRESENT() sdMounted()
 
 void sdInit(void);
+void mountSDCard();
 uint32_t sdIsHC(void);
 uint32_t sdGetSpeed(void);
 uint32_t sdMounted(void);
@@ -145,16 +146,19 @@ void initPulses();
 void setSampleRate(uint32_t frequency);
 void audioPlayTask(void * pdata);
 void encoderTask(void * pdata);
-uint8_t telemetryGetByte(uint8_t * byte);
 
 void telemetryTransmitBuffer(uint8_t * data, uint8_t len);
+uint8_t telemetryGetByte(uint8_t * byte);
+
+void setI2CGPIO(uint8_t addr, uint8_t port, uint8_t mask, uint8_t value);
+
+
 uint16_t audioStackAvailable();
 uint16_t per10msStackAvailable();
 uint16_t mixerStackAvailable();
 uint16_t menusStackAvailable();
 uint16_t encStackAvailable();
 bool rEncDown(uint8_t mask);
-void mountSDCard();
 
 void backlightEnable();
 void backlightDisable();
@@ -192,4 +196,15 @@ enum Analogs {
   NUM_ANALOGS
 };
 
+//MCP23017
+#define MCP23017_ADDR_KEYS  0x20
+#define MCP23017_ADDR_SW    0x21
+
+#define MCP_IODIRA    0x00
+#define MCP_IPOLA     0x02
+#define MCP_GPINTENA  0x04
+#define MCP_IOCON     0x0A
+#define MCP_GPPUA     0x0C
+#define MCP_GPIOA     0x12
+#define MCP_OLATA     0x14
 #endif

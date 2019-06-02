@@ -165,7 +165,7 @@ set(SRC
   targets/common/esp32/drivers/fs_wrappers.cpp
   targets/common/esp32/drivers/keys_driver.cpp
   targets/common/esp32/drivers/lcd_driver.cpp
-  targets/common/esp32/drivers/pulses_esp32.cpp
+  targets/common/esp32/drivers/pulses_ppm_esp32.cpp
   targets/common/esp32/drivers/pulses_espnow.cpp
   targets/common/esp32/drivers/sdcard.cpp
   targets/common/esp32/drivers/telemetry_driver.cpp

@@ -40,4 +40,10 @@ uint8_t keyState(uint8_t index)
   return keys[index].state();
 }
 
+void rfPwrOn(){
+  setI2CGPIO(MCP23017_ADDR_SW, MCP_OLATA + 1, BIT(RF_POWER_BIT), BIT(RF_POWER_BIT));
+}
 
+void rfPwrOff(){
+  setI2CGPIO(MCP23017_ADDR_SW, MCP_OLATA + 1, BIT(RF_POWER_BIT), 0);
+}

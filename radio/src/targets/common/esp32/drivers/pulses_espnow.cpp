@@ -43,8 +43,9 @@ void packet_prepare()
 void bind_packet_prepare()
 {
   packet.type = BIND;
-  packet.idx++;
-  packet.ch[0] = g_model.moduleData[INTERNAL_MODULE].espnow.ch;
+  packet.idx = g_model.moduleData[INTERNAL_MODULE].espnow.ch;
+  xQueueReceive( xPulsesQueue, locChannelOutputs,0);
+  memcpy((void *)packet.ch,locChannelOutputs,sizeof(packet.ch));
   packet.crc = 0;
   packet.crc = crc16_le(0, (uint8_t const *) &packet, sizeof(packet));
 }

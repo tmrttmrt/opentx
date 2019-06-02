@@ -30,8 +30,6 @@
 #include "opentx.h"
 
 #define I2C_MASTER_FREQ_HZ 400000
-#define MCP23017_ADDR_KEYS 0x20
-#define MCP23017_ADDR_SW 0x21
 
 #define GPIO_INTR_PIN GPIO_NUM_21
 #define ESP_INTR_FLAG_DEFAULT 0
@@ -60,10 +58,7 @@ void encoderTask(void * pdata)
         uint8_t gpio = readI2CGPIO(MCP23017_ADDR_SW,0x11); //INTCAPB
         ESP_LOGD(TAG,"encoder interrupt: %x",gpio);
         addr= (old & 0b110) << 1 | (gpio & 0b110)>>1;
-//        incRotaryEncoder(0, lookup_table[addr]);
         rotencValue += lookup_table[addr];
-//        addr= (old & 0b110000) >>2  | (gpio & 0b110000) >> 4;
-//        incRotaryEncoder(1, lookup_table[addr]);
         old = gpio;
     }
 }
@@ -92,7 +87,7 @@ void initKeys()
         i2c_cmd_handle_t cmd = i2c_cmd_link_create();
         i2c_master_start(cmd);
         i2c_master_write_byte(cmd, (MCP23017_ADDR_KEYS << 1) | I2C_MASTER_WRITE, true);
-        i2c_master_write_byte(cmd,0x0A,true); //IOCON
+        i2c_master_write_byte(cmd,MCP_IOCON,true); //IOCON
         i2c_master_write_byte(cmd,BIT(5),true);//IOCON.SEQOP
         i2c_master_stop(cmd);
         ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
@@ -103,7 +98,7 @@ void initKeys()
         cmd = i2c_cmd_link_create();
         i2c_master_start(cmd);
         i2c_master_write_byte(cmd, (MCP23017_ADDR_KEYS << 1) | I2C_MASTER_WRITE, true);
-        i2c_master_write_byte(cmd,0x0C,true);
+        i2c_master_write_byte(cmd,MCP_GPPUA,true);
         i2c_master_write_byte(cmd,0xFF,true); //GPPUA
         i2c_master_write_byte(cmd,0xFF,true); //GPPUB
         i2c_master_stop(cmd);
@@ -115,7 +110,7 @@ void initKeys()
         cmd = i2c_cmd_link_create();
         i2c_master_start(cmd);
         i2c_master_write_byte(cmd, (MCP23017_ADDR_KEYS << 1) | I2C_MASTER_WRITE, true);
-        i2c_master_write_byte(cmd,0x02,true);
+        i2c_master_write_byte(cmd,MCP_IPOLA,true);
         i2c_master_write_byte(cmd,0xFF,true); //IPOLA
         i2c_master_write_byte(cmd,0xFF,true); //IPOLB
         i2c_master_stop(cmd);
@@ -127,7 +122,7 @@ void initKeys()
         cmd = i2c_cmd_link_create();
         i2c_master_start(cmd);
         i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
-        i2c_master_write_byte(cmd,0x0A,true); //IOCON
+        i2c_master_write_byte(cmd,MCP_IOCON,true); //IOCON
         i2c_master_write_byte(cmd,BIT(5),true);//IOCON.SEQOP
         i2c_master_stop(cmd);
         ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
@@ -138,9 +133,21 @@ void initKeys()
         cmd = i2c_cmd_link_create();
         i2c_master_start(cmd);
         i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
-        i2c_master_write_byte(cmd,0x0C,true);
+        i2c_master_write_byte(cmd,MCP_IODIRA,true);
+        i2c_master_write_byte(cmd,0xFF,true); //IODIRA
+        i2c_master_write_byte(cmd,0x0F,true); //IODIRB
+        i2c_master_stop(cmd);
+        ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
+        if(ESP_OK!=ret) {
+            ESP_LOGE(TAG,"i2c write error. addr: %d", MCP23017_ADDR_SW);
+        }
+        i2c_cmd_link_delete(cmd);
+        cmd = i2c_cmd_link_create();
+        i2c_master_start(cmd);
+        i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
+        i2c_master_write_byte(cmd,MCP_GPPUA,true);
         i2c_master_write_byte(cmd,0xFF,true); //GPPUA
-        i2c_master_write_byte(cmd,0xFF,true); //GPPUB
+        i2c_master_write_byte(cmd,0x0F,true); //GPPUB
         i2c_master_stop(cmd);
         ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
         if(ESP_OK!=ret) {
@@ -150,9 +157,9 @@ void initKeys()
         cmd = i2c_cmd_link_create();
         i2c_master_start(cmd);
         i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
-        i2c_master_write_byte(cmd,0x02,true);
+        i2c_master_write_byte(cmd,MCP_IPOLA,true);
         i2c_master_write_byte(cmd,0xFF,true); //IPOLA
-        i2c_master_write_byte(cmd,0xFF,true); //IPOLB
+        i2c_master_write_byte(cmd,0x0F,true); //IPOLB
         i2c_master_stop(cmd);
         ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
         if(ESP_OK!=ret) {
@@ -162,9 +169,9 @@ void initKeys()
         cmd = i2c_cmd_link_create();
         i2c_master_start(cmd);
         i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
-        i2c_master_write_byte(cmd,0x04,true);
+        i2c_master_write_byte(cmd,MCP_GPINTENA,true);
         i2c_master_write_byte(cmd,0x00,true); //GPINTENA
-        i2c_master_write_byte(cmd,0x36,true); //GPINTENB
+        i2c_master_write_byte(cmd,0x06,true); //GPINTENB
         i2c_master_stop(cmd);
         ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, portMAX_DELAY);
         if(ESP_OK!=ret) {
@@ -199,7 +206,7 @@ uint16_t readI2CGPIO(uint8_t addr)
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (addr << 1) | I2C_MASTER_WRITE, true);
-    i2c_master_write_byte(cmd, 0x12, true);
+    i2c_master_write_byte(cmd, MCP_GPIOA, true);
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (addr << 1) | I2C_MASTER_READ, true);
     i2c_master_read_byte(cmd, &dataa, I2C_MASTER_ACK);
@@ -236,6 +243,29 @@ uint8_t readI2CGPIO(uint8_t addr, uint8_t port)
     return data;
 }
 
+void writeMCP(uint8_t addr, uint8_t port, uint8_t value)
+{
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (addr << 1) | I2C_MASTER_WRITE, true);
+    i2c_master_write_byte(cmd,port,true);
+    i2c_master_write_byte(cmd,value,true);
+    i2c_master_stop(cmd);
+    xSemaphoreTake(i2cSem, portMAX_DELAY);
+    esp_err_t ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 2);
+    xSemaphoreGive(i2cSem);
+    if(ESP_OK!=ret) {
+        ESP_LOGE(TAG,"i2c write error. addr: %d", MCP23017_ADDR_SW);
+    }
+    i2c_cmd_link_delete(cmd);
+}
+
+void setI2CGPIO(uint8_t addr, uint8_t port, uint8_t mask, uint8_t value) {
+  uint8_t cval = readI2CGPIO(addr, port);
+  value = (value & mask) | (cval & !mask);
+  writeMCP( addr, port, value);
+}
+
 
 void readKeysAndTrims()
 {
@@ -268,8 +298,8 @@ void readKeysAndTrims()
 
 bool keyDown()
 {
-    uint8_t keys = readI2CGPIO(MCP23017_ADDR_KEYS, 0x13)& ~((uint8_t)(BIT(7) | BIT(6)));
-    uint8_t keysre = readI2CGPIO(MCP23017_ADDR_SW, 0x13) & BIT(INP_J_ROT_ENC_1_PUSH);
+    uint8_t keys = readI2CGPIO(MCP23017_ADDR_KEYS, MCP_GPIOA + 1)& ~((uint8_t)(BIT(7) | BIT(6)));
+    uint8_t keysre = readI2CGPIO(MCP23017_ADDR_SW, MCP_GPIOA + 1) & BIT(INP_J_ROT_ENC_1_PUSH);
     if((keys | keysre) != 0) {
         ESP_LOGD(TAG,"keyDown: %x, keyRe: %x", keys, keysre);
     }
@@ -278,14 +308,14 @@ bool keyDown()
 
 bool rEncDown(uint8_t bit)
 {
-    uint8_t keysre = readI2CGPIO(MCP23017_ADDR_SW, 0x13) & BIT(bit);
+    uint8_t keysre = readI2CGPIO(MCP23017_ADDR_SW, MCP_GPIOA + 1) & BIT(bit);
     return  keysre;
 }
 
 uint8_t switchState(uint8_t index)
 {
     uint8_t result = 0;
-    uint8_t port_input = readI2CGPIO(MCP23017_ADDR_SW, 0x12) ;
+    uint8_t port_input = readI2CGPIO(MCP23017_ADDR_SW, MCP_GPIOA) ;
     switch (index) {
     case SW_ELE:
         result = (port_input & (1<<INP_ElevDR));
@@ -337,6 +367,6 @@ uint8_t switchState(uint8_t index)
 
 uint8_t trimDown(uint8_t idx)
 {
-    uint8_t port_input = readI2CGPIO(MCP23017_ADDR_KEYS, 0x12);
+    uint8_t port_input = readI2CGPIO(MCP23017_ADDR_KEYS, MCP_GPIOA);
     return port_input & (1 << idx);
 }

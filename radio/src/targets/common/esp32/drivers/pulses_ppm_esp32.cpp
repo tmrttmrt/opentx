@@ -53,19 +53,11 @@ void init_main_ppm(uint32_t out_enable){
   ESP_LOGI(TAG, "'init_main_ppm' called. out_enable:%d",out_enable);
   if(out_enable){
     ppmEnabled = true;
+    rfPwrOn();
   } else {
     ppmEnabled = false;
+    rfPwrOff();
   }
-}
-
-void init_second_ppm(uint32_t period)
-{
-  ESP_LOGI(TAG, "'init_second_ppm' called. period:%d",period);
-}
-
-void disable_second_ppm()
-{
-  ESP_LOGI(TAG, "'disable_second_ppm' called.");
 }
 
 void init_ppm(uint32_t port)
@@ -74,9 +66,6 @@ void init_ppm(uint32_t port)
   if (port == EXTERNAL_MODULE) {
     init_main_ppm(1);
   }
-  else {
-    init_second_ppm(3000);
-  }
 }
 
 void disable_ppm(uint32_t port)
@@ -84,9 +73,6 @@ void disable_ppm(uint32_t port)
   ESP_LOGI(TAG, "'disable_ppm' called. port:%d",port);
   if (port == EXTERNAL_MODULE) {
       init_main_ppm(0);
-  }
-  else {
-    disable_second_ppm();
   }
 }
 

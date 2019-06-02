@@ -130,9 +130,12 @@ void init_module_timer( uint32_t module_index, uint32_t period, uint8_t state);
 void disable_module_timer( uint32_t module_index);
 void extmoduleSerialStart(uint32_t baudrate, uint32_t period_half_us, bool inverted);
 void extmoduleSendNextFrame();
+void rfPwrOn();
+void rfPwrOff();
 
 //#define INP_E_PPM_IN              4
-#define PPM_TX_GPIO               15
+#define PPM_TX_GPIO             15
+#define RF_POWER_BIT            5
 
 // Trims
 #define NUM_TRIMS                 4

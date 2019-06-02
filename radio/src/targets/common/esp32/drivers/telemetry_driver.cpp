@@ -28,7 +28,7 @@ static const char *TAG = "telemetry_driver.cpp";
 uint8_t telemetryGetByte(uint8_t * byte)
 {
     int rxBytes = uart_read_bytes(UART_NUM_1, byte, 1, 0);
-    if(rxBytes==1) {
+    if(rxBytes == 1) {
         return 1;
     } else {
         return 0;
@@ -37,6 +37,11 @@ uint8_t telemetryGetByte(uint8_t * byte)
 
 void telemetryPortInit(uint32_t baudrate, uint8_t mode)
 {
+    static bool installed = false;
+    
+    if(installed){
+      uart_driver_delete(UART_NUM_1);
+    }
     ESP_LOGI(TAG,"telemetryPortInit");
     uart_config_t uart_config;
     memset(&uart_config, 0, sizeof(uart_config));
@@ -57,8 +62,8 @@ void telemetryPortInit(uint32_t baudrate, uint8_t mode)
     uart_config.flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
     uart_param_config(UART_NUM_1, &uart_config);
     uart_set_pin(UART_NUM_1, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
-    // We won't use a buffer for sending data.
     uart_driver_install(UART_NUM_1, BUF_SIZE * 2, BUF_SIZE * 2, 0, NULL, 0);
+    installed = true;
 }
 
 void telemetryTransmitBuffer(uint8_t * data, uint8_t len)
