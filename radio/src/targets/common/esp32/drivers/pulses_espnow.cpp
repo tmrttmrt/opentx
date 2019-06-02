@@ -320,5 +320,5 @@ void init_espnow()
 void disable_espnow()
 {
   ESP_LOGI(TAG, "disable_espnow");
-    false;
+  pulsesON = false;
 }
