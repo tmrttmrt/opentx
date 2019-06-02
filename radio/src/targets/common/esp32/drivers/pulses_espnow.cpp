@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) OpenTX
+ *
+ * License GPLv2: http://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */ 
+ 
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
@@ -183,6 +198,7 @@ static void tx_task(void *pvParameter)
     }
   }
   esp_now_deinit();
+  vTaskDelay(100 / portTICK_PERIOD_MS);
   stopWiFiESPNow();
   vTaskDelete(NULL);
 }
@@ -255,7 +271,9 @@ esp_err_t initTX(){
 
   pulsesON = true;
   txState = PULSES;
-  xTaskCreatePinnedToCore(tx_task, "tx_task", PPM_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX-6, NULL, PULSES_TASK_CORE);
+  if (pdPASS != xTaskCreatePinnedToCore(tx_task, "tx_task", PPM_STACK_SIZE, NULL, ESP_TASK_PRIO_MAX-6, NULL, PULSES_TASK_CORE)) {
+    ESP_LOGE(TAG, "Failed to create tx_task");
+  }
   return ESP_OK;
 }
 
@@ -302,5 +320,5 @@ void init_espnow()
 void disable_espnow()
 {
   ESP_LOGI(TAG, "disable_espnow");
-  pulsesON = false;
+    false;
 }
