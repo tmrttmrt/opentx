@@ -1666,15 +1666,15 @@ Wire Wire Line
 Wire Wire Line
 	3850 4250 3100 4250
 Text Label 3550 4650 2    42   ~ 0
-SD_MISO
+SD_MOSI
 Wire Wire Line
 	3100 4650 3550 4650
 Text Label 3550 4550 2    42   ~ 0
-SD_MOSI
+SD_SCK
 Wire Wire Line
 	3100 4550 3550 4550
 Text Label 3550 4450 2    42   ~ 0
-SD_SCK
+SD_MISO
 Wire Wire Line
 	3100 4450 3550 4450
 Wire Wire Line
