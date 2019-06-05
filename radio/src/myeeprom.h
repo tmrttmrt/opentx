@@ -244,7 +244,7 @@ enum SwashType {
 
 #define IS_MANUAL_RESET_TIMER(idx)     (g_model.timers[idx].persistent == 2)
 
-#if !defined(PCBSKY9X) && !defined(PCBESP_WROOM_32)
+#if !defined(PCBSKY9X) && !defined(PCBESP_WROOM_32) && !defined(PCBESP_HELTEC_32)
 #define TIMER_COUNTDOWN_START(x)       (g_model.timers[x].countdownStart > 0 ? 5 : 10 - g_model.timers[x].countdownStart * 10)
 #else
 #define TIMER_COUNTDOWN_START(x)       10

@@ -606,7 +606,7 @@ extern uint16_t maxMixerDuration;
   static inline uint16_t getTmr2MHz() { return TIMER_2MHz_TIMER->CNT; }
 #elif defined(PCBSKY9X)
   static inline uint16_t getTmr2MHz() { return TC1->TC_CHANNEL[0].TC_CV; }
-#elif defined(PCBESP_WROOM_32)
+#elif defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   uint16_t getTmr2MHz();
 #else
   uint16_t getTmr16KHz();

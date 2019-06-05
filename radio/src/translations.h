@@ -215,7 +215,7 @@ extern const char STR_TTRIM[];
 extern const char STR_BEEPCTR[];
 extern const char STR_USE_GLOBAL_FUNCS[];
 
-#if defined(PCBSKY9X) && defined(REVX) || defined(PCBESP_WROOM_32)
+#if defined(PCBSKY9X) && defined(REVX) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   extern const char STR_OUTPUT_TYPE[];
 #endif
 

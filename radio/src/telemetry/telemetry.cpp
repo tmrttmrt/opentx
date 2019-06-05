@@ -132,7 +132,7 @@ void telemetryWakeup()
     // Receive serial data here
     rxPdcUsart(processTelemetryData);
   }
-#elif defined(PCBESP_WROOM_32)
+#elif defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   if (telemetryProtocol == PROTOCOL_TELEMETRY_FRSKY_D) {
     uint8_t data;
     while (telemetryGetByte(&data)) {

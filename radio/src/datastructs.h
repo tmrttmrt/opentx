@@ -880,7 +880,7 @@ static inline void check_struct()
   CHKSIZE(CurveData, 4);
   CHKSIZE(CustomScreenData, 610);
   CHKSIZE(Topbar::PersistentData, 216);
-#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
+#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   CHKSIZE(MixData, 20);
   CHKSIZE(ExpoData, 17);
   CHKSIZE(LimitData, 11);
@@ -937,7 +937,7 @@ static inline void check_struct()
 #elif defined(PCBSKY9X)
   CHKSIZE(RadioData, 735);
   CHKSIZE(ModelData, 5301);
-#elif defined(PCBESP_WROOM_32)
+#elif defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   CHKSIZE(RadioData, 766);
   CHKSIZE(ModelData, 5300);  
 #elif defined(PCBHORUS)

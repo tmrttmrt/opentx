@@ -20,7 +20,7 @@
 
 #include "opentx.h"
 
-#if defined(PCBESP_WROOM_32)
+#if defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
 
 #define HW_SETTINGS_COLUMN2            (30 + 5*FW)
 

@@ -44,8 +44,8 @@ uint16_t getBatteryVoltage();   // returns current battery voltage in 10mV steps
 #define STORAGE_NUM_SLIDERS            0
 #define NUM_XPOTS                      0
 #define STORAGE_NUM_MOUSE_ANALOGS      0
-#define ADC_CHAN {ADC1_CHANNEL_0,ADC1_CHANNEL_3,ADC1_CHANNEL_6,ADC1_CHANNEL_7,ADC1_CHANNEL_4,ADC1_CHANNEL_5,(adc1_channel_t)ADC2_CHANNEL_8}
-#define NUM_ADC2 1
+#define ADC_CHAN {ADC1_CHANNEL_0,ADC1_CHANNEL_3,ADC1_CHANNEL_6,ADC1_CHANNEL_7,ADC1_CHANNEL_4,ADC1_CHANNEL_5,ADC1_CHANNEL_2}
+#define NUM_ADC2 0
 #define ADC1_NAVG 20
 
 
@@ -85,20 +85,26 @@ uint8_t switchState(uint8_t index);
 #define LCD_CONTRAST_MAX               45
 #define LCD_CONTRAST_DEFAULT           25
 #define LCD_PIN_NUM_MISO -1
-#define LCD_PIN_NUM_MOSI GPIO_NUM_12
-#define LCD_PIN_NUM_CLK  GPIO_NUM_14
-#define LCD_PIN_NUM_CS   GPIO_NUM_13
-#define LCD_PIN_NUM_DC   GPIO_NUM_27
-#define LCD_PIN_NUM_RST  GPIO_NUM_0
-#define LCD_PIN_NUM_BCKL GPIO_NUM_2
+
+//#define LCD_PIN_NUM_MOSI GPIO_NUM_12
+//#define LCD_PIN_NUM_CLK  GPIO_NUM_14
+//#define LCD_PIN_NUM_CS   GPIO_NUM_13
+//#define LCD_PIN_NUM_DC   GPIO_NUM_27
+//#define LCD_PIN_NUM_RST  GPIO_NUM_0
+//#define LCD_PIN_NUM_BCKL GPIO_NUM_2
+
+#define I2C_DISPLAY_SCL_GPIO          GPIO_NUM_15
+#define I2C_DISPLAY_SDA_GPIO          GPIO_NUM_4
+#define I2C_DISPLAY_RESET_GPIO        GPIO_NUM_16
+
 void lcdRefresh(void);
 #define lcdRefreshWait()
 void lcdSetRefVolt(unsigned char val);
 void lcdSetContrast(void);
 void lcdInit(void);
-void backlightEnable();
-void backlightDisable();
-bool isBacklightEnabled();
+#define backlightEnable()
+#define backlightDisable()
+#define isBacklightEnabled() true
 #define lcdOff()
 #define LCD_LOCK()
 #define LCD_UNLOCK()
@@ -107,7 +113,7 @@ bool isBacklightEnabled();
 #define SD_PIN_NUM_MISO GPIO_NUM_19
 #define SD_PIN_NUM_MOSI GPIO_NUM_5
 #define SD_PIN_NUM_CLK  GPIO_NUM_18
-#define SD_PIN_NUM_CS   GPIO_NUM_4
+#define SD_PIN_NUM_CS   GPIO_NUM_14
 
 // DBLKeys driver
 #define KEYS_PRESSED()            0
@@ -137,7 +143,7 @@ void rfPwrOn();
 void rfPwrOff();
 
 //#define INP_E_PPM_IN              4
-#define PPM_TX_GPIO             15
+#define PPM_TX_GPIO             GPIO_NUM_12
 #define RF_POWER_BIT            5
 
 // Trims
@@ -154,8 +160,8 @@ void rfPwrOff();
 #define BACKLIGHT_ON 1
 
 // Rotary encoders driver
-#define INP_J_ROT_ENC_1_PUSH      0
-#define ROTARY_ENCODER_NAVIGATION
+//#define INP_J_ROT_ENC_1_PUSH      0
+//#define ROTARY_ENCODER_NAVIGATION
 
 #define IS_SHIFT_KEY(index)       (false)
 #define IS_SHIFT_PRESSED()        (false)
@@ -164,7 +170,6 @@ void rfPwrOff();
 #define NUM_SWITCHES                   7
 //MCP23017
 #define MCP23017_ADDR_KEYS  0x20
-#define MCP23017_ADDR_SW    0x21
 #define I2C_KEYS_SDA_GPIO GPIO_NUM_23
 #define I2C_KEYS_SCL_GPIO GPIO_NUM_22
 
@@ -231,6 +236,8 @@ enum CalibratedAnalogs {
 
 // Telemetry driver
 #define TELE_TXD_GPIO (GPIO_NUM_17)
-#define TELE_RXD_GPIO (GPIO_NUM_16)
+#define TELE_RXD_GPIO (GPIO_NUM_13)
 
+  
 #endif
+

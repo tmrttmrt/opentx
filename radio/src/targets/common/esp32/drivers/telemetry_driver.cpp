@@ -20,8 +20,6 @@
 #define HASASSERT
 #include "opentx.h"
 
-#define TXD_PIN (GPIO_NUM_17)
-#define RXD_PIN (GPIO_NUM_16)
 static const int BUF_SIZE = 128;
 static const char *TAG = "telemetry_driver.cpp";
 
@@ -61,7 +59,7 @@ void telemetryPortInit(uint32_t baudrate, uint8_t mode)
     }
     uart_config.flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
     uart_param_config(UART_NUM_1, &uart_config);
-    uart_set_pin(UART_NUM_1, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+    uart_set_pin(UART_NUM_1, TELE_TXD_GPIO, TELE_RXD_GPIO, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
     uart_driver_install(UART_NUM_1, BUF_SIZE * 2, BUF_SIZE * 2, 0, NULL, 0);
     installed = true;
 }

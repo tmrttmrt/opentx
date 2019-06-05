@@ -1,7 +1,7 @@
 include(CMakeForceCompiler)
 include(Bitmaps)
 
-set(PCB_TYPES X9LITE X7 XLITE XLITES X9D X9D+ X9E X10 X12S SKY9X 9XRPRO AR9X  ESP_WROOM_32)
+set(PCB_TYPES X9LITE X7 XLITE XLITES X9D X9D+ X9E X10 X12S SKY9X 9XRPRO AR9X ESP_WROOM_32 ESP_HELTEC_32)
 set(GUI_LANGUAGES CZ DE EN ES FR IT PT SK SE PL HU NL)
 set(TTS_LANGUAGES CZ DE EN ES FR IT PT SK SE PL HU NL RU)
 
@@ -88,6 +88,8 @@ elseif(PCB STREQUAL SKY9X OR PCB STREQUAL 9XRPRO OR PCB STREQUAL AR9X)
   include(targets/sky9x/CMakeLists.txt)
 elseif(PCB STREQUAL ESP_WROOM_32)
   include(targets/esp-wroom-32/CMakeLists.txt)
+elseif(PCB STREQUAL ESP_HELTEC_32)
+  include(targets/esp-heltec-32/CMakeLists.txt)
 else()
   message(FATAL_ERROR "Unknown PCB '${PCB}'")
 endif()
@@ -522,8 +524,7 @@ if(NOT MSVC)
     set(IDF_BUILD_ARTIFACTS ON)
     set(IDF_PROJECT_EXECUTABLE firmware.elf)
     set(IDF_BUILD_ARTIFACTS_DIR ${CMAKE_BINARY_DIR})
-    set(IDF_SDKCONFIG_DEFAULTS "${CMAKE_CURRENT_SOURCE_DIR}/targets/common/esp32/esp-idf/sdkconfig.defaults")
-
+    
     # Trim down components included in the build. Although freertos and spi_flash are the ones needed by the application
     # itself, the bootloader and esptool_py components are also needed in order to create the artifacts to be used
     # for flashing to the target chip

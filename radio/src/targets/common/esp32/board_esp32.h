@@ -114,10 +114,10 @@ void eeLoadModelName(uint8_t id, char *name);
 uint16_t eeModelSize(uint8_t index);
 
 
+#define _MAX_LFN      CONFIG_FATFS_MAX_LFN
 #if defined(SDCARD)
 #define SD_IS_HC()                      (sdIsHC())
 #define SD_GET_SPEED()                 (sdGetSpeed())
-#define _MAX_LFN      CONFIG_FATFS_MAX_LFN
 #define SD_PATH "/sdcard"
 #define sdPoll10ms()
 #define SD_CARD_PRESENT() sdMounted()
@@ -160,10 +160,6 @@ uint16_t menusStackAvailable();
 uint16_t encStackAvailable();
 bool rEncDown(uint8_t mask);
 
-void backlightEnable();
-void backlightDisable();
-bool isBacklightEnabled();
-
 void initWiFi();
 void startWiFi( char *ssid_zchar, char *passwd_zchar, char* ftppass_zchar);
 void stopWiFi();
@@ -195,10 +191,6 @@ enum Analogs {
   TX_VOLTAGE,
   NUM_ANALOGS
 };
-
-//MCP23017
-#define MCP23017_ADDR_KEYS  0x20
-#define MCP23017_ADDR_SW    0x21
 
 #define MCP_IODIRA    0x00
 #define MCP_IPOLA     0x02

@@ -50,7 +50,7 @@ void menuStatisticsView(event_t event)
 #if !defined(PCBTARANIS)
     case EVT_KEY_LONG(KEY_MENU): // historical
 #endif
-#if !defined(PCBSKY9X) && !defined(PCBESP_WROOM_32)
+#if !defined(PCBSKY9X) && !defined(PCBESP_WROOM_32) && !defined(PCBESP_HELTEC_32)
     case EVT_KEY_LONG(KEY_ENTER):
 #endif
       g_eeGeneral.globalTimer = 0;

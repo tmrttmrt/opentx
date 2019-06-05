@@ -198,7 +198,7 @@ void writeHeader()
   #define STR_SWITCHES_LOG_HEADER  "SA,SB,SC,SD,SE,SF,SG,SH"
 #endif
   f_puts(STR_SWITCHES_LOG_HEADER ",LSW,", &g_oLogFile);
-#elif defined(PCBESP_WROOM_32)  
+#elif defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32) 
   f_puts("Rud,Ele,Thr,Ail,P1,P2,THR,RUD,ELE,3POS,AIL,GEA,TRN,", &g_oLogFile);
 #else
   f_puts("Rud,Ele,Thr,Ail,P1,P2,P3,THR,RUD,ELE,3POS,AIL,GEA,TRN,", &g_oLogFile);

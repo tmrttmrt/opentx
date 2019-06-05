@@ -46,7 +46,7 @@ void IRAM_ATTR gpio_isr_handler(void* arg)
     xSemaphoreGiveFromISR(xRotEncSem, &mustYield);
     if (mustYield) portYIELD_FROM_ISR();
 }
-
+#if defined(MCP23017_ADDR_SW)
 void encoderTask(void * pdata)
 {
     static uint8_t old;
@@ -62,7 +62,7 @@ void encoderTask(void * pdata)
         old = gpio;
     }
 }
-
+#endif
 
 void initKeys()
 {
@@ -119,6 +119,7 @@ void initKeys()
             ESP_LOGE(TAG,"i2c write error. addr: %d", MCP23017_ADDR_KEYS);
         }
         i2c_cmd_link_delete(cmd);
+#if defined(MCP23017_ADDR_SW)        
         cmd = i2c_cmd_link_create();
         i2c_master_start(cmd);
         i2c_master_write_byte(cmd, (MCP23017_ADDR_SW << 1) | I2C_MASTER_WRITE, true);
@@ -178,7 +179,6 @@ void initKeys()
             ESP_LOGE(TAG,"i2c write error. addr: %d", MCP23017_ADDR_SW);
         }
         i2c_cmd_link_delete(cmd);
-
         //Configure interrupt
         gpio_config_t io_conf;
         io_conf.intr_type = (gpio_int_type_t)GPIO_PIN_INTR_NEGEDGE;
@@ -192,6 +192,7 @@ void initKeys()
             ESP_LOGE(TAG,"Failed to create semaphore: xRotEncSem.");
         }
         gpio_isr_handler_add(GPIO_INTR_PIN, gpio_isr_handler, (void*) GPIO_INTR_PIN);
+#endif
     } else {
         ESP_LOGE(TAG,"i2c driver install error.");
     }
@@ -255,7 +256,7 @@ void writeMCP(uint8_t addr, uint8_t port, uint8_t value)
     esp_err_t ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 2);
     xSemaphoreGive(i2cSem);
     if(ESP_OK!=ret) {
-        ESP_LOGE(TAG,"i2c write error. addr: %d", MCP23017_ADDR_SW);
+        ESP_LOGE(TAG,"i2c write error. addr: %d", addr);
     }
     i2c_cmd_link_delete(cmd);
 }
@@ -299,23 +300,33 @@ void readKeysAndTrims()
 bool keyDown()
 {
     uint8_t keys = readI2CGPIO(MCP23017_ADDR_KEYS, MCP_GPIOA + 1)& ~((uint8_t)(BIT(7) | BIT(6)));
+#if defined(MCP23017_ADDR_KEYS_SW)
     uint8_t keysre = readI2CGPIO(MCP23017_ADDR_SW, MCP_GPIOA + 1) & BIT(INP_J_ROT_ENC_1_PUSH);
+#else
+    uint8_t keysre = 0;
+#endif
     if((keys | keysre) != 0) {
         ESP_LOGD(TAG,"keyDown: %x, keyRe: %x", keys, keysre);
     }
     return  keys | keysre;
 }
 
+#if defined(MCP23017_ADDR_KEYS_SW)
 bool rEncDown(uint8_t bit)
 {
     uint8_t keysre = readI2CGPIO(MCP23017_ADDR_SW, MCP_GPIOA + 1) & BIT(bit);
     return  keysre;
 }
+#endif
 
 uint8_t switchState(uint8_t index)
 {
     uint8_t result = 0;
+#if defined(MCP23017_ADDR_KEYS_SW)
     uint8_t port_input = readI2CGPIO(MCP23017_ADDR_SW, MCP_GPIOA) ;
+#else
+    uint8_t port_input = 0;
+#endif
     switch (index) {
     case SW_ELE:
         result = (port_input & (1<<INP_ElevDR));

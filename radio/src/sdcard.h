@@ -146,7 +146,7 @@ const char * getBasename(const char * path);
   #define OTX_FOURCC 0x3378746F // otx for Taranis X9D
 #elif defined(PCBSKY9X)
   #define OTX_FOURCC 0x3278746F // otx for sky9x
-#elif defined(PCBESP_WROOM_32)
+#elif defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   #define OTX_FOURCC 0x3878746F // otx for ESP32
 #elif defined(RADIO_T12)
   #define OTX_FOURCC 0x3D78746F // otx for Jumper T12

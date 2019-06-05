@@ -308,7 +308,7 @@ bool isSwitchAvailable(int swtch, SwitchContext context)
     swtch = -swtch;
   }
 
-#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
+#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   if (swtch >= SWSRC_FIRST_SWITCH && swtch <= SWSRC_LAST_SWITCH) {
     UNUSED(negative);
     return true;
@@ -345,7 +345,7 @@ bool isSwitchAvailable(int swtch, SwitchContext context)
   }
 #endif
 
-#if defined(PCBSKY9X) && defined(REVX) || defined(CPUESP32)
+#if defined(PCBSKY9X) && defined(REVX) || defined(PCBESP_WROOM_32)
   if (swtch == SWSRC_REa) {
     return false;
   }

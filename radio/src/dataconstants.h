@@ -72,7 +72,7 @@
   #define MAX_INPUTS                   32
   #define MAX_TRAINER_CHANNELS         16
   #define MAX_TELEMETRY_SENSORS        40
-#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32) 
+#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32) 
   #define MAX_MODELS                   60
   #define MAX_OUTPUT_CHANNELS          32 // number of real output channels CH1-CH32
   #define MAX_FLIGHT_MODES             9
@@ -136,7 +136,7 @@ enum CurveType {
   #define MAX_CURVE_POINTS             512
 #endif
 
-#if defined(PCBTARANIS) || defined(PCBSKY9X) || defined(PCBHORUS) || defined(PCBESP_WROOM_32)
+#if defined(PCBTARANIS) || defined(PCBSKY9X) || defined(PCBHORUS) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   #define NUM_MODULES                  2
 #else
   #define NUM_MODULES                  1
@@ -204,7 +204,7 @@ enum TrainerMode {
     EXTRA_MODULE,
     SPORT_MODULE
   };
-#elif defined(PCBESP_WROOM_32)
+#elif defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   enum ModuleIndex {
     INTERNAL_MODULE,
     EXTERNAL_MODULE,
@@ -220,7 +220,7 @@ enum TrainerMode {
   #define TRAINER_MODE_MAX()             HAS_WIRELESS_TRAINER_HARDWARE() ? TRAINER_MODE_MASTER_BATTERY_COMPARTMENT : TRAINER_MODE_MASTER_CPPM_EXTERNAL_MODULE
 #endif
 
-#if defined(PCBTARANIS) || defined(PCBHORUS) || defined(PCBESP_WROOM_32)
+#if defined(PCBTARANIS) || defined(PCBHORUS) || defined(CPUESP32)
   #define IS_INTERNAL_MODULE_ENABLED() (g_model.moduleData[INTERNAL_MODULE].type != MODULE_TYPE_NONE)
 #elif defined(PCBSKY9X)
   #define IS_INTERNAL_MODULE_ENABLED() (false)
@@ -496,7 +496,7 @@ enum SwitchSources {
   SWSRC_GMBR2,
 #endif
 
-#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
+#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   SWSRC_ID0 = SWSRC_FIRST_SWITCH,
   SWSRC_ID1,
   SWSRC_ID2,
@@ -722,7 +722,7 @@ enum MixSources {
   MIXSRC_GMBL,                      LUA_EXPORT("gmbl", "Switch Left gimbal")
   MIXSRC_GMBR,                      LUA_EXPORT("gmbr", "Switch right gimbal")
 #endif
-#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
+#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   MIXSRC_3POS = MIXSRC_FIRST_SWITCH,
   MIXSRC_THR,
   MIXSRC_RUD,

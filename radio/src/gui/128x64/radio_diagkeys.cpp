@@ -55,7 +55,7 @@ void menuRadioDiagKeys(event_t event)
       displayKeyState(5*FW+2, y, i);
     }
 
-#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
+#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
     if (i != SW_ID0) {
       y = MENU_HEADER_HEIGHT +i*FH - 2*FH;
       drawSwitch(8*FW, y, i+1, 0);

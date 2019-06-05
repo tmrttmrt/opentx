@@ -209,7 +209,7 @@ void scheduleNextMixerCalculation(uint8_t module, uint16_t period_ms)
   }
   else {
     // for now assume mixer calculation takes 2 ms.
-#if defined(PCBESP_WROOM_32)
+#if defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
     nextMixerTime[module] = (uint32_t) RTOS_GET_TIME() + ((period_ms-MIXER_TIME_MS) / RTOS_MS_PER_TICK)  /* 1 tick in advance*/;
 #else    
     nextMixerTime[module] = (uint32_t) RTOS_GET_TIME() + (period_ms / RTOS_MS_PER_TICK);

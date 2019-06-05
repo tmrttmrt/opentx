@@ -1,19 +1,19 @@
 set(CPU_FAMILY ESP32)
 set(ARCH ESP32)
 set(LUA NO)
-add_definitions(-DEEPROM_VARIANT=${EEPROM_VARIANT} -DLCD_SPI)
+add_definitions(-DEEPROM_VARIANT=${EEPROM_VARIANT} -DLCD_I2C)
 set(SDCARD YES)
 set(HAPTIC NO)
 set(EEPROM SPIFLASH)
 set(GUI_DIR 128x64)
 set(NAVIGATION_TYPE 9x)
-set(TARGET_DIR esp-wroom-32)
+set(TARGET_DIR esp-heltec-32)
 set(FIRMWARE_DEPENDENCIES ${FIRMWARE_DEPENDENCIES} 9x_bitmaps)
 set(PPM_LIMITS_SYMETRICAL YES)
 set(PXX1 NO)
-set(IDF_SDKCONFIG_DEFAULTS "${CMAKE_CURRENT_SOURCE_DIR}/targets/esp-wroom-32/esp-idf/sdkconfig.defaults")
+set(IDF_SDKCONFIG_DEFAULTS "${CMAKE_CURRENT_SOURCE_DIR}/targets/esp-heltec-32/esp-idf/sdkconfig.defaults")
 
-set(FLAVOUR esp32-wroom)
+set(FLAVOUR esp32-heltec)
 
 add_definitions(-DPCBESP_HELTEC_32 -DPPM_PIN_SERIAL -DAUDIO_DUAL_BUFFER)
 add_definitions(-DAUDIO -DVOICE -DVARIO)
@@ -51,5 +51,5 @@ set(TARGET_SRC
 set(SRC
   ${SRC}
   debug.cpp
-  targets/common/esp32/drivers/lcd_driver.cpp
+  targets/common/esp32/drivers/lcd_driver_i2c.cpp
   )

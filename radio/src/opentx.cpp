@@ -472,12 +472,12 @@ void modelDefault(uint8_t id)
   }
 #endif
 
-#if defined(HARDWARE_INTERNAL_MODULE) && !defined(PCBESP_WROOM_32)
+#if defined(HARDWARE_INTERNAL_MODULE) && !defined(PCBESP_WROOM_32) && !defined(PCBESP_HELTEC_32)
   g_model.moduleData[INTERNAL_MODULE].type = IS_PXX2_INTERNAL_ENABLED() ? MODULE_TYPE_ISRM_PXX2 : MODULE_TYPE_XJT_PXX1;
   g_model.moduleData[INTERNAL_MODULE].channelsCount = defaultModuleChannels_M8(INTERNAL_MODULE);
 #elif defined(PCBSKY9X)
   g_model.moduleData[EXTERNAL_MODULE].type = MODULE_TYPE_PPM;
-#elif defined(PCBESP_WROOM_32)
+#elif defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   g_model.moduleData[INTERNAL_MODULE].type = MODULE_TYPE_ESPNOW;
   memset(g_model.moduleData[INTERNAL_MODULE].espnow.rx_mac_addr, 0xFF, ESP_NOW_ETH_ALEN);
   g_model.moduleData[INTERNAL_MODULE].espnow.ch = 1;
@@ -1915,7 +1915,7 @@ int main()
 #endif
 
 
-#if defined(GUI) && !defined(PCBTARANIS) && !defined(PCBHORUS) && !defined(PCBESP_WROOM_32)
+#if defined(GUI) && !defined(PCBTARANIS) && !defined(PCBHORUS) && !defined(PCBESP_WROOM_32) && !defined(PCBESP_HELTEC_32)
   // TODO remove this
   lcdInit();
 #endif
