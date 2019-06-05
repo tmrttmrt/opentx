@@ -36,13 +36,13 @@
 
 typedef void (*voidFunction)(void);
 
-#define jumpTo(addr) {                                          \
+#define jumpTo(addr) do {                                       \
         SCB->VTOR = addr;                                       \
         __set_MSP(*(__IO uint32_t*)addr);                       \
         uint32_t     jumpAddress = *(uint32_t*)(addr + 4);      \
         voidFunction jumpFn = (voidFunction)jumpAddress;        \
         jumpFn();                                               \
-    }
+    } while(0)
 
 // Bootloader marker:
 // -> used to detect valid bootloader files
@@ -210,10 +210,6 @@ int main()
 
   keysInit();
 
-#if defined(ROTARY_ENCODER_NAVIGATION)
-  rotaryEncoderInit();
-#endif
-
   boardPreInit();
 
   // wait for inputs to stabilize
@@ -227,14 +223,19 @@ int main()
     jumpTo(APP_START_ADDRESS);
   }
 
+#if defined(ROTARY_ENCODER_NAVIGATION)
+  rotaryEncoderInit();
+#endif
+
   pwrInit();
   delaysInit(); // needed for lcdInit()
 
 #if defined(DEBUG)
-  serial2Init(UART_MODE_DEBUG, 0); // default serial mode (None if DEBUG not defined)
+  auxSerialInit(UART_MODE_DEBUG, 0); // default serial mode (None if DEBUG not defined)
 #endif
 
   __enable_irq();
+
   TRACE("\nBootloader started :)");
 
   lcdInit();

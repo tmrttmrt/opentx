@@ -23,7 +23,7 @@ if(PCB STREQUAL X9E)
     top_lcd_driver.cpp
     startup_stm32f40_41xxx.s
     )
-  set(AUX_SERIAL_DRIVER ../common/arm/stm32/serial2_driver.cpp)
+  set(AUX_SERIAL_DRIVER ../common/arm/stm32/aux_serial_driver.cpp)
   if(STICKS STREQUAL HORUS)
     add_definitions(-DHORUS_STICKS)
   endif()
@@ -48,7 +48,7 @@ elseif(PCB STREQUAL X9D+)
   set(BITMAPS_TARGET taranis_bitmaps)
   set(FONTS_TARGET taranis_fonts)
   set(LCD_DRIVER lcd_driver_spi.cpp)
-  set(AUX_SERIAL_DRIVER ../common/arm/stm32/serial2_driver.cpp)
+  set(AUX_SERIAL_DRIVER ../common/arm/stm32/aux_serial_driver.cpp)
   set(GVAR_SCREEN model_gvars.cpp)
   set(STATUS_LEDS NO)
 elseif(PCB STREQUAL X9D)
@@ -65,7 +65,7 @@ elseif(PCB STREQUAL X9D)
   set(BITMAPS_TARGET taranis_bitmaps)
   set(FONTS_TARGET taranis_fonts)
   set(LCD_DRIVER lcd_driver_aspi.cpp)
-  set(AUX_SERIAL_DRIVER ../common/arm/stm32/serial2_driver.cpp)
+  set(AUX_SERIAL_DRIVER ../common/arm/stm32/aux_serial_driver.cpp)
   set(GVAR_SCREEN model_gvars.cpp)
   set(STATUS_LEDS NO)
 elseif(PCB STREQUAL X7)
@@ -77,17 +77,18 @@ elseif(PCB STREQUAL X7)
   if(PCBREV STREQUAL T12)
     set(LUA_EXPORT lua_export_t12)
     set(FLAVOUR t12)
-    set(NAVIGATION_TYPE xlite)
+    set(NAVIGATION_TYPE 9x)
     set(MULTIMODULE ON)
     add_definitions(-DRADIO_T12)
+    add_definitions(-DEEPROM_VARIANT=0x4001)
   else()
     set(LUA_EXPORT lua_export_x7)
     set(FLAVOUR x7)
     set(NAVIGATION_TYPE x7)
     add_definitions(-DRADIO_X7)
+    add_definitions(-DEEPROM_VARIANT=0x4000)
   endif()
   add_definitions(-DPCBX7 -DSOFTWARE_VOLUME)
-  add_definitions(-DEEPROM_VARIANT=0x4000)
   add_definitions(-DPWR_BUTTON_${PWR_BUTTON})
   set(GUI_DIR 128x64)
   set(BITMAPS_TARGET 9x_bitmaps)
@@ -189,13 +190,6 @@ else()
     )
 endif()
 
-if(NOT PCB STREQUAL XLITE)
-  set(TARGET_SRC
-    ${TARGET_SRC}
-    trainer_driver.cpp
-    )
-endif()
-
 if(PCB STREQUAL X9E OR (PCB STREQUAL X7 AND NOT (PCBREV STREQUAL T12)) OR PCB STREQUAL X9LITE)
   set(TARGET_SRC
     ${TARGET_SRC}
@@ -258,6 +252,7 @@ set(TARGET_SRC
   ${LED_DRIVER}
   backlight_driver.cpp
   extmodule_driver.cpp
+  trainer_driver.cpp
   ../common/arm/stm32/audio_dac_driver.cpp
   ../common/arm/stm32/adc_driver.cpp
   )

@@ -155,7 +155,7 @@ void boardInit()
                          SPORT_UPDATE_RCC_AHB1Periph |
                          AUX_SERIAL_RCC_AHB1Periph |
                          TRAINER_RCC_AHB1Periph |
-                         HEARTBEAT_RCC_AHB1Periph |
+                         TRAINER_MODULE_RCC_AHB1Periph |
                          BT_RCC_AHB1Periph |
                          GYRO_RCC_AHB1Periph,
                          ENABLE);
@@ -173,6 +173,7 @@ void boardInit()
                          TELEMETRY_RCC_APB1Periph |
                          AUX_SERIAL_RCC_APB1Periph |
                          INTMODULE_RCC_APB1Periph |
+                         TRAINER_MODULE_RCC_APB1Periph |
                          BT_RCC_APB1Periph |
                          GYRO_RCC_APB1Periph,
                          ENABLE);
@@ -183,7 +184,7 @@ void boardInit()
                          HAPTIC_RCC_APB2Periph |
                          INTMODULE_RCC_APB2Periph |
                          EXTMODULE_RCC_APB2Periph |
-                         HEARTBEAT_RCC_APB2Periph |
+                         TRAINER_MODULE_RCC_APB2Periph |
                          BT_RCC_APB2Periph,
                          ENABLE);
 
@@ -227,7 +228,7 @@ void boardInit()
   usbInit();
 
 #if defined(DEBUG) && defined(AUX_SERIAL_GPIO)
-  serial2Init(0, 0); // default serial mode (None if DEBUG not defined)
+  auxSerialInit(0, 0); // default serial mode (None if DEBUG not defined)
   TRACE("\nTaranis board started :)");
 #endif
 
@@ -361,14 +362,14 @@ void checkTrainerSettings()
         stop_trainer_ppm();
         break;
       case TRAINER_MODE_MASTER_CPPM_EXTERNAL_MODULE:
-        stop_cppm_on_heartbeat_capture() ;
+        stop_trainer_module_cppm() ;
         break;
       case TRAINER_MODE_MASTER_SBUS_EXTERNAL_MODULE:
-        stop_sbus_on_heartbeat_capture() ;
+        stop_trainer_module_sbus() ;
         break;
 #if defined(TRAINER_BATTERY_COMPARTMENT)
       case TRAINER_MODE_MASTER_BATTERY_COMPARTMENT:
-        serial2Stop();
+        auxSerialStop();
 #endif
     }
 
@@ -378,15 +379,15 @@ void checkTrainerSettings()
         init_trainer_ppm();
         break;
       case TRAINER_MODE_MASTER_CPPM_EXTERNAL_MODULE:
-         init_cppm_on_heartbeat_capture();
+         init_trainer_module_cppm();
          break;
       case TRAINER_MODE_MASTER_SBUS_EXTERNAL_MODULE:
-         init_sbus_on_heartbeat_capture();
+         init_trainer_module_sbus();
          break;
 #if defined(TRAINER_BATTERY_COMPARTMENT)
       case TRAINER_MODE_MASTER_BATTERY_COMPARTMENT:
-        if (g_eeGeneral.serial2Mode == UART_MODE_SBUS_TRAINER) {
-          serial2SbusInit();
+        if (g_eeGeneral.auxSerialMode == UART_MODE_SBUS_TRAINER) {
+          auxSerialSbusInit();
           break;
         }
         // no break

@@ -255,16 +255,19 @@ void extmoduleSendNextFrame();
   #define init_trainer_capture()
   #define stop_trainer_capture()
 #endif
-#if defined(TRAINER_MODULE_HEARTBEAT)
-  void init_cppm_on_heartbeat_capture(void);
-  void stop_cppm_on_heartbeat_capture(void);
-  void init_sbus_on_heartbeat_capture(void);
-  void stop_sbus_on_heartbeat_capture(void);
+#if defined(TRAINER_MODULE_CPPM)
+  void init_trainer_module_cppm(void);
+  void stop_trainer_module_cppm(void);
 #else
-  #define init_cppm_on_heartbeat_capture()
-  #define stop_cppm_on_heartbeat_capture()
-  #define init_sbus_on_heartbeat_capture()
-  #define stop_sbus_on_heartbeat_capture()
+  #define init_trainer_module_cppm()
+  #define stop_trainer_module_cppm()
+#endif
+#if defined(TRAINER_MODULE_SBUS)
+  void init_trainer_module_sbus(void);
+  void stop_trainer_module_sbus(void);
+#else
+  #define init_trainer_module_sbus()
+  #define stop_trainer_module_sbus()
 #endif
 
 // SBUS
@@ -334,6 +337,10 @@ enum EnumKeys
 #elif defined(NAVIGATION_XLITE)
   #define KEY_PLUS                      KEY_RIGHT
   #define KEY_MINUS                     KEY_LEFT
+#elif defined(NAVIGATION_9X)
+  #define KEY_MENU                      KEY_ENTER
+  #define KEY_MINUS                     KEY_DOWN
+  #define KEY_PLUS                      KEY_UP
 #else
   #define KEY_UP                        KEY_PLUS
   #define KEY_DOWN                      KEY_MINUS
@@ -766,12 +773,12 @@ void hapticOff(void);
 #if defined(AUX_SERIAL_GPIO)
 #define DEBUG_BAUDRATE                  115200
 #define AUX_SERIAL
-extern uint8_t serial2Mode;
-void serial2Init(unsigned int mode, unsigned int protocol);
-void serial2Putc(char c);
-#define serial2TelemetryInit(protocol) serial2Init(UART_MODE_TELEMETRY, protocol)
-void serial2SbusInit(void);
-void serial2Stop(void);
+extern uint8_t auxSerialMode;
+void auxSerialInit(unsigned int mode, unsigned int protocol);
+void auxSerialPutc(char c);
+#define auxSerialTelemetryInit(protocol) auxSerialInit(UART_MODE_TELEMETRY, protocol)
+void auxSerialSbusInit(void);
+void auxSerialStop(void);
 #endif
 
 // BT driver
@@ -869,7 +876,7 @@ void checkTrainerSettings(void);
 #endif
 
 extern Fifo<uint8_t, TELEMETRY_FIFO_SIZE> telemetryFifo;
-extern DMAFifo<32> serial2RxFifo;
+extern DMAFifo<32> auxSerialRxFifo;
 #endif
 
 // Gyro driver
