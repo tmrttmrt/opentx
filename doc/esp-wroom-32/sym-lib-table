@@ -1,3 +1,7 @@
 (sym_lib_table
   (lib (name esp-wroom-32-rescue)(type Legacy)(uri ${KIPRJMOD}/esp-wroom-32-rescue.lib)(options "")(descr ""))
+  (lib (name esp-WiFi-kit-32)(type Legacy)(uri T:/tmertelj-personal/hobby/plans/OpenTX/firmware/opentx/doc/esp-wroom-32/esp-WiFi-kit-32.lib)(options "")(descr ""))
+  (lib (name esp32-wroom-32-rescue)(type Legacy)(uri ${KIPRJMOD}/esp32-wroom-32-rescue.lib)(options "")(descr ""))
+  (lib (name esp32-WiFi-kit-32)(type Legacy)(uri T:/tmertelj-personal/hobby/plans/OpenTX/firmware/opentx/doc/esp-wroom-32/esp32-WiFi-kit-32.lib)(options "")(descr ""))
+  (lib (name esp32-WiFi-kit-32-rescue)(type Legacy)(uri ${KIPRJMOD}/esp32-WiFi-kit-32-rescue.lib)(options "")(descr ""))
 )

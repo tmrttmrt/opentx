@@ -44,20 +44,20 @@ uint16_t getBatteryVoltage();   // returns current battery voltage in 10mV steps
 #define STORAGE_NUM_SLIDERS            0
 #define NUM_XPOTS                      0
 #define STORAGE_NUM_MOUSE_ANALOGS      0
-#define ADC_CHAN {ADC1_CHANNEL_0,ADC1_CHANNEL_3,ADC1_CHANNEL_6,ADC1_CHANNEL_7,ADC1_CHANNEL_4,ADC1_CHANNEL_5,ADC1_CHANNEL_2}
+#define ADC_CHAN {ADC1_CHANNEL_0,ADC1_CHANNEL_1,ADC1_CHANNEL_2,ADC1_CHANNEL_3,ADC1_CHANNEL_6,ADC1_CHANNEL_7,ADC1_CHANNEL_4}
 #define NUM_ADC2 0
 #define ADC1_NAVG 20
 
 
 // Switches driver
-#define INP_ID2                 7
-#define INP_ID1                 6
-#define INP_AileDR              0
-#define INP_ThrCt               3
-#define INP_Gear                4
-#define INP_RuddDR              2
-#define INP_ElevDR              1
-#define INP_Trainer             5
+#define INP_ID2                 GPIO_NUM_33
+#define INP_ID1                 GPIO_NUM_25
+#define INP_AileDR              GPIO_NUM_13
+#define INP_ThrCt               GPIO_NUM_27
+//#define INP_Gear                4
+#define INP_RuddDR              GPIO_NUM_14
+#define INP_ElevDR              GPIO_NUM_12
+//#define INP_Trainer             5
 
 enum EnumSwitches
 {
@@ -110,10 +110,10 @@ void lcdInit(void);
 #define LCD_UNLOCK()
 
 //SDCARD driver
-#define SD_PIN_NUM_MISO GPIO_NUM_19
+#define SD_PIN_NUM_MISO GPIO_NUM_23
 #define SD_PIN_NUM_MOSI GPIO_NUM_5
 #define SD_PIN_NUM_CLK  GPIO_NUM_18
-#define SD_PIN_NUM_CS   GPIO_NUM_14
+#define SD_PIN_NUM_CS   GPIO_NUM_19
 
 // DBLKeys driver
 #define KEYS_PRESSED()            0
@@ -143,8 +143,8 @@ void rfPwrOn();
 void rfPwrOff();
 
 //#define INP_E_PPM_IN              4
-#define PPM_TX_GPIO             GPIO_NUM_12
-#define RF_POWER_BIT            5
+#define PPM_TX_GPIO             GPIO_NUM_17
+//#define RF_POWER_BIT            5
 
 // Trims
 #define NUM_TRIMS                 4
@@ -170,7 +170,7 @@ void rfPwrOff();
 #define NUM_SWITCHES                   7
 //MCP23017
 #define MCP23017_ADDR_KEYS  0x20
-#define I2C_KEYS_SDA_GPIO GPIO_NUM_23
+#define I2C_KEYS_SDA_GPIO GPIO_NUM_21
 #define I2C_KEYS_SCL_GPIO GPIO_NUM_22
 
 enum EnumKeys
@@ -235,8 +235,8 @@ enum CalibratedAnalogs {
 #define NUM_DUMMY_ANAS             0
 
 // Telemetry driver
-#define TELE_TXD_GPIO (GPIO_NUM_17)
-#define TELE_RXD_GPIO (GPIO_NUM_13)
+#define TELE_TXD_GPIO (GPIO_NUM_0)
+#define TELE_RXD_GPIO (GPIO_NUM_2)
 
   
 #endif

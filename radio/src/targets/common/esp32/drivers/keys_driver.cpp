@@ -31,7 +31,6 @@
 
 #define I2C_MASTER_FREQ_HZ 400000
 
-#define GPIO_INTR_PIN GPIO_NUM_21
 #define ESP_INTR_FLAG_DEFAULT 0
 
 static const char *TAG = "keys_driver.cpp";
@@ -324,9 +323,7 @@ uint8_t switchState(uint8_t index)
     uint8_t result = 0;
 #if defined(MCP23017_ADDR_KEYS_SW)
     uint8_t port_input = readI2CGPIO(MCP23017_ADDR_SW, MCP_GPIOA) ;
-#else
-    uint8_t port_input = 0;
-#endif
+
     switch (index) {
     case SW_ELE:
         result = (port_input & (1<<INP_ElevDR));
@@ -371,7 +368,8 @@ uint8_t switchState(uint8_t index)
     default:
         break;
     }
-
+#else
+#endif
     return result;
 }
 

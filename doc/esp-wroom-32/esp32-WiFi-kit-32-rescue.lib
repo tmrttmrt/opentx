@@ -1,0 +1,352 @@
+EESchema-LIBRARY Version 2.4
+#encoding utf-8
+#
+# +BATT-power-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF +BATT-power-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue #PWR 0 0 Y Y 1 F P
+F0 "#PWR" 0 -150 50 H I C CNN
+F1 "+BATT-power-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 140 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+DRAW
+P 2 0 1 0 -30 50 0 100 N
+P 2 0 1 0 0 0 0 100 N
+P 2 0 1 0 0 100 30 50 N
+X +BATT 1 0 0 0 U 50 50 1 1 W N
+ENDDRAW
+ENDDEF
+#
+# 4066-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF 4066-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue U 0 0 Y Y 4 F N
+F0 "U" 200 -149 40 H V C CNN
+F1 "4066-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 200 150 40 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+P 3 0 1 0 -100 -150 0 -50 0 -50 N
+P 4 0 1 0 -100 0 100 100 100 -100 -100 0 N
+P 4 0 1 0 -100 100 100 0 -100 -100 -100 100 N
+X V+ 14 0 250 200 D 30 30 0 1 W
+X V- 7 0 -250 200 U 30 30 0 1 W
+X I/O 1 -300 0 200 R 40 40 1 1 P
+X ON 13 -300 -150 200 R 40 40 1 1 I
+X O/I 2 300 0 200 L 40 40 1 1 P
+X O/I 3 300 0 200 L 40 40 2 1 P
+X I/O 4 -300 0 200 R 40 40 2 1 P
+X ON 5 -300 -150 200 R 40 40 2 1 I
+X ON 6 -300 -150 200 R 40 40 3 1 I
+X I/O 8 -300 0 200 R 40 40 3 1 P
+X O/I 9 300 0 200 L 40 40 3 1 P
+X O/I 10 300 0 200 L 40 40 4 1 P
+X I/O 11 -300 0 200 R 40 40 4 1 P
+X ON 12 -300 -150 200 R 40 40 4 1 I
+ENDDRAW
+ENDDEF
+#
+# 7805-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF 7805-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue U 0 30 N Y 1 F N
+F0 "U" 150 -196 60 H V C CNN
+F1 "7805-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 200 60 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+S -200 -150 200 150 0 1 0 N
+X GND GND 0 -250 100 U 40 40 1 1 I
+X VI VI -400 50 200 R 40 40 1 1 I
+X VO VO 400 50 200 L 40 40 1 1 w
+ENDDRAW
+ENDDEF
+#
+# C-Device-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF C-Device-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue C 0 10 N Y 1 F N
+F0 "C" 25 100 50 H V L CNN
+F1 "C-Device-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 25 -100 50 H V L CNN
+F2 "" 38 -150 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+$FPLIST
+ C_*
+$ENDFPLIST
+DRAW
+P 2 0 1 20 -80 -30 80 -30 N
+P 2 0 1 20 -80 30 80 30 N
+X ~ 1 0 150 110 D 50 50 1 1 P
+X ~ 2 0 -150 110 U 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
+# CONN_1-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF ~CONN_1-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue P 0 30 N N 1 F N
+F0 "P" 80 0 40 H V L CNN
+F1 "CONN_1-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 55 30 H I C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+C 0 0 31 0 1 0 N
+P 2 0 1 0 -30 0 -50 0 N
+X 1 1 -150 0 100 R 60 60 1 1 P
+ENDDRAW
+ENDDEF
+#
+# DIODESCH-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF DIODESCH-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue D 0 40 N N 1 F N
+F0 "D" 0 100 40 H V C CNN
+F1 "DIODESCH-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 -100 40 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+$FPLIST
+ D?
+ S*
+$ENDFPLIST
+DRAW
+P 3 0 1 0 -50 50 50 0 -50 -50 F
+P 6 0 1 8 75 25 75 50 50 50 50 -50 25 -50 25 -25 N
+X A 1 -200 0 150 R 40 40 1 1 P
+X K 2 200 0 150 L 40 40 1 1 P
+ENDDRAW
+ENDDEF
+#
+# GND-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF ~GND-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue #PWR 0 0 Y Y 1 F P
+F0 "#PWR" 0 0 30 H I C CNN
+F1 "GND-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 -70 30 H I C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+P 4 0 1 0 -50 0 0 -50 50 0 -50 0 N
+X GND 1 0 0 0 U 30 30 1 1 W N
+ENDDRAW
+ENDDEF
+#
+# GND-power-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF GND-power-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue #PWR 0 0 Y Y 1 F P
+F0 "#PWR" 0 -250 50 H I C CNN
+F1 "GND-power-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 -150 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+DRAW
+P 6 0 1 0 0 0 0 -50 50 -50 0 -100 -50 -50 0 -50 N
+X GND 1 0 0 0 D 50 50 1 1 W N
+ENDDRAW
+ENDDEF
+#
+# LED-Device-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF LED-Device-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue D 0 40 N N 1 F N
+F0 "D" 0 100 50 H V C CNN
+F1 "LED-Device-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 -100 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+$FPLIST
+ LED*
+ LED_SMD:*
+ LED_THT:*
+$ENDFPLIST
+DRAW
+P 2 0 1 8 -50 -50 -50 50 N
+P 2 0 1 0 -50 0 50 0 N
+P 4 0 1 8 50 -50 50 50 -50 0 50 -50 N
+P 5 0 1 0 -120 -30 -180 -90 -150 -90 -180 -90 -180 -60 N
+P 5 0 1 0 -70 -30 -130 -90 -100 -90 -130 -90 -130 -60 N
+X K 1 -150 0 100 R 50 50 1 1 P
+X A 2 150 0 100 L 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
+# MCP23017_SP-Interface_Expansion-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF MCP23017_SP-Interface_Expansion-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue U 0 40 Y Y 1 F N
+F0 "U" -450 950 50 H V C CNN
+F1 "MCP23017_SP-Interface_Expansion-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 0 50 H V C CNN
+F2 "Package_DIP:DIP-28_W7.62mm" 200 -1000 50 H I L CNN
+F3 "" 200 -1100 50 H I L CNN
+$FPLIST
+ DIP*W7.62mm*
+$ENDFPLIST
+DRAW
+S -500 900 500 -900 0 1 10 f
+X GPB0 1 700 800 200 L 50 50 1 1 B
+X VSS 10 0 -1100 200 U 50 50 1 1 W
+X NC 11 -500 600 200 R 50 50 1 1 N N
+X SCK 12 -700 700 200 R 50 50 1 1 I
+X SDA 13 -700 800 200 R 50 50 1 1 B
+X NC 14 -500 500 200 R 50 50 1 1 N N
+X A0 15 -700 -800 200 R 50 50 1 1 I
+X A1 16 -700 -700 200 R 50 50 1 1 I
+X A2 17 -700 -600 200 R 50 50 1 1 I
+X ~RESET~ 18 -700 -100 200 R 50 50 1 1 I
+X INTB 19 -700 200 200 R 50 50 1 1 T
+X GPB1 2 700 700 200 L 50 50 1 1 B
+X INTA 20 -700 100 200 R 50 50 1 1 T
+X GPA0 21 700 -100 200 L 50 50 1 1 B
+X GPA1 22 700 -200 200 L 50 50 1 1 B
+X GPA2 23 700 -300 200 L 50 50 1 1 B
+X GPA3 24 700 -400 200 L 50 50 1 1 B
+X GPA4 25 700 -500 200 L 50 50 1 1 B
+X GPA5 26 700 -600 200 L 50 50 1 1 B
+X GPA6 27 700 -700 200 L 50 50 1 1 B
+X GPA7 28 700 -800 200 L 50 50 1 1 B
+X GPB2 3 700 600 200 L 50 50 1 1 B
+X GPB3 4 700 500 200 L 50 50 1 1 B
+X GPB4 5 700 400 200 L 50 50 1 1 B
+X GPB5 6 700 300 200 L 50 50 1 1 B
+X GPB6 7 700 200 200 L 50 50 1 1 B
+X GPB7 8 700 100 200 L 50 50 1 1 B
+X VDD 9 0 1100 200 D 50 50 1 1 W
+ENDDRAW
+ENDDEF
+#
+# MOSFET_N-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF MOSFET_N-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue Q 0 0 N Y 1 F N
+F0 "Q" 10 170 60 H V R CNN
+F1 "MOSFET_N-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 10 -150 60 H V R CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+P 2 0 1 8 -50 -100 -50 100 N
+P 2 0 1 10 0 -150 0 150 N
+P 2 0 1 0 100 -100 0 -100 N
+P 2 0 1 0 100 100 0 100 N
+P 3 0 1 8 100 -100 100 0 50 0 N
+P 5 0 1 8 50 30 50 -30 0 0 50 30 50 30 N
+X D D 100 200 100 D 40 40 1 1 P
+X G G -200 0 150 R 40 40 1 1 I
+X S S 100 -200 100 U 40 40 1 1 P
+ENDDRAW
+ENDDEF
+#
+# MOSFET_P-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF MOSFET_P-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue Q 0 40 Y N 1 F N
+F0 "Q" 0 190 60 H V R CNN
+F1 "MOSFET_P-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 -180 60 H V R CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+P 2 0 1 8 -50 -100 -50 100 N
+P 2 0 1 10 0 -150 0 150 N
+P 2 0 1 8 30 0 0 0 N
+P 2 0 1 0 100 -100 0 -100 N
+P 2 0 1 0 100 100 0 100 N
+P 3 0 1 0 80 0 100 0 100 -100 N
+P 5 0 1 8 30 40 30 -30 80 0 30 40 30 40 N
+X D D 100 200 100 D 40 40 1 1 P
+X G G -200 0 150 R 40 40 1 1 I
+X S S 100 -200 100 U 40 40 1 1 P
+ENDDRAW
+ENDDEF
+#
+# POT-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF POT-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue RV 0 40 Y N 1 F N
+F0 "RV" 0 -100 50 H V C CNN
+F1 "POT-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 0 50 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+S -150 50 150 -50 0 1 0 N
+P 3 0 1 0 0 50 -20 70 20 70 F
+X 1 1 -250 0 100 R 40 40 1 1 P
+X 2 2 0 150 80 D 40 40 1 1 P
+X 3 3 250 0 100 L 40 40 1 1 P
+ENDDRAW
+ENDDEF
+#
+# R-Device-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF R-Device-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue R 0 0 N Y 1 F N
+F0 "R" 80 0 50 V V C CNN
+F1 "R-Device-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 0 50 V V C CNN
+F2 "" -70 0 50 V I C CNN
+F3 "" 0 0 50 H I C CNN
+$FPLIST
+ R_*
+$ENDFPLIST
+DRAW
+S -40 -100 40 100 0 1 10 N
+X ~ 1 0 150 50 D 50 50 1 1 P
+X ~ 2 0 -150 50 U 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
+# SPST-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF SPST-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue SW 0 0 N Y 1 F N
+F0 "SW" 0 100 70 H V C CNN
+F1 "SPST-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 -100 70 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+C -150 0 50 0 0 0 N
+C 150 0 50 0 0 0 N
+P 2 0 0 0 -100 0 100 100 N
+X 1 1 -500 0 300 R 70 70 1 1 I
+X 2 2 500 0 300 L 70 70 1 1 I
+ENDDRAW
+ENDDEF
+#
+# SW-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF SW-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue SW 0 40 N N 1 F N
+F0 "SW" 0 100 50 H V C CNN
+F1 "SW-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 0 50 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+P 2 0 1 0 -100 0 100 50 N
+X 1 1 -300 0 200 R 60 60 0 1 P I
+X 2 2 300 0 200 L 60 60 0 1 P I
+ENDDRAW
+ENDDEF
+#
+# SW_PUSH-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF SW_PUSH-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue SW 0 40 N N 1 F N
+F0 "SW" 150 110 50 H V C CNN
+F1 "SW_PUSH-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 -80 50 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+S -170 50 170 60 0 1 0 N
+P 4 0 1 0 -40 60 -30 90 30 90 40 60 N
+X 1 1 -300 0 200 R 60 60 0 1 P I
+X 2 2 300 0 200 L 60 60 0 1 P I
+ENDDRAW
+ENDDEF
+#
+# VCC-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF VCC-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue #PWR 0 0 Y Y 1 F P
+F0 "#PWR" 0 100 30 H I C CNN
+F1 "VCC-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 100 30 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
+DRAW
+C 0 50 20 0 1 0 N
+P 3 0 1 0 0 0 0 30 0 30 N
+X VCC 1 0 0 0 U 20 20 0 0 W N
+ENDDRAW
+ENDDEF
+#
+# VCC-power-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
+#
+DEF VCC-power-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue #PWR 0 0 Y Y 1 F P
+F0 "#PWR" 0 -150 50 H I C CNN
+F1 "VCC-power-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue" 0 150 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+DRAW
+C 0 75 25 0 1 0 N
+P 2 0 1 0 0 0 0 50 N
+X VCC 1 0 0 0 U 50 50 1 1 W N
+ENDDRAW
+ENDDEF
+#
+#End Library

@@ -2,9 +2,7 @@
 * Copyright (C) OpenTX
 *
 * Based on code named
-*   th9x - http://code.google.com/p/th9x
-*   er9x - http://code.google.com/p/er9x
-*   gruvin9x - http://code.google.com/p/gruvin9x
+*   esp32-evb - https://github.com/OLIMEX/ESP32-EVB
 *
 * License GPLv2: http://www.gnu.org/licenses/gpl-2.0.html
 *

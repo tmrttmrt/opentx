@@ -167,6 +167,7 @@ void rfPwrOff();
 #define MCP23017_ADDR_SW    0x21
 #define I2C_KEYS_SDA_GPIO GPIO_NUM_23
 #define I2C_KEYS_SCL_GPIO GPIO_NUM_22
+#define GPIO_INTR_PIN GPIO_NUM_21
 
 enum EnumKeys
 {

@@ -1,11 +1,11 @@
 EESchema Schematic File Version 4
-LIBS:esp-wroom-32-cache
+LIBS:esp32-wroom-32-cache
 EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title "OpenTX board based on Arduino ESP32"
+Title "OpenTX board based on ESP32 WROOM module"
 Date "2019-01-16"
 Rev "0"
 Comp "Copyright F. Aguerre & T. Mertelj"
@@ -15,7 +15,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L esp-wroom-32-rescue:SW_PUSH-MEGA2560 .3
+L esp32-wroom-32-rescue:SW_PUSH-MEGA2560-esp-wroom-32-rescue .3
 U 1 1 5499AF9B
 P 6350 2900
 F 0 ".3" H 6450 2900 50  0001 C CNN
@@ -26,7 +26,7 @@ F 3 "" H 6350 2900 60  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR017
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR017
 U 1 1 5499AE76
 P 5950 2750
 F 0 "#PWR017" H 5950 2750 30  0001 C CNN
@@ -39,7 +39,7 @@ $EndComp
 Text Notes 7950 3950 0    42   ~ 0
 JACK
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR019
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR019
 U 1 1 5499ABF7
 P 7750 4300
 F 0 "#PWR019" H 7750 4300 30  0001 C CNN
@@ -52,7 +52,7 @@ $EndComp
 Text Label 7200 4500 0    42   ~ 0
 DSC_PPM
 $Comp
-L esp-wroom-32-rescue:C-Device C1
+L esp32-wroom-32-rescue:C-Device-esp-wroom-32-rescue C1
 U 1 1 5499AA3F
 P 10600 5800
 F 0 "C1" V 10550 5650 50  0000 L CNN
@@ -63,7 +63,7 @@ F 3 "" H 10600 5800 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR04
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR04
 U 1 1 549993C2
 P 2500 2600
 F 0 "#PWR04" H 2500 2600 30  0001 C CNN
@@ -74,7 +74,7 @@ F 3 "" H 2500 2600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:C-Device C1
+L esp32-wroom-32-rescue:C-Device-esp-wroom-32-rescue C1
 U 1 1 54998B4F
 P 8350 2350
 F 0 "C1" V 8300 2200 50  0000 L CNN
@@ -85,7 +85,7 @@ F 3 "" H 8350 2350 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:C-Device C1
+L esp32-wroom-32-rescue:C-Device-esp-wroom-32-rescue C1
 U 1 1 54998B49
 P 8100 2350
 F 0 "C1" V 8050 2200 50  0000 L CNN
@@ -96,7 +96,7 @@ F 3 "" H 8100 2350 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR032
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR032
 U 1 1 54998B1E
 P 10750 3050
 F 0 "#PWR032" H 10750 3050 30  0001 C CNN
@@ -109,7 +109,7 @@ $EndComp
 Text Notes 8400 3300 0    60   ~ 0
 Power management
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR020
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR020
 U 1 1 5499853A
 P 7750 5600
 F 0 "#PWR020" H 7750 5600 30  0001 C CNN
@@ -120,7 +120,7 @@ F 3 "" H 7750 5600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR023
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR023
 U 1 1 549984D9
 P 8750 6150
 F 0 "#PWR023" H 8750 6150 30  0001 C CNN
@@ -131,7 +131,7 @@ F 3 "" H 8750 6150 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R7
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R7
 U 1 1 54997DEC
 P 8750 5800
 F 0 "R7" V 8830 5800 50  0000 C CNN
@@ -142,7 +142,7 @@ F 3 "" H 8750 5800 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R5
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R5
 U 1 1 54997CFE
 P 7750 5250
 F 0 "R5" V 7830 5250 50  0000 C CNN
@@ -153,7 +153,7 @@ F 3 "" H 7750 5250 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R4
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R4
 U 1 1 54997CE8
 P 8000 5000
 F 0 "R4" V 8080 5000 50  0000 C CNN
@@ -166,7 +166,7 @@ $EndComp
 Text Label 7200 5000 0    42   ~ 0
 DSC_Activated
 $Comp
-L esp-wroom-32-rescue:SPST-MEGA2560 SW2
+L esp32-wroom-32-rescue:SPST-MEGA2560-esp-wroom-32-rescue SW2
 U 1 1 5499444A
 P 8250 4350
 F 0 "SW2" H 8250 4450 50  0000 C CNN
@@ -177,7 +177,7 @@ F 3 "" H 8250 4350 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:DIODESCH-MEGA2560 D1
+L esp32-wroom-32-rescue:DIODESCH-MEGA2560-esp-wroom-32-rescue D1
 U 1 1 549943E4
 P 8250 5750
 F 0 "D1" H 8250 5850 40  0000 C CNN
@@ -188,7 +188,7 @@ F 3 "" H 8250 5750 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:DIODESCH-MEGA2560 D1
+L esp32-wroom-32-rescue:DIODESCH-MEGA2560-esp-wroom-32-rescue D1
 U 1 1 549943CB
 P 8250 5350
 F 0 "D1" H 8250 5450 40  0000 C CNN
@@ -199,7 +199,7 @@ F 3 "" H 8250 5350 60  0001 C CNN
 	0    -1   1    0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R4
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R4
 U 1 1 549943BB
 P 8500 5550
 F 0 "R4" V 8580 5550 50  0000 C CNN
@@ -212,7 +212,7 @@ $EndComp
 Text Label 11100 5500 2    42   ~ 0
 RF_Activated
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR027
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR027
 U 1 1 54994281
 P 10350 6000
 F 0 "#PWR027" H 10350 6000 30  0001 C CNN
@@ -223,7 +223,7 @@ F 3 "" H 10350 6000 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R4
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R4
 U 1 1 54994280
 P 10350 5250
 F 0 "R4" V 10430 5250 50  0000 C CNN
@@ -234,7 +234,7 @@ F 3 "" H 10350 5250 60  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R5
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R5
 U 1 1 5499427F
 P 10350 5750
 F 0 "R5" V 10430 5750 50  0000 C CNN
@@ -245,7 +245,7 @@ F 3 "" H 10350 5750 60  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:DIODESCH-MEGA2560 D1
+L esp32-wroom-32-rescue:DIODESCH-MEGA2560-esp-wroom-32-rescue D1
 U 1 1 549941C1
 P 9900 3850
 F 0 "D1" H 9900 3950 40  0000 C CNN
@@ -256,7 +256,7 @@ F 3 "" H 9900 3850 60  0001 C CNN
 	1    0    0    1   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:SPST-MEGA2560 SW1
+L esp32-wroom-32-rescue:SPST-MEGA2560-esp-wroom-32-rescue SW1
 U 1 1 54994193
 P 9050 3850
 F 0 "SW1" H 9050 3950 50  0000 C CNN
@@ -269,7 +269,7 @@ $EndComp
 Text Label 6450 1050 2    42   ~ 0
 U_batt
 $Comp
-L esp-wroom-32-rescue:R-Device R3
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R3
 U 1 1 54994034
 P 6050 1300
 F 0 "R3" V 6130 1300 50  0000 C CNN
@@ -280,7 +280,7 @@ F 3 "" H 6050 1300 60  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R4
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R4
 U 1 1 54994033
 P 5800 1050
 F 0 "R4" V 5880 1050 50  0000 C CNN
@@ -291,7 +291,7 @@ F 3 "" H 5800 1050 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR016
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR016
 U 1 1 54994032
 P 6050 1650
 F 0 "#PWR016" H 6050 1650 30  0001 C CNN
@@ -306,7 +306,7 @@ Battery voltage reading
 Text Notes 7100 1900 0    60   ~ 0
 Rotary encoders (x2)
 $Comp
-L esp-wroom-32-rescue:R-Device R1
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R1
 U 1 1 54993DF7
 P 2750 1650
 F 0 "R1" V 2830 1650 50  0000 C CNN
@@ -317,7 +317,7 @@ F 3 "" H 2750 1650 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R1
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R1
 U 1 1 54993D2B
 P 7150 2750
 F 0 "R1" V 7230 2750 50  0000 C CNN
@@ -328,7 +328,7 @@ F 3 "" H 7150 2750 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:C-Device C1
+L esp32-wroom-32-rescue:C-Device-esp-wroom-32-rescue C1
 U 1 1 54993C14
 P 7850 2350
 F 0 "C1" V 7800 2200 50  0000 L CNN
@@ -339,7 +339,7 @@ F 3 "" H 7850 2350 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR022
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR022
 U 1 1 54993C0D
 P 8650 2200
 F 0 "#PWR022" H 8650 2200 30  0001 C CNN
@@ -356,7 +356,7 @@ Rot_x_B
 Text Label 9050 2650 2    42   ~ 0
 Rot_x_A
 $Comp
-L esp-wroom-32-rescue:DIODESCH-MEGA2560 D1
+L esp32-wroom-32-rescue:DIODESCH-MEGA2560-esp-wroom-32-rescue D1
 U 1 1 5499378E
 P 2600 900
 F 0 "D1" H 2600 1000 40  0000 C CNN
@@ -371,7 +371,7 @@ PPM management
 Text Notes 9650 750  0    60   ~ 0
 LCD backlight (5V)
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR025
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR025
 U 1 1 5499359A
 P 9600 1600
 F 0 "#PWR025" H 9600 1600 30  0001 C CNN
@@ -382,7 +382,7 @@ F 3 "" H 9600 1600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:C-Device C1
+L esp32-wroom-32-rescue:C-Device-esp-wroom-32-rescue C1
 U 1 1 54993599
 P 9600 1300
 F 0 "C1" V 9350 1200 50  0000 L CNN
@@ -393,7 +393,7 @@ F 3 "" H 9600 1300 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:C-Device C1
+L esp32-wroom-32-rescue:C-Device-esp-wroom-32-rescue C1
 U 1 1 54993563
 P 10400 1300
 F 0 "C1" V 10350 1150 50  0000 L CNN
@@ -404,7 +404,7 @@ F 3 "" H 10400 1300 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR029
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR029
 U 1 1 54993562
 P 10400 1600
 F 0 "#PWR029" H 10400 1600 30  0001 C CNN
@@ -415,7 +415,7 @@ F 3 "" H 10400 1600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR026
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR026
 U 1 1 549934C9
 P 10000 1600
 F 0 "#PWR026" H 10000 1600 30  0001 C CNN
@@ -426,7 +426,7 @@ F 3 "" H 10000 1600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:LED-Device .5
+L esp32-wroom-32-rescue:LED-Device-esp-wroom-32-rescue .5
 U 1 1 549933C8
 P 10750 1450
 F 0 ".5" H 10800 1350 50  0000 C CNN
@@ -439,7 +439,7 @@ $EndComp
 Text Notes 6850 750  0    60   ~ 0
 Switches, trims & keybs deboucing (x22)
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR021
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR021
 U 1 1 54992E9C
 P 8100 1500
 F 0 "#PWR021" H 8100 1500 30  0001 C CNN
@@ -450,7 +450,7 @@ F 3 "" H 8100 1500 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:C-Device C1
+L esp32-wroom-32-rescue:C-Device-esp-wroom-32-rescue C1
 U 1 1 54992E49
 P 8100 1200
 F 0 "C1" V 7850 1100 50  0000 L CNN
@@ -461,7 +461,7 @@ F 3 "" H 8100 1200 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R1
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R1
 U 1 1 54992E3A
 P 7850 1000
 F 0 "R1" V 7930 1000 50  0000 C CNN
@@ -472,7 +472,7 @@ F 3 "" H 7850 1000 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR018
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR018
 U 1 1 54992E1E
 P 6900 1500
 F 0 "#PWR018" H 6900 1500 30  0001 C CNN
@@ -483,7 +483,7 @@ F 3 "" H 6900 1500 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:SW_PUSH-MEGA2560 SW_xx1
+L esp32-wroom-32-rescue:SW_PUSH-MEGA2560-esp-wroom-32-rescue SW_xx1
 U 1 1 54992E18
 P 7300 1000
 F 0 "SW_xx1" H 7300 1150 50  0000 C CNN
@@ -496,7 +496,7 @@ $EndComp
 Text Label 8650 1000 2    42   ~ 0
 MCP23017_Input
 $Comp
-L esp-wroom-32-rescue:VCC-power 105
+L esp32-wroom-32-rescue:VCC-power-esp-wroom-32-rescue 105
 U 1 1 5498A277
 P 9450 950
 F 0 "105" H 9450 1050 30  0001 C CNN
@@ -507,7 +507,7 @@ F 3 "" H 9450 950 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:7805-MEGA2560 U3
+L esp32-wroom-32-rescue:7805-MEGA2560-esp-wroom-32-rescue U3
 U 1 1 5498A254
 P 10000 1150
 F 0 "U3" H 10150 954 50  0000 C CNN
@@ -520,7 +520,7 @@ $EndComp
 Text Label 2950 2550 0    42   ~ 0
 LCD_Light
 $Comp
-L esp-wroom-32-rescue:R-Device .6
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue .6
 U 1 1 5498A214
 P 10750 1900
 F 0 ".6" V 10750 1900 50  0000 C CNN
@@ -531,7 +531,7 @@ F 3 "" H 10750 1900 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R8
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R8
 U 1 1 5498A213
 P 3600 2550
 F 0 "R8" V 3680 2550 50  0000 C CNN
@@ -542,7 +542,7 @@ F 3 "" H 3600 2550 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR02
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR02
 U 1 1 54989B15
 P 1100 5300
 F 0 "#PWR02" H 1100 5300 50  0001 C CNN
@@ -553,7 +553,7 @@ F 3 "" H 1100 5300 60  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:4066-MEGA2560 U1
+L esp32-wroom-32-rescue:4066-MEGA2560-esp-wroom-32-rescue U1
 U 1 1 549891BA
 P 1600 2500
 F 0 "U1" H 1800 2351 40  0000 C CNN
@@ -564,7 +564,7 @@ F 3 "" H 1600 2500 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:VCC-power 102
+L esp32-wroom-32-rescue:VCC-power-esp-wroom-32-rescue 102
 U 1 1 549891B9
 P 1600 2250
 F 0 "102" H 1600 2350 30  0001 C CNN
@@ -575,7 +575,7 @@ F 3 "" H 1600 2250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR03
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR03
 U 1 1 549891B8
 P 1600 2750
 F 0 "#PWR03" H 1600 2750 30  0001 C CNN
@@ -586,7 +586,7 @@ F 3 "" H 1600 2750 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:4066-MEGA2560 U1
+L esp32-wroom-32-rescue:4066-MEGA2560-esp-wroom-32-rescue U1
 U 2 1 549891B7
 P 2050 1250
 F 0 "U1" H 2250 1101 40  0000 C CNN
@@ -597,7 +597,7 @@ F 3 "" H 2050 1250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:4066-MEGA2560 U1
+L esp32-wroom-32-rescue:4066-MEGA2560-esp-wroom-32-rescue U1
 U 4 1 549891B6
 P 1450 1650
 F 0 "U1" H 1650 1501 40  0000 C CNN
@@ -608,7 +608,7 @@ F 3 "" H 1450 1650 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:4066-MEGA2560 U1
+L esp32-wroom-32-rescue:4066-MEGA2560-esp-wroom-32-rescue U1
 U 3 1 549891B5
 P 2200 2050
 F 0 "U1" H 2400 1901 40  0000 C CNN
@@ -619,7 +619,7 @@ F 3 "" H 2200 2050 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R6
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R6
 U 1 1 549891B4
 P 2000 1650
 F 0 "R6" V 2080 1650 50  0000 C CNN
@@ -630,7 +630,7 @@ F 3 "" H 2000 1650 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:VCC-power 103
+L esp32-wroom-32-rescue:VCC-power-esp-wroom-32-rescue 103
 U 1 1 549891B3
 P 2350 1600
 F 0 "103" H 2350 1700 30  0001 C CNN
@@ -643,7 +643,7 @@ $EndComp
 Text Label 600  2650 0    42   ~ 0
 Sim_Control
 $Comp
-L esp-wroom-32-rescue:VCC-power 101
+L esp32-wroom-32-rescue:VCC-power-esp-wroom-32-rescue 101
 U 1 1 549891AD
 P 1250 2250
 F 0 "101" H 1250 2350 30  0001 C CNN
@@ -654,7 +654,7 @@ F 3 "" H 1250 2250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R6
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R6
 U 1 1 549891AC
 P 2150 2500
 F 0 "R6" V 2230 2500 50  0000 C CNN
@@ -669,7 +669,7 @@ PPM_IN
 Text Label 600  1250 0    42   ~ 0
 PPM_OUT
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR01
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR01
 U 1 1 549891A9
 P 850 1800
 F 0 "#PWR01" H 850 1800 30  0001 C CNN
@@ -684,7 +684,7 @@ Key_►
 Text Label 5850 3850 2    42   ~ 0
 Key_▼
 $Comp
-L esp-wroom-32-rescue:R-Device R1
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R1
 U 1 1 54988260
 P 7600 2900
 F 0 "R1" V 7680 2900 50  0000 C CNN
@@ -695,7 +695,7 @@ F 3 "" H 7600 2900 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R1
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R1
 U 1 1 5498825E
 P 7600 2650
 F 0 "R1" V 7680 2650 50  0000 C CNN
@@ -706,7 +706,7 @@ F 3 "" H 7600 2650 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R4
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R4
 U 1 1 549881F1
 P 6750 2350
 F 0 "R4" V 6830 2350 50  0000 C CNN
@@ -717,7 +717,7 @@ F 3 "" H 6750 2350 60  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R4
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R4
 U 1 1 549881F0
 P 6900 2350
 F 0 "R4" V 6980 2350 50  0000 C CNN
@@ -728,7 +728,7 @@ F 3 "" H 6900 2350 60  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:VCC-power 104
+L esp32-wroom-32-rescue:VCC-power-esp-wroom-32-rescue 104
 U 1 1 549881ED
 P 6750 2050
 F 0 "104" H 6750 2150 30  0001 C CNN
@@ -739,7 +739,7 @@ F 3 "" H 6750 2050 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR024
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR024
 U 1 1 549881DD
 P 9050 6150
 F 0 "#PWR024" H 9050 6150 30  0001 C CNN
@@ -750,7 +750,7 @@ F 3 "" H 9050 6150 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R4
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R4
 U 1 1 549881DA
 P 9050 4800
 F 0 "R4" V 9130 4800 50  0000 C CNN
@@ -761,7 +761,7 @@ F 3 "" H 9050 4800 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:MOSFET_P-MEGA2560 Q2
+L esp32-wroom-32-rescue:MOSFET_P-MEGA2560-esp-wroom-32-rescue Q2
 U 1 1 549881D9
 P 9050 4350
 F 0 "Q2" V 9000 4600 60  0000 R CNN
@@ -772,7 +772,7 @@ F 3 "" H 9050 4350 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R7
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R7
 U 1 1 549881D8
 P 8800 4550
 F 0 "R7" V 8880 4550 50  0000 C CNN
@@ -785,7 +785,7 @@ $EndComp
 Text Label 7200 6050 0    42   ~ 0
 Hold_Power
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR030
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR030
 U 1 1 549881D0
 P 10600 6000
 F 0 "#PWR030" H 10600 6000 30  0001 C CNN
@@ -880,7 +880,7 @@ Sim_Control
 Text Label 2550 6100 1    42   ~ 0
 PPM_OUT
 $Comp
-L esp-wroom-32-rescue:CONN_1-MEGA2560 +1
+L esp32-wroom-32-rescue:CONN_1-MEGA2560-esp-wroom-32-rescue +1
 U 1 1 549E784B
 P 7450 3700
 F 0 "+1" V 7500 3700 40  0000 L CNN
@@ -891,7 +891,7 @@ F 3 "" H 7450 3700 60  0000 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:MOSFET_N-MEGA2560 Q1
+L esp32-wroom-32-rescue:MOSFET_N-MEGA2560-esp-wroom-32-rescue Q1
 U 1 1 549E7A7F
 P 8950 5550
 F 0 "Q1" H 9200 5600 50  0000 R CNN
@@ -902,7 +902,7 @@ F 3 "~" H 8950 5550 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:CONN_1-MEGA2560 RF_Module1
+L esp32-wroom-32-rescue:CONN_1-MEGA2560-esp-wroom-32-rescue RF_Module1
 U 1 1 549E7AB4
 P 3000 900
 F 0 "RF_Module1" H 3080 900 40  0000 L CNN
@@ -913,7 +913,7 @@ F 3 "" H 3000 900 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:VCC-power 3.3V01
+L esp32-wroom-32-rescue:VCC-power-esp-wroom-32-rescue 3.3V01
 U 1 1 54989ABB
 P 1050 4000
 F 0 "3.3V01" H 1050 4100 60  0001 C CNN
@@ -924,7 +924,7 @@ F 3 "" H 1050 4000 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:+BATT-power U07
+L esp32-wroom-32-rescue:+BATT-power-esp-wroom-32-rescue U07
 U 1 1 549E8260
 P 5450 950
 F 0 "U07" H 5450 900 60  0001 C CNN
@@ -935,7 +935,7 @@ F 3 "" H 5450 950 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:MOSFET_N-MEGA2560 Q1
+L esp32-wroom-32-rescue:MOSFET_N-MEGA2560-esp-wroom-32-rescue Q1
 U 1 1 549E84D3
 P 10650 2450
 F 0 "Q1" H 10650 2600 50  0000 R CNN
@@ -946,7 +946,7 @@ F 3 "~" H 10650 2450 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:CONN_1-MEGA2560 -1
+L esp32-wroom-32-rescue:CONN_1-MEGA2560-esp-wroom-32-rescue -1
 U 1 1 549E84E5
 P 7250 3700
 F 0 "-1" V 7300 3700 40  0000 L CNN
@@ -961,7 +961,7 @@ Battery (2S LiPo)
 Text Label 3400 1650 2    42   ~ 0
 DSC_PPM
 $Comp
-L esp-wroom-32-rescue:SW-MEGA2560 ROT_ENC_x1
+L esp32-wroom-32-rescue:SW-MEGA2560-esp-wroom-32-rescue ROT_ENC_x1
 U 1 1 549E8A70
 P 6350 2650
 F 0 "ROT_ENC_x1" H 6350 2760 50  0000 C CNN
@@ -972,7 +972,7 @@ F 3 "~" H 6350 2650 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:SW-MEGA2560 .2
+L esp32-wroom-32-rescue:SW-MEGA2560-esp-wroom-32-rescue .2
 U 1 1 549E8A96
 P 6350 2750
 F 0 ".2" H 6350 2860 50  0001 C CNN
@@ -983,7 +983,7 @@ F 3 "~" H 6350 2750 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR031
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR031
 U 1 1 549E8FF9
 P 10450 3050
 F 0 "#PWR031" H 10450 3050 30  0001 C CNN
@@ -994,7 +994,7 @@ F 3 "" H 10450 3050 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R6
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R6
 U 1 1 549E8FFF
 P 10450 2700
 F 0 "R6" V 10530 2700 50  0000 C CNN
@@ -1052,8 +1052,6 @@ Wire Wire Line
 	1500 900  1500 1250
 Wire Wire Line
 	3100 4750 3550 4750
-Wire Wire Line
-	3000 4450 3100 4450
 Wire Wire Line
 	5450 4350 5900 4350
 Wire Wire Line
@@ -1136,7 +1134,7 @@ Connection ~ 8250 3850
 Wire Wire Line
 	1500 900  2400 900 
 $Comp
-L esp-wroom-32-rescue:+BATT-power U08
+L esp32-wroom-32-rescue:+BATT-power-esp-wroom-32-rescue U08
 U 1 1 54DF6192
 P 10500 3850
 F 0 "U08" H 10500 3800 60  0001 C CNN
@@ -1147,7 +1145,7 @@ F 3 "" H 10500 3850 60  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power GND01
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue GND01
 U 1 1 54DF675E
 P 7250 3950
 F 0 "GND01" H 7250 3950 50  0001 C CNN
@@ -1160,7 +1158,7 @@ $EndComp
 Wire Wire Line
 	7250 3850 7250 3950
 $Comp
-L esp-wroom-32-rescue:LED-Device .1
+L esp32-wroom-32-rescue:LED-Device-esp-wroom-32-rescue .1
 U 1 1 5568D052
 P 4200 2550
 F 0 ".1" H 4250 2450 50  0000 C CNN
@@ -1179,7 +1177,7 @@ Wire Notes Line
 Wire Notes Line
 	4450 2700 3950 2700
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR09
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR09
 U 1 1 5568D616
 P 4600 2800
 F 0 "#PWR09" H 4600 2800 30  0001 C CNN
@@ -1196,7 +1194,7 @@ LCD direct backlight (3.3V, 20 mA)
 Text Label 9450 2450 0    42   ~ 0
 LCD_Light
 $Comp
-L esp-wroom-32-rescue:R-Device R4
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R4
 U 1 1 5568D86B
 P 10100 2450
 F 0 "R4" V 10180 2450 50  0000 C CNN
@@ -1216,7 +1214,7 @@ Connection ~ 8100 2100
 Connection ~ 8350 2100
 Connection ~ 8350 2900
 $Comp
-L esp-wroom-32-rescue:POT-MEGA2560 Pxx1
+L esp32-wroom-32-rescue:POT-MEGA2560-esp-wroom-32-rescue Pxx1
 U 1 1 55731CC9
 P 5050 2500
 F 0 "Pxx1" H 5050 2400 50  0000 C CNN
@@ -1227,7 +1225,7 @@ F 3 "~" H 5050 2500 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR015
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR015
 U 1 1 55731CE2
 P 5400 2900
 F 0 "#PWR015" H 5400 2900 50  0001 C CNN
@@ -1240,7 +1238,7 @@ $EndComp
 Wire Wire Line
 	5050 2150 5050 2250
 $Comp
-L esp-wroom-32-rescue:C-Device C1
+L esp32-wroom-32-rescue:C-Device-esp-wroom-32-rescue C1
 U 1 1 55732064
 P 5400 2700
 F 0 "C1" V 5350 2550 50  0000 L CNN
@@ -1258,10 +1256,6 @@ Wire Wire Line
 	5200 2500 5400 2500
 Text Notes 4900 2000 0    60   ~ 0
 Stick anti-jitter filter
-Wire Wire Line
-	2350 3500 2350 4450
-Text Notes 2400 4500 3    50   ~ 0
-Pin 9, can be soldered\nwith pin 8 (unused)
 Wire Wire Line
 	1500 1250 1750 1250
 Wire Wire Line
@@ -1281,7 +1275,7 @@ Wire Wire Line
 Wire Wire Line
 	8350 2900 9050 2900
 $Comp
-L esp-wroom-32-rescue:ESP32-WROOM-ESP32-footprints-Shem-Lib U1
+L esp32-wroom-32-rescue:ESP32-WROOM-ESP32-footprints-Shem-Lib-esp-wroom-32-rescue U1
 U 1 1 5C2D33A7
 P 2200 4600
 F 0 "U1" H 2175 5987 60  0000 C CNN
@@ -1448,7 +1442,7 @@ Wire Wire Line
 Wire Wire Line
 	1250 5200 700  5200
 $Comp
-L esp-wroom-32-rescue:MCP23017_SP-Interface_Expansion U2
+L esp32-wroom-32-rescue:MCP23017_SP-Interface_Expansion-esp-wroom-32-rescue U2
 U 1 1 5CECE7B2
 P 4750 4450
 F 0 "U2" V 4700 4150 50  0000 C CNN
@@ -1473,7 +1467,7 @@ Connection ~ 8250 5000
 Wire Wire Line
 	8250 5000 8250 5150
 $Comp
-L esp-wroom-32-rescue:GND-MEGA2560 #PWR011
+L esp32-wroom-32-rescue:GND-MEGA2560-esp-wroom-32-rescue #PWR011
 U 1 1 5D013A16
 P 4750 5700
 F 0 "#PWR011" H 4750 5700 30  0001 C CNN
@@ -1484,7 +1478,7 @@ F 3 "" H 4750 5700 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:VCC-MEGA2560 #PWR010
+L esp32-wroom-32-rescue:VCC-MEGA2560-esp-wroom-32-rescue #PWR010
 U 1 1 5D013C96
 P 4750 3150
 F 0 "#PWR010" H 4750 3250 30  0001 C CNN
@@ -1529,7 +1523,7 @@ Wire Wire Line
 Text Label 3050 7600 1    42   ~ 0
 SW_Trn
 $Comp
-L esp-wroom-32-rescue:GND-MEGA2560 #PWR07
+L esp32-wroom-32-rescue:GND-MEGA2560-esp-wroom-32-rescue #PWR07
 U 1 1 5D5494FA
 P 3300 5450
 F 0 "#PWR07" H 3300 5450 30  0001 C CNN
@@ -1566,7 +1560,7 @@ Wire Wire Line
 Wire Wire Line
 	3650 3750 4050 3750
 $Comp
-L esp-wroom-32-rescue:VCC-MEGA2560 #PWR012
+L esp32-wroom-32-rescue:VCC-MEGA2560-esp-wroom-32-rescue #PWR012
 U 1 1 5C32810C
 P 4750 6400
 F 0 "#PWR012" H 4750 6500 30  0001 C CNN
@@ -1579,7 +1573,7 @@ $EndComp
 Wire Wire Line
 	4750 6400 4750 6550
 $Comp
-L esp-wroom-32-rescue:GND-MEGA2560 #PWR05
+L esp32-wroom-32-rescue:GND-MEGA2560-esp-wroom-32-rescue #PWR05
 U 1 1 5C3374EC
 P 2500 6700
 F 0 "#PWR05" H 2500 6700 30  0001 C CNN
@@ -1603,7 +1597,7 @@ Connection ~ 3050 5750
 Wire Wire Line
 	3050 5750 3050 5600
 $Comp
-L esp-wroom-32-rescue:VCC-MEGA2560 #PWR06
+L esp32-wroom-32-rescue:VCC-MEGA2560-esp-wroom-32-rescue #PWR06
 U 1 1 5C366CB1
 P 2850 5800
 F 0 "#PWR06" H 2850 5900 30  0001 C CNN
@@ -1616,7 +1610,7 @@ $EndComp
 Wire Wire Line
 	2850 5800 2850 5850
 $Comp
-L esp-wroom-32-rescue:MCP23017_SP-Interface_Expansion U3
+L esp32-wroom-32-rescue:MCP23017_SP-Interface_Expansion-esp-wroom-32-rescue U3
 U 1 1 5C2FC793
 P 3650 6550
 F 0 "U3" V 3650 6150 50  0000 C CNN
@@ -1675,8 +1669,6 @@ Wire Wire Line
 	3100 4550 3550 4550
 Text Label 3550 4450 2    42   ~ 0
 SD_MISO
-Wire Wire Line
-	3100 4450 3550 4450
 Wire Wire Line
 	3750 7250 3750 7600
 Wire Wire Line
@@ -1786,7 +1778,7 @@ F 3 "https://www.diodes.com/assets/Datasheets/AZ1117.pdf" H 4350 1100 50  0001 C
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:VCC-power #PWR?
+L esp32-wroom-32-rescue:VCC-power-esp-wroom-32-rescue #PWR?
 U 1 1 5CBEE779
 P 4050 1100
 F 0 "#PWR?" H 4050 950 50  0001 C CNN
@@ -1797,7 +1789,7 @@ F 3 "" H 4050 1100 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR?
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR?
 U 1 1 5CBEEBD3
 P 4350 1700
 F 0 "#PWR?" H 4350 1450 50  0001 C CNN
@@ -1929,7 +1921,7 @@ RF_Power
 Wire Wire Line
 	3950 7250 3950 7700
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR?
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR?
 U 1 1 5CF84FA3
 P 9750 6000
 F 0 "#PWR?" H 9750 6000 30  0001 C CNN
@@ -1940,7 +1932,7 @@ F 3 "" H 9750 6000 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R?
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R?
 U 1 1 5CF84FA9
 P 9750 5800
 F 0 "R?" V 9830 5800 50  0000 C CNN
@@ -1951,7 +1943,7 @@ F 3 "" H 9750 5800 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R?
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R?
 U 1 1 5CF84FB0
 P 9500 5550
 F 0 "R?" V 9580 5550 50  0000 C CNN
@@ -1962,7 +1954,7 @@ F 3 "" H 9500 5550 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:GND-power #PWR?
+L esp32-wroom-32-rescue:GND-power-esp-wroom-32-rescue #PWR?
 U 1 1 5CF84FC5
 P 10050 6000
 F 0 "#PWR?" H 10050 6000 30  0001 C CNN
@@ -1973,7 +1965,7 @@ F 3 "" H 10050 6000 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R?
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R?
 U 1 1 5CF84FCB
 P 10050 5100
 F 0 "R?" V 10130 5100 50  0000 C CNN
@@ -1984,7 +1976,7 @@ F 3 "" H 10050 5100 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:MOSFET_P-MEGA2560 Q?
+L esp32-wroom-32-rescue:MOSFET_P-MEGA2560-esp-wroom-32-rescue Q?
 U 1 1 5CF84FD2
 P 10050 4650
 F 0 "Q?" V 10000 4900 60  0000 R CNN
@@ -1995,7 +1987,7 @@ F 3 "" H 10050 4650 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:R-Device R?
+L esp32-wroom-32-rescue:R-Device-esp-wroom-32-rescue R?
 U 1 1 5CF84FD9
 P 9800 4850
 F 0 "R?" V 9880 4850 50  0000 C CNN
@@ -2006,7 +1998,7 @@ F 3 "" H 9800 4850 60  0001 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L esp-wroom-32-rescue:MOSFET_N-MEGA2560 Q?
+L esp32-wroom-32-rescue:MOSFET_N-MEGA2560-esp-wroom-32-rescue Q?
 U 1 1 5CF84FE0
 P 9950 5550
 F 0 "Q?" H 10200 5600 50  0000 R CNN
@@ -2069,4 +2061,9 @@ Wire Wire Line
 	9350 5550 9350 5100
 Text Label 9350 5400 1    50   ~ 0
 RF_POWER
+Wire Wire Line
+	3000 4450 3100 4450
+Connection ~ 3100 4450
+Wire Wire Line
+	3100 4450 3550 4450
 $EndSCHEMATC
