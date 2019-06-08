@@ -656,7 +656,7 @@
 #define TR_US                         "us"
 #define TR_TMR1JITTERUS        "Tmr1 Jitter\037\124us"
 #define TR_TMIXMAXMS         "TmixMaks"
-#define TR_FREESTACKMINB     "Wolny stos"
+#define TR_FREE_STACK     "Wolny stos"
 #define TR_MENUTORESET         CENTER TR_ENTER " >> Reset"
 #define TR_PPM_TRAINER         "TR"
 #define TR_CH                  "KN"
@@ -898,7 +898,7 @@
 #define TR_MIXERS_MONITOR      "MONITOR MIKSER"
 #define TR_PATH_TOO_LONG       "Ścieżka za długa"
 #define TR_VIEW_TEXT           "Pokaż tekst"
-#define TR_FLASH_BOOTLOADER    "Flash BootLoader"
+#define TR_FLASH_BOOTLOADER    "Flash bootloader"
 #define TR_FLASH_EXTERNAL_DEVICE "Sflashuj Moduł Zewnętrzny"
 #define TR_FLASH_RECEIVER_OTA          "Flash receiver OTA"
 #define TR_FLASH_BLUETOOTH_MODULE      TR("Flash BT module", "Flash Bluetooth module")

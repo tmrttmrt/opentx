@@ -1204,6 +1204,11 @@ union ReusableBuffer
   } hardwareAndSettings;
 
   struct {
+    ModuleInformation modules[NUM_MODULES];
+    uint8_t linesCount;
+  } radioTools;
+
+  struct {
     uint8_t stickMode;
   } generalSettings;
 
@@ -1401,6 +1406,10 @@ inline bool isSimu()
 #define f_unlink(lfn) unlink(lfn)
 #define f_chdir(lfn)  wr_chdir(lfn)
 #define f_rename(old, new) rename(old, new)
+#endif
+
+#if defined(DEBUG_LATENCY)
+extern uint8_t latencyToggleSwitch;
 #endif
 
 #endif // _OPENTX_H_
