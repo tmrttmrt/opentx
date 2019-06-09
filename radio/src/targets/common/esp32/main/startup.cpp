@@ -103,6 +103,7 @@ void  per10msTask(void * pdata)
         xSemaphoreTake(xPer10msSem, portMAX_DELAY);
         //        uint32_t now = esp_timer_get_time();
         per10ms();
+        READI2CSW();
         //        testDuration = (uint16_t)(esp_timer_get_time()-now);
     }
 }

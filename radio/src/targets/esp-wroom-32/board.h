@@ -162,6 +162,7 @@ void rfPwrOff();
 
 // Keys driver
 #define NUM_SWITCHES                   7
+#define READI2CSW() readI2CSw()
 //MCP23017
 #define MCP23017_ADDR_KEYS  0x20
 #define MCP23017_ADDR_SW    0x21

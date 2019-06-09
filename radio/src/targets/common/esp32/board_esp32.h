@@ -151,6 +151,7 @@ void telemetryTransmitBuffer(uint8_t * data, uint8_t len);
 uint8_t telemetryGetByte(uint8_t * byte);
 
 void setI2CGPIO(uint8_t addr, uint8_t port, uint8_t mask, uint8_t value);
+void readI2CSw();
 
 
 uint16_t audioStackAvailable();

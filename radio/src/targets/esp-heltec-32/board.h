@@ -168,6 +168,7 @@ void rfPwrOff();
 
 // Keys driver
 #define NUM_SWITCHES                   7
+#define READI2CSW()
 //MCP23017
 #define MCP23017_ADDR_KEYS  0x20
 #define I2C_KEYS_SDA_GPIO GPIO_NUM_21

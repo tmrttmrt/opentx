@@ -228,19 +228,21 @@ void menuStatisticsDebug(event_t event)
   lcdDrawText(lcdLastRightPos, y, "ms");
   y += FH;
 #if defined(CPUESP32)
-  lcdDrawTextAlignedLeft(1*FH, STR_FREE_STACK);
-  lcdDrawText(MENU_DEBUG_COL1_OFS, 1*FH, "    ");
-  lcdDrawTextAlignedLeft( 2*FH, "  MNU/MIX/AUD/TMR/ENC");
-  lcdDrawTextAlignedLeft(3*FH, "  ");
-  lcdDrawNumber(lcdLastRightPos+2, 3*FH, menusStackAvailable(), LEFT) ;
-  lcdDrawText(lcdLastRightPos, 3*FH, "/");
-  lcdDrawNumber(lcdLastRightPos+2, 3*FH, mixerStackAvailable(), LEFT) ;
-  lcdDrawText(lcdLastRightPos, 3*FH, "/");
-  lcdDrawNumber(lcdLastRightPos+2, 3*FH, audioStackAvailable(), LEFT) ;
-  lcdDrawText(lcdLastRightPos, 3*FH, "/");
-  lcdDrawNumber(lcdLastRightPos+2, 3*FH, per10msStackAvailable(), LEFT) ;
-  lcdDrawText(lcdLastRightPos, 3*FH, "/");
-  lcdDrawNumber(lcdLastRightPos+2, 3*FH, encStackAvailable(), LEFT) ;
+  lcdDrawTextAlignedLeft(y, STR_FREE_STACK);
+  lcdDrawText(MENU_DEBUG_COL1_OFS, y, "    ");
+  y += FH;
+  lcdDrawTextAlignedLeft( y, "  MNU/MIX/AUD/TMR/ENC");
+  y += FH;
+  lcdDrawTextAlignedLeft(y, "  ");
+  lcdDrawNumber(lcdLastRightPos+2, y, menusStackAvailable(), LEFT) ;
+  lcdDrawText(lcdLastRightPos, y, "/");
+  lcdDrawNumber(lcdLastRightPos+2, y, mixerStackAvailable(), LEFT) ;
+  lcdDrawText(lcdLastRightPos, y, "/");
+  lcdDrawNumber(lcdLastRightPos+2, y, audioStackAvailable(), LEFT) ;
+  lcdDrawText(lcdLastRightPos, y, "/");
+  lcdDrawNumber(lcdLastRightPos+2, y, per10msStackAvailable(), LEFT) ;
+  lcdDrawText(lcdLastRightPos, y, "/");
+  lcdDrawNumber(lcdLastRightPos+2, y, encStackAvailable(), LEFT) ;
 #else
   lcdDrawTextAlignedLeft(y, STR_FREE_STACK);
   lcdDrawNumber(MENU_DEBUG_COL1_OFS, y, menusStack.available(), LEFT);
