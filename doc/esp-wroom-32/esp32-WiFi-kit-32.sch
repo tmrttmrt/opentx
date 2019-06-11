@@ -45,7 +45,7 @@ L esp32-WiFi-kit-32-rescue:R-Device-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue
 U 1 1 54994280
 P 10350 5250
 F 0 "R10" V 10430 5250 50  0000 C CNN
-F 1 "5.1K" V 10350 5250 50  0000 C CNN
+F 1 "10K" V 10350 5250 50  0000 C CNN
 F 2 "" H 10350 5250 60  0001 C CNN
 F 3 "" H 10350 5250 60  0001 C CNN
 	1    10350 5250
@@ -169,9 +169,9 @@ F 3 "" H 7300 1000 60  0001 C CNN
 $EndComp
 Text Label 8650 1000 2    42   ~ 0
 MCP23017_Input
-Text Label 5850 4050 2    42   ~ 0
+Text Label 6250 4050 2    42   ~ 0
 Key_►
-Text Label 5850 3850 2    42   ~ 0
+Text Label 6250 3850 2    42   ~ 0
 Key_▼
 $Comp
 L esp32-WiFi-kit-32-rescue:GND-power-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue #PWR015
@@ -184,65 +184,65 @@ F 3 "" H 10600 6000 60  0001 C CNN
 	1    10600 6000
 	1    0    0    -1  
 $EndComp
-Text Label 1100 4050 0    42   ~ 0
+Text Label 1500 4050 0    42   ~ 0
 SW_AilDR
-Text Label 1400 4350 2    42   ~ 0
+Text Label 1800 4350 2    42   ~ 0
 SW_ThCut
-Text Label 1100 4250 0    42   ~ 0
+Text Label 1500 4250 0    42   ~ 0
 SW_RudDR
-Text Label 5850 3750 2    42   ~ 0
+Text Label 6250 3750 2    42   ~ 0
 Key_ESC
-Text Label 5850 3650 2    42   ~ 0
+Text Label 6250 3650 2    42   ~ 0
 Key_MENU
-Text Label 1400 4150 2    42   ~ 0
+Text Label 1800 4150 2    42   ~ 0
 SW_EleDR
-Text Label 5850 3950 2    42   ~ 0
+Text Label 6250 3950 2    42   ~ 0
 Key_▲
-Text Label 5850 4150 2    42   ~ 0
+Text Label 6250 4150 2    42   ~ 0
 Key_◄
-Text Label 1100 4650 0    42   ~ 0
+Text Label 1500 4650 0    42   ~ 0
 SW_ID2
-Text Label 1100 4550 0    42   ~ 0
+Text Label 1500 4550 0    42   ~ 0
 SW_ID1
-Text Label 5950 4850 2    42   ~ 0
+Text Label 6350 4850 2    42   ~ 0
 Trim_LV-►
-Text Label 5950 4750 2    42   ~ 0
+Text Label 6350 4750 2    42   ~ 0
 Trim_LV◄-
-Text Label 5950 5050 2    42   ~ 0
+Text Label 6350 5050 2    42   ~ 0
 Trim_RV-►
-Text Label 5950 4950 2    42   ~ 0
+Text Label 6350 4950 2    42   ~ 0
 Trim_RV◄-
-Text Label 5950 5150 2    42   ~ 0
+Text Label 6350 5150 2    42   ~ 0
 Trim_RH◄-
-Text Label 5950 5250 2    42   ~ 0
+Text Label 6350 5250 2    42   ~ 0
 Trim_RH-►
-Text Label 5950 4550 2    42   ~ 0
+Text Label 6350 4550 2    42   ~ 0
 Trim_LH◄-
-Text Label 5950 4650 2    42   ~ 0
+Text Label 6350 4650 2    42   ~ 0
 Trim_LH-►
-Text Label 1100 5250 0    42   ~ 0
+Text Label 1500 5250 0    42   ~ 0
 Stick_LV
-Text Label 1100 5350 0    42   ~ 0
+Text Label 1500 5350 0    42   ~ 0
 Stick_RH
-Text Label 1100 4750 0    42   ~ 0
+Text Label 1500 4750 0    42   ~ 0
 U_batt
-Text Label 1100 4950 0    42   ~ 0
+Text Label 1500 4950 0    42   ~ 0
 Pot_1
-Text Label 1100 4850 0    42   ~ 0
+Text Label 1500 4850 0    42   ~ 0
 Pot_2
-Text Label 1100 5150 0    42   ~ 0
+Text Label 1500 5150 0    42   ~ 0
 Stick_RV
-Text Label 1100 5050 0    42   ~ 0
+Text Label 1500 5050 0    42   ~ 0
 Stick_LH
-Text Label 1100 4450 0    42   ~ 0
+Text Label 1500 4450 0    42   ~ 0
 AUDIO
-Text Label 3000 4450 0    42   ~ 0
+Text Label 3400 4450 0    42   ~ 0
 Telemetry_TX
-Text Label 3000 4350 0    42   ~ 0
+Text Label 3400 4350 0    42   ~ 0
 Telemetry_RX
-Text Label 5850 4250 2    42   ~ 0
+Text Label 6250 4250 2    42   ~ 0
 RF_Activated
-Text Label 3000 4750 0    42   ~ 0
+Text Label 3400 4750 0    42   ~ 0
 PPM_OUT
 $Comp
 L esp32-WiFi-kit-32-rescue:CONN_1-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue +1
@@ -258,12 +258,12 @@ $EndComp
 $Comp
 L esp32-WiFi-kit-32-rescue:VCC-power-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue 3.3V01
 U 1 1 54989ABB
-P 1200 3750
-F 0 "3.3V01" H 1200 3850 60  0001 C CNN
-F 1 "VCC" H 1200 3900 50  0000 C CNN
-F 2 "" H 1200 3750 60  0001 C CNN
-F 3 "" H 1200 3750 60  0001 C CNN
-	1    1200 3750
+P 1600 3750
+F 0 "3.3V01" H 1600 3850 60  0001 C CNN
+F 1 "VCC" H 1600 3900 50  0000 C CNN
+F 2 "" H 1600 3750 60  0001 C CNN
+F 3 "" H 1600 3750 60  0001 C CNN
+	1    1600 3750
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -295,17 +295,17 @@ Wire Wire Line
 Wire Wire Line
 	6900 1500 6900 1000
 Wire Wire Line
-	2950 4450 3400 4450
+	3350 4450 3800 4450
 Wire Wire Line
-	5450 4250 5850 4250
+	5850 4250 6250 4250
 Wire Wire Line
-	1050 4350 1400 4350
+	1450 4350 1800 4350
 Wire Wire Line
-	1050 4250 1400 4250
+	1450 4250 1800 4250
 Wire Wire Line
-	2950 4750 3400 4750
+	3350 4750 3800 4750
 Wire Wire Line
-	2950 4350 3400 4350
+	3350 4350 3800 4350
 Connection ~ 10600 5500
 Wire Wire Line
 	6450 1050 6050 1050
@@ -420,176 +420,174 @@ Wire Wire Line
 Wire Wire Line
 	1400 1750 1400 1700
 Wire Wire Line
-	1200 3750 1400 3750
+	1600 3750 1800 3750
 Wire Wire Line
-	1400 5050 1050 5050
+	1800 5050 1450 5050
 Wire Wire Line
-	1400 4950 1050 4950
+	1800 4950 1450 4950
 Wire Wire Line
-	1400 5150 1050 5150
+	1800 5150 1450 5150
 Wire Wire Line
-	1400 5350 1050 5350
+	1800 5350 1450 5350
 Wire Wire Line
-	1400 5250 1050 5250
+	1800 5250 1450 5250
 Wire Wire Line
-	1400 4850 1050 4850
+	1800 4850 1450 4850
 Wire Wire Line
-	1400 4750 1050 4750
+	1800 4750 1450 4750
 $Comp
 L esp32-WiFi-kit-32-rescue:MCP23017_SP-Interface_Expansion-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue U3
 U 1 1 5CECE7B2
-P 4750 4450
-F 0 "U3" V 4700 4150 50  0000 C CNN
-F 1 "MCP23017_SP" V 4700 4550 50  0000 C CNN
-F 2 "Package_DIP:DIP-28_W7.62mm" H 4950 3450 50  0001 L CNN
-F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf" H 4950 3350 50  0001 L CNN
-	1    4750 4450
+P 5150 4450
+F 0 "U3" V 5100 4150 50  0000 C CNN
+F 1 "MCP23017_SP" V 5100 4550 50  0000 C CNN
+F 2 "Package_DIP:DIP-28_W7.62mm" H 5350 3450 50  0001 L CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf" H 5350 3350 50  0001 L CNN
+	1    5150 4450
 	1    0    0    -1  
 $EndComp
 $Comp
 L esp32-WiFi-kit-32-rescue:GND-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue #PWR07
 U 1 1 5D013A16
-P 4750 5700
-F 0 "#PWR07" H 4750 5700 30  0001 C CNN
-F 1 "GND" H 4750 5630 30  0001 C CNN
-F 2 "" H 4750 5700 60  0000 C CNN
-F 3 "" H 4750 5700 60  0000 C CNN
-	1    4750 5700
+P 5150 5700
+F 0 "#PWR07" H 5150 5700 30  0001 C CNN
+F 1 "GND" H 5150 5630 30  0001 C CNN
+F 2 "" H 5150 5700 60  0000 C CNN
+F 3 "" H 5150 5700 60  0000 C CNN
+	1    5150 5700
 	1    0    0    -1  
 $EndComp
 $Comp
 L esp32-WiFi-kit-32-rescue:VCC-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue #PWR06
 U 1 1 5D013C96
-P 4750 3150
-F 0 "#PWR06" H 4750 3250 30  0001 C CNN
-F 1 "VCC" H 4800 3250 30  0000 C CNN
-F 2 "" H 4750 3150 60  0000 C CNN
-F 3 "" H 4750 3150 60  0000 C CNN
-	1    4750 3150
+P 5150 3150
+F 0 "#PWR06" H 5150 3250 30  0001 C CNN
+F 1 "VCC" H 5200 3250 30  0000 C CNN
+F 2 "" H 5150 3150 60  0000 C CNN
+F 3 "" H 5150 3150 60  0000 C CNN
+	1    5150 3150
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4050 5500 4750 5500
+	4450 5500 5150 5500
 Wire Wire Line
-	5450 4550 5950 4550
+	5850 4550 6350 4550
 Wire Wire Line
-	5450 4650 5950 4650
+	5850 4650 6350 4650
 Wire Wire Line
-	5450 4750 5950 4750
+	5850 4750 6350 4750
 Wire Wire Line
-	5450 4850 5950 4850
+	5850 4850 6350 4850
 Wire Wire Line
-	5450 4950 5950 4950
+	5850 4950 6350 4950
 Wire Wire Line
-	5450 5050 5950 5050
+	5850 5050 6350 5050
 Wire Wire Line
-	5450 5150 5950 5150
+	5850 5150 6350 5150
 Wire Wire Line
-	5450 5250 5950 5250
+	5850 5250 6350 5250
 Wire Wire Line
-	1050 4050 1400 4050
+	1450 4050 1800 4050
 $Comp
 L esp32-WiFi-kit-32-rescue:GND-MEGA2560-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue #PWR01
 U 1 1 5D5494FA
-P 800 3850
-F 0 "#PWR01" H 800 3850 30  0001 C CNN
-F 1 "GND" H 800 3780 30  0001 C CNN
-F 2 "" H 800 3850 60  0000 C CNN
-F 3 "" H 800 3850 60  0000 C CNN
-	1    800  3850
+P 1200 3850
+F 0 "#PWR01" H 1200 3850 30  0001 C CNN
+F 1 "GND" H 1200 3780 30  0001 C CNN
+F 2 "" H 1200 3850 60  0000 C CNN
+F 3 "" H 1200 3850 60  0000 C CNN
+	1    1200 3850
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1400 3650 800  3650
+	1800 3650 1200 3650
 Wire Wire Line
-	800  3650 800  3850
+	1200 3650 1200 3850
 Wire Wire Line
-	3650 3750 4050 3750
+	4050 3750 4450 3750
 Wire Wire Line
-	1050 4650 1400 4650
-Wire Wire Line
-	1050 4550 1400 4550
-Text Label 3000 5350 0    42   ~ 0
+	1450 4650 1800 4650
+Text Label 3400 5350 0    42   ~ 0
 I2C_SDA
-Text Label 3000 5250 0    42   ~ 0
+Text Label 3400 5250 0    42   ~ 0
 I2C_SCL
 Wire Wire Line
-	1050 4150 1400 4150
+	1450 4150 1800 4150
 Wire Wire Line
-	3950 4550 4050 4550
+	4350 4550 4450 4550
 Wire Wire Line
-	2950 4650 3950 4650
-Text Label 3000 5150 0    42   ~ 0
+	3350 4650 4350 4650
+Text Label 3400 5150 0    42   ~ 0
 SD_N_CS
 Wire Wire Line
-	3400 5150 2950 5150
+	3800 5150 3350 5150
 Wire Wire Line
-	1050 4450 1400 4450
-Text Label 3000 4850 0    42   ~ 0
+	1450 4450 1800 4450
+Text Label 3400 4850 0    42   ~ 0
 SD_MOSI
 Wire Wire Line
-	2950 4850 3400 4850
-Text Label 3000 4950 0    42   ~ 0
+	3350 4850 3800 4850
+Text Label 3400 4950 0    42   ~ 0
 SD_SCK
 Wire Wire Line
-	2950 4950 3400 4950
-Text Label 3000 5050 0    42   ~ 0
+	3350 4950 3800 4950
+Text Label 3400 5050 0    42   ~ 0
 SD_MISO
 Wire Wire Line
-	4750 5550 4750 5700
+	5150 5550 5150 5700
 Wire Wire Line
-	3650 3750 3650 5250
+	4050 3750 4050 5250
 Wire Wire Line
-	3750 3650 4050 3650
-Text Label 3000 4650 0    42   ~ 0
+	4150 3650 4450 3650
+Text Label 3400 4650 0    42   ~ 0
 DISPL_RESET
 Wire Wire Line
-	5450 3650 5850 3650
+	5850 3650 6250 3650
 Wire Wire Line
-	5450 3750 5850 3750
+	5850 3750 6250 3750
 Wire Wire Line
-	5450 3850 5850 3850
+	5850 3850 6250 3850
 Wire Wire Line
-	5450 3950 5850 3950
+	5850 3950 6250 3950
 Wire Wire Line
-	5450 4050 5850 4050
+	5850 4050 6250 4050
 Wire Wire Line
-	5450 4150 5850 4150
+	5850 4150 6250 4150
 Wire Wire Line
-	4050 5250 4050 5500
-Connection ~ 4050 5150
-Connection ~ 4050 5250
+	4450 5250 4450 5500
+Connection ~ 4450 5150
+Connection ~ 4450 5250
 Wire Wire Line
-	4050 5050 4050 5150
+	4450 5050 4450 5150
 Wire Wire Line
-	4050 5150 4050 5250
+	4450 5150 4450 5250
 $Comp
 L Device:C 100n1
 U 1 1 5CBA5F4B
-P 5050 3300
-F 0 "100n1" V 4798 3300 50  0000 C CNN
-F 1 "C?" V 4889 3300 50  0000 C CNN
-F 2 "" H 5088 3150 50  0001 C CNN
-F 3 "~" H 5050 3300 50  0001 C CNN
-	1    5050 3300
+P 5450 3300
+F 0 "100n1" V 5198 3300 50  0000 C CNN
+F 1 "C?" V 5289 3300 50  0000 C CNN
+F 2 "" H 5488 3150 50  0001 C CNN
+F 3 "~" H 5450 3300 50  0001 C CNN
+	1    5450 3300
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	4750 3350 4750 3300
+	5150 3350 5150 3300
 Wire Wire Line
-	4900 3300 4750 3300
-Connection ~ 4750 3300
+	5300 3300 5150 3300
+Connection ~ 5150 3300
 Wire Wire Line
-	4750 3300 4750 3150
+	5150 3300 5150 3150
 $Comp
 L power:GND #PWR08
 U 1 1 5CBC8A57
-P 5200 3300
-F 0 "#PWR08" H 5200 3050 50  0001 C CNN
-F 1 "GND" V 5205 3172 50  0000 R CNN
-F 2 "" H 5200 3300 50  0001 C CNN
-F 3 "" H 5200 3300 50  0001 C CNN
-	1    5200 3300
+P 5600 3300
+F 0 "#PWR08" H 5600 3050 50  0001 C CNN
+F 1 "GND" V 5605 3172 50  0000 R CNN
+F 2 "" H 5600 3300 50  0001 C CNN
+F 3 "" H 5600 3300 50  0001 C CNN
+	1    5600 3300
 	0    -1   -1   0   
 $EndComp
 Connection ~ 1400 1750
@@ -741,7 +739,7 @@ Text Label 2950 1300 0    50   ~ 0
 AU_AMPL
 Text Notes 2400 800  0    60   ~ 0
 Audio filter
-Text Notes 5200 5800 0    50   ~ 0
+Text Notes 5600 5800 0    50   ~ 0
 Power managment has not been \nimplemented in firmware.\nSD card SPI needs external pull ups (not drawn).
 $Comp
 L esp32-WiFi-kit-32-rescue:GND-power-esp-wroom-32-rescue-esp32-WiFi-kit-32-rescue #PWR012
@@ -871,32 +869,32 @@ RF_POWER
 $Comp
 L esp32-WiFi-kit-32:WiFi-kit-32 U1
 U 1 1 5CFD4342
-P 2450 4000
-F 0 "U1" H 2175 4715 50  0000 C CNN
-F 1 "WiFi-kit-32" H 2175 4624 50  0000 C CNN
-F 2 "" H 2450 4000 50  0001 C CNN
-F 3 "" H 2450 4000 50  0001 C CNN
-	1    2450 4000
+P 2850 4000
+F 0 "U1" H 2575 4715 50  0000 C CNN
+F 1 "WiFi-kit-32" H 2575 4624 50  0000 C CNN
+F 2 "" H 2850 4000 50  0001 C CNN
+F 3 "" H 2850 4000 50  0001 C CNN
+	1    2850 4000
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3950 4650 3950 4550
+	4350 4650 4350 4550
 Wire Wire Line
-	2950 5250 3650 5250
+	3350 5250 4050 5250
 Wire Wire Line
-	2950 5350 3750 5350
+	3350 5350 4150 5350
 Wire Wire Line
-	2950 4250 3400 4250
-Text Label 3000 4250 0    42   ~ 0
+	3350 4250 3800 4250
+Text Label 3400 4250 0    42   ~ 0
 DISPL_SCL
 Wire Wire Line
-	2950 4550 3400 4550
-Text Label 3000 4550 0    42   ~ 0
+	3350 4550 3800 4550
+Text Label 3400 4550 0    42   ~ 0
 DISPL_SDA
 Wire Wire Line
-	3750 3650 3750 5350
+	4150 3650 4150 5350
 Wire Wire Line
-	2950 5050 3400 5050
+	3350 5050 3800 5050
 Wire Wire Line
 	7450 3850 8550 3850
 Connection ~ 9550 3850
@@ -904,8 +902,38 @@ Wire Wire Line
 	9550 3850 10500 3850
 Wire Wire Line
 	9550 3850 9550 4550
-Text Label 5850 4350 2    42   ~ 0
+Text Label 6250 4350 2    42   ~ 0
 RF_POWER
 Wire Wire Line
-	5450 4350 5850 4350
+	5850 4350 6250 4350
+$Comp
+L Device:R_US R12
+U 1 1 5D0041BE
+P 1000 4550
+F 0 "R12" V 795 4550 50  0000 C CNN
+F 1 "1K" V 886 4550 50  0000 C CNN
+F 2 "" V 1040 4540 50  0001 C CNN
+F 3 "~" H 1000 4550 50  0001 C CNN
+	1    1000 4550
+	0    1    1    0   
+$EndComp
+$Comp
+L power:VCC #PWR016
+U 1 1 5D004342
+P 800 4500
+F 0 "#PWR016" H 800 4350 50  0001 C CNN
+F 1 "VCC" H 817 4673 50  0000 C CNN
+F 2 "" H 800 4500 50  0001 C CNN
+F 3 "" H 800 4500 50  0001 C CNN
+	1    800  4500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	800  4500 800  4550
+Wire Wire Line
+	800  4550 850  4550
+Wire Wire Line
+	1150 4550 1800 4550
+Text Notes 550  4800 0    50   ~ 0
+On-module LED \npuls dow with 10K.
 $EndSCHEMATC

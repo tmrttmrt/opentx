@@ -195,6 +195,7 @@ void oledInitialize(void)
 
 void lcdSetRefVolt(uint8_t val)
 {
+  _set_contrast_control(val);
 }
 
 void lcdRefresh()

@@ -51,5 +51,5 @@ set(TARGET_SRC
 set(SRC
   ${SRC}
   debug.cpp
-  targets/common/esp32/drivers/lcd_driver_i2c.cpp
+  targets/common/esp32/drivers/oled_driver_i2c.cpp
   )

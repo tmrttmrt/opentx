@@ -82,16 +82,8 @@ uint8_t switchState(uint8_t index);
 #define LCD_H                          64
 #define LCD_DEPTH                      1
 #define LCD_CONTRAST_MIN               10
-#define LCD_CONTRAST_MAX               45
-#define LCD_CONTRAST_DEFAULT           25
-#define LCD_PIN_NUM_MISO -1
-
-//#define LCD_PIN_NUM_MOSI GPIO_NUM_12
-//#define LCD_PIN_NUM_CLK  GPIO_NUM_14
-//#define LCD_PIN_NUM_CS   GPIO_NUM_13
-//#define LCD_PIN_NUM_DC   GPIO_NUM_27
-//#define LCD_PIN_NUM_RST  GPIO_NUM_0
-//#define LCD_PIN_NUM_BCKL GPIO_NUM_2
+#define LCD_CONTRAST_MAX               255
+#define LCD_CONTRAST_DEFAULT           200
 
 #define I2C_DISPLAY_SCL_GPIO          GPIO_NUM_15
 #define I2C_DISPLAY_SDA_GPIO          GPIO_NUM_4
