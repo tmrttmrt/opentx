@@ -54,6 +54,7 @@
 #endif
 
 // Rotary Encoder
+#define ROTARY_ENCODER_RCC_APB1Periph   RCC_APB1Periph_TIM4
 #define ROTARY_ENCODER_GPIO             GPIOH
 #define ROTARY_ENCODER_GPIO_PIN_A       GPIO_Pin_11 // PH.11
 #define ROTARY_ENCODER_GPIO_PIN_B       GPIO_Pin_10 // PH.10
@@ -65,6 +66,9 @@
 #define ROTARY_ENCODER_EXTI_PortSource  EXTI_PortSourceGPIOH
 #define ROTARY_ENCODER_EXTI_PinSource1  EXTI_PinSource11
 #define ROTARY_ENCODER_EXTI_PinSource2  EXTI_PinSource10
+#define ROTARY_ENCODER_TIMER            TIM4
+#define ROTARY_ENCODER_TIMER_IRQn       TIM4_IRQn
+#define ROTARY_ENCODER_TIMER_IRQHandler TIM4_IRQHandler
 
 // Switches
 #define STORAGE_SWITCH_A
@@ -279,9 +283,10 @@
 
 // Power
 #define PWR_RCC_AHB1Periph              RCC_AHB1Periph_GPIOJ
-#define PWR_GPIO                        GPIOJ
-#define PWR_SWITCH_GPIO_PIN             GPIO_Pin_0  // PJ.00
+#define PWR_ON_GPIO                     GPIOJ
 #define PWR_ON_GPIO_PIN                 GPIO_Pin_1  // PJ.01
+#define PWR_SWITCH_GPIO                 GPIOJ
+#define PWR_SWITCH_GPIO_PIN             GPIO_Pin_0  // PJ.00
 
 // S.Port update connector
 #define SPORT_MAX_BAUDRATE              250000 // < 400000

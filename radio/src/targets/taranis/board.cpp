@@ -41,64 +41,6 @@ void watchdogInit(unsigned int duration)
   IWDG->KR = 0xCCCC;      // start
 }
 
-// Starts TIMER at 2MHz
-void init2MhzTimer()
-{
-  TIMER_2MHz_TIMER->PSC = (PERI1_FREQUENCY * TIMER_MULT_APB1) / 2000000 - 1 ;       // 0.5 uS, 2 MHz
-  TIMER_2MHz_TIMER->ARR = 65535;
-  TIMER_2MHz_TIMER->CR2 = 0;
-  TIMER_2MHz_TIMER->CR1 = TIM_CR1_CEN;
-}
-
-// Starts TIMER at 200Hz (5ms)
-void init5msTimer()
-{
-  INTERRUPT_xMS_TIMER->ARR = 4999 ; // 5mS in uS
-  INTERRUPT_xMS_TIMER->PSC = (PERI1_FREQUENCY * TIMER_MULT_APB1) / 1000000 - 1 ; // 1uS
-  INTERRUPT_xMS_TIMER->CCER = 0 ;
-  INTERRUPT_xMS_TIMER->CCMR1 = 0 ;
-  INTERRUPT_xMS_TIMER->EGR = 0 ;
-  INTERRUPT_xMS_TIMER->CR1 = 5 ;
-  INTERRUPT_xMS_TIMER->DIER |= 1 ;
-  NVIC_EnableIRQ(INTERRUPT_xMS_IRQn) ;
-  NVIC_SetPriority(INTERRUPT_xMS_IRQn, 7);
-}
-
-void stop5msTimer( void )
-{
-  INTERRUPT_xMS_TIMER->CR1 = 0 ;        // stop timer
-  NVIC_DisableIRQ(INTERRUPT_xMS_IRQn) ;
-}
-
-// TODO use the same than board_sky9x.cpp
-void interrupt5ms()
-{
-  static uint32_t pre_scale ;       // Used to get 10 Hz counter
-
-  AUDIO_HEARTBEAT();
-
-#if defined(HAPTIC)
-  HAPTIC_HEARTBEAT();
-#endif
-
-  if (++pre_scale >= 2) {
-    pre_scale = 0 ;
-    DEBUG_TIMER_START(debugTimerPer10ms);
-    DEBUG_TIMER_SAMPLE(debugTimerPer10msPeriod);
-    per10ms();
-    DEBUG_TIMER_STOP(debugTimerPer10ms);
-  }
-}
-
-#if !defined(SIMU)
-extern "C" void INTERRUPT_xMS_IRQHandler()
-{
-  INTERRUPT_xMS_TIMER->SR &= ~TIM_SR_UIF ;
-  interrupt5ms() ;
-  DEBUG_INTERRUPT(INT_5MS);
-}
-#endif
-
 #if defined(PWR_BUTTON_PRESS)
   #define PWR_PRESS_DURATION_MIN        100 // 1s
   #define PWR_PRESS_DURATION_MAX        500 // 5s
@@ -160,7 +102,8 @@ void boardInit()
                          GYRO_RCC_AHB1Periph,
                          ENABLE);
 
-  RCC_APB1PeriphClockCmd(LCD_RCC_APB1Periph |
+  RCC_APB1PeriphClockCmd(ROTARY_ENCODER_RCC_APB1Periph |
+                         LCD_RCC_APB1Periph |
                          AUDIO_RCC_APB1Periph |
                          ADC_RCC_APB1Periph |
                          BACKLIGHT_RCC_APB1Periph |
@@ -192,10 +135,7 @@ void boardInit()
   bluetoothInit(BLUETOOTH_DEFAULT_BAUDRATE, true);
 #endif
 
-#if !defined(PCBX9E)
-  // some X9E boards need that the pwrInit() is moved a little bit later
   pwrInit();
-#endif
 
 #if defined(STATUS_LEDS)
   ledInit();
@@ -247,7 +187,7 @@ void boardInit()
 #if defined(PWR_BUTTON_PRESS)
   if (!WAS_RESET_BY_WATCHDOG_OR_SOFTWARE()) {
     lcdClear();
-#if defined(PCBX9E)
+#if LCD_DEPTH > 1
     lcdDrawBitmap(76, 2, bmp_lock, 0, 60);
 #else
     lcdDrawFilledRect(LCD_W / 2 - 18, LCD_H / 2 - 3, 6, 6, SOLID, 0);
@@ -263,7 +203,7 @@ void boardInit()
       if (duration < PWR_PRESS_DURATION_MIN) {
         unsigned index = duration / (PWR_PRESS_DURATION_MIN / 4);
         lcdClear();
-#if defined(PCBX9E)
+#if LCD_DEPTH > 1
         lcdDrawBitmap(76, 2, bmp_startup, index*60, 60);
 #else
         for(uint8_t i= 0; i < 4; i++) {
@@ -280,7 +220,7 @@ void boardInit()
       else {
         if (pwr_on != 1) {
           pwr_on = 1;
-          pwrInit();
+          pwrOn();
           backlightInit();
           haptic.play(15, 3, PLAY_NOW);
         }
@@ -293,14 +233,16 @@ void boardInit()
     }
   }
   else {
-    pwrInit();
+    pwrOn();
     backlightInit();
   }
+#else // defined(PWR_BUTTON_PRESS)
+  pwrOn();
+  backlightInit();
+#endif
+
 #if defined(TOPLCD_GPIO)
   toplcdInit();
-#endif
-#else // defined(PWR_BUTTON_PRESS)
-  backlightInit();
 #endif
 
   if (HAS_SPORT_UPDATE_CONNECTOR()) {

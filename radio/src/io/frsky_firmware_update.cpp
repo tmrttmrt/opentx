@@ -299,7 +299,7 @@ const char * FrskyDeviceFirmwareUpdate::uploadFile(const char * filename)
 
   const char * ext = getFileExtension(filename);
   if (ext && !strcasecmp(ext, UPDATE_FIRMWARE_EXT)) {
-    // FrSkyFirmwareInformation *information = (FrSkyFirmwareInformation *) buffer;
+    // FrSkyFirmwareInformation * information = (FrSkyFirmwareInformation *) buffer;
     if (f_read(&file, buffer, sizeof(FrSkyFirmwareInformation), &count) != FR_OK || count != sizeof(FrSkyFirmwareInformation)) {
       f_close(&file);
       return "Format error";
@@ -635,7 +635,7 @@ void FrskyChipFirmwareUpdate::flashFirmware(const char * filename)
 
   const char * result = doFlashFirmware(filename);
 
-  AUDIO_PLAY(AU_SPECIAL_SOUND_BEEP1 );
+  AUDIO_PLAY(AU_SPECIAL_SOUND_BEEP1);
   BACKLIGHT_ENABLE();
 
   if (result) {
