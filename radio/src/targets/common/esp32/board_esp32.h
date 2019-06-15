@@ -79,7 +79,8 @@ extern TaskPrio menuTaskPrio;
 extern TaskPrio audioTaskPrio;
 
 #define usbPlugged() false
-#define checkTrainerSettings()
+#define init_trainer_capture()
+#define stop_trainer_capture()
 #define eepromIsWriting() (false)
 #define eepromWriteProcess()
 #define isForcePowerOffRequested() false

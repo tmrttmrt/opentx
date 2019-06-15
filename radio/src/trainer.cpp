@@ -47,7 +47,7 @@ void checkTrainerSignalWarning()
   }
 }
 
-#if defined(PCBSKY9X)
+#if defined(PCBSKY9X) || defined(CPUESP32)
 void checkTrainerSettings()
 {
   uint8_t requiredTrainerMode = SLAVE_MODE();
