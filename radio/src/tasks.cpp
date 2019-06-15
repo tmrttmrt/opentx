@@ -113,8 +113,8 @@ TASK_FUNCTION(mixerTask)
   s_pulses_paused = true;
 
   while (1) {
-#if defined(PCBX9D) || defined(PCBX7)
-    // SBUS on Hearbeat PIN (which is a serial RX)
+#if defined(PCBTARANIS) && defined(SBUS)
+    // SBUS trainer
     processSbusInput();
 #endif
 
@@ -134,7 +134,7 @@ TASK_FUNCTION(mixerTask)
     }
 #else
     if (isForcePowerOffRequested()) {
-      pwrOff();
+      boardOff();
     }
 #endif
 
