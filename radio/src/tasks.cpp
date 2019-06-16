@@ -85,7 +85,7 @@ bool isModuleSynchronous(uint8_t module)
     return true;
 #endif
 #if defined(CPUESP32)
-  if (protocol == PROTOCOL_CHANNELS_ESPNOW)
+  if (protocol == PROTOCOL_CHANNELS_ESPNOW || protocol == PROTOCOL_CHANNELS_PPM)
     return true;
 #endif
   return false;
@@ -200,9 +200,6 @@ TASK_FUNCTION(mixerTask)
       if (t0 > maxMixerDuration) maxMixerDuration = t0;
 
       sendSynchronousPulses();
-#if defined(CPUESP32)
-      extmoduleSendNextFrame();
-#endif
     }
   }
 }

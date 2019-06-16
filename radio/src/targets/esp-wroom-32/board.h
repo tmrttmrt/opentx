@@ -137,7 +137,7 @@ void rfPwrOn();
 void rfPwrOff();
 
 //#define INP_E_PPM_IN              4
-#define PPM_TX_GPIO             15
+#define PPM_TX_GPIO             GPIO_NUM_15
 #define RF_POWER_BIT            5
 
 // Trims
