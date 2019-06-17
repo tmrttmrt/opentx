@@ -665,10 +665,10 @@ void menuModelSetup(event_t event)
             }
           }
         }
-
+        LcdFlags line = attr;
         for (uint8_t i=0; i<NUM_SWITCHES-1/*not on TRN switch*/; i++) {
           uint8_t swactive = !(g_model.switchWarningEnable & 1 << i);
-          attr = 0;
+          LcdFlags attr = 0;
 
           if (IS_3POS(i)) {
             c = '0'+(states & 0x03);
@@ -680,12 +680,12 @@ void menuModelSetup(event_t event)
             c = *(STR_VSWITCHES - 2 + 9 + (3*(i+1)));
             states >>= 1;
           }
-          if ((sub == k) && (menuHorizontalPosition == i)) {
+          if (line && (menuHorizontalPosition == i)) {
             attr = BLINK | INVERS;
           }
           lcdDrawChar(MODEL_SETUP_2ND_COLUMN+i*FW, y, (swactive) ? c : '-', attr);
         }
-        lcdDrawText(MODEL_SETUP_2ND_COLUMN+(NUM_SWITCHES*FW), y, "<]", (menuHorizontalPosition == NUM_SWITCHES-1 && !NO_HIGHLIGHT() && (sub == k)) ? BLINK | INVERS : 0);
+        lcdDrawText(MODEL_SETUP_2ND_COLUMN+(NUM_SWITCHES*FW), y, "<]", (menuHorizontalPosition == NUM_SWITCHES-1 && !NO_HIGHLIGHT() && attr) ? BLINK | INVERS: 0);
 #endif
         break;
       }
