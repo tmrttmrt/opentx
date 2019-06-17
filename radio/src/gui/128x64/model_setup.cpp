@@ -680,12 +680,12 @@ void menuModelSetup(event_t event)
             c = *(STR_VSWITCHES - 2 + 9 + (3*(i+1)));
             states >>= 1;
           }
-          if (attr && (menuHorizontalPosition == i)) {
+          if ((sub == k) && (menuHorizontalPosition == i)) {
             attr = BLINK | INVERS;
           }
           lcdDrawChar(MODEL_SETUP_2ND_COLUMN+i*FW, y, (swactive) ? c : '-', attr);
-          lcdDrawText(MODEL_SETUP_2ND_COLUMN+(NUM_SWITCHES*FW), y, "<]", (menuHorizontalPosition == NUM_SWITCHES-1 && !NO_HIGHLIGHT()) ? attr : 0);
         }
+        lcdDrawText(MODEL_SETUP_2ND_COLUMN+(NUM_SWITCHES*FW), y, "<]", (menuHorizontalPosition == NUM_SWITCHES-1 && !NO_HIGHLIGHT() && (sub == k)) ? BLINK | INVERS : 0);
 #endif
         break;
       }
