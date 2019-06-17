@@ -69,20 +69,15 @@ void init_main_ppm(uint32_t out_enable){
   }
 }
 
-void init_ppm(uint32_t port)
+void extmodulePpmStart()
 {
-  ESP_LOGI(TAG, "'init_ppm' called. port:%d",port);
-  if (port == EXTERNAL_MODULE) {
-    init_main_ppm(1);
-  }
+  ESP_LOGI(TAG, "'extmodulePpmStart' called.");
+  init_main_ppm(1);
 }
 
-void disable_ppm(uint32_t port)
+void extmoduleStop()
 {
-  ESP_LOGI(TAG, "'disable_ppm' called. port:%d",port);
-  if (port == EXTERNAL_MODULE) {
-    init_main_ppm(0);
-  }
+  init_main_ppm(0);
 }
 
 void extmoduleSerialStart(uint32_t baudrate, uint32_t period_half_us, bool inverted)

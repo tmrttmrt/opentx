@@ -36,7 +36,9 @@ extern "C" {
 #pragma clang diagnostic ignored "-Wdeprecated-register"
 #endif
 
-#if defined(STM32F4)
+#if defined(LUA_EXPORT_GENERATION)
+  // no includes
+#elif defined(STM32F4)
   #include "STM32F4xx_DSP_StdPeriph_Lib_V1.4.0/Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"
   #include "STM32F4xx_DSP_StdPeriph_Lib_V1.4.0/Libraries/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_rcc.h"
   #include "STM32F4xx_DSP_StdPeriph_Lib_V1.4.0/Libraries/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_syscfg.h"
@@ -78,6 +80,7 @@ extern "C" {
 #endif
 
 #include "usb_driver.h"
+
 #if !defined(SIMU)
   #include "usbd_cdc_core.h"
   #include "usbd_msc_core.h"
@@ -199,29 +202,10 @@ uint32_t isBootloaderStart(const uint8_t * buffer);
 #define IS_INTERNAL_MODULE_ON()         (GPIO_ReadInputDataBit(INTMODULE_PWR_GPIO, INTMODULE_PWR_GPIO_PIN) == Bit_SET)
 #endif
 
-void init_ppm(uint8_t module);
-void disable_ppm(uint8_t module);
-void init_pxx2(uint8_t module);
-void disable_pxx2(uint8_t module);
-void init_pxx1_pulses(uint8_t module);
-void init_pxx1_serial(uint8_t module);
-void disable_pxx1_pulses(uint8_t module);
-void disable_pxx1_serial(uint8_t module);
-void disable_serial(uint8_t module);
-void intmoduleStop();
-void intmodulePxxStart();
 void intmoduleSerialStart(uint32_t baudrate, uint8_t rxEnable);
-#if defined(INTERNAL_MODULE_PPM)
-void intmodulePpmStart(void);
-#endif
 void intmoduleSendBuffer(const uint8_t * data, uint8_t size);
 void intmoduleSendNextFrame();
 
-void extmoduleStop();
-void extmodulePpmStart();
-void extmodulePxxPulsesStart();
-void extmodulePxxSerialStart();
-void extmodulePxx2Start();
 void extmoduleSerialStart(uint32_t baudrate, uint32_t period_half_us, bool inverted);
 void extmoduleInvertedSerialStart(uint32_t baudrate);
 void extmoduleSendBuffer(const uint8_t * data, uint8_t size);

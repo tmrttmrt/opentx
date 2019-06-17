@@ -317,8 +317,8 @@ void init_espnow()
   initTX();
 }
 
-void disable_espnow()
+void intmoduleStop()
 {
-  ESP_LOGI(TAG, "disable_espnow");
+  ESP_LOGI(TAG, "intmoduleStop");
   pulsesON = false;
 }

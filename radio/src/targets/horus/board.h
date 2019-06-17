@@ -35,6 +35,7 @@ extern "C" {
 #pragma clang diagnostic ignored "-Wdeprecated-register"
 #endif
 
+#if !defined(LUA_EXPORT_GENERATION)
 #include "STM32F4xx_DSP_StdPeriph_Lib_V1.4.0/Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"
 #include "STM32F4xx_DSP_StdPeriph_Lib_V1.4.0/Libraries/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_rcc.h"
 #include "STM32F4xx_DSP_StdPeriph_Lib_V1.4.0/Libraries/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_syscfg.h"
@@ -53,12 +54,9 @@ extern "C" {
 #include "STM32F4xx_DSP_StdPeriph_Lib_V1.4.0/Libraries/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_fmc.h"
 #include "STM32F4xx_DSP_StdPeriph_Lib_V1.4.0/Libraries/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_tim.h"
 #include "STM32F4xx_DSP_StdPeriph_Lib_V1.4.0/Libraries/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_dma2d.h"
-
-#if defined(PCBX10)
 #include "STM32F4xx_DSP_StdPeriph_Lib_V1.4.0/Libraries/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_adc.h"
-#endif
-
 #include "STM32F4xx_DSP_StdPeriph_Lib_V1.4.0/Libraries/STM32F4xx_StdPeriph_Driver/inc/misc.h"
+#endif
 
 #if __clang__
 // Restore warnings about registers
@@ -208,31 +206,15 @@ void SDRAM_Init(void);
   #define IS_PXX1_INTERNAL_ENABLED()            (true)
 #endif
 
-void init_ppm(uint8_t module);
-void disable_ppm(uint8_t module);
-void init_pxx1_pulses(uint8_t module);
-void init_pxx1_serial(uint8_t module);
-void disable_pxx1_pulses(uint8_t module);
-void disable_pxx1_serial(uint8_t module);
-void init_pxx2(uint8_t module);
-void disable_pxx2(uint8_t module);
-void disable_serial(uint8_t module);
-
 void init_intmodule_heartbeat();
 void check_intmodule_heartbeat();
 
-void intmoduleStop();
 void intmoduleSerialStart(uint32_t baudrate, uint8_t rxEnable);
-void intmodulePxxStart();
 void intmoduleSendBuffer(const uint8_t * data, uint8_t size);
 void intmoduleSendNextFrame();
 
 void extmoduleSerialStart(uint32_t baudrate, uint32_t period_half_us, bool inverted);
 void extmoduleSendNextFrame();
-void extmoduleStop();
-void extmodulePpmStart();
-void extmodulePxxStart();
-void extmodulePxx2Start();
 
 // Trainer driver
 void init_trainer_ppm(void);

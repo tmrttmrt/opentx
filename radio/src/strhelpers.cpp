@@ -44,6 +44,11 @@ char zchar2char(int8_t idx)
   return ' ';
 }
 
+char char2lower(char c)
+{
+  return (c >= 'A' && c <= 'Z') ? c + 32 : c;
+}
+
 int8_t char2zchar(char c)
 {
   if (c == '_') return 37;
@@ -165,7 +170,7 @@ char * strAppendStringWithIndex(char * dest, const char * s, int idx)
   return strAppendUnsigned(strAppend(dest, s), abs(idx));
 }
 
-char * getTimerString(char * dest, putstime_t tme, uint8_t hours)
+char * getTimerString(char * dest, int32_t tme, uint8_t hours)
 {
   char * s = dest;
   div_t qr;
