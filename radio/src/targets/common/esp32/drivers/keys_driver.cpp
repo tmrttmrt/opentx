@@ -433,7 +433,7 @@ uint8_t switchState(uint8_t index)
   return result;
 }
 
-uint8_t trimDown(uint8_t idx)
+bool trimDown(uint8_t idx)
 {
   return trState & (1 << idx);
 }

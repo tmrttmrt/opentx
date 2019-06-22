@@ -22,6 +22,7 @@
 #ifndef _BOARD_ESP_WROOM_32_H_
 #define _BOARD_ESP_WROOM_32_H_
 
+#include "../opentx_constants.h"
 #include "board_esp32.h"
 
 // Stubs
@@ -162,6 +163,7 @@ void rfPwrOff();
 
 // Keys driver
 #define NUM_SWITCHES                   7
+#define NUM_SWITCHES_POSITIONS         9
 #define READI2CSW() readI2CSw()
 //MCP23017
 #define MCP23017_ADDR_KEYS  0x20

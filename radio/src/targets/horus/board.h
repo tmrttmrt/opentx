@@ -22,6 +22,7 @@
 #define _BOARD_HORUS_H_
 
 #include "../definitions.h"
+#include "../opentx_constants.h"
 #include "cpu_id.h"
 
 #if defined(__cplusplus) && !defined(SIMU)
@@ -308,16 +309,12 @@ enum EnumSwitchesPositions
   SW_SGMBR0,
   SW_SGMBR1,
   SW_SGMBR2,
-  STORAGE_NUM_SWITCHES_POSITIONS
+  NUM_SWITCHES_POSITIONS
 };
 
-
-#if defined(__cplusplus)
-static_assert(STORAGE_NUM_SWITCHES_POSITIONS == NUM_SWITCHES * 3, "Wrong switches positions count");
-#endif
+#define STORAGE_NUM_SWITCHES_POSITIONS  (STORAGE_NUM_SWITCHES * 3)
 
 void keysInit(void);
-uint8_t keyState(uint8_t index);
 uint32_t switchState(uint8_t index);
 uint32_t readKeys(void);
 #define KEYS_PRESSED()                          (readKeys())
@@ -425,6 +422,10 @@ enum Analogs {
 
 #define POT_LAST (SLIDER_FIRST - 1)
 
+#define DEFAULT_SWITCH_CONFIG  (SWITCH_TOGGLE << 14) + (SWITCH_3POS << 12) + (SWITCH_2POS << 10) + (SWITCH_3POS << 8) + (SWITCH_3POS << 6) + (SWITCH_3POS << 4) + (SWITCH_3POS << 2) + (SWITCH_3POS << 0)
+#define DEFAULT_POTS_CONFIG    (POT_WITH_DETENT << 4) + (POT_MULTIPOS_SWITCH << 2) + (POT_WITHOUT_DETENT << 0)
+#define DEFAULT_SLIDERS_CONFIG (SLIDER_WITH_DETENT << 3) + (SLIDER_WITH_DETENT << 2) + (SLIDER_WITH_DETENT << 1) + (SLIDER_WITH_DETENT << 0)
+
 enum CalibratedAnalogs {
   CALIBRATED_STICK1,
   CALIBRATED_STICK2,
@@ -521,6 +522,7 @@ void ledBlue(void);
 #define LCD_DEPTH                      16
 void lcdInit(void);
 void lcdRefresh(void);
+void lcdCopy(void * dest, void * src);
 void DMAFillRect(uint16_t * dest, uint16_t destw, uint16_t desth, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
 void DMACopyBitmap(uint16_t * dest, uint16_t destw, uint16_t desth, uint16_t x, uint16_t y, const uint16_t * src, uint16_t srcw, uint16_t srch, uint16_t srcx, uint16_t srcy, uint16_t w, uint16_t h);
 void DMACopyAlphaBitmap(uint16_t * dest, uint16_t destw, uint16_t desth, uint16_t x, uint16_t y, const uint16_t * src, uint16_t srcw, uint16_t srch, uint16_t srcx, uint16_t srcy, uint16_t w, uint16_t h);
@@ -608,7 +610,6 @@ void sportUpdatePowerOff(void);
 void hapticInit(void);
 void hapticDone(void);
 void hapticOff(void);
-#define HAPTIC_OFF()                   hapticOff()
 void hapticOn(uint32_t pwmPercent);
 
 // GPS driver
