@@ -18,6 +18,7 @@
  * GNU General Public License for more details.
  */
 
+#include <io/frsky_firmware_update.h>
 #include "opentx.h"
 
 RadioData  g_eeGeneral;
@@ -1485,26 +1486,18 @@ void doMixerCalculations()
   s_mixer_first_run_done = true;
 }
 
-
-#define OPENTX_START_NO_SPLASH  0x01
-#define OPENTX_START_NO_CHECKS  0x02
-
 #if !defined(OPENTX_START_DEFAULT_ARGS)
   #define OPENTX_START_DEFAULT_ARGS  0
 #endif
 
-void opentxStart(const uint8_t startType = OPENTX_START_DEFAULT_ARGS)
+void opentxStart(const uint8_t startOptions = OPENTX_START_DEFAULT_ARGS)
 {
-  TRACE("opentxStart(%u)", startType);
+  TRACE("opentxStart(%u)", startOptions);
 
-  if (startType & OPENTX_START_NO_CHECKS) {
-    return;
-  }
-
-  uint8_t calibration_needed = (g_eeGeneral.chkSum != evalChkSum());
+  uint8_t calibration_needed = !(startOptions & OPENTX_START_NO_CALIBRATION) && (g_eeGeneral.chkSum != evalChkSum());
 
 #if defined(GUI)
-  if (!calibration_needed && !(startType & OPENTX_START_NO_SPLASH)) {
+  if (!calibration_needed && !(startOptions & OPENTX_START_NO_SPLASH)) {
     doSplash();
   }
 #endif
@@ -1527,7 +1520,7 @@ void opentxStart(const uint8_t startType = OPENTX_START_DEFAULT_ARGS)
   if (calibration_needed) {
     chainMenu(menuFirstCalib);
   }
-  else {
+  else if (!(startOptions & OPENTX_START_NO_CHECKS)) {
     checkAlarm();
     checkAll();
     PLAY_MODEL_NAME();
@@ -1605,7 +1598,8 @@ void opentxResume()
   loadFontCache();
 #endif
 
-  opentxStart(OPENTX_START_NO_SPLASH);
+  // removed to avoid the double warnings (throttle, switch, etc.)
+  // opentxStart(OPENTX_START_NO_SPLASH | OPENTX_START_NO_CALIBRATION | OPENTX_START_NO_CHECKS);
 
   referenceSystemAudioFiles();
 
@@ -1764,10 +1758,19 @@ void opentxInit()
     unexpectedShutdown = 1;
   }
 
-#if defined(SDCARD) && !defined(PCBMEGA2560)
+#if defined(SDCARD)
   // SDCARD related stuff, only done if not unexpectedShutdown
   if (!unexpectedShutdown) {
     sdInit();
+
+#if defined(AUTOUPDATE)
+    if (f_stat(AUTOUPDATE_FILENAME, nullptr) == FR_OK) {
+      FrskyChipFirmwareUpdate device;
+      if (device.flashFirmware(AUTOUPDATE_FILENAME, false) == nullptr)
+        f_unlink(AUTOUPDATE_FILENAME);
+    }
+#endif
+
     logsInit();
   }
 #endif
@@ -1830,9 +1833,9 @@ void opentxInit()
 #endif
 
   currentSpeakerVolume = requiredSpeakerVolume = g_eeGeneral.speakerVolume + VOLUME_LEVEL_DEF;
-  #if !defined(SOFTWARE_VOLUME)
-    setScaledVolume(currentSpeakerVolume);
-  #endif
+#if !defined(SOFTWARE_VOLUME)
+  setScaledVolume(currentSpeakerVolume);
+#endif
 
   referenceSystemAudioFiles();
   audioQueue.start();
@@ -1901,7 +1904,6 @@ int main()
 #if defined(PCBTARANIS)
   g_eeGeneral.contrast = LCD_CONTRAST_DEFAULT;
 #endif
-  wdt_disable();
 
   boardInit();
 
@@ -1909,29 +1911,13 @@ int main()
   loadFonts();
 #endif
 
-#if defined(GUI) && !defined(PCBTARANIS) && !defined(PCBHORUS) && !defined(PCBESP_WROOM_32) && !defined(PCBESP_HELTEC_32)
-  // TODO remove this
-  lcdInit();
-#endif
-
 #if !defined(SIMU) && !defined(CPUESP32)
-  stackPaint();
-#endif
 
-#if defined(GUI) && !defined(PCBTARANIS)
-  // lcdSetRefVolt(25);
+  stackPaint();
 #endif
 
 #if defined(SPLASH) && (defined(PCBTARANIS) || defined(PCBHORUS))
   drawSplash();
-#endif
-
-#if defined(DSM2_SERIAL) && !defined(TELEMETRY_FRSKY)
-  DSM2_Init();
-#endif
-
-#if defined(MENU_ROTARY_SW)
-  init_rotary_sw();
 #endif
 
 #if defined(PCBHORUS)

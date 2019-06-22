@@ -34,20 +34,15 @@
   #include <SDL.h>
 #endif
 
-uint8_t MCUCSR, MCUSR, MCUCR;
-volatile uint8_t pina=0xff, pinb=0xff, pinc=0xff, pind, pine=0xff, pinf=0xff, ping=0xff, pinh=0xff, pinj=0, pinl=0;
-uint8_t portb, portc, porth=0, dummyport;
-uint16_t dummyport16;
 int g_snapshot_idx = 0;
 
 uint8_t simu_start_mode = 0;
-char * main_thread_error = NULL;
+char * main_thread_error = nullptr;
 
 bool simu_shutdown = false;
 bool simu_running = false;
 
 #if defined(STM32)
-uint32_t Peri1_frequency, Peri2_frequency;
 GPIO_TypeDef gpioa, gpiob, gpioc, gpiod, gpioe, gpiof, gpiog, gpioh, gpioi, gpioj;
 TIM_TypeDef tim1, tim2, tim3, tim4, tim5, tim6, tim7, tim8, tim9, tim10;
 RCC_TypeDef rcc;
@@ -80,14 +75,12 @@ void toplcdOff()
 uint64_t simuTimerMicros(void)
 {
 #if SIMPGMSPC_USE_QT
-
   static QElapsedTimer ticker;
   if (!ticker.isValid())
     ticker.start();
   return ticker.nsecsElapsed() / 1000;
 
 #elif defined(_MSC_VER)
-
   static double freqScale = 0.0;
   static LARGE_INTEGER firstTick;
   LARGE_INTEGER newTick;
@@ -106,12 +99,9 @@ uint64_t simuTimerMicros(void)
   QueryPerformanceCounter(&newTick);
   // compute the elapsed time
   return (newTick.QuadPart - firstTick.QuadPart) * freqScale;
-
 #else  // GNUC
-
   auto now = std::chrono::steady_clock::now();
   return (uint64_t) std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
-
 #endif
 }
 
@@ -173,10 +163,10 @@ void StartSimu(bool tests, const char * sdPath, const char * settingsPath)
   if (simu_running)
     return;
 
-  moduleState[0].protocol = PROTOCOL_CHANNELS_UNINITIALIZED;
+  stopPulses();
   menuLevel = 0;
 
-  simu_start_mode = (tests ? 0 : 0x02 /* OPENTX_START_NO_CHECKS */);
+  simu_start_mode = (tests ? 0 : OPENTX_START_NO_SPLASH | OPENTX_START_NO_CALIBRATION | OPENTX_START_NO_CHECKS);
   simu_shutdown = false;
 
   simuFatfsSetPaths(sdPath, settingsPath);
@@ -386,8 +376,9 @@ void StartAudioThread(int volumeGain)
   sp.sched_priority = SCHED_RR;
   pthread_attr_setschedparam(&attr, &sp);
   pthread_create(&simuAudio.threadPid, &attr, &audioThread, nullptr);
+#ifdef __linux__
   pthread_setname_np(simuAudio.threadPid, "audio");
-  return;
+#endif
 }
 
 void StopAudioThread()
@@ -405,10 +396,6 @@ void lcdSetRefVolt(uint8_t val)
 {
 }
 #endif
-
-void adcPrepareBandgap()
-{
-}
 
 #if defined(PCBTARANIS)
 void lcdOff()
