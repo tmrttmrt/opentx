@@ -178,6 +178,7 @@ void ModelData::clear()
   }
   else if (IS_ESP32(board)) {
     moduleData[0].protocol = PULSES_ESPNOW;
+    moduleData[0].espnow.ch=1;
     moduleData[1].protocol = PULSES_OFF;
   }
   else {
