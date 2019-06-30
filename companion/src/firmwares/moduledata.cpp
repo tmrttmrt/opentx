@@ -82,7 +82,7 @@ QString ModuleData::indexToString(int index, Firmware * fw)
     return tr("Trainer Port");
 
   if (fw->getCapability(NumModules) > 1) {
-    if (IS_HORUS_OR_TARANIS(fw->getBoard()))
+    if (IS_HORUS_OR_TARANIS(fw->getBoard()) || IS_ESP32(fw->getBoard()))
       return index == 0 ? tr("Internal Radio System") : tr("External Radio Module");
     if (index > 0)
       return tr("Extra Radio System");
@@ -109,7 +109,8 @@ QString ModuleData::protocolToString(unsigned protocol)
     "FrSky ACCESS ISRM",
     "FrSky ACCESS R9M",
     "FrSky ACCESS R9M Lite",
-    "FrSky ACCESS R9M Lite Pro"
+    "FrSky ACCESS R9M Lite Pro",
+    "ESPNOW"
   };
 
   return CHECK_IN_ARRAY(strings, protocol);

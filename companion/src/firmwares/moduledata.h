@@ -53,6 +53,7 @@ enum PulsesProtocol {
   PULSES_ACCESS_R9M,
   PULSES_ACCESS_R9M_LITE,
   PULSES_ACCESS_R9M_LITE_PRO,
+  PULSES_ESPNOW,
   PULSES_PROTOCOL_LAST
 };
 
@@ -169,6 +170,11 @@ class ModuleData {
       char data[1 + 3 * 8];
     } access;
 
+    struct {
+      int ch;
+      char rx_mac_addr[6];
+    } espnow;
+    
     void clear() { memset(this, 0, sizeof(ModuleData)); }
     void convert(RadioDataConversionState & cstate);
     QString polarityToString() const { return ppm.pulsePol ? tr("Positive") : tr("Negative"); }

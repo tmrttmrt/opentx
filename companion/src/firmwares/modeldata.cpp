@@ -176,6 +176,10 @@ void ModelData::clear()
     moduleData[0].protocol = PULSES_PPM;
     moduleData[1].protocol = PULSES_PPM;
   }
+  else if (IS_ESP32(board)) {
+    moduleData[0].protocol = PULSES_ESPNOW;
+    moduleData[1].protocol = PULSES_OFF;
+  }
   else {
     moduleData[0].protocol = PULSES_PPM;
     moduleData[1].protocol = PULSES_OFF;

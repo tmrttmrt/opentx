@@ -99,6 +99,7 @@ class ProtocolsConversionTable: public ConversionTable
       addConversion(PULSES_ACCESS_R9M_LITE_PRO, val++);
 
       addConversion(PULSES_SBUS, val++);
+      addConversion(PULSES_ESPNOW, val++);
     }
 };
 

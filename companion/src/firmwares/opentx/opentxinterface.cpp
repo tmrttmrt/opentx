@@ -852,6 +852,35 @@ int OpenTxFirmware::isAvailable(PulsesProtocol proto, int port)
         return 0;
     }
   }
+  else if (IS_ESP32(board)) {
+    switch (port) {
+      case 1:
+        switch (proto) {
+          case PULSES_PPM:
+          case PULSES_DSMX:
+          case PULSES_LP45:
+          case PULSES_DSM2:
+          case PULSES_SBUS:
+            return 1;
+          case PULSES_MULTIMODULE:
+            return id.contains("multimodule") ? 1 : 0;
+          default:
+            return 0;
+        }
+        break;
+        
+      case 0:
+        switch (proto) {
+          case PULSES_ESPNOW:
+            return 1;
+          default:
+            return 0;
+        }
+        break;
+      default:
+        return 0;
+    }
+  }  
   else {
     switch (proto) {
       case PULSES_PPM:

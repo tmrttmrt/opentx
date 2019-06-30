@@ -2048,13 +2048,24 @@ OpenTxModelData::OpenTxModelData(ModelData & modelData, Board::Type board, unsig
         internalField.Append(new SignedField<16>(this, modelData.moduleData[module].failsafeChannels[i]));
       }
     }
-    internalField.Append(new ConversionField< SignedField<6> >(this, modelData.moduleData[module].ppm.delay, exportPpmDelay, importPpmDelay));
-    internalField.Append(new BoolField<1>(this, modelData.moduleData[module].ppm.pulsePol));
-    internalField.Append(new BoolField<1>(this, modelData.moduleData[module].ppm.outputType));
-    internalField.Append(new SignedField<8>(this, modelData.moduleData[module].ppm.frameLength));
+    if (IS_ESP32(board) && 0 == module){
+        internalField.Append(new SignedField<8>(this, modelData.moduleData[module].espnow.ch));
+        internalField.Append(new CharField<6>(this, modelData.moduleData[module].espnow.rx_mac_addr));
+    }
+    else {
+      internalField.Append(new ConversionField< SignedField<6> >(this, modelData.moduleData[module].ppm.delay, exportPpmDelay, importPpmDelay));
+      internalField.Append(new BoolField<1>(this, modelData.moduleData[module].ppm.pulsePol));
+      internalField.Append(new BoolField<1>(this, modelData.moduleData[module].ppm.outputType));
+      internalField.Append(new SignedField<8>(this, modelData.moduleData[module].ppm.frameLength));
+    }
     if (version >= 219) {
+      if (IS_ESP32(board) && 0 == module){
+        internalField.Append(new CharField<1 + 3 * 8 - 7>(this, modelData.moduleData[module].access.data));
+      }
+      else {
       // TODO ACCESS
-      internalField.Append(new CharField<1 + 3 * 8 - 2>(this, modelData.moduleData[module].access.data));
+        internalField.Append(new CharField<1 + 3 * 8 - 2>(this, modelData.moduleData[module].access.data));
+      }
     }
   }
 
