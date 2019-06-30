@@ -205,6 +205,8 @@ class ModelData {
     
     char modelRegistrationID[8];
 
+    char registrationId[8+1];
+
     void clear();
     bool isEmpty() const;
     void setDefaultInputs(const GeneralSettings & settings);

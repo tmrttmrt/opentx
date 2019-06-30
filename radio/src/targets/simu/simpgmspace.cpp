@@ -142,12 +142,16 @@ void simuInit()
 bool keysStates[NUM_KEYS] = { false };
 void simuSetKey(uint8_t key, bool state)
 {
+  // TRACE("simuSetKey(%d, %d)", key, state);
+  assert(key < DIM(keysStates));
   keysStates[key] = state;
 }
 
-bool trimsStates[NUM_TRIMS*2] = { false };
+bool trimsStates[NUM_TRIMS * 2] = { false };
 void simuSetTrim(uint8_t trim, bool state)
 {
+  // TRACE("simuSetTrim(%d, %d)", trim, state);
+  assert(trim < DIM(trimsStates));
   trimsStates[trim] = state;
 }
 
@@ -155,6 +159,7 @@ int8_t switchesStates[NUM_SWITCHES] = { -1 };
 void simuSetSwitch(uint8_t swtch, int8_t state)
 {
   // TRACE("simuSetSwitch(%d, %d)", swtch, state);
+  assert(swtch < DIM(switchesStates));
   switchesStates[swtch] = state;
 }
 
@@ -463,14 +468,18 @@ void pwrInit()
 void readKeysAndTrims()
 {
   uint8_t index = 0;
-  uint32_t in = readKeys();
+  uint32_t keys_input = readKeys();
   for (uint8_t i = 1; i != uint8_t(1 << TRM_BASE); i <<= 1) {
-    keys[index++].input(in & i);
+    keys[index++].input(keys_input & i);
   }
 
-  in = readTrims();
+  uint32_t trims_input = readTrims();
   for (uint8_t i = 1; i != uint8_t(1 << 8); i <<= 1) {
-    keys[index++].input(in & i);
+    keys[index++].input(trims_input & i);
+  }
+
+  if (keys_input || trims_input) {
+    backlightOn();
   }
 }
 

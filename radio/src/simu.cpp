@@ -232,7 +232,7 @@ void OpenTxSim::doEvents()
 
 long OpenTxSim::onKeypress(FXObject *, FXSelector, void * v)
 {
-  FXEvent *evt = (FXEvent *)v;
+  auto * evt = (FXEvent *)v;
 
   // TRACE("keypress %x", evt->code);
 
@@ -245,7 +245,7 @@ long OpenTxSim::onKeypress(FXObject *, FXSelector, void * v)
 
 void OpenTxSim::updateKeysAndSwitches(bool start)
 {
-  static int keys1[] = {
+  static int keys[] = {
 #if defined(PCBHORUS)
     KEY_Page_Up,   KEY_PGUP,
     KEY_Page_Down, KEY_PGDN,
@@ -283,8 +283,8 @@ void OpenTxSim::updateKeysAndSwitches(bool start)
 #endif
   };
 
-  for (unsigned int i=0; i<DIM(keys1); i+=2) {
-    simuSetKey(keys1[i+1], start ? false : getApp()->getKeyState(keys1[i]));
+  for (unsigned int i=0; i<DIM(keys); i+=2) {
+    simuSetKey(keys[i+1], start ? false : getApp()->getKeyState(keys[i]));
   }
 
 #ifdef __APPLE__
@@ -296,7 +296,7 @@ void OpenTxSim::updateKeysAndSwitches(bool start)
   static FXuint trimKeys[] = { KEY_F1, KEY_F2, KEY_F3, KEY_F4, KEY_F5, KEY_F6, KEY_F7, KEY_F8, KEY_F9, KEY_F10, KEY_F11, KEY_F12 };
 #endif
 
-  for (unsigned i=0; i<DIM(trimKeys); i++) {
+  for (unsigned i=0; i<2*NUM_TRIMS; i++) {
     simuSetTrim(i, getApp()->getKeyState(trimKeys[i]));
   }
 
