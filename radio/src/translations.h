@@ -416,6 +416,9 @@ extern const char STR_BIND_OK[];
 #endif
 
 extern const char STR_INTERNALRF[];
+extern const char STR_INTERNAL_MODULE[];
+extern const char STR_EXTERNAL_MODULE[];
+extern const char STR_NO_MODULE_INFORMATION[];
 extern const char STR_EXTERNALRF[];
 extern const char STR_MODULE_TELEMETRY[];
 extern const char STR_MODULE_TELEM_ON[];
@@ -546,6 +549,8 @@ extern const char STR_FAILSAFEWARN[];
 extern const char STR_NIGHTLY_WARNING[];
 extern const char STR_NIGHTLY_NOTSAFE[];
 extern const char STR_WRONG_SDCARDVERSION[];
+extern const char STR_WARN_RTC_BATTERY_LOW[];
+extern const char STR_BATTERY[];
 extern const char STR_WRONG_PCBREV[];
 extern const char STR_EMERGENCY_MODE[];
 extern const char STR_NO_FAILSAFE[];

@@ -248,7 +248,7 @@ class SourcesConversionTable: public ConversionTable {
         addConversion(RawSource(SOURCE_TYPE_SPECIAL, 2), val++); // Timer1
         addConversion(RawSource(SOURCE_TYPE_SPECIAL, 3), val++); // Timer2
         addConversion(RawSource(SOURCE_TYPE_SPECIAL, 4), val++); // Timer3
-        for (unsigned i=0; i<MAX_TELEMETRY_SENSORS(board, version)*3; ++i) {
+        for (int i=0; i<MAX_TELEMETRY_SENSORS(board, version)*3; ++i) {
           addConversion(RawSource(SOURCE_TYPE_TELEMETRY, i), val++);
         }
       }
@@ -2365,11 +2365,11 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
   internalField.Append(new UnsignedField<8>(this, generalData.backlightBright));
   if (version < 218) internalField.Append(new SignedField<8>(this, generalData.txCurrentCalibration));
 
-  if (version < 218) internalField.Append(new SignedField<8>(this, generalData.temperatureWarn));
+  if (version < 218) internalField.Append(new SpareBitsField<8>(this));
   if (version < 218) internalField.Append(new UnsignedField<8>(this, generalData.mAhWarn));
   if (version < 218) internalField.Append(new UnsignedField<16>(this, generalData.mAhUsed));
   internalField.Append(new UnsignedField<32>(this, generalData.globalTimer));
-  if (version < 218) internalField.Append(new SignedField<8>(this, generalData.temperatureCalib));
+  if (version < 218) internalField.Append(new SpareBitsField<8>(this));
   internalField.Append(new UnsignedField<4>(this, generalData.bluetoothBaudrate));
   internalField.Append(new UnsignedField<4>(this, generalData.bluetoothMode));
   if (version < 218) internalField.Append(new BoolField<8>(this, generalData.optrexDisplay));
@@ -2451,10 +2451,10 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
   }
   else if (IS_SKY9X(board)  && version >= 218) {
     internalField.Append(new SignedField<8>(this, generalData.txCurrentCalibration));
-    internalField.Append(new SignedField<8>(this, generalData.temperatureWarn));
+    internalField.Append(new SpareBitsField<8>(this));
     internalField.Append(new UnsignedField<8>(this, generalData.mAhWarn));
     internalField.Append(new UnsignedField<16>(this, generalData.mAhUsed));
-    internalField.Append(new SignedField<8>(this, generalData.temperatureCalib));
+    internalField.Append(new SpareBitsField<8>(this));
     internalField.Append(new BoolField<8>(this, generalData.optrexDisplay));
     internalField.Append(new UnsignedField<8>(this, generalData.sticksGain));
     internalField.Append(new UnsignedField<8>(this, generalData.rotarySteps));

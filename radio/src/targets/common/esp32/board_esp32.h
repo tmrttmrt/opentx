@@ -85,6 +85,8 @@ extern TaskPrio audioTaskPrio;
 #define eepromWriteProcess()
 #define isForcePowerOffRequested() false
 #define resetForcePowerOffRequest()
+#define enableVBatBridge()
+#define disableVBatBridge()
 
 void telemetryPortInit(uint32_t baudrate, uint8_t mode);
 void rtosInit();

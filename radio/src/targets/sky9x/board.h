@@ -199,10 +199,6 @@ void usbMassStorage();
 void configure_pins( uint32_t pins, uint16_t config );
 uint16_t getCurrent();
 
-extern uint8_t temperature ;              // Raw temp reading
-extern uint8_t maxTemperature ;           // Raw temp reading
-uint8_t getTemperature();
-
 extern uint16_t Current_analogue;
 extern uint16_t Current_max;
 extern uint32_t Current_accumulator;
@@ -274,6 +270,7 @@ extern "C" {
 #define NUM_SLIDERS                    0
 #define STORAGE_NUM_SLIDERS            0
 #define NUM_XPOTS                      0
+#define NUM_MOUSE_ANALOGS              0
 #define STORAGE_NUM_MOUSE_ANALOGS      0
 enum Analogs {
   STICK1,
@@ -305,10 +302,11 @@ enum CalibratedAnalogs {
 #define IS_SLIDER(x)                   false
 #define STICKS_PWM_ENABLED()           false
 void adcInit();
-void adcRead(void);
+void adcRead();
 uint16_t getAnalogValue(uint8_t index);
 void setSticksGain(uint8_t gains);
-#define NUM_MOUSE_ANALOGS              0
+#define enableVBatBridge()             do { } while(0)
+#define disableVBatBridge()
 
 // Battery driver
 uint16_t getBatteryVoltage();          // returns current battery voltage in 10mV steps

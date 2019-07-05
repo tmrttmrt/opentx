@@ -22,7 +22,7 @@
 
 #if defined(PCBSKY9X)
 #define HW_SETTINGS_COLUMN (2+(15*FW))
-enum MenuRadioHardwareItems {
+enum {
   ITEM_RADIO_HARDWARE_OPTREX_DISPLAY,
   ITEM_RADIO_HARDWARE_STICKS_GAINS_LABELS,
   ITEM_RADIO_HARDWARE_STICK_LV_GAIN,
@@ -88,7 +88,7 @@ void menuRadioHardware(event_t event)
 #endif // PCBSKY9X
 
 #if defined(PCBTARANIS)
-enum MenuRadioHardwareItems {
+enum {
   ITEM_RADIO_HARDWARE_LABEL_STICKS,
   ITEM_RADIO_HARDWARE_STICK1,
   ITEM_RADIO_HARDWARE_STICK2,
@@ -115,14 +115,8 @@ enum MenuRadioHardwareItems {
   ITEM_RADIO_HARDWARE_SJ,
 #endif
   ITEM_RADIO_HARDWARE_BATTERY_CALIB,
-#if defined(STM32)
-  ITEM_RADIO_HARDWARE_RTC_BATTERY,
-#endif
 #if defined(TX_CAPACITY_MEASUREMENT)
   ITEM_RADIO_HARDWARE_CAPACITY_CALIB,
-#endif
-#if defined(PCBSKY9X)
-  ITEM_RADIO_HARDWARE_TEMPERATURE_CALIB,
 #endif
 #if defined(CROSSFIRE) && SPORT_MAX_BAUDRATE < 400000
   ITEM_RADIO_HARDWARE_SERIAL_BAUDRATE,
@@ -180,22 +174,10 @@ enum MenuRadioHardwareItems {
   #define SWITCH_TYPE_MAX(sw)            ((MIXSRC_SF-MIXSRC_FIRST_SWITCH == sw || MIXSRC_SH-MIXSRC_FIRST_SWITCH == sw || MIXSRC_SI-MIXSRC_FIRST_SWITCH == sw || MIXSRC_SJ-MIXSRC_FIRST_SWITCH == sw) ? SWITCH_2POS : SWITCH_3POS)
 #endif
 
-#if defined(STM32)
-  #define RTC_BATT_ROWS                  READONLY_ROW,
-#else
-  #define RTC_BATT_ROWS
-#endif
-
 #if defined(TX_CAPACITY_MEASUREMENT)
   #define TX_CAPACITY_MEASUREMENT_ROWS   0,
 #else
   #define TX_CAPACITY_MEASUREMENT_ROWS
-#endif
-
-#if defined(PCBSKY9X)
-  #define TEMPERATURE_CALIB_ROWS         0,
-#else
-  #define TEMPERATURE_CALIB_ROWS
 #endif
 
 #if defined(CROSSFIRE) && SPORT_MAX_BAUDRATE < 400000
@@ -222,11 +204,7 @@ void menuRadioHardware(event_t event)
       SWITCHES_ROWS,
     0 /* battery calib */,
 
-    RTC_BATT_ROWS
-
     TX_CAPACITY_MEASUREMENT_ROWS
-
-    TEMPERATURE_CALIB_ROWS
 
     MAX_BAUD_ROWS
 
@@ -349,29 +327,12 @@ void menuRadioHardware(event_t event)
         }
         break;
 
-#if defined(STM32)
-      case ITEM_RADIO_HARDWARE_RTC_BATTERY:
-        lcdDrawTextAlignedLeft(y, STR_RTC_BATT);
-        putsVolts(HW_SETTINGS_COLUMN2, y, vbattRTC, PREC2|LEFT);
-        break;
-#endif
-
 #if defined(TX_CAPACITY_MEASUREMENT)
       case ITEM_RADIO_HARDWARE_CAPACITY_CALIB:
         lcdDrawTextAlignedLeft(y, STR_CURRENT_CALIB);
         drawValueWithUnit(HW_SETTINGS_COLUMN2, y, getCurrent(), UNIT_MILLIAMPS, attr);
         if (attr) {
           CHECK_INCDEC_GENVAR(event, g_eeGeneral.txCurrentCalibration, -49, 49);
-        }
-        break;
-#endif
-
-#if defined(PCBSKY9X)
-      case ITEM_RADIO_HARDWARE_TEMPERATURE_CALIB:
-        lcdDrawTextAlignedLeft(y, STR_TEMP_CALIB);
-        drawValueWithUnit(HW_SETTINGS_COLUMN2, y, getTemperature(), UNIT_TEMPERATURE, attr) ;
-        if (attr) {
-          CHECK_INCDEC_GENVAR(event, g_eeGeneral.temperatureCalib, -100, 100);
         }
         break;
 #endif

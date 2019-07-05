@@ -543,12 +543,12 @@
 #define TR_SUBTYPE             INDENT "Subtype"
 #define TR_NOFREEEXPO          "Expos voll!"
 #define TR_NOFREEMIXER         "Mischer voll!"
-#define TR_SOURCE              INDENT "Quelle"
+#define TR_SOURCE               "Quelle"
 #define TR_WEIGHT              "Gewicht"
 #define TR_EXPO                TR("Expo", "Exponential")
 #define TR_SIDE                "Seite"
 #define TR_DIFFERENTIAL        "Diff"
-#define TR_OFFSET              INDENT "Offset"
+#define TR_OFFSET               "Offset"
 #define TR_TRIM                "Trim"
 #define TR_DREX                "DRex"
 #define DREX_CHBOX_OFFSET      30
@@ -648,7 +648,7 @@
 #define TR_TMR1JITTERUS        "Tmr1 Jitter\037\124us"
 #define TR_TMIXMAXMS         "Tmix max"
 #define TR_FREE_STACK     "Freier Stack"
-#define TR_MENUTORESET         CENTER TR_ENTER " für Reset"
+#define TR_MENUTORESET         TR_ENTER " für Reset"
 #define TR_PPM_TRAINER         "TR"
 #define TR_CH                  "CH"
 #define TR_MODEL               "MODELL"
@@ -705,8 +705,8 @@
 #define TR_MONITOR_SWITCHES    "LOGIK SCHALTER MONITOR"
 #define TR_MONITOR_OUTPUT_DESC "Kanäle"
 #define TR_MONITOR_MIXER_DESC  "Mischer"
-  #define TR_RECEIVER_NUM      TR(INDENT "Empf Nr.", INDENT "Empfänger Nummer")
-  #define TR_RECEIVER          INDENT "Receiver"
+#define TR_RECEIVER_NUM        TR(INDENT "Empf Nr.", INDENT "Empfänger Nummer")
+#define TR_RECEIVER            "Receiver"
 #define TR_MULTI_RFTUNE        TR(INDENT "RF Freq.", INDENT "RF Freq. Feintuning")
 #define TR_MULTI_TELEMETRY             "Telemetry"
 #define TR_MULTI_VIDFREQ       TR(INDENT "Vid. Freq.", INDENT "Video Frequenz")
@@ -809,6 +809,8 @@
 #define TR_NIGHTLY_WARNING     TR("NIGHTLY", "NIGHTLY BUILD")
 #define TR_NIGHTLY_NOTSAFE     "Nicht für Flug geeignet"
 #define TR_WRONG_SDCARDVERSION TR("Erw. Version: ","Erwartete Version: ")
+#define TR_WARN_RTC_BATTERY_LOW        "RTC Battery low"
+#define TR_BATTERY                     "BATTERY"
 #define TR_WRONG_PCBREV        "Falsches PCB erkannt"
 #define TR_EMERGENCY_MODE      "NOTFALL MODUS"
 #define TR_PCBREV_ERROR        "PCB Problem"
@@ -901,6 +903,9 @@
 #define TR_WRITING             "Writing..."
 #define TR_CONFIRM_FORMAT      "Formatieren bestätigen?"
 #define TR_INTERNALRF          "Internes HF-Modul"
+#define TR_INTERNAL_MODULE             "Internal module"
+#define TR_EXTERNAL_MODULE             "External module"
+#define TR_NO_MODULE_INFORMATION       "No module information"
 #define TR_EXTERNALRF          "Externes HF-Modul"
 #define TR_FAILSAFE            TR(INDENT "Failsafe", INDENT "Failsafe Mode")
 #define TR_FAILSAFESET         "Failsafe setzen"
@@ -978,7 +983,7 @@
 #define TR_TRAINER             "DSC Buchse PPM In/Out"
 #define TR_ANTENNAPROBLEM      CENTER "TX-Antennenproblem!"
 #define TR_MODELIDUSED         TR("ID schon benutzt", "Modell-ID schon benutzt")
-#define TR_MODULE              INDENT "Modul-Typ"
+#define TR_MODULE              "Modul-Typ"
 #define TR_RX_NAME                     "Rx Name"
 #define TR_TELEMETRY_TYPE      TR("Typ", "Telemetrietyp")
 #define TR_TELEMETRY_SENSORS   "Sensoren"

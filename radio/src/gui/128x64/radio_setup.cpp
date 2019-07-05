@@ -75,7 +75,6 @@ enum MenuRadioSetupItems {
   ITEM_SETUP_ALARMS_LABEL,
   ITEM_SETUP_BATTERY_WARNING,
   CASE_CAPACITY(ITEM_SETUP_CAPACITY_WARNING)
-  CASE_PCBSKY9X(ITEM_SETUP_TEMPERATURE_WARNING)
   ITEM_SETUP_INACTIVITY_ALARM,
   ITEM_SETUP_MEMORY_WARNING,
   ITEM_SETUP_ALARM_WARNING,
@@ -153,7 +152,6 @@ void menuRadioSetup(event_t event)
     CASE_GYRO(0)
     CASE_GYRO(0)
     0, LABEL(ALARMS), 0, CASE_CAPACITY(0)
-    CASE_PCBSKY9X(0)
     0, 0, 0, 0,
     LABEL(BACKLIGHT), 0, 0, 0, CASE_PWM_BACKLIGHT(0)
     CASE_PWM_BACKLIGHT(0)
@@ -444,14 +442,6 @@ void menuRadioSetup(event_t event)
         break;
 #endif
 
-#if defined(PCBSKY9X)
-      case ITEM_SETUP_TEMPERATURE_WARNING:
-        lcdDrawTextAlignedLeft(y, STR_TEMPWARNING);
-        drawValueWithUnit(RADIO_SETUP_2ND_COLUMN, y, g_eeGeneral.temperatureWarn, UNIT_TEMPERATURE, attr|LEFT) ;
-        if(attr) CHECK_INCDEC_GENVAR(event, g_eeGeneral.temperatureWarn, 0, 120); // 0 means no alarm
-        break;
-#endif
-
       case ITEM_SETUP_INACTIVITY_ALARM:
         lcdDrawTextAlignedLeft(y, STR_INACTIVITYALARM);
         lcdDrawNumber(RADIO_SETUP_2ND_COLUMN, y, g_eeGeneral.inactivityTimer, attr|LEFT);
@@ -597,7 +587,7 @@ void menuRadioSetup(event_t event)
       case ITEM_SETUP_RX_CHANNEL_ORD:
         lcdDrawTextAlignedLeft(y, STR_RXCHANNELORD); // RAET->AETR
         for (uint8_t i=1; i<=4; i++) {
-          putsChnLetter(RADIO_SETUP_2ND_COLUMN - FW + i*FW, y, channel_order(i), attr);
+          putsChnLetter(RADIO_SETUP_2ND_COLUMN - FW + i*FW, y, channelOrder(i), attr);
         }
         if (attr) CHECK_INCDEC_GENVAR(event, g_eeGeneral.templateSetup, 0, 23);
         break;

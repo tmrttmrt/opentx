@@ -99,15 +99,15 @@ void menuRadioModulesVersion(event_t event)
     // Label
     if (y >= MENU_BODY_TOP && y < MENU_BODY_BOTTOM) {
       if (module == INTERNAL_MODULE)
-        lcdDrawTextAlignedLeft(y, "Internal module");
+        lcdDrawTextAlignedLeft(y, STR_INTERNAL_MODULE);
       else if (module == EXTERNAL_MODULE)
-        lcdDrawTextAlignedLeft(y, "External module");
+        lcdDrawTextAlignedLeft(y, STR_EXTERNAL_MODULE);
     }
     y += FH;
 
     // Module model
     if (y >= MENU_BODY_TOP && y < MENU_BODY_BOTTOM) {
-      lcdDrawText(INDENT_WIDTH, y, "Module");
+      lcdDrawText(INDENT_WIDTH, y, STR_MODULE);
       uint8_t modelId = reusableBuffer.hardwareAndSettings.modules[module].information.modelID;
       lcdDrawText(COLUMN2_X, y, PXX2modulesModels[modelId]);
     }
@@ -130,7 +130,7 @@ void menuRadioModulesVersion(event_t event)
       if (reusableBuffer.hardwareAndSettings.modules[module].receivers[receiver].information.modelID && reusableBuffer.hardwareAndSettings.modules[module].receivers[receiver].timestamp < get_tmr10ms() + 2000) {
         // Receiver model
         if (y >= MENU_BODY_TOP && y < MENU_BODY_BOTTOM) {
-          lcdDrawText(INDENT_WIDTH, y, "Receiver");
+          lcdDrawText(INDENT_WIDTH, y, STR_RECEIVER);
           lcdDrawNumber(lcdLastRightPos + 2, y, receiver + 1);
           uint8_t modelId = reusableBuffer.hardwareAndSettings.modules[module].receivers[receiver].information.modelID;
           lcdDrawText(COLUMN2_X, y, PXX2receiversModels[modelId]);
@@ -152,6 +152,9 @@ void menuRadioModulesVersion(event_t event)
   }
   else {
     menuVerticalOffset = 0;
+    if (lines == 0) {
+      lcdDrawText(LCD_W/2, 4*FH, STR_NO_MODULE_INFORMATION, CENTERED);
+    }
   }
 
   switch(event) {
@@ -207,21 +210,20 @@ void menuRadioVersion(event_t event)
 {
   SIMPLE_MENU(STR_MENUVERSION, menuTabGeneral, MENU_RADIO_VERSION, ITEM_RADIO_VERSION_COUNT);
 
-  coord_t y = MENU_HEADER_HEIGHT + 1;
-  lcdDrawTextAlignedLeft(y, vers_stamp);
-  y += 4*FH;
-  // TODO this was good on AVR radios, but horrible now ...
+  coord_t y = MENU_HEADER_HEIGHT + 2;
+  lcdDrawText(FW, y, vers_stamp, SMLSIZE);
+  y += 4 * (FH - 1);
 
 #if defined(COPROCESSOR)
-  if (Coproc_valid == 1) {
-    lcdDrawTextAlignedLeft(y, "CoPr:");
-    lcdDraw8bitsNumber(10*FW, y, Coproc_read);
-  }
-  else {
-    lcdDrawTextAlignedLeft(y, "CoPr: ---");
-  }
-  y += FH;
+  lcdDrawText(FW, y, "COPR\037\033: ", SMLSIZE);
+  if (Coproc_valid == 1)
+    lcdDrawNumber(lcdNextPos, y, Coproc_read, SMLSIZE);
+  else
+    lcdDrawText(lcdNextPos, y, "---", SMLSIZE);
+  y += FH - 1;
 #endif
+
+  y += 2;
 
 #if defined(PXX2)
   lcdDrawText(INDENT_WIDTH, y, BUTTON(TR_MODULES_RX_VERSION), menuVerticalPosition == ITEM_RADIO_MODULES_VERSION ? INVERS : 0);

@@ -553,12 +553,12 @@
 #define TR_SUBTYPE             INDENT "Subtype"
 #define TR_NOFREEEXPO          "BrakWoln.Expo!"
 #define TR_NOFREEMIXER         "BrakWoln.Mixów!"
-#define TR_SOURCE              INDENT "Źródło"
+#define TR_SOURCE               "Źródło"
 #define TR_WEIGHT              "Waga "
 #define TR_EXPO                TR("Expo", "Exponential")
 #define TR_SIDE                "Strona"
 #define TR_DIFFERENTIAL        "Różnic"
-#define TR_OFFSET              INDENT"Ofset "
+#define TR_OFFSET              "Ofset "
 #define TR_TRIM                "Trym"
 #define TR_DREX                "DRex"
 #define DREX_CHBOX_OFFSET      30
@@ -656,7 +656,7 @@
 #define TR_TMR1JITTERUS        "Tmr1 Jitter\037\124us"
 #define TR_TMIXMAXMS         "TmixMaks"
 #define TR_FREE_STACK     "Wolny stos"
-#define TR_MENUTORESET         CENTER TR_ENTER " >> Reset"
+#define TR_MENUTORESET         TR_ENTER " >> Reset"
 #define TR_PPM_TRAINER         "TR"
 #define TR_CH                  "KN"
 #define TR_MODEL               "MODEL"
@@ -818,6 +818,8 @@
 #define TR_NIGHTLY_WARNING             TR("NIGHTLY", "NIGHTLY BUILD")
 #define TR_NIGHTLY_NOTSAFE             "Version not safe to fly"
 #define TR_WRONG_SDCARDVERSION TR("Expected ver: ","Expected version: ")
+#define TR_WARN_RTC_BATTERY_LOW        "RTC Battery low"
+#define TR_BATTERY                     "BATTERY"
 #define TR_WRONG_PCBREV        "Wrong PCB detected"
 #define TR_EMERGENCY_MODE      "EMERGENCY MODE"
 #define TR_PCBREV_ERROR        "PCB error"
@@ -910,6 +912,9 @@
 #define TR_WRITING             "\032Zapis...  "
 #define TR_CONFIRM_FORMAT      "Zatwierdź Format?"
 #define TR_INTERNALRF          "Wewn.Moduł RF"
+#define TR_INTERNAL_MODULE             "Internal module"
+#define TR_EXTERNAL_MODULE             "External module"
+#define TR_NO_MODULE_INFORMATION       "No module information"
 #define TR_EXTERNALRF          "Zewn.Moduł RF"
 #define TR_FAILSAFE            TR(INDENT"Failsafe",INDENT"Tryb Failsafe")
 #define TR_FAILSAFESET         "USTAWIENIE FAILSAFE"
@@ -987,7 +992,7 @@
 #define TR_TRAINER             "Port Trenera"
 #define TR_ANTENNAPROBLEM      CENTER "Problem z anteną TX"
 #define TR_MODELIDUSED         TR("ID zajęte","ID modelu zajęte")
-#define TR_MODULE              INDENT "Moduł "
+#define TR_MODULE              "Moduł "
 #define TR_RX_NAME                     "Rx Name"
 #define TR_TELEMETRY_TYPE      TR("Typ ", "Typ Telemetrii")
 #define TR_TELEMETRY_SENSORS   "Czujniki"
