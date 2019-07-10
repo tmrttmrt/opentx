@@ -88,6 +88,9 @@ void processReceiverSettingsFrame(uint8_t module, uint8_t * frame)
     return;
   }
 
+  if (frame[4] & PXX2_RX_SETTINGS_FLAG1_FPORT)
+    reusableBuffer.hardwareAndSettings.receiverSettings.fport = 1;
+
   if (frame[4] & PXX2_RX_SETTINGS_FLAG1_FASTPWM)
     reusableBuffer.hardwareAndSettings.receiverSettings.pwmRate = 1;
 
@@ -118,6 +121,9 @@ void processRegisterFrame(uint8_t module, uint8_t * frame)
         str2zchar(reusableBuffer.moduleSetup.pxx2.registerRxName, (const char *)&frame[4], PXX2_LEN_RX_NAME);
         reusableBuffer.moduleSetup.pxx2.registerLoopIndex = frame[12];
         reusableBuffer.moduleSetup.pxx2.registerStep = REGISTER_RX_NAME_RECEIVED;
+#if defined(COLORLCD)
+        putEvent(EVT_REFRESH);
+#endif
       }
       break;
 

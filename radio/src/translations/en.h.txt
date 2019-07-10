@@ -374,13 +374,6 @@
   #define TR_VKEYS                     "Menu\0""Exit\0""Down\0""Up\0  ""Right""Left\0"
 #endif
 
-#define LEN_VRENCODERS                 "\003"
-#if defined(ROTARY_ENCODERS)
-#define TR_VRENCODERS                  "REa""REb"
-#else
-#define TR_VRENCODERS                  "RE\0"
-#endif
-
 #define LEN_VSWITCHES                  "\003"
 #define LEN_VSRCRAW                    "\004"
 
@@ -707,12 +700,12 @@
 #define TR_MONITOR_SWITCHES            "LOGICAL SWITCHES MONITOR"
 #define TR_MONITOR_OUTPUT_DESC         "Outputs"
 #define TR_MONITOR_MIXER_DESC          "Mixers"
-  #define TR_RECEIVER_NUM              TR(INDENT "RxNum", INDENT "Receiver No.")
+  #define TR_RECEIVER_NUM              TR("RxNum", "Receiver No.")
   #define TR_RECEIVER                  "Receiver"
 #define TR_MULTI_RFTUNE                TR(INDENT "Freq tune",INDENT "RF Freq. fine tune")
 #define TR_MULTI_TELEMETRY             "Telemetry"
 #define TR_MULTI_VIDFREQ               TR(INDENT "Vid. freq.", INDENT "Video frequency")
-#define TR_MULTI_RFPOWER               INDENT "RF Power"
+#define TR_RFPOWER               INDENT "RF Power"
 #define TR_MULTI_OPTION                TR(INDENT "Option", INDENT "Option value")
 #define TR_MULTI_AUTOBIND              TR(INDENT "Autobind",INDENT "Bind on powerup")
 #define TR_MULTI_DSM_AUTODTECT         TR(INDENT "Autodetect", INDENT "Autodetect format")
