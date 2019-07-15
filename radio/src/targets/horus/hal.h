@@ -565,12 +565,13 @@
 #define INTMODULE_DMA_FLAG_TC           DMA_IT_TCIF7
 #define INTMODULE_DMA_CHANNEL           DMA_Channel_4
 #if defined(PCBX12S)
-  #define INTMODULE_BOOT_GPIO           GPIOI
-  #define INTMODULE_BOOT_GPIO_PIN       GPIO_PIN_9  // PC.02
+  #define INTMODULE_BOOTCMD_GPIO        GPIOC
+  #define INTMODULE_BOOTCMD_GPIO_PIN    GPIO_Pin_2  // PC.02
 #elif defined(PCBX10)
-  #define INTMODULE_BOOT_GPIO           GPIOI
-  #define INTMODULE_BOOT_GPIO_PIN       GPIO_PIN_9  // PI.09
+  #define INTMODULE_BOOTCMD_GPIO        GPIOI
+  #define INTMODULE_BOOTCMD_GPIO_PIN    GPIO_Pin_9  // PI.09
 #endif
+#define INTMODULE_FLASH_BAUDRATE        38400
 #if defined(PCBX10) || PCBREV >= 13
   #define INTMODULE_RCC_APB1Periph      RCC_APB1Periph_TIM2
   #define INTMODULE_RCC_APB2Periph      RCC_APB2Periph_USART1

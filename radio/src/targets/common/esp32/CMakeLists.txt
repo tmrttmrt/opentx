@@ -153,7 +153,7 @@ set(SRC
   telemetry/frsky_d.cpp
   telemetry/frsky_sport.cpp
   telemetry/frsky_pxx2.cpp
-  crc16.cpp
+  crc.cpp
   vario.cpp
   targets/common/esp32/main/startup.cpp
   targets/common/esp32/drivers/ana_driver.cpp
