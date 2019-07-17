@@ -235,7 +235,7 @@ inline bool isModulePXX2(uint8_t idx)
 inline bool isModuleRFAccess(uint8_t idx)
 {
   if (isModuleISRM(idx)) {
-    return g_model.moduleData[idx].rfProtocol == MODULE_SUBTYPE_ISRM_PXX2_ACCESS;
+    return g_model.moduleData[idx].subType == MODULE_SUBTYPE_ISRM_PXX2_ACCESS;
   }
   else if (isModuleR9MAccess(idx)) {
     return true;
@@ -462,6 +462,11 @@ inline bool isModuleFailsafeAvailable(uint8_t idx)
   return false;
 }
 
+inline bool isModuleBindRangeAvailable(uint8_t moduleIdx)
+{
+  return isModulePXX2(moduleIdx) || isModulePXX1(moduleIdx) || isModuleDSM2(moduleIdx) || isModuleMultimodule(moduleIdx);
+}
+
 inline uint8_t getMaxRxNum(uint8_t idx)
 {
   if (isModuleDSM2(idx))
@@ -477,6 +482,9 @@ inline uint8_t getMaxRxNum(uint8_t idx)
 
 inline const char * getModuleDelay(uint8_t idx)
 {
+  if (isModuleISRMAccess(idx))
+    return sentModuleChannels(idx) > 16 ? "(21ms)" : (sentModuleChannels(idx) > 8 ? "(14ms)" : "(7ms)");
+
   if (isModuleXJTD16(idx) || isModuleR9MNonAccess(idx))
     return sentModuleChannels(idx) > 8 ? "(18ms)" : "(9ms)";
 

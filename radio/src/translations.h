@@ -156,8 +156,8 @@ extern const char STR_R9M_LBT_POWER_VALUES[];
 extern const char STR_R9M_LITE_FCC_POWER_VALUES[];
 extern const char STR_R9M_LITE_LBT_POWER_VALUES[];
 extern const char STR_TELEMETRY_PROTOCOLS[];
-extern const char STR_ACCST_RF_PROTOCOLS[];
-extern const char STR_ISRM_PXX2_RF_PROTOCOLS[];
+extern const char STR_XJT_ACCST_RF_PROTOCOLS[];
+extern const char STR_ISRM_RF_PROTOCOLS[];
 extern const char STR_R9M_PXX2_RF_PROTOCOLS[];
 extern const char STR_DSM_PROTOCOLS[];
 
@@ -290,7 +290,7 @@ extern const char STR_PERSISTENT[];
 extern const char STR_BACKLIGHT_LABEL[];
 extern const char STR_BLDELAY[];
 
-#if defined(PWM_BACKLIGHT) || defined(PCBHORUS)
+#if defined(PWM_BACKLIGHT) || defined(COLORLCD)
 extern const char STR_BLONBRIGHTNESS[];
 extern const char STR_BLOFFBRIGHTNESS[];
 #endif
