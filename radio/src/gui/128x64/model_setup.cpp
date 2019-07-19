@@ -350,9 +350,13 @@ void menuModelSetup(event_t event)
     LABEL(InternalModule),
     0,
     isModuleESPNOW(INTERNAL_MODULE)?(uint8_t)1:HIDDEN_ROW,
-#endif
     LABEL(ExternalModule),
     EXTERNAL_MODULE_TYPE_ROWS,
+    HIDDEN_ROW,
+#else
+    LABEL(ExternalModule),
+    EXTERNAL_MODULE_TYPE_ROWS,
+#endif
     MULTIMODULE_SUBTYPE_ROWS(EXTERNAL_MODULE)
     MULTIMODULE_STATUS_ROWS
     EXTERNAL_MODULE_CHANNELS_ROWS,
