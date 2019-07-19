@@ -23,6 +23,7 @@
 
 #include "bitfield.h"
 #include "definitions.h"
+#include "telemetry/telemetry.h"
 #if defined(MULTIMODULE)
 #include "telemetry/multi.h"
 #endif
@@ -79,6 +80,16 @@ inline bool isModuleXJTD16(uint8_t idx)
 inline bool isModuleISRM(uint8_t idx)
 {
   return g_model.moduleData[idx].type == MODULE_TYPE_ISRM_PXX2;
+}
+
+inline bool isModuleISRMD16(uint8_t idx)
+{
+  return g_model.moduleData[idx].type == MODULE_TYPE_ISRM_PXX2 && g_model.moduleData[idx].subType == MODULE_SUBTYPE_ISRM_PXX2_ACCST_D16;
+}
+
+inline bool isModuleD16(uint8_t idx)
+{
+  return isModuleXJTD16(idx) || isModuleISRMD16(idx);
 }
 
 inline bool isModuleISRMAccess(uint8_t idx)
@@ -189,7 +200,7 @@ inline bool isModuleR9MLite(uint8_t idx)
 
 inline bool isModuleR9M_FCC(uint8_t idx)
 {
-  return isModuleR9MNonAccess(idx) && g_model.moduleData[idx].rfProtocol == MODULE_SUBTYPE_R9M_FCC;
+  return isModuleR9MNonAccess(idx) && g_model.moduleData[idx].subType == MODULE_SUBTYPE_R9M_FCC;
 }
 
 inline bool isModuleTypeLite(uint8_t type)
@@ -199,22 +210,22 @@ inline bool isModuleTypeLite(uint8_t type)
 
 inline bool isModuleR9M_LBT(uint8_t idx)
 {
-  return isModuleR9MNonAccess(idx) && g_model.moduleData[idx].rfProtocol == MODULE_SUBTYPE_R9M_EU;
+  return isModuleR9MNonAccess(idx) && g_model.moduleData[idx].subType == MODULE_SUBTYPE_R9M_EU;
 }
 
 inline bool isModuleR9M_FCC_VARIANT(uint8_t idx)
 {
-  return isModuleR9MNonAccess(idx) && g_model.moduleData[idx].rfProtocol != MODULE_SUBTYPE_R9M_EU;
+  return isModuleR9MNonAccess(idx) && g_model.moduleData[idx].subType != MODULE_SUBTYPE_R9M_EU;
 }
 
 inline bool isModuleR9M_EUPLUS(uint8_t idx)
 {
-  return isModuleR9MNonAccess(idx) && g_model.moduleData[idx].rfProtocol == MODULE_SUBTYPE_R9M_EUPLUS;
+  return isModuleR9MNonAccess(idx) && g_model.moduleData[idx].subType == MODULE_SUBTYPE_R9M_EUPLUS;
 }
 
 inline bool isModuleR9M_AU_PLUS(uint8_t idx)
 {
-  return isModuleR9MNonAccess(idx) && g_model.moduleData[idx].rfProtocol == MODULE_SUBTYPE_R9M_AUPLUS;
+  return isModuleR9MNonAccess(idx) && g_model.moduleData[idx].subType == MODULE_SUBTYPE_R9M_AUPLUS;
 }
 
 inline bool isModuleTypePXX1(uint8_t type)
@@ -278,12 +289,26 @@ constexpr int8_t MAX_EXTRA_MODULE_CHANNELS_M8 = 8; // only 16ch PPM
 
 inline int8_t maxModuleChannels_M8(uint8_t idx)
 {
-  if (isExtraModule(idx))
+  if (isExtraModule(idx)) {
     return MAX_EXTRA_MODULE_CHANNELS_M8;
-  else if (isModuleXJT(idx))
+  }
+  else if (isModuleXJT(idx)) {
     return maxChannelsXJT[1 + g_model.moduleData[idx].subType];
-  else
+  }
+  else if (isModuleR9M(idx)) {
+    if (isModuleR9M_LBT(idx)) {
+      if (isModuleR9MLite(idx))
+        return g_model.moduleData[idx].pxx.power == R9M_LITE_LBT_POWER_25_8CH ? 0 : 8;
+      else
+        return g_model.moduleData[idx].pxx.power == R9M_LBT_POWER_25_8CH ? 0 : 8;
+    }
+    else {
+      return 8; // always 16 channels in FCC / FLEX
+    }
+  }
+  else {
     return maxChannelsModules[g_model.moduleData[idx].type];
+  }
 }
 
 inline int8_t defaultModuleChannels_M8(uint8_t idx)
@@ -312,111 +337,6 @@ inline int8_t sentModuleChannels(uint8_t idx)
     return 16;
   else
     return 8 + g_model.moduleData[idx].channelsCount;
-}
-
-enum {
-  MODULE_OPTION_EXTERNAL_ANTENNA,
-  MODULE_OPTION_POWER,
-  MODULE_OPTION_SPECTRUM_ANALYSER,
-  MODULE_OPTION_POWER_METER,
-};
-
-/* Options order:
- * - External antenna (0x01)
- * - Power (0x02)
- * - Spektrum analyser (0x04)
- * - Power meter (0x08)
- */
-static const uint8_t moduleOptions[] = {
-#if defined(SIMU)
-  0b11111111, // None = display all options on SIMU
-#else
-  0b00000000, // None = no option available on unknown modules
-#endif
-  0b11110001, // XJT
-  0b11110001, // ISRM
-  0b11111101, // ISRM-PRO
-  0b11110101, // ISRM-S
-  0b11110010, // R9M
-  0b11110010, // R9MLite
-  0b11110110, // R9MLite-PRO
-  0b11110100, // ISRM-N
-};
-
-inline uint8_t getModuleOptions(uint8_t modelId)
-{
-  if (modelId < DIM(moduleOptions))
-    return moduleOptions[modelId];
-  else
-    return moduleOptions[0];
-}
-
-inline bool isModuleOptionAvailable(uint8_t modelId, uint8_t option)
-{
-  return getModuleOptions(modelId) & (1 << option);
-}
-
-enum {
-  RECEIVER_OPTION_OTA,
-};
-
-/* Options order:
- * - OTA (0x01)
- */
-static const uint8_t receiverOptions[] = {
-#if defined(SIMU)
-  0b11111111, // None = display all options on SIMU
-#else
-  0b00000000, // None = display all options on SIMU
-#endif
-  0b11111110, // X8R
-  0b11111110, // RX8R
-  0b11111110, // RX8R-PRO
-  0b11111110, // RX6R
-  0b11111110, // RX4R
-  0b11111110, // G-RX8
-  0b11111110, // G-RX6
-  0b11111110, // X6R
-  0b11111110, // X4R
-  0b11111110, // X4R-SB
-  0b11111110, // XSR
-  0b11111110, // XSR-M
-  0b11111110, // RXSR
-  0b11111110, // S6R
-  0b11111110, // S8R
-  0b11111110, // XM
-  0b11111110, // XM+
-  0b11111110, // XMR
-  0b11111110, // R9
-  0b11111110, // R9-SLIM
-  0b11111110, // R9-SLIM+
-  0b11111110, // R9-MINI
-  0b11111110, // R9-MM
-  0b11111110, // R9-STAB
-  0b11111111, // R9-MINI+OTA
-  0b11111111, // R9-MM+OTA
-};
-
-enum ModuleCapabilities {
-  MODULE_CAPABILITY_COUNT
-};
-
-enum ReceiverCapabilities {
-  RECEIVER_CAPABILITY_FPORT,
-  RECEIVER_CAPABILITY_COUNT
-};
-
-inline uint8_t getReceiverOptions(uint8_t modelId)
-{
-  if (modelId < DIM(receiverOptions))
-    return receiverOptions[modelId];
-  else
-    return receiverOptions[0];
-}
-
-inline bool isReceiverOptionAvailable(uint8_t modelId, uint8_t option)
-{
-  return getReceiverOptions(modelId) & (1 << option);
 }
 
 inline bool isDefaultModelRegistrationID()
@@ -491,4 +411,47 @@ inline const char * getModuleDelay(uint8_t idx)
   return nullptr;
 }
 
+inline bool isBindCh9To16Allowed(uint8_t moduleIndex)
+{
+  if (g_model.moduleData[moduleIndex].channelsCount <= 0) {
+    return false;
+  }
+
+  if (isModuleR9M_LBT(moduleIndex)) {
+    if (isModuleR9MLite(moduleIndex))
+      return g_model.moduleData[moduleIndex].pxx.power != R9M_LBT_POWER_25_8CH;
+    else
+      return g_model.moduleData[moduleIndex].pxx.power != R9M_LITE_LBT_POWER_25_8CH;
+  }
+  else {
+    return true;
+  }
+}
+
+inline bool isTelemAllowedOnBind(uint8_t moduleIndex)
+{
+#if defined(HARDWARE_INTERNAL_MODULE)
+  if (moduleIndex == INTERNAL_MODULE)
+    return isSportLineUsedByInternalModule();
+
+  if (isSportLineUsedByInternalModule())
+    return false;
+#endif
+
+  if (g_model.moduleData[EXTERNAL_MODULE].type == MODULE_TYPE_R9M_LITE_PXX1) {
+    if (isModuleR9M_LBT(EXTERNAL_MODULE))
+      return g_model.moduleData[EXTERNAL_MODULE].pxx.power < R9M_LITE_LBT_POWER_100_16CH_NOTELEM;
+    else
+      return true;
+  }
+
+  if (g_model.moduleData[EXTERNAL_MODULE].type == MODULE_TYPE_R9M_PXX1 || g_model.moduleData[EXTERNAL_MODULE].type == MODULE_TYPE_R9M_LITE_PRO_PXX1) {
+    if (isModuleR9M_LBT(EXTERNAL_MODULE))
+      return g_model.moduleData[EXTERNAL_MODULE].pxx.power < R9M_LBT_POWER_200_16CH_NOTELEM;
+    else
+      return true;
+  }
+
+  return true;
+}
 #endif // _MODULES_H_

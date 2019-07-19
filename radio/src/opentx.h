@@ -1146,6 +1146,7 @@ union ReusableBuffer
       };
       uint8_t resetReceiverFlags;
       ModuleInformation moduleInformation;
+      ModuleSettings moduleSettings;
     } pxx2;
 #if defined(BLUETOOTH)
     struct {
@@ -1185,14 +1186,8 @@ union ReusableBuffer
   struct {
     ModuleInformation modules[NUM_MODULES];
     uint32_t updateTime;
-
-    union {
-      ModuleSettings moduleSettings;
-      ReceiverSettings receiverSettings;
-    };
-
-    uint8_t moduleSettingsDirty;
-
+    ModuleSettings moduleSettings;
+    ReceiverSettings receiverSettings; // when dealing with receiver settings, we also need module settings
   } hardwareAndSettings;
 
   struct {
