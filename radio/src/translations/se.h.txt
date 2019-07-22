@@ -384,7 +384,7 @@
 #define LEN_VSRCRAW            "\004"
 
 
-#define TR_STICKS_VSRCRAW      TR("Rod\0""Hjd\0""Gas\0""Ske\0", "\307Rod""\307Hjd""\307Gas""\307Ske")
+#define TR_STICKS_VSRCRAW      "\307Rod""\307Hjd""\307Gas""\307Ske"
 
 #if defined(PCBHORUS)
   #define TR_TRIMS_VSRCRAW     "\313Rod""\313Hjd""\313Gas""\313Ske""\313T5\0""\313T6\0"
@@ -497,7 +497,6 @@
 
 #define TR_MENUWHENDONE        CENTER "\011" TR_ENTER " Avslutar "
 #define TR_FREE                "kvar"
-#define TR_NO_INFO                     TR("no info", "no information")
 #define TR_DELETEMODEL         "Radera Modell"
 #define TR_COPYINGMODEL        "Kopierar Modell "
 #define TR_MOVINGMODEL         "Flyttar Modell "
@@ -563,6 +562,7 @@
 #define TR_FLMODE              TR("Läge","Flyglägen")
 #define TR_MIXWARNING          "Varning"
 #define TR_OFF                 "Av "
+#define TR_NO_INFORMATION              TR("No info", "No information")
 #define TR_MULTPX              "Multpx"
 #define TR_DELAYDOWN           "Dröj Ned"
 #define TR_DELAYUP             "Dröj Upp"

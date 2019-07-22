@@ -389,7 +389,7 @@
 #define LEN_VSWITCHES          "\003"
 #define LEN_VSRCRAW            "\004"
 
-#define TR_STICKS_VSRCRAW      TR("SK\0 ""SW\0 ""Gaz\0""Lot\0", "\307SK ""\307SW ""\307Gaz""\307Lot")
+#define TR_STICKS_VSRCRAW      "\307SK\0""\307SW\0""\307Gaz""\307Lot"
 
 #if defined(PCBHORUS)
   #define TR_TRIMS_VSRCRAW     "\313SK\0""\313SW\0""\313Gaz""\313Lot""\313T5\0""\313T6\0"
@@ -502,7 +502,6 @@
 
 #define TR_MENUWHENDONE        CENTER "\006" TR_ENTER " > DALEJ"
 #define TR_FREE                "woln"
-#define TR_NO_INFO                     TR("no info", "no information")
 #define TR_DELETEMODEL         "SKASUJ MODEL"
 #define TR_COPYINGMODEL        "Kopiuj model.."
 #define TR_MOVINGMODEL         "Przenieś model."
@@ -564,6 +563,7 @@
 #define TR_FLMODE              "Tryb"
 #define TR_MIXWARNING          "UWAGA"
 #define TR_OFF                 "Wył."
+#define TR_NO_INFORMATION              TR("No info", "No information")
 #define TR_MULTPX              "Złącz."
 #define TR_DELAYDOWN           "Opózn.(-)"
 #define TR_DELAYUP             "Opózn.(+)"

@@ -648,6 +648,7 @@
   #define ADC_EXT_SET_DMA_FLAGS()       ADC_DMA->LIFCR = (DMA_LIFCR_CTCIF0 | DMA_LIFCR_CHTIF0 | DMA_LIFCR_CTEIF0 | DMA_LIFCR_CDMEIF0 | DMA_LIFCR_CFEIF0)
   #define ADC_EXT_TRANSFER_COMPLETE()   (ADC_DMA->LISR & DMA_LISR_TCIF0)
   #define ADC_EXT_SAMPTIME              3    // sample time = 56 cycles
+  #define ADC_VREF_PREC2                330
 #elif defined(PCBX9DP)
   #define HARDWARE_POT1
   #define HARDWARE_POT2
@@ -678,6 +679,7 @@
   #define ADC_CHANNEL_SLIDER1           ADC_Channel_14
   #define ADC_CHANNEL_SLIDER2           ADC_Channel_15
   #define ADC_CHANNEL_BATT              ADC_Channel_10
+  #define ADC_VREF_PREC2                330
 #elif defined(PCBXLITE)
   #define HARDWARE_POT1
   #define HARDWARE_POT2
@@ -706,6 +708,7 @@
   #define ADC_CHANNEL_POT1              ADC_Channel_11 // ADC1_IN11
   #define ADC_CHANNEL_POT2              ADC_Channel_12 // ADC1_IN12
   #define ADC_CHANNEL_BATT              ADC_Channel_10 // ADC1_IN10
+  #define ADC_VREF_PREC2                330
 #elif defined(PCBX7)
   #define HARDWARE_POT1
   #define HARDWARE_POT2
@@ -729,6 +732,7 @@
   #define ADC_CHANNEL_POT1              ADC_Channel_8
   #define ADC_CHANNEL_POT2              ADC_Channel_6
   #define ADC_CHANNEL_BATT              ADC_Channel_10
+  #define ADC_VREF_PREC2                330
 #elif defined(PCBX9LITE)
   #define HARDWARE_POT1
   #define ADC_RCC_AHB1Periph            (RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_DMA2)
@@ -748,6 +752,7 @@
   #define ADC_GPIOC_PINS                (GPIO_Pin_0 | GPIO_Pin_1)
   #define ADC_CHANNEL_POT1              ADC_Channel_11 // ADC1_IN11
   #define ADC_CHANNEL_BATT              ADC_Channel_10 // ADC1_IN10
+  #define ADC_VREF_PREC2                300
 #else
   #define HARDWARE_POT1
   #define HARDWARE_POT2
@@ -776,6 +781,7 @@
   #define ADC_CHANNEL_SLIDER1           ADC_Channel_14
   #define ADC_CHANNEL_SLIDER2           ADC_Channel_15
   #define ADC_CHANNEL_BATT              ADC_Channel_10
+  #define ADC_VREF_PREC2                330
 #endif
 
 // PWR and LED driver

@@ -266,7 +266,11 @@ enum EnumKeys
 
 #if defined(KEYS_GPIO_PIN_SHIFT)
 #define IS_SHIFT_KEY(index)             (index == KEY_SHIFT)
+#if defined(SIMU)
+#define IS_SHIFT_PRESSED()              (readKeys() & (1 << KEY_SHIFT))
+#else
 #define IS_SHIFT_PRESSED()              (~KEYS_GPIO_REG_SHIFT & KEYS_GPIO_PIN_SHIFT)
+#endif
 #else
 #define IS_SHIFT_KEY(index)             (false)
 #define IS_SHIFT_PRESSED()              (false)
@@ -454,7 +458,6 @@ enum Analogs {
   SLIDER2,
 #endif
   TX_VOLTAGE,
-  TX_INTREF,
   TX_RTC_VOLTAGE,
   NUM_ANALOGS
 };

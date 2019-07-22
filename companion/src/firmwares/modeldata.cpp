@@ -316,7 +316,7 @@ void ModelData::setTrimValue(int phaseIdx, int trimIdx, int value)
       return;
     if (p == phaseIdx || phaseIdx == 0) {
       trim = value;
-      break;;
+      break;
     }
     else if (mode == 0) {
       phaseIdx = p;
