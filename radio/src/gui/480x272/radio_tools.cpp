@@ -29,7 +29,7 @@ bool addRadioTool(uint8_t index, const char * label)
   LcdFlags attr = (sub == index ? INVERS : 0);
   coord_t y = MENU_HEADER_HEIGHT + 1 + index * FH;
   lcdDrawNumber(3, y, index + 1, LEADING0|LEFT, 2);
-  lcdDrawText(3*FW, y, label, (sub == index ? INVERS  : 0));
+// BSS lcdDrawText(3*FW, y, label, (sub == index ? INVERS  : 0));
   if (attr && s_editMode > 0) {
     s_editMode = 0;
     killAllEvents();
@@ -38,7 +38,7 @@ bool addRadioTool(uint8_t index, const char * label)
   return false;
 }
 
-void addRadioModuleTool(uint8_t index, const char * label, void (* tool)(event_t), uint8_t module)
+void addRadioModuleTool(uint8_t index, const char * label, bool (* tool)(event_t), uint8_t module)
 {
   if (addRadioTool(index, label)) {
     g_moduleIdx = module;
@@ -89,16 +89,19 @@ bool readToolName(const char * filename, char * name)
 void addRadioScriptTool(uint8_t index, const char * path)
 {
   char toolName[TOOL_NAME_MAXLEN + 1];
-
-  if (!readToolName(path, toolName)) {
-    strAppendFilename(toolName, getBasename(path), TOOL_NAME_MAXLEN);
+  const char * label;
+  char * ext = (char *)getFileExtension(path);
+  if (readToolName(path, toolName)) {
+    label = toolName;
+  }
+  else {
+    *ext = '\0';
+    label = getBasename(path);
   }
 
-  if (addRadioTool(index, toolName)) {
-    char toolPath[_MAX_LFN];
-    strcpy(toolPath, path);
-    *((char *)getBasename(toolPath)-1) = '\0';
-    f_chdir(toolPath);
+  if (addRadioTool(index, label)) {
+    f_chdir("/SCRIPTS/TOOLS/");
+    *ext = '.';
     luaExec(path);
   }
 }
@@ -110,7 +113,7 @@ bool isRadioScriptTool(const char * filename)
 }
 #endif
 
-void menuRadioTools(event_t event)
+bool menuRadioTools(event_t event)
 {
   if (event == EVT_ENTRY  || event == EVT_ENTRY_UP) {
     memclear(&reusableBuffer.radioTools, sizeof(reusableBuffer.radioTools));
@@ -123,11 +126,11 @@ void menuRadioTools(event_t event)
 #endif
   }
 
-  SIMPLE_MENU(STR_MENUTOOLS, menuTabGeneral, MENU_RADIO_TOOLS, HEADER_LINE + reusableBuffer.radioTools.linesCount);
+  SIMPLE_MENU(STR_MENUTOOLS, RADIO_ICONS, menuTabGeneral, MENU_RADIO_TOOLS, HEADER_LINE + reusableBuffer.radioTools.linesCount);
 
   uint8_t index = 0;
 
-#if defined(PXX2)
+#if 0 // TODO BSS defined(PXX2)
   if (isPXX2ModuleOptionAvailable(reusableBuffer.hardwareAndSettings.modules[INTERNAL_MODULE].information.modelID, MODULE_OPTION_SPECTRUM_ANALYSER))
     addRadioModuleTool(index++, STR_SPECTRUM_ANALYSER_INT, menuRadioSpectrumAnalyser, INTERNAL_MODULE);
 
@@ -172,4 +175,6 @@ void menuRadioTools(event_t event)
   }
 
   reusableBuffer.radioTools.linesCount = index;
+
+  return true;
 }
