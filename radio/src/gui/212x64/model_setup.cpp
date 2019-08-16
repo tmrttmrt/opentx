@@ -246,12 +246,13 @@ void editTimerCountdown(int timerIdx, coord_t y, LcdFlags attr, event_t event)
 
 #define TIMER_ROWS(x)                     2|NAVIGATION_LINE_BY_LINE, 0, 0, 0, g_model.timers[x].countdownBeep != COUNTDOWN_SILENT ? (uint8_t) 1 : (uint8_t)0
 
-inline uint8_t EXTERNAL_MODULE_MODE_ROWS() {
+inline uint8_t EXTERNAL_MODULE_MODE_ROW()
+{
   if (isModuleXJT(EXTERNAL_MODULE) || isModuleR9MNonAccess(EXTERNAL_MODULE) || isModuleDSM2(EXTERNAL_MODULE))
     return 1;
 #if defined(MULTIMODULE)
   else if (isModuleMultimodule(EXTERNAL_MODULE)) {
-    return 2 + MULTIMODULE_RFPROTO_ROWS(EXTERNAL_MODULE);
+    return 2 + MULTIMODULE_RFPROTO_COLUMNS(EXTERNAL_MODULE);
   }
 #endif
   else
@@ -362,7 +363,7 @@ void menuModelSetup(event_t event)
       IF_ACCESS_MODULE_RF(INTERNAL_MODULE, 0), // Receiver 3
 
     LABEL(ExternalModule),
-      EXTERNAL_MODULE_MODE_ROWS(),
+      EXTERNAL_MODULE_MODE_ROW(),
       MULTIMODULE_STATUS_ROWS
       EXTERNAL_MODULE_CHANNELS_ROWS,
       IF_NOT_ACCESS_MODULE_RF(EXTERNAL_MODULE, EXTERNAL_MODULE_BIND_ROWS),
@@ -755,9 +756,9 @@ void menuModelSetup(event_t event)
 #if defined(INTERNAL_MODULE_PXX1)
         lcdDrawTextAtIndex(MODEL_SETUP_2ND_COLUMN, y, STR_INTERNAL_MODULE_PROTOCOLS, g_model.moduleData[INTERNAL_MODULE].type, menuHorizontalPosition==0 ? attr : 0);
         if (isModuleXJT(INTERNAL_MODULE))
-          lcdDrawTextAtIndex(lcdNextPos + 3, y, STR_XJT_ACCST_RF_PROTOCOLS, 1+g_model.moduleData[INTERNAL_MODULE].rfProtocol, menuHorizontalPosition==1 ? attr : 0);
+          lcdDrawTextAtIndex(lcdNextPos + 3, y, STR_XJT_ACCST_RF_PROTOCOLS, 1 + g_model.moduleData[INTERNAL_MODULE].rfProtocol, menuHorizontalPosition==1 ? attr : 0);
         else if (isModuleISRM(INTERNAL_MODULE))
-          lcdDrawTextAtIndex(lcdNextPos + 3, y, STR_ISRM_RF_PROTOCOLS, g_model.moduleData[INTERNAL_MODULE].subType, menuHorizontalPosition==1 ? attr : 0);
+          lcdDrawTextAtIndex(lcdNextPos + 3, y, STR_ISRM_RF_PROTOCOLS, 1 + g_model.moduleData[INTERNAL_MODULE].subType, menuHorizontalPosition==1 ? attr : 0);
         if (attr) {
           if (menuHorizontalPosition == 0) {
             uint8_t moduleType = checkIncDec(event, g_model.moduleData[INTERNAL_MODULE].type, MODULE_TYPE_NONE, MODULE_TYPE_MAX, EE_MODEL, isInternalModuleAvailable);
@@ -769,7 +770,7 @@ void menuModelSetup(event_t event)
             }
           }
           else if (isModuleXJT(INTERNAL_MODULE)) {
-            g_model.moduleData[INTERNAL_MODULE].rfProtocol = checkIncDec(event, g_model.moduleData[INTERNAL_MODULE].rfProtocol, 0, MODULE_SUBTYPE_PXX1_LAST, EE_MODEL, isRfProtocolAvailable);
+            g_model.moduleData[INTERNAL_MODULE].subType = checkIncDec(event, g_model.moduleData[INTERNAL_MODULE].subType, 0, MODULE_SUBTYPE_PXX1_LAST, EE_MODEL, isRfProtocolAvailable);
             if (checkIncDec_Ret) {
               g_model.moduleData[0].type = MODULE_TYPE_XJT_PXX1;
               g_model.moduleData[0].channelsStart = 0;
@@ -777,7 +778,7 @@ void menuModelSetup(event_t event)
             }
           }
           else if (isModulePXX2(INTERNAL_MODULE)) {
-            g_model.moduleData[INTERNAL_MODULE].subType = checkIncDec(event, g_model.moduleData[INTERNAL_MODULE].subType, 0, MODULE_SUBTYPE_ISRM_PXX2_LAST, EE_MODEL, isRfProtocolAvailable);
+            g_model.moduleData[INTERNAL_MODULE].subType = checkIncDec(event, g_model.moduleData[INTERNAL_MODULE].subType, 0, MODULE_SUBTYPE_ISRM_PXX2_ACCST_LR12, EE_MODEL, isRfProtocolAvailable);
           }
         }
 #else
@@ -1038,16 +1039,10 @@ void menuModelSetup(event_t event)
                 CHECK_INCDEC_MODELVAR_ZERO(event, moduleData.channelsStart, 32-8-moduleData.channelsCount);
                 break;
               case 1:
-                CHECK_INCDEC_MODELVAR(event, moduleData.channelsCount, -4, min<int8_t>(maxModuleChannels_M8(moduleIdx), 32-8-moduleData.channelsStart));
-#if defined(INTERNAL_MODULE_PPM)
-                if ((k == ITEM_MODEL_SETUP_EXTERNAL_MODULE_CHANNELS && g_model.moduleData[EXTERNAL_MODULE].type == MODULE_TYPE_PPM) || (k == ITEM_MODEL_SETUP_INTERNAL_MODULE_CHANNELS && g_model.moduleData[INTERNAL_MODULE].type == MODULE_TYPE_PPM) || (k == ITEM_MODEL_SETUP_TRAINER_CHANNELS)) {
+                CHECK_INCDEC_MODELVAR_CHECK(event, moduleData.channelsCount, -4, min<int8_t>(maxModuleChannels_M8(moduleIdx), 32-8-moduleData.channelsStart), moduleData.type == MODULE_TYPE_ISRM_PXX2 ? isPxx2IsrmChannelsCountAllowed : nullptr);
+                if (checkIncDec_Ret && moduleData.type == MODULE_TYPE_PPM) {
                   SET_DEFAULT_PPM_FRAME_LENGTH(moduleIdx);
                 }
-#else
-                if ((k == ITEM_MODEL_SETUP_EXTERNAL_MODULE_CHANNELS && g_model.moduleData[EXTERNAL_MODULE].type == MODULE_TYPE_PPM) || (k == ITEM_MODEL_SETUP_TRAINER_CHANNELS)) {
-                  SET_DEFAULT_PPM_FRAME_LENGTH(moduleIdx);
-                }
-#endif
                 break;
             }
           }
@@ -1407,78 +1402,8 @@ void menuModelSetup(event_t event)
       case ITEM_MODEL_SETUP_EXTERNAL_MODULE_PXX2_RECEIVER_1:
       case ITEM_MODEL_SETUP_EXTERNAL_MODULE_PXX2_RECEIVER_2:
       case ITEM_MODEL_SETUP_EXTERNAL_MODULE_PXX2_RECEIVER_3:
-      {
-        uint8_t moduleIdx = CURRENT_MODULE_EDITED(k);
-        uint8_t receiverIdx = CURRENT_RECEIVER_EDITED(k);
-        ModuleInformation & moduleInformation = reusableBuffer.moduleSetup.pxx2.moduleInformation;
-
-        drawStringWithIndex(INDENT_WIDTH, y, STR_RECEIVER, receiverIdx + 1);
-
-        if (!(g_model.moduleData[moduleIdx].pxx2.receivers & (1 << receiverIdx))) {
-          lcdDrawText(MODEL_SETUP_2ND_COLUMN, y, STR_MODULE_BIND, attr);
-          if (attr && s_editMode > 0) {
-            s_editMode = 0;
-            killEvents(event);
-            g_model.moduleData[moduleIdx].pxx2.receivers |= (1 << receiverIdx);
-            memclear(g_model.moduleData[moduleIdx].pxx2.receiverName[receiverIdx], PXX2_LEN_RX_NAME);
-            storageDirty(EE_MODEL);
-          }
-          else {
-            break;
-          }
-        }
-
-        drawReceiverName(MODEL_SETUP_2ND_COLUMN, y, moduleIdx, receiverIdx, attr);
-
-        if (s_editMode && isModuleR9MAccess(moduleIdx) && moduleState[moduleIdx].mode == MODULE_MODE_NORMAL && moduleInformation.information.modelID) {
-          moduleInformation.information.modelID = 0;
-          moduleState[moduleIdx].startBind(&reusableBuffer.moduleSetup.bindInformation);
-        }
-
-        if (attr && (moduleState[moduleIdx].mode == 0 || s_editMode == 0)) {
-          if (moduleState[moduleIdx].mode) {
-            moduleState[moduleIdx].mode = 0;
-            removePXX2ReceiverIfEmpty(moduleIdx, receiverIdx);
-            killEvents(event); // we stopped BIND / SHARE, we don't want to re-open the menu
-            event = 0;
-            CLEAR_POPUP();
-          }
-          s_editMode = 0;
-        }
-
-        if (moduleState[moduleIdx].mode == MODULE_MODE_BIND) {
-          if (reusableBuffer.moduleSetup.bindInformation.step == BIND_INIT) {
-            if (reusableBuffer.moduleSetup.bindInformation.candidateReceiversCount > 0) {
-              popupMenuItemsCount = min<uint8_t>(reusableBuffer.moduleSetup.bindInformation.candidateReceiversCount, PXX2_MAX_RECEIVERS_PER_MODULE);
-              for (uint8_t i = 0; i < popupMenuItemsCount; i++) {
-                popupMenuItems[i] = reusableBuffer.moduleSetup.bindInformation.candidateReceiversNames[i];
-              }
-              popupMenuTitle = STR_PXX2_SELECT_RX;
-              CLEAR_POPUP();
-              POPUP_MENU_START(onPXX2BindMenu);
-            }
-            else {
-              POPUP_WAIT(STR_WAITING_FOR_RX);
-            }
-          }
-        }
-
-        if (attr && EVT_KEY_MASK(event) == KEY_ENTER) {
-          killEvents(event);
-          if (isPXX2ReceiverEmpty(moduleIdx, receiverIdx)) {
-            onPXX2ReceiverMenu(STR_BIND);
-          }
-          else {
-            POPUP_MENU_ADD_ITEM(STR_BIND);
-            POPUP_MENU_ADD_ITEM(STR_OPTIONS);
-            POPUP_MENU_ADD_ITEM(STR_SHARE);
-            POPUP_MENU_ADD_ITEM(STR_DELETE);
-            POPUP_MENU_ADD_ITEM(STR_RESET);
-          }
-          POPUP_MENU_START(onPXX2ReceiverMenu);
-        }
-      }
-      break;
+        modelSetupModulePxx2ReceiverLine(CURRENT_MODULE_EDITED(k), CURRENT_RECEIVER_EDITED(k), y, event, attr);
+        break;
 #endif
     }
   }

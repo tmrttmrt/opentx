@@ -216,9 +216,7 @@ enum {
 #if !defined(BLUETOOTH)
   #define BLUETOOTH_ROWS
 #elif defined(PCBX9E)
-  #define BLUETOOTH_ROWS
-#elif defined(PCBSKY9X)
-  #define BLUETOOTH_ROWS                 0, uint8_t(g_eeGeneral.bluetoothMode == BLUETOOTH_OFF ? HIDDEN_ROW : READONLY_ROW), uint8_t(g_eeGeneral.bluetoothMode == BLUETOOTH_OFF ? HIDDEN_ROW : READONLY_ROW), uint8_t(g_eeGeneral.bluetoothMode == BLUETOOTH_OFF ? HIDDEN_ROW : 0),
+  #define BLUETOOTH_ROWS                 0, uint8_t(g_eeGeneral.bluetoothMode == BLUETOOTH_OFF ? HIDDEN_ROW : READONLY_ROW), uint8_t(g_eeGeneral.bluetoothMode == BLUETOOTH_OFF ? HIDDEN_ROW : READONLY_ROW), uint8_t(g_eeGeneral.bluetoothMode == BLUETOOTH_OFF ? HIDDEN_ROW : 0), uint8_t(g_eeGeneral.bluetoothMode == BLUETOOTH_OFF ? HIDDEN_ROW : 0),
 #else
   #define BLUETOOTH_ROWS                 uint8_t(IS_BLUETOOTH_CHIP_PRESENT() ? 0 : HIDDEN_ROW), uint8_t(g_eeGeneral.bluetoothMode == BLUETOOTH_TELEMETRY ? -1 : HIDDEN_ROW), uint8_t(g_eeGeneral.bluetoothMode == BLUETOOTH_OFF ? HIDDEN_ROW : -1), uint8_t(g_eeGeneral.bluetoothMode == BLUETOOTH_OFF ? HIDDEN_ROW : -1), uint8_t(g_eeGeneral.bluetoothMode == BLUETOOTH_OFF ? HIDDEN_ROW : 0),
 #endif
@@ -305,7 +303,11 @@ void menuRadioHardware(event_t event)
     0 /* ADC filter */,
     READONLY_ROW /* RAS */,
 
-    1 /* debugs */
+    1 /* debugs */,
+
+    0,
+
+    0
   });
 
   uint8_t sub = menuVerticalPosition - HEADER_LINE;
@@ -588,7 +590,7 @@ void menuRadioHardware(event_t event)
         break;
 
       case ITEM_RADIO_BACKUP_EEPROM:
-        lcdDrawText(0, y, BUTTON(STR_EEBACKUP), attr);
+        lcdDrawText(LCD_W / 2, y, BUTTON(STR_EEBACKUP), attr | CENTERED);
         if (attr && event == EVT_KEY_FIRST(KEY_ENTER)) {
           s_editMode = EDIT_SELECT_FIELD;
           eepromBackup();
@@ -596,7 +598,7 @@ void menuRadioHardware(event_t event)
         break;
 
       case ITEM_RADIO_FACTORY_RESET:
-        lcdDrawText(0, y, BUTTON(STR_FACTORYRESET), attr);
+        lcdDrawText(LCD_W / 2, y, BUTTON(STR_FACTORYRESET), attr | CENTERED);
         if (attr && event == EVT_KEY_FIRST(KEY_ENTER)) {
           s_editMode = EDIT_SELECT_FIELD;
           POPUP_CONFIRMATION(STR_CONFIRMRESET, onFactoryResetConfirm);
