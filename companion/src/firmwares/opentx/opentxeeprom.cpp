@@ -2608,7 +2608,7 @@ OpenTxGeneralData::OpenTxGeneralData(GeneralSettings & generalData, Board::Type 
       for (int i=0; i<Boards::getCapability(board, Board::Pots); ++i) {
         internalField.Append(new ZCharField<3>(this, generalData.potName[i], "Pot name"));
       }
-      for (int i=0; i<MAX_SLIDERS(board); ++i) {
+      for (int i=0; i<Boards::getCapability(board, Board::Sliders); ++i) {
         internalField.Append(new ZCharField<3>(this, generalData.sliderName[i], "Slider name"));
       }
   }
