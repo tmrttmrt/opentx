@@ -115,7 +115,7 @@ PACK(struct ExpoData {
 PACK(struct LimitData {
   int32_t min:11;
   int32_t max:11;
-  int32_t ppmCenter:10;
+  int32_t ppmCenter:10; // TODO can be reduced to 8 bits
   int16_t offset:11;
   uint16_t symetrical:1;
   uint16_t revert:1;
@@ -785,7 +785,9 @@ PACK(struct RadioData {
   NOBACKUP(uint32_t globalTimer);
   NOBACKUP(uint8_t  bluetoothBaudrate:4);
   NOBACKUP(uint8_t  bluetoothMode:4);
-  NOBACKUP(uint8_t  countryCode);
+  NOBACKUP(uint8_t  countryCode:2);
+  NOBACKUP(int8_t   pwrOnSpeed:3);
+  NOBACKUP(int8_t   pwrOffSpeed:3);
   NOBACKUP(uint8_t  imperial:1);
   NOBACKUP(uint8_t  jitterFilter:1); /* 0 - active */
   NOBACKUP(uint8_t  disableRssiPoweroffAlarm:1);

@@ -1732,9 +1732,15 @@ void copyTrimsToOffset(uint8_t ch)
   storageDirty(EE_MODEL);
 }
 
+
 #if defined(STARTUP_ANIMATION)
-#define PWR_PRESS_DURATION_MIN        100 // 1s
-#define PWR_PRESS_DURATION_MAX        500 // 5s
+
+inline uint32_t PWR_PRESS_DURATION_MIN()
+{
+  return (2 - g_eeGeneral.pwrOnSpeed) * 100;
+}
+
+constexpr uint32_t PWR_PRESS_DURATION_MAX = 500; // 5s
 
 void runStartupAnimation()
 {
@@ -1744,8 +1750,8 @@ void runStartupAnimation()
 
   while (pwrPressed()) {
     duration = get_tmr10ms() - start;
-    if (duration < PWR_PRESS_DURATION_MIN) {
-      drawStartupAnimation(duration);
+    if (duration < PWR_PRESS_DURATION_MIN()) {
+      drawStartupAnimation(duration, PWR_PRESS_DURATION_MIN());
     }
     else if (duration >= PWR_PRESS_DURATION_MAX) {
       drawSleepBitmap();
@@ -1758,7 +1764,7 @@ void runStartupAnimation()
     }
   }
 
-  if (duration < PWR_PRESS_DURATION_MIN || duration >= PWR_PRESS_DURATION_MAX) {
+  if (duration < PWR_PRESS_DURATION_MIN() || duration >= PWR_PRESS_DURATION_MAX) {
     boardOff();
   }
 }
@@ -2030,6 +2036,12 @@ int main()
 
 #if !defined(SIMU) && !defined(CPUESP32)
 #if defined(PWR_BUTTON_PRESS)
+
+inline uint32_t PWR_PRESS_SHUTDOWN_DELAY()
+{
+  return (2 - g_eeGeneral.pwrOffSpeed) * 100;
+}
+
 uint32_t pwr_press_time = 0;
 
 uint32_t pwrPressedDuration()
@@ -2075,7 +2087,7 @@ uint32_t pwrCheck()
       if (g_eeGeneral.backlightMode != e_backlight_mode_off) {
         BACKLIGHT_ENABLE();
       }
-      if (get_tmr10ms() - pwr_press_time > PWR_PRESS_SHUTDOWN_DELAY) {
+      if (get_tmr10ms() - pwr_press_time > PWR_PRESS_SHUTDOWN_DELAY()) {
 #if defined(SHUTDOWN_CONFIRMATION)
         while (1) {
 #else
@@ -2105,7 +2117,7 @@ uint32_t pwrCheck()
         return e_power_off;
       }
       else {
-        drawShutdownAnimation(pwrPressedDuration(), message);
+        drawShutdownAnimation(pwrPressedDuration(), PWR_PRESS_SHUTDOWN_DELAY(), message);
         return e_power_press;
       }
     }
