@@ -155,23 +155,27 @@ set(SRC
   telemetry/frsky_pxx2.cpp
   crc.cpp
   vario.cpp
-  targets/common/esp32/main/startup.cpp
-  targets/common/esp32/drivers/ana_driver.cpp
-  targets/common/esp32/drivers/audio_driver.cpp
-  targets/common/esp32/drivers/audio_esp32.cpp
-  targets/common/esp32/drivers/eeprom_conversions.cpp.dis
-  targets/common/esp32/drivers/eeprom_driver.cpp
-  targets/common/esp32/drivers/fs_driver.cpp
-  targets/common/esp32/drivers/fs_wrappers.cpp
-  targets/common/esp32/drivers/keys_driver.cpp
-  targets/common/esp32/drivers/pulses_ppm_esp32.cpp
-  targets/common/esp32/drivers/pulses_espnow.cpp
-  targets/common/esp32/drivers/sdcard.cpp
-  targets/common/esp32/drivers/telemetry_driver.cpp
-  targets/common/esp32/ftp-server/ftp.c         
-  targets/common/esp32/ftp-server/WiFi.c
-  targets/common/esp32/ftp-server/initWiFi.cpp  
-  targets/common/esp32/ota_server/ota_server.c  
+  )
+
+set(FIRMWARE_TARGET_SRC
+  ${FIRMWARE_TARGET_SRC}
+  ../common/esp32/main/startup.cpp
+  ../common/esp32/drivers/ana_driver.cpp
+  ../common/esp32/drivers/audio_driver.cpp
+  ../common/esp32/drivers/audio_esp32.cpp
+  ../common/esp32/drivers/eeprom_conversions.cpp.dis
+  ../common/esp32/drivers/eeprom_driver.cpp
+  ../common/esp32/drivers/fs_driver.cpp
+  ../common/esp32/drivers/fs_wrappers.cpp
+  ../common/esp32/drivers/keys_driver.cpp
+  ../common/esp32/drivers/pulses_ppm_esp32.cpp
+  ../common/esp32/drivers/pulses_espnow.cpp
+  ../common/esp32/drivers/sdcard.cpp
+  ../common/esp32/drivers/telemetry_driver.cpp
+  ../common/esp32/ftp-server/ftp.c         
+  ../common/esp32/ftp-server/WiFi.c
+  ../common/esp32/ftp-server/initWiFi.cpp  
+  ../common/esp32/ota_server/ota_server.c  
   )
 
 set(PULSES_SRC

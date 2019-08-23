@@ -33,7 +33,7 @@ if(SIMU_LUA_COMPILER)
 endif()
 
 if(Qt5Widgets_FOUND)
-  set(SIMULATOR_FLAVOUR opentx-${FLAVOUR})
+    set(SIMULATOR_FLAVOUR opentx-${FLAVOUR})
   set(SIMULATOR_TARGET ${SIMULATOR_FLAVOUR}-simulator)
   add_definitions(-DSIMULATOR_FLAVOUR="${SIMULATOR_FLAVOUR}")
   include_directories(${COMPANION_SRC_DIRECTORY} ${COMPANION_SRC_DIRECTORY}/simulation)

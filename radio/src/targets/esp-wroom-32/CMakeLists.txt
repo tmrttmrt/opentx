@@ -40,15 +40,15 @@ endif()
 
 set(FIRMWARE_TARGET_SRC
   ${FIRMWARE_TARGET_SRC}
+  board.cpp
+  ../common/esp32/drivers/lcd_driver.cpp
   )
 
 set(TARGET_SRC
   ${TARGET_SRC}
-  board.cpp
   )
 
 set(SRC
   ${SRC}
   debug.cpp
-  targets/common/esp32/drivers/lcd_driver.cpp
   )
