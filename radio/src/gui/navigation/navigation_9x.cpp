@@ -248,8 +248,7 @@ void check(event_t event, uint8_t curr, const MenuHandlerFunc *menuTab, uint8_t 
 
   }
 
-  switch (event)
-  {
+  switch (event) {
     case EVT_ENTRY:
       menuEntryTime = get_tmr10ms();
       l_posVert = 0;
@@ -277,7 +276,7 @@ void check(event_t event, uint8_t curr, const MenuHandlerFunc *menuTab, uint8_t 
     case EVT_KEY_FIRST(KEY_ENTER):
       if (!menuTab || l_posVert>0) {
         if (READ_ONLY_UNLOCKED()) {
-          s_editMode = (s_editMode<=0);
+          s_editMode = (s_editMode <= 0);
         }
       }
       break;
@@ -293,6 +292,7 @@ void check(event_t event, uint8_t curr, const MenuHandlerFunc *menuTab, uint8_t 
       }
       // no break
 #endif
+
     case EVT_KEY_LONG(KEY_EXIT):
       s_editMode = 0; // TODO needed? we call ENTRY_UP after which does the same
       popMenu();

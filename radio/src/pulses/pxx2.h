@@ -58,6 +58,12 @@
 
 #define PXX2_HW_INFO_TX_ID                         0xFF
 
+#if defined(COLORLCD)
+  #define SPECTRUM_ANALYSER_POWER_FLOOR   -120 /*dBm*/
+#else
+  #define SPECTRUM_ANALYSER_POWER_FLOOR   -120 /*dBm*/
+#endif
+
 enum PXX2ModuleModelID {
   PXX2_MODULE_NONE,
   PXX2_MODULE_XJT,
@@ -113,16 +119,16 @@ static const uint8_t PXX2ModuleOptions[] = {
 #else
   0b00000000, // None = no option available on unknown modules
 #endif
-  0b11110001, // XJT
-  0b11110001, // ISRM
-  0b11111101, // ISRM-PRO
-  0b11110101, // ISRM-S
-  0b11110010, // R9M
-  0b11110010, // R9MLite
-  0b11110110, // R9MLite-PRO
-  0b11110100, // ISRM-N
-  0b11110100, // ISRM-S-X9
-  0b11110100, // ISRM-S-X10
+  0b00000001, // XJT
+  0b00000001, // ISRM
+  0b00001101, // ISRM-PRO
+  0b00000101, // ISRM-S
+  0b00000010, // R9M
+  0b00000010, // R9MLite
+  0b00000110, // R9MLite-PRO
+  0b00000100, // ISRM-N
+  0b00000100, // ISRM-S-X9
+  0b00001101, // ISRM-S-X10
 };
 
 inline uint8_t getPXX2ModuleOptions(uint8_t modelId)

@@ -29,12 +29,6 @@
 #include "modules_helpers.h"
 #include "ff.h"
 
-#if NUM_MODULES > 1
-  #define IS_RANGECHECK_ENABLE()             (moduleState[0].mode == MODULE_MODE_RANGECHECK || moduleState[1].mode == MODULE_MODE_RANGECHECK)
-#else
-  #define IS_RANGECHECK_ENABLE()             (moduleState[0].mode == MODULE_MODE_RANGECHECK)
-#endif
-
 #if defined(PCBSKY9X) && defined(DSM2)
   #define DSM2_BIND_TIMEOUT      255         // 255*11ms
   extern uint8_t dsm2BindTimer;
@@ -152,15 +146,6 @@ class OtaUpdateInformation: public BindInformation {
 
 typedef void (* ModuleCallback)();
 
-#if defined(SIMU)
-  #define BIND_INFO \
-    bindInformation->candidateReceiversCount = 2; \
-    strcpy(bindInformation->candidateReceiversNames[0], "SimuRX1"); \
-    strcpy(bindInformation->candidateReceiversNames[1], "SimuRX2"); 
-#else
-  #define BIND_INFO
-#endif
-
 PACK(struct ModuleState {
   uint8_t protocol:4;
   uint8_t mode:4;
@@ -181,7 +166,11 @@ PACK(struct ModuleState {
     bindInformation = destination;
     callback = bindCallback;
     mode = MODULE_MODE_BIND;
-    BIND_INFO;
+#if defined(SIMU)
+     bindInformation->candidateReceiversCount = 2;
+     strcpy(bindInformation->candidateReceiversNames[0], "SimuRX1");
+     strcpy(bindInformation->candidateReceiversNames[1], "SimuRX2");
+#endif
   }
   void readModuleInformation(ModuleInformation * destination, int8_t first, int8_t last)
   {
@@ -412,5 +401,30 @@ inline void SEND_FAILSAFE_1S()
 // for channels not set previously to HOLD or NOPULSE
 void setCustomFailsafe(uint8_t moduleIndex);
 
+inline bool isModuleInRangeCheckMode()
+{
+  if (moduleState[0].mode == MODULE_MODE_RANGECHECK)
+    return true;
+
+#if NUM_MODULES > 1
+  if (moduleState[1].mode == MODULE_MODE_RANGECHECK)
+    return true;
+#endif
+
+  return false;
+}
+
+inline bool isModuleInBeepMode()
+{
+  if (moduleState[0].mode >= MODULE_MODE_BEEP_FIRST)
+    return true;
+
+#if NUM_MODULES > 1
+  if (moduleState[1].mode >= MODULE_MODE_BEEP_FIRST)
+    return true;
+#endif
+
+  return false;
+}
 
 #endif // _PULSES_H_

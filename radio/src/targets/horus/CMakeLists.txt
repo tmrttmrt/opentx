@@ -49,6 +49,8 @@ if (PCB STREQUAL X10)
     option(INTERNAL_MODULE_PXX2 "Support for PXX2 internal module" OFF)
   endif()
 elseif (PCB STREQUAL X12S)
+  option(INTERNAL_MODULE_PXX1 "Support for PXX1 internal module" ON)
+  option(INTERNAL_MODULE_PXX2 "Support for PXX2 internal module" OFF)
   set(FLAVOUR x12s)
   set(PCBREV "13" CACHE STRING "PCB Revision")
   if(${PCBREV} GREATER 10)
@@ -64,7 +66,7 @@ elseif (PCB STREQUAL X12S)
   set(TARGET_SRC
     ${TARGET_SRC}
     audio_spi_driver.cpp
-    adc_driver.cpp
+    x12s_adc_driver.cpp
     gps_driver.cpp
     )
   set(AUX_SERIAL_DRIVER ../common/arm/stm32/aux_serial_driver.cpp)
@@ -86,6 +88,15 @@ add_definitions(-DPWR_BUTTON_${PWR_BUTTON})
 
 if(NOT UNEXPECTED_SHUTDOWN)
   add_definitions(-DNO_UNEXPECTED_SHUTDOWN)
+endif()
+
+if(INTERNAL_MODULE_PXX1)
+  add_definitions(-DINTERNAL_MODULE_PXX1)
+endif()
+
+if(INTERNAL_MODULE_PXX2)
+  set(PXX2 ON)
+  add_definitions(-DINTERNAL_MODULE_PXX2)
 endif()
 
 include_directories(${RADIO_SRC_DIRECTORY}/fonts/480x272 gui/${GUI_DIR} gui/${GUI_DIR}/layouts)
@@ -123,13 +134,13 @@ if(PXX2 OR LUA)
   set(GUI_SRC ${GUI_SRC} radio_tools.cpp)
 endif()
 
-#if(PXX2)
-#  set(GUI_SRC
-#    ${GUI_SRC}
-#    ../common/stdlcd/radio_spectrum_analyser.cpp
-#    ../common/stdlcd/radio_power_meter.cpp
-#    )
-#endif()
+if(PXX2)
+  set(GUI_SRC
+    ${GUI_SRC}
+    radio_spectrum_analyser.cpp
+    radio_power_meter.cpp
+    )
+endif()
 
 if(DISK_CACHE)
   set(SRC ${SRC} disk_cache.cpp)
@@ -192,10 +203,3 @@ if(PYTHONINTERP_FOUND)
   )
 endif()
 
-if(INTERNAL_MODULE_PXX1)
-  add_definitions(-DINTERNAL_MODULE_PXX1)
-endif()
-
-if(INTERNAL_MODULE_PXX2)
-  add_definitions(-DINTERNAL_MODULE_PXX2)
-endif()

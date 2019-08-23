@@ -834,9 +834,7 @@ enum Functions {
   FUNC_HAPTIC,
   FUNC_LOGS,
   FUNC_BACKLIGHT,
-#if defined(PCBTARANIS)
   FUNC_SCREENSHOT,
-#endif
 #if defined(DEBUG)
   FUNC_TEST, // should remain the last before MAX as not added in Companion
 #endif
@@ -867,9 +865,7 @@ enum ResetFunctionParam {
   FUNC_RESET_TIMER2,
   FUNC_RESET_TIMER3,
   FUNC_RESET_FLIGHT,
-#if defined(TELEMETRY_FRSKY)
   FUNC_RESET_TELEMETRY,
-#endif
   FUNC_RESET_PARAM_FIRST_TELEM,
   FUNC_RESET_PARAM_LAST_TELEM = FUNC_RESET_PARAM_FIRST_TELEM + MAX_TELEMETRY_SENSORS,
   FUNC_RESET_PARAMS_COUNT,

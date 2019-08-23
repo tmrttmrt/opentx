@@ -328,15 +328,27 @@ set(simu_SRCS simulator.cpp )
 add_executable(${SIMULATOR_NAME} MACOSX_BUNDLE ${WIN_EXECUTABLE_TYPE} ${simu_SRCS} ${icon_RC})
 target_link_libraries(${SIMULATOR_NAME} PRIVATE ${CPN_COMMON_LIB})
 
+if(NOT MSVC)
+  add_subdirectory(tests)
+endif()
+
 ############# Install ####################
 
 # Generate list of simulator plugins, used by all platforms
-file(GLOB simulator_plugins "${CMAKE_BINARY_DIR}/Release/*opentx-*simulator${CMAKE_SHARED_LIBRARY_SUFFIX}")
+if(WIN32)
+  file(GLOB simulator_plugins "${CMAKE_BINARY_DIR}/Release/*opentx-*simulator${CMAKE_SHARED_LIBRARY_SUFFIX}")
+else()
+  file(GLOB simulator_plugins "${CMAKE_BINARY_DIR}/*opentx-*simulator${CMAKE_SHARED_LIBRARY_SUFFIX}")
+endif()
 
 # the current flavour is not automatically added if build in the current cmake iteration, so always
 # add its library name to be sure
 if(PCB STREQUAL X7 AND PCBREV STREQUAL T12)
   set(FLAVOUR t12)
+elseif(PCB STREQUAL X9D+ AND PCBREV STREQUAL 2019)
+  set(FLAVOUR x9d+2019)
+elseif(PCB STREQUAL ESP_WROOM32 OR PCB STREQUAL ESP_HELTEC_32)
+  set(FLAVOUR esp_wroom_32)
 else()
   string(TOLOWER ${PCB} FLAVOUR)
 endif()

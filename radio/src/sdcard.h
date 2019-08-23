@@ -126,7 +126,7 @@ inline const char * SDCARD_ERROR(FRESULT result)
 #endif
 
 // NOTE: 'size' must = 0 or be a valid character position within 'filename' array -- it is NOT validated
-const char * getFileExtension(const char * filename, uint8_t size=0, uint8_t extMaxLen=0, uint8_t *fnlen=NULL, uint8_t *extlen=NULL);
+const char * getFileExtension(const char * filename, uint8_t size=0, uint8_t extMaxLen=0, uint8_t * fnlen=nullptr, uint8_t * extlen=nullptr);
 const char * getBasename(const char * path);
 
 #if defined(PCBX12S)
@@ -139,7 +139,6 @@ const char * getBasename(const char * path);
   #define OTX_FOURCC 0x3B78746F // otx for Taranis X-Lite S
 #elif defined(PCBXLITE)
   #define OTX_FOURCC 0x3978746F // otx for Taranis X-Lite
-  #define O9X_FOURCC 0x3978396F // o9x for Taranis X-Lite
 #elif defined(RADIO_X7)
   #define OTX_FOURCC 0x3678746F // otx for Taranis X7
 #elif defined(PCBX9LITE)
@@ -156,7 +155,7 @@ const char * getBasename(const char * path);
 
 bool isFileAvailable(const char * filename, bool exclDir = false);
 int findNextFileIndex(char * filename, uint8_t size, const char * directory);
-bool isExtensionMatching(const char * extension, const char * pattern, char * match = NULL);
+bool isExtensionMatching(const char * extension, const char * pattern, char * match = nullptr);
 
 const char * sdCopyFile(const char * src, const char * dest);
 const char * sdCopyFile(const char * srcFilename, const char * srcDir, const char * destFilename, const char * destDir);

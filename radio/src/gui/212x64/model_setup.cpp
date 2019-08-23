@@ -246,7 +246,7 @@ void editTimerCountdown(int timerIdx, coord_t y, LcdFlags attr, event_t event)
 
 #define TIMER_ROWS(x)                     2|NAVIGATION_LINE_BY_LINE, 0, 0, 0, g_model.timers[x].countdownBeep != COUNTDOWN_SILENT ? (uint8_t) 1 : (uint8_t)0
 
-inline uint8_t EXTERNAL_MODULE_MODE_ROW()
+inline uint8_t EXTERNAL_MODULE_TYPE_ROW()
 {
   if (isModuleXJT(EXTERNAL_MODULE) || isModuleR9MNonAccess(EXTERNAL_MODULE) || isModuleDSM2(EXTERNAL_MODULE))
     return 1;
@@ -363,7 +363,7 @@ void menuModelSetup(event_t event)
       IF_ACCESS_MODULE_RF(INTERNAL_MODULE, 0), // Receiver 3
 
     LABEL(ExternalModule),
-      EXTERNAL_MODULE_MODE_ROW(),
+      EXTERNAL_MODULE_TYPE_ROW(),
       MULTIMODULE_STATUS_ROWS
       EXTERNAL_MODULE_CHANNELS_ROWS,
       IF_NOT_ACCESS_MODULE_RF(EXTERNAL_MODULE, EXTERNAL_MODULE_BIND_ROWS),
@@ -821,15 +821,15 @@ void menuModelSetup(event_t event)
 
           // Do not use MODEL_SETUP_3RD_COLUMN here since some the protocol string are so long that we cannot afford the 2 spaces (+6) here
           if (g_model.moduleData[EXTERNAL_MODULE].multi.customProto) {
-            lcdDrawText(lcdNextPos + FW, y, STR_MULTI_CUSTOM, menuHorizontalPosition == 1 ? attr : 0);
-            lcdDrawNumber(lcdNextPos + FW, y, g_model.moduleData[EXTERNAL_MODULE].getMultiProtocol(false), menuHorizontalPosition == 2 ? attr : 0, 2);
-            lcdDrawNumber(lcdNextPos + FW, y, g_model.moduleData[EXTERNAL_MODULE].subType, menuHorizontalPosition == 3 ? attr : 0, 2);
+            lcdDrawText(lcdNextPos + 3, y, STR_MULTI_CUSTOM, menuHorizontalPosition == 1 ? attr : 0);
+            lcdDrawNumber(lcdNextPos + 3, y, g_model.moduleData[EXTERNAL_MODULE].getMultiProtocol(false), menuHorizontalPosition == 2 ? attr : 0, 2);
+            lcdDrawNumber(lcdNextPos + 3, y, g_model.moduleData[EXTERNAL_MODULE].subType, menuHorizontalPosition == 3 ? attr : 0, 2);
           }
           else {
-            lcdDrawTextAtIndex(lcdNextPos + FW, y, STR_MULTI_PROTOCOLS, multi_rfProto, menuHorizontalPosition==1 ? attr : 0);
+            lcdDrawTextAtIndex(lcdNextPos + 3, y, STR_MULTI_PROTOCOLS, multi_rfProto, menuHorizontalPosition==1 ? attr : 0);
             const mm_protocol_definition * pdef = getMultiProtocolDefinition(multi_rfProto);
             if (pdef->subTypeString) {
-              lcdDrawTextAtIndex(lcdNextPos + FW, y, pdef->subTypeString, g_model.moduleData[EXTERNAL_MODULE].subType, menuHorizontalPosition==2 ? attr : 0);
+              lcdDrawTextAtIndex(lcdNextPos + 3, y, pdef->subTypeString, g_model.moduleData[EXTERNAL_MODULE].subType, menuHorizontalPosition==2 ? attr : 0);
             }
           }
         }
@@ -838,19 +838,21 @@ void menuModelSetup(event_t event)
           if (s_editMode > 0) {
             switch (menuHorizontalPosition) {
               case 0:
-                g_model.moduleData[EXTERNAL_MODULE].type = checkIncDec(event, g_model.moduleData[EXTERNAL_MODULE].type, MODULE_TYPE_NONE,
-                                                                       IS_TRAINER_EXTERNAL_MODULE() ? MODULE_TYPE_NONE : MODULE_TYPE_COUNT - 1, EE_MODEL,
-                                                                       isExternalModuleAvailable);
+              {
+                uint8_t moduleType = checkIncDec(event, g_model.moduleData[EXTERNAL_MODULE].type, MODULE_TYPE_NONE, MODULE_TYPE_COUNT - 1, EE_MODEL,
+                                                 isExternalModuleAvailable);
                 if (checkIncDec_Ret) {
-                  g_model.moduleData[EXTERNAL_MODULE].rfProtocol = 0;
-                  g_model.moduleData[EXTERNAL_MODULE].channelsStart = 0;
+                  memclear(&g_model.moduleData[EXTERNAL_MODULE], sizeof(g_model.moduleData[EXTERNAL_MODULE]));
+                  g_model.moduleData[EXTERNAL_MODULE].type = moduleType;
                   g_model.moduleData[EXTERNAL_MODULE].channelsCount = defaultModuleChannels_M8(EXTERNAL_MODULE);
                   if (isModuleSBUS(EXTERNAL_MODULE))
                     g_model.moduleData[EXTERNAL_MODULE].sbus.refreshRate = -31;
-                  if (isModulePPM(EXTERNAL_MODULE))
+                  else if (isModulePPM(EXTERNAL_MODULE))
                     SET_DEFAULT_PPM_FRAME_LENGTH(EXTERNAL_MODULE);
                 }
                 break;
+              }
+
               case 1:
                 if (isModuleDSM2(EXTERNAL_MODULE))
                   CHECK_INCDEC_MODELVAR(event, g_model.moduleData[EXTERNAL_MODULE].rfProtocol, DSM2_PROTO_LP45, DSM2_PROTO_DSMX);
@@ -1409,7 +1411,7 @@ void menuModelSetup(event_t event)
   }
 
 #if defined(PXX)
-  if (IS_RANGECHECK_ENABLE()) {
+  if (isModuleInRangeCheckMode()) {
     showMessageBox("RSSI: ");
     lcdDrawNumber(WARNING_LINE_X, 5*FH, TELEMETRY_RSSI(), BOLD | LEFT);
   }

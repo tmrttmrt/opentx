@@ -53,6 +53,7 @@ TEST(Conversions, ConversionX9DPFrom22)
   EXPECT_ZSTREQ("Tes", g_model.telemetrySensors[0].label);
   EXPECT_EQ(10, g_model.telemetrySensors[0].id);
   EXPECT_EQ(9, g_model.telemetrySensors[0].frskyInstance.physID);
+  EXPECT_EQ(MIXSRC_FIRST_TELEM, g_model.logicalSw[0].v1);
 }
 #endif
 
@@ -96,10 +97,20 @@ TEST(Conversions, ConversionX7From22)
 #endif
 
 #if defined(PCBX10)
-TEST(Conversions, ConversionHorusFrom22)
+TEST(X10Conversions, ConversionRadioFrom22)
 {
   simuFatfsSetPaths(TESTS_PATH "/tests/", TESTS_PATH "/tests/");
-  loadModel("model_22_horus.bin");
+  loadRadioSettings("/radio_22_x10.bin");
+
+  EXPECT_EQ(219, g_eeGeneral.version);
+  EXPECT_STRNEQ("en", g_eeGeneral.ttsLanguage);
+  EXPECT_STRNEQ("model1.bin", g_eeGeneral.currModelFilename);
+}
+
+TEST(X10Conversions, ConversionModelFrom22)
+{
+  simuFatfsSetPaths(TESTS_PATH "/tests/", TESTS_PATH "/tests/");
+  loadModel("model_22_x10.bin");
 
   EXPECT_ZSTREQ("Test", g_model.header.name);
   EXPECT_EQ(80, g_model.mixData[0].weight);

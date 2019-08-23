@@ -196,7 +196,19 @@ enum MenuModelSetupItems {
 #endif
 
 #define PORT_CHANNELS_ROWS(x)          (x==EXTERNAL_MODULE ? EXTERNAL_MODULE_CHANNELS_ROWS : 0)
-#define EXTERNAL_MODULE_TYPE_ROWS      (isModulePXX1(EXTERNAL_MODULE) || isModulePXX2(EXTERNAL_MODULE) || isModuleDSM2(EXTERNAL_MODULE) || isModuleMultimodule(EXTERNAL_MODULE)) ? (uint8_t)1 : (uint8_t)0
+
+inline uint8_t EXTERNAL_MODULE_TYPE_ROW()
+{
+  if (isModuleXJT(EXTERNAL_MODULE) || isModuleR9MNonAccess(EXTERNAL_MODULE) || isModuleDSM2(EXTERNAL_MODULE))
+    return 1;
+#if defined(MULTIMODULE)
+  else if (isModuleMultimodule(EXTERNAL_MODULE)) {
+    return 1;
+  }
+#endif
+  else
+    return 0;
+}
 
 #define POT_WARN_ROWS                  ((g_model.potsWarnMode) ? (uint8_t)(NUM_POTS+NUM_SLIDERS) : (uint8_t)0)
 #define TIMER_ROWS                     2, 0, 0, 0, 0
@@ -319,7 +331,7 @@ void menuModelSetup(event_t event)
     INTERNAL_MODULE_ROWS
 
     LABEL(ExternalModule),
-      EXTERNAL_MODULE_TYPE_ROWS,
+      EXTERNAL_MODULE_TYPE_ROW(),
       MULTIMODULE_SUBTYPE_ROWS(EXTERNAL_MODULE)
       EXTERNAL_MODULE_POWER_ROW,
       MULTIMODULE_STATUS_ROWS
@@ -344,11 +356,11 @@ void menuModelSetup(event_t event)
     0,
     isModuleESPNOW(INTERNAL_MODULE)?(uint8_t)1:HIDDEN_ROW,
     LABEL(ExternalModule),
-    EXTERNAL_MODULE_TYPE_ROWS,
+    EXTERNAL_MODULE_TYPE_ROW(),
     HIDDEN_ROW,
 #else
     LABEL(ExternalModule),
-    EXTERNAL_MODULE_TYPE_ROWS,
+    EXTERNAL_MODULE_TYPE_ROW(),
 #endif
     MULTIMODULE_SUBTYPE_ROWS(EXTERNAL_MODULE)
     MULTIMODULE_STATUS_ROWS
@@ -877,7 +889,7 @@ void menuModelSetup(event_t event)
                   g_model.moduleData[EXTERNAL_MODULE].channelsCount = defaultModuleChannels_M8(EXTERNAL_MODULE);
                   if (isModuleSBUS(EXTERNAL_MODULE))
                     g_model.moduleData[EXTERNAL_MODULE].sbus.refreshRate = -31;
-                  if (isModulePPM(EXTERNAL_MODULE))
+                  else if (isModulePPM(EXTERNAL_MODULE))
                     SET_DEFAULT_PPM_FRAME_LENGTH(EXTERNAL_MODULE);
                 }
               }
@@ -1604,7 +1616,6 @@ void menuModelSetup(event_t event)
       }
 #endif
 
-
 #if 0
       case ITEM_MODEL_SETUP_PPM2_PROTOCOL:
         lcdDrawTextAlignedLeft(y, "Port2");
@@ -1654,7 +1665,7 @@ void menuModelSetup(event_t event)
   }
 
 #if defined(PXX)
-  if (IS_RANGECHECK_ENABLE()) {
+  if (isModuleInRangeCheckMode()) {
     showMessageBox("RSSI: ");
     lcdDrawNumber(WARNING_LINE_X, 5*FH, TELEMETRY_RSSI(), BOLD);
   }

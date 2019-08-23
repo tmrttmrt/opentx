@@ -156,7 +156,6 @@ void writeHeader()
   f_puts("Time,", &g_oLogFile);
 #endif
 
-#if defined(TELEMETRY_FRSKY)
 
   char label[TELEM_LABEL_LEN+7];
   for (int i=0; i<MAX_TELEMETRY_SENSORS; i++) {
@@ -177,7 +176,6 @@ void writeHeader()
       }
     }
   }
-#endif
 
 #if defined(PCBTARANIS) || defined(PCBHORUS)
   for (uint8_t i=1; i<NUM_STICKS+NUM_POTS+NUM_SLIDERS+1; i++) {
@@ -255,7 +253,6 @@ void logsWrite()
       f_printf(&g_oLogFile, "%d,", tmr10ms);
 #endif
 
-#if defined(TELEMETRY_FRSKY)
       for (int i=0; i<MAX_TELEMETRY_SENSORS; i++) {
         if (isTelemetryFieldAvailable(i)) {
           TelemetrySensor & sensor = g_model.telemetrySensors[i];
@@ -293,7 +290,6 @@ void logsWrite()
           }
         }
       }
-#endif
 
       for (uint8_t i=0; i<NUM_STICKS+NUM_POTS+NUM_SLIDERS; i++) {
         f_printf(&g_oLogFile, "%d,", calibratedAnalogs[i]);

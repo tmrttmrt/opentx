@@ -741,3 +741,39 @@ void disableSpeaker()
 {
 }
 #endif
+
+#if defined(COPROCESSOR)
+CoprocData coprocData;
+
+void coprocReadData(bool)
+{
+}
+#endif
+
+void rtcInit()
+{
+}
+
+void rtcSetTime(const struct gtm * t)
+{
+}
+
+#if defined(AUX_SERIAL)
+AuxSerialRxFifo auxSerialRxFifo(nullptr);
+uint8_t auxSerialMode;
+void auxSerialInit(unsigned int mode, unsigned int protocol)
+{
+}
+
+void auxSerialPutc(char c)
+{
+}
+
+void auxSerialSbusInit()
+{
+}
+
+void auxSerialStop()
+{
+}
+#endif

@@ -776,11 +776,12 @@ int OpenTxFirmware::isAvailable(PulsesProtocol proto, int port)
           case PULSES_PPM:
             return id.contains("internalppm") ? 1 : 0;
           case PULSES_ACCESS_ISRM:
+          case PULSES_ACCST_ISRM_D16:
             return (IS_TARANIS_XLITES(board) || IS_TARANIS_X9LITE(board)) ? 1 : 0;
           default:
             return 0;
         }
-
+        
       case 1:
         switch (proto) {
           case PULSES_OFF:
@@ -795,16 +796,15 @@ int OpenTxFirmware::isAvailable(PulsesProtocol proto, int port)
           case PULSES_DSM2:
           case PULSES_DSMX:
           case PULSES_SBUS:
-            return 1;
           case PULSES_MULTIMODULE:
-            if(IS_JUMPER_T12(board))
-              return 1;
-            else
-              return id.contains("multimodule") ? 1 : 0;
           case PULSES_CROSSFIRE:
-            return id.contains("crossfire") ? 1 : 0;
+            return 1;
           case PULSES_ACCESS_R9M_LITE:
           case PULSES_ACCESS_R9M_LITE_PRO:
+            return (IS_TARANIS_XLITES(board) || IS_TARANIS_X9LITE(board)) ? 1 : 0;
+          case PULSES_XJT_LITE_X16:
+          case PULSES_XJT_LITE_D8:
+          case PULSES_XJT_LITE_LR12:
             return (IS_TARANIS_XLITES(board) || IS_TARANIS_X9LITE(board)) ? 1 : 0;
           default:
             return 0;
@@ -835,9 +835,8 @@ int OpenTxFirmware::isAvailable(PulsesProtocol proto, int port)
           case PULSES_DSM2:
           case PULSES_DSMX:
           case PULSES_SBUS:
-            return 1;
           case PULSES_MULTIMODULE:
-            return id.contains("multimodule") ? 1 : 0;
+            return 1;
           default:
             return 0;
         }
@@ -1183,7 +1182,6 @@ void addOpenTxRfOptions(OpenTxFirmware * firmware, bool flex = true)
 {
   static const Firmware::Option opt_eu("eu", Firmware::tr("Removes D8 FrSky protocol support which is not legal for use in the EU on radios sold after Jan 1st, 2015"));
   static const Firmware::Option opt_fl("flexr9m", Firmware::tr("Enable non certified firmwares"));
-  firmware->addOption("multimodule", Firmware::tr("Support for the DIY-Multiprotocol-TX-Module"));
   if (flex)
     firmware->addOptionsGroup({opt_eu, opt_fl});
   else
@@ -1201,8 +1199,6 @@ void addOpenTxFrskyOptions(OpenTxFirmware * firmware)
   firmware->addOption("noheli", Firmware::tr("Disable HELI menu and cyclic mix support"));
   firmware->addOption("nogvars", Firmware::tr("Disable Global variables"));
   firmware->addOption("lua", Firmware::tr("Enable Lua custom scripts screen"));
-  firmware->addOption("luac", Firmware::tr("Enable Lua compiler"));
-  firmware->addOption("crossfire", Firmware::tr("Support for Crossfire TX Module"));
   addOpenTxRfOptions(firmware);
 }
 
@@ -1304,12 +1300,9 @@ void registerOpenTxFirmwares()
   /* Jumper T12 board */
   firmware = new OpenTxFirmware("opentx-t12", QCoreApplication::translate("Firmware", "Jumper T12"), BOARD_JUMPER_T12);
   addOpenTxCommonOptions(firmware);
-  firmware->addOption("multimodule", Firmware::tr("Support for the DIY-Multiprotocol-TX-Module"));
   firmware->addOption("noheli", Firmware::tr("Disable HELI menu and cyclic mix support"));
   firmware->addOption("nogvars", Firmware::tr("Disable Global variables"));
   firmware->addOption("lua", Firmware::tr("Enable Lua custom scripts screen"));
-  firmware->addOption("luac", Firmware::tr("Enable Lua compiler"));
-  firmware->addOption("crossfire", Firmware::tr("Support for Crossfire TX Module"));
   addOpenTxFontOptions(firmware);
   registerOpenTxFirmware(firmware);
 

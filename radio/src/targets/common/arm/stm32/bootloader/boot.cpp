@@ -215,8 +215,9 @@ int main()
 
 #if defined(PCBHORUS)
   // wait a bit for the inputs to stabilize...
-  // ... otherwise the bootloader cannot be started
-  //     when the power on delay is cut to 0.
+  for (uint32_t i = 0; i < 50000; i++) {
+    wdt_reset();
+  }
 #endif
 
   // LHR & RHL trims not pressed simultanously
@@ -243,6 +244,7 @@ int main()
 
   lcdInit();
   backlightInit();
+  backlightEnable();
 
 #if defined(PCBTARANIS)
   i2cInit();
