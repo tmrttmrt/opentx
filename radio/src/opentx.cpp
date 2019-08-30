@@ -1729,6 +1729,9 @@ void copyTrimsToOffset(uint8_t ch)
 
 inline uint32_t PWR_PRESS_DURATION_MIN()
 {
+  if (g_eeGeneral.version != EEPROM_VER)
+    return 200;
+
   return (2 - g_eeGeneral.pwrOnSpeed) * 100;
 }
 
@@ -1818,7 +1821,8 @@ void opentxInit()
 #endif
 
 #if defined(EEPROM)
-  storageReadRadioSettings();
+  storageClearRadioSetting();
+  storageReadRadioSettings(false);
 #endif
 
   BACKLIGHT_ENABLE(); // we start the backlight during the startup animation
@@ -1877,6 +1881,7 @@ void opentxInit()
 #endif
 
 #if defined(EEPROM)
+  storageReadRadioSettings(true);
   storageReadCurrentModel();
 #endif
 
@@ -2048,7 +2053,7 @@ uint32_t pwrPressedDuration()
 
 uint32_t pwrCheck()
 {
-  const char * message = NULL;
+  const char * message = nullptr;
 
   enum PwrCheckState {
     PWR_CHECK_ON,

@@ -234,7 +234,6 @@ set(companion_SRCS
   progressdialog.cpp
   process_copy.cpp
   process_flash.cpp
-  process_dnld.cpp
   process_sync.cpp
   flashfirmwaredialog.cpp
   flasheepromdialog.cpp
@@ -271,7 +270,6 @@ set(companion_MOC_HDRS
   progressdialog.h
   process_copy.h
   process_flash.h
-  process_dnld.h
   process_sync.h
   flashfirmwaredialog.h
   flasheepromdialog.h
@@ -347,10 +345,8 @@ if(PCB STREQUAL X7 AND PCBREV STREQUAL T12)
   set(FLAVOUR t12)
 elseif(PCB STREQUAL X9D+ AND PCBREV STREQUAL 2019)
   set(FLAVOUR x9d+2019)
-elseif(PCB STREQUAL ESP_WROOM_32)
-  set(FLAVOUR esp32-wroom)
-elseif(PCB STREQUAL ESP_HELTEC_32)
-  set(FLAVOUR esp32-heltec)
+elseif(PCB STREQUAL X10 AND PCBREV STREQUAL EXPRESS)
+  set(FLAVOUR x10express)
 else()
   string(TOLOWER ${PCB} FLAVOUR)
 endif()

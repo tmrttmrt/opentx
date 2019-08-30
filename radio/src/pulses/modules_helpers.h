@@ -23,7 +23,7 @@
 
 #include "bitfield.h"
 #include "definitions.h"
-#include "helpers.h"
+#include "opentx_helpers.h"
 #include "telemetry/telemetry.h"
 #if defined(MULTIMODULE)
 #include "telemetry/multi.h"
@@ -253,29 +253,15 @@ inline bool isModuleRFAccess(uint8_t idx)
   }
 }
 
-#if defined(DSM2)
-inline bool isModuleDSM2(uint8_t idx)
+inline bool isModuleDSM2(uint8_t moduleIdx)
 {
-  return idx == EXTERNAL_MODULE && g_model.moduleData[EXTERNAL_MODULE].type == MODULE_TYPE_DSM2;
+  return g_model.moduleData[moduleIdx].type == MODULE_TYPE_DSM2;
 }
-#else
-inline bool isModuleDSM2(uint8_t idx)
-{
-  return false;
-}
-#endif
 
-#if defined(SBUS)
-inline bool isModuleSBUS(uint8_t idx)
+inline bool isModuleSBUS(uint8_t moduleIdx)
 {
-  return idx == EXTERNAL_MODULE && g_model.moduleData[EXTERNAL_MODULE].type == MODULE_TYPE_SBUS;
+  return g_model.moduleData[moduleIdx].type == MODULE_TYPE_SBUS;
 }
-#else
-inline bool isModuleSBUS(uint8_t idx)
-{
-  return false;
-}
-#endif
 
 // order is the same as in enum Protocols in myeeprom.h (none, ppm, pxx, pxx2, dsm, crossfire, multi, r9m, r9m2, sbus)
 static const int8_t maxChannelsModules[] = { 0, 8, 8, 16, -2, 8, 4, 8, 16, 8}; // relative to 8!
@@ -494,11 +480,11 @@ inline void setModuleType(uint8_t moduleIdx, uint8_t moduleType)
   ModuleData & moduleData = g_model.moduleData[moduleIdx];
   memclear(&moduleData, sizeof(ModuleData));
   moduleData.type = moduleType;
-  moduleData.channelsCount = defaultModuleChannels_M8(EXTERNAL_MODULE);
-  if (isModuleSBUS(moduleIdx))
+  moduleData.channelsCount = defaultModuleChannels_M8(moduleIdx);
+  if (moduleData.type == MODULE_TYPE_SBUS)
     moduleData.sbus.refreshRate = -31;
-  else if (isModuleTypePPM(moduleData.type))
-    setDefaultPpmFrameLength(EXTERNAL_MODULE);
+  else if (moduleData.type == MODULE_TYPE_PPM)
+    setDefaultPpmFrameLength(moduleIdx);
 }
 
 #endif // _MODULES_HELPERS_H_

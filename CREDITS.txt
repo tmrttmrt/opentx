@@ -1534,3 +1534,5 @@ Sascha Heinrich
 James Snodgrass
 Alain Labonne
 Darko Perković
+Pierre Malriq
+Donald Manson

@@ -72,7 +72,7 @@
   #define MAX_INPUTS                   32
   #define MAX_TRAINER_CHANNELS         16
   #define MAX_TELEMETRY_SENSORS        40
-#elif defined(PCBSKY9X) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32) 
+#elif defined(PCBSKY9X)
   #define MAX_MODELS                   60
   #define MAX_OUTPUT_CHANNELS          32 // number of real output channels CH1-CH32
   #define MAX_FLIGHT_MODES             9
@@ -136,7 +136,7 @@ enum CurveType {
   #define MAX_CURVE_POINTS             512
 #endif
 
-#if defined(PCBTARANIS) || defined(PCBSKY9X) || defined(PCBHORUS) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
+#if defined(PCBTARANIS) || defined(PCBSKY9X) || defined(PCBHORUS)
   #define NUM_MODULES                  2
 #else
   #define NUM_MODULES                  1
@@ -204,12 +204,6 @@ enum TrainerMode {
     EXTRA_MODULE,
     SPORT_MODULE
   };
-#elif defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
-  enum ModuleIndex {
-    INTERNAL_MODULE,
-    EXTERNAL_MODULE,
-    SPORT_MODULE
-  };
 #endif
 
 #if defined(BLUETOOTH)
@@ -220,7 +214,7 @@ enum TrainerMode {
   #define TRAINER_MODE_MAX()             HAS_WIRELESS_TRAINER_HARDWARE() ? TRAINER_MODE_MASTER_BATTERY_COMPARTMENT : TRAINER_MODE_MASTER_CPPM_EXTERNAL_MODULE
 #endif
 
-#if defined(PCBTARANIS) || defined(PCBHORUS) || defined(CPUESP32)
+#if defined(PCBTARANIS) || defined(PCBHORUS)
   #define IS_INTERNAL_MODULE_ENABLED() (g_model.moduleData[INTERNAL_MODULE].type != MODULE_TYPE_NONE)
 #elif defined(PCBSKY9X)
   #define IS_INTERNAL_MODULE_ENABLED() (false)
@@ -255,12 +249,16 @@ enum UartModes {
 
 enum TelemetryProtocol
 {
-  TELEM_PROTO_FRSKY_D,
-  TELEM_PROTO_FRSKY_SPORT,
-  TELEM_PROTO_CROSSFIRE,
-  TELEM_PROTO_SPEKTRUM,
-  TELEM_PROTO_LUA,
-  TELEM_PROTO_FLYSKY_IBUS,
+  PROTOCOL_TELEMETRY_FIRST,
+  PROTOCOL_TELEMETRY_FRSKY_SPORT = PROTOCOL_TELEMETRY_FIRST,
+  PROTOCOL_TELEMETRY_FRSKY_D,
+  PROTOCOL_TELEMETRY_FRSKY_D_SECONDARY,
+  PROTOCOL_TELEMETRY_CROSSFIRE,
+  PROTOCOL_TELEMETRY_SPEKTRUM,
+  PROTOCOL_TELEMETRY_FLYSKY_IBUS,
+  PROTOCOL_TELEMETRY_MULTIMODULE,
+  PROTOCOL_TELEMETRY_LAST=PROTOCOL_TELEMETRY_MULTIMODULE,
+  PROTOCOL_TELEMETRY_LUA
 };
 
 #define TELEM_LABEL_LEN                4
@@ -484,8 +482,7 @@ enum SwitchSources {
   SWSRC_SR2,
 #endif
 
-
-#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
+#if defined(PCBSKY9X)
   SWSRC_ID0 = SWSRC_FIRST_SWITCH,
   SWSRC_ID1,
   SWSRC_ID2,
@@ -503,7 +500,7 @@ enum SwitchSources {
 
 #if NUM_XPOTS > 0
   SWSRC_FIRST_MULTIPOS_SWITCH,
-  SWSRC_LAST_MULTIPOS_SWITCH = SWSRC_FIRST_MULTIPOS_SWITCH + (NUM_POTS * XPOTS_MULTIPOS_COUNT) - 1,
+  SWSRC_LAST_MULTIPOS_SWITCH = SWSRC_FIRST_MULTIPOS_SWITCH + (NUM_XPOTS * XPOTS_MULTIPOS_COUNT) - 1,
 #endif
 
   SWSRC_FIRST_TRIM,
@@ -526,7 +523,7 @@ enum SwitchSources {
   SWSRC_TrimT6Up,
 #endif
 
-#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
+#if defined(PCBSKY9X)
   SWSRC_REa,
 #endif
 
@@ -729,7 +726,7 @@ enum MixSources {
   MIXSRC_SQ,                        LUA_EXPORT("sq", "Switch Q")
   MIXSRC_SR,                        LUA_EXPORT("sr", "Switch R")
 #endif
-#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
+#if defined(PCBSKY9X)
   MIXSRC_3POS = MIXSRC_FIRST_SWITCH,
   MIXSRC_THR,
   MIXSRC_RUD,
