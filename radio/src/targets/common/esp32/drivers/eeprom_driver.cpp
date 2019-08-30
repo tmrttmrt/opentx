@@ -443,7 +443,7 @@ void storageFormat()
     clearDir(eepromDname);
 }
 
-void storageReadRadioSettings(bool allowConversion = false)
+bool storageReadRadioSettings(bool allowFixes)
 {
     if (!eeLoadGeneral()) {
         startWiFi(NULL,NULL,NULL);
@@ -461,6 +461,7 @@ void storageReadRadioSettings(bool allowConversion = false)
         }
     }
 #endif
+  return true;
 }
 
 void storageClearRadioSetting()
