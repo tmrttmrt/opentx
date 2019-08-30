@@ -86,6 +86,7 @@ void eeLoadModelHeaders()
   }
 }
 
+#if !defined(CPUESP32)
 void storageClearRadioSetting()
 {
   memclear(&g_eeGeneral, sizeof(RadioData));
@@ -110,6 +111,7 @@ void storageReadRadioSettings(bool allowConversion)
     }
   }
 }
+#endif
 
 void storageReadCurrentModel()
 {

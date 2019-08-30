@@ -146,7 +146,6 @@ set(SRC
   ${SRC}
   main.cpp
   tasks.cpp
-  gui/common/arm/widgets.cpp
   telemetry/telemetry.cpp
   telemetry/telemetry_sensors.cpp
   telemetry/frsky.cpp

@@ -443,7 +443,7 @@ void storageFormat()
     clearDir(eepromDname);
 }
 
-void storageReadRadioSettings()
+void storageReadRadioSettings(bool allowConversion = false)
 {
     if (!eeLoadGeneral()) {
         startWiFi(NULL,NULL,NULL);
@@ -461,6 +461,11 @@ void storageReadRadioSettings()
         }
     }
 #endif
+}
+
+void storageClearRadioSetting()
+{
+  
 }
 
 #if defined(SDCARD)

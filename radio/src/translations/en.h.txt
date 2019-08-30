@@ -129,6 +129,12 @@
   #define TR_RETA123                   "RETA123"
 #endif
 
+#if defined(CPUESP32)
+  #define TR_ESPNOW "ESPN\0 "  
+#else
+  #define TR_ESPNOW
+#endif
+
 #if defined(PCBSKY9X) && defined(REVX)
   #define LEN_VOUTPUT_TYPE             "\011"
   #define TR_VOUTPUT_TYPE              "OpenDrain""PushPull\0"
@@ -698,6 +704,7 @@
 #define TR_CAT_NOT_EMPTY               "Category is not empty"
 #define TR_SDCARD_ERROR                TR("SD error", "SD card error")
 #define TR_NO_SDCARD                   "No SD card"
+#define TR_OUT_OF_MEM                  "Out of memory"
 #define TR_WAITING_FOR_RX              "Waiting for RX..."
 #define TR_WAITING_FOR_TX              "Waiting for TX..."
 #define TR_NO_TOOLS                    "No tools available"
