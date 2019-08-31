@@ -531,7 +531,7 @@ void audioTask(void * pdata)
   setSampleRate(AUDIO_SAMPLE_RATE);
 
 
-  if (!unexpectedShutdown) {
+  if (!globalData.unexpectedShutdown) {
     AUDIO_HELLO();
   }
 

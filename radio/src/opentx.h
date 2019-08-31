@@ -30,7 +30,6 @@
 #include "opentx_types.h"
 #include "debounce.h"
 
-
 #if defined(SIMU)
 #include "targets/simu/simpgmspace.h"
 #endif
@@ -419,13 +418,13 @@ void watchdogSuspend(uint32_t timeout);
 
 #define MAX_ALERT_TIME   60
 
-struct t_inactivity
+struct InactivityData
 {
   uint16_t counter;
   uint8_t  sum;
 };
 
-extern struct t_inactivity inactivity;
+extern InactivityData inactivity;
 
 #define LEN_STD_CHARS 40
 
@@ -572,9 +571,13 @@ extern uint8_t trimsDisplayMask;
 
 void flightReset(uint8_t check=true);
 
-extern uint8_t unexpectedShutdown;
+PACK(struct GlobalData {
+  uint8_t unexpectedShutdown:1;
+  uint8_t sdcardPresent:1;
+  uint8_t spare:6;
+});
 
-extern uint16_t vbattRTC;
+extern GlobalData globalData;
 
 extern uint16_t maxMixerDuration;
 
@@ -1092,14 +1095,16 @@ constexpr uint8_t OPENTX_START_NO_CHECKS = 0x04;
 
 // Re-useable byte array to save having multiple buffers
 #if LCD_W <= 212
-#define SD_SCREEN_FILE_LENGTH          32
+constexpr uint8_t SD_SCREEN_FILE_LENGTH = 32;
 #else
-#define SD_SCREEN_FILE_LENGTH          64
+constexpr uint8_t SD_SCREEN_FILE_LENGTH = 64;
 #endif
 
 #if defined(BLUETOOTH)
 #include "bluetooth.h"
 #endif
+
+constexpr uint8_t TEXT_FILENAME_MAXLEN = 40;
 
 union ReusableBuffer
 {
@@ -1216,13 +1221,29 @@ union ReusableBuffer
     int8_t preset;
   } curveEdit;
 
+  struct {
+    char filename[TEXT_FILENAME_MAXLEN];
+    char lines[NUM_BODY_LINES][LCD_COLS + 1];
+    int linesCount;
+  } viewText;
+
+  struct {
+    bool longNames;
+    bool secondPage;
+    bool mixersView;
+  } viewChannels;
+
+  struct {
+    uint8_t maxNameLen;
+  } modelFailsafe;
+
 #if defined(STM32)
   // Data for the USB mass storage driver. If USB mass storage runs no menu is not allowed to be displayed
   uint8_t MSC_BOT_Data[MSC_MEDIA_PACKET];
 #endif
 };
 
-extern union ReusableBuffer reusableBuffer;
+extern ReusableBuffer reusableBuffer;
 
 uint8_t zlen(const char *str, uint8_t size);
 bool zexist(const char *str, uint8_t size);
@@ -1241,13 +1262,15 @@ char * strcat_zchar(char *dest, const char *name, uint8_t size, const char *defa
 // Stick tolerance varies between transmitters, Higher is better
 #define STICK_TOLERANCE 64
 
-  ls_telemetry_value_t minTelemValue(source_t channel);
-  ls_telemetry_value_t maxTelemValue(source_t channel);
+ls_telemetry_value_t maxTelemValue(source_t channel);
 
 getvalue_t convert16bitsTelemValue(source_t channel, ls_telemetry_value_t value);
 getvalue_t convertLswTelemValue(LogicalSwitchData * cs);
 
-#define convertTelemValue(channel, value) convert16bitsTelemValue(channel, value)
+inline getvalue_t convertTelemValue(source_t channel, ls_telemetry_value_t value)
+{
+  return convert16bitsTelemValue(channel, value);
+}
 
 inline int div_and_round(int num, int den)
 {
@@ -1287,8 +1310,6 @@ extern uint8_t s_frsky_view;
 
 constexpr uint32_t EARTH_RADIUS = 6371009;
 
-void getGpsPilotPosition();
-void getGpsDistance();
 void varioWakeup();
 
 #if defined(AUDIO) && defined(BUZZER)
@@ -1373,15 +1394,6 @@ enum JackMode {
 #include "gyro.h"
 #endif
 
-inline bool isSimu()
-{
-#if defined(SIMU)
-  return true;
-#else
-  return false;
-#endif
-}
-
 #if defined(CPUESP32)
 #define f_getcwd(lfn, maxlen) wr_getcwd(lfn, maxlen)
 #define f_unlink(lfn) unlink(lfn)
@@ -1399,7 +1411,7 @@ inline bool isAsteriskDisplayed()
   return true;
 #endif
 
-  return unexpectedShutdown;
+  return globalData.unexpectedShutdown;
 }
 
 #endif // _OPENTX_H_
