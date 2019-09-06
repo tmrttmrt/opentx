@@ -547,8 +547,11 @@ inline void POPUP_MENU_SELECT_ITEM(uint8_t index)
 
 inline void POPUP_MENU_START(PopupMenuHandler handler)
 {
-  popupMenuHandler = handler;
-  AUDIO_KEY_PRESS();
+  if (handler != popupMenuHandler) {
+    killAllEvents();
+    AUDIO_KEY_PRESS();
+    popupMenuHandler = handler;
+  }
 }
 
 inline void CLEAR_POPUP()
@@ -580,7 +583,10 @@ inline void POPUP_WARNING(const char * s)
   popupFunc = runPopupWarning;
 }
 
-inline void POPUP_CONFIRMATION(const char *s, void (* confirmHandler)(const char *) = nullptr)
+typedef void (* PopupMenuHandler)(const char * result);
+extern PopupMenuHandler popupMenuHandler;
+
+inline void POPUP_CONFIRMATION(const char *s, PopupMenuHandler confirmHandler)
 {
   warningText = s;
   warningType = WARNING_TYPE_CONFIRM;

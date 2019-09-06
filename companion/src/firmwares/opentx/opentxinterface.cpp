@@ -58,9 +58,9 @@ OpenTxEepromInterface::~OpenTxEepromInterface()
 const char * OpenTxEepromInterface::getName()
 {
   switch (board) {
-    case BOARD_STOCK:
+    case BOARD_9X_M64:
       return "OpenTX for 9X board";
-    case BOARD_M128:
+    case BOARD_9X_M128:
       return "OpenTX for M128 / 9X board";
     case BOARD_MEGA2560:
       return "OpenTX for MEGA2560 board";
@@ -90,7 +90,7 @@ const char * OpenTxEepromInterface::getName()
       return "OpenTX for 9XR-PRO";
     case BOARD_AR9X:
       return "OpenTX for ar9x board / 9X";
-    case BOARD_X12S:
+    case BOARD_HORUS_X12S:
       return "OpenTX for FrSky Horus";
     case BOARD_X10:
       return "OpenTX for FrSky X10";
@@ -275,11 +275,11 @@ unsigned long OpenTxEepromInterface::load(RadioData &radioData, const uint8_t * 
 uint8_t OpenTxEepromInterface::getLastDataVersion(Board::Type board)
 {
   switch (board) {
-    case BOARD_STOCK:
+    case BOARD_9X_M64:
       return 216;
     case BOARD_GRUVIN9X:
     case BOARD_MEGA2560:
-    case BOARD_M128:
+    case BOARD_9X_M128:
       return 217;
     case BOARD_ESP_WROOM_32:
       return 219;
@@ -321,7 +321,7 @@ int OpenTxEepromInterface::save(uint8_t * eeprom, const RadioData & radioData, u
 
   efile->EeFsCreate(eeprom, size, board, version);
 
-  if (board == BOARD_M128) {
+  if (board == BOARD_9X_M128) {
     variant |= M128_VARIANT;
   }
   else if (IS_TARANIS_X9E(board)) {
@@ -437,7 +437,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
         return 0;
       else if (IS_ARM(board) || IS_ESP32(board))
         return 60;
-      else if (board == BOARD_M128)
+      else if (board == BOARD_9X_M128)
         return 30;
       else if (IS_2560(board))
         return 30;
@@ -516,7 +516,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case CustomFunctions:
       if (IS_ARM(board) || IS_ESP32(board))
         return 64;
-      else if (IS_2560(board) || board == BOARD_M128)
+      else if (IS_2560(board) || board == BOARD_9X_M128)
         return 24;
       else
         return 16;
@@ -707,9 +707,9 @@ int OpenTxFirmware::getCapability(::Capability capability)
     case HasMahPersistent:
       return (IS_ARM(board) ? true : false);
     case SimulatorVariant:
-      if (board == BOARD_STOCK)
+      if (board == BOARD_9X_M64)
         return SIMU_STOCK_VARIANTS;
-      else if (board == BOARD_M128)
+      else if (board == BOARD_9X_M128)
         return SIMU_M128_VARIANTS;
       else if (IS_TARANIS_X9E(board))
         return TARANIS_X9E_VARIANT;
@@ -778,9 +778,8 @@ bool OpenTxFirmware::isAvailable(PulsesProtocol proto, int port)
           case PULSES_PPM:
             return id.contains("internalppm");
           case PULSES_ACCESS_ISRM:
-            return IS_TARANIS_XLITES(board) || IS_TARANIS_X9LITE(board) || board == BOARD_TARANIS_X9DP_2019 || board == BOARD_X10_EXPRESS || (IS_HORUS(board) && id.contains("internalaccess"));
           case PULSES_ACCST_ISRM_D16:
-            return (IS_TARANIS_XLITES(board) || IS_TARANIS_X9LITE(board));
+            return IS_TARANIS_XLITES(board) || IS_TARANIS_X9LITE(board) || board == BOARD_TARANIS_X9DP_2019 || board == BOARD_X10_EXPRESS || (IS_HORUS(board) && id.contains("internalaccess"));
           default:
             return false;
         }
@@ -978,7 +977,7 @@ EepromLoadErrors OpenTxEepromInterface::checkVersion(unsigned int version)
 bool OpenTxEepromInterface::checkVariant(unsigned int version, unsigned int variant)
 {
   bool variantError = false;
-  if (board == BOARD_M128 && !(variant & M128_VARIANT)) {
+  if (board == BOARD_9X_M128 && !(variant & M128_VARIANT)) {
     if (version == 212) {
       uint8_t tmp[1000];
       for (int i = 1; i < 31; i++) {
@@ -1301,7 +1300,7 @@ void registerOpenTxFirmwares()
   registerOpenTxFirmware(firmware);
 
   /* FrSky X12 (Horus) board */
-  firmware = new OpenTxFirmware("opentx-x12s", Firmware::tr("FrSky Horus X12S"), BOARD_X12S);
+  firmware = new OpenTxFirmware("opentx-x12s", Firmware::tr("FrSky Horus X12S"), BOARD_HORUS_X12S);
   addOpenTxFrskyOptions(firmware);
   firmware->addOption("internalaccess", Firmware::tr("Support for ACCESS internal module replacement"));
   firmware->addOption("pcbdev", Firmware::tr("Use ONLY with first DEV pcb version"));
@@ -1341,10 +1340,10 @@ void registerOpenTxFirmwares()
 
   
   // These are kept only for import purposes, marked as deprecated to hide from UI.
-  registerOpenTxFirmware(new OpenTxFirmware("opentx-9xr",      Firmware::tr("Turnigy 9XR"),                       BOARD_STOCK),    true);
-  registerOpenTxFirmware(new OpenTxFirmware("opentx-9xr128",   Firmware::tr("Turnigy 9XR with m128 chip"),        BOARD_M128),     true);
-  registerOpenTxFirmware(new OpenTxFirmware("opentx-9x",       Firmware::tr("9X with stock board"),               BOARD_STOCK),    true);
-  registerOpenTxFirmware(new OpenTxFirmware("opentx-9x128",    Firmware::tr("9X with stock board and m128 chip"), BOARD_M128),     true);
+  registerOpenTxFirmware(new OpenTxFirmware("opentx-9xr",      Firmware::tr("Turnigy 9XR"),                       BOARD_9X_M64),    true);
+  registerOpenTxFirmware(new OpenTxFirmware("opentx-9xr128",   Firmware::tr("Turnigy 9XR with m128 chip"),        BOARD_9X_M128),     true);
+  registerOpenTxFirmware(new OpenTxFirmware("opentx-9x",       Firmware::tr("9X with stock board"),               BOARD_9X_M64),    true);
+  registerOpenTxFirmware(new OpenTxFirmware("opentx-9x128",    Firmware::tr("9X with stock board and m128 chip"), BOARD_9X_M128),     true);
   registerOpenTxFirmware(new OpenTxFirmware("opentx-gruvin9x", Firmware::tr("9X with Gruvin9x board"),            BOARD_GRUVIN9X), true);
   registerOpenTxFirmware(new OpenTxFirmware("opentx-mega2560", Firmware::tr("DIY MEGA2560 radio"),                BOARD_MEGA2560), true);
 

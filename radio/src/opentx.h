@@ -574,7 +574,8 @@ void flightReset(uint8_t check=true);
 PACK(struct GlobalData {
   uint8_t unexpectedShutdown:1;
   uint8_t sdcardPresent:1;
-  uint8_t spare:6;
+  uint8_t externalAntennaEnabled: 1;
+  uint8_t spare:5;
 });
 
 extern GlobalData globalData;
@@ -1123,6 +1124,7 @@ union ReusableBuffer
   struct {
     char msg[64];
     uint8_t r9mPower;
+    int8_t antennaMode;
     BindInformation bindInformation;
     struct {
       union {
@@ -1182,12 +1184,16 @@ union ReusableBuffer
     uint32_t updateTime;
     ModuleSettings moduleSettings;
     ReceiverSettings receiverSettings; // when dealing with receiver settings, we also need module settings
-  } hardwareAndSettings;
+  } hardwareAndSettings; // moduleOptions, receiverOptions, radioVersion
 
   struct {
     ModuleInformation modules[NUM_MODULES];
     uint8_t linesCount;
   } radioTools;
+
+  struct {
+    int8_t antennaMode;
+  } radioHardware;
 
   struct {
     uint8_t stickMode;

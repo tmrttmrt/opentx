@@ -392,14 +392,6 @@
 #define LEN_VCELLINDEX         "\007"
 #define TR_VCELLINDEX          "Lowest\0""1\0     ""2\0     ""3\0     ""4\0     ""5\0     ""6\0     ""Highest""Delta\0"
 
-#if defined(PCBX10) || defined(PCBXLITE)
-#define LEN_VANTENNATYPES      "\010"
-#define TR_VANTENNATYPES       "Internal""External"
-#else
-#define LEN_VANTENNATYPES      "\010"
-#define TR_VANTENNATYPES       "Internal""Ext+Int\0"
-#endif
-
 #define LEN_GYROS                      "\004"
 #define TR_GYROS                       "GyrX""GyrY"
 
@@ -496,6 +488,7 @@
 #define TR_FLMODE              TR("Mode","Modes")
 #define TR_MIXWARNING          "Warning"
 #define TR_OFF                 "OFF"
+#define TR_ANTENNA                     "Antenna"
 #define TR_NO_INFORMATION              TR("No info", "No information")
 #define TR_MULTPX              "Multpx"
 #define TR_DELAYDOWN           "Delay Dn"
@@ -545,8 +538,8 @@
 #define TR_BLOFFBRIGHTNESS     INDENT"OFF Brightness"
 #define TR_BLCOLOR             INDENT "Color"
 #define TR_SPLASHSCREEN        "Splash screen"
-#define TR_PWR_ON_SPEED                "Pwr On speed"
-#define TR_PWR_OFF_SPEED               "Pwr Off speed"
+#define TR_PWR_ON_DELAY                "Pwr On delay"
+#define TR_PWR_OFF_DELAY               "Pwr Off delay"
 #define TR_THROTTLEWARNING     TR("T-Warning", INDENT "Throttle Warning")
 #define TR_SWITCHWARNING       TR("S-Warning", INDENT "Switch Warning")
 #define TR_POTWARNINGSTATE     TR(INDENT "Pot&Slid.", INDENT "Pots & sliders")
@@ -853,8 +846,8 @@
 #define TR_WRITING             "Writing..."
 #define TR_CONFIRM_FORMAT      "Confirm Format?"
 #define TR_INTERNALRF          "Internal RF"
-#define TR_INTERNAL_MODULE             "Internal module"
-#define TR_EXTERNAL_MODULE             "External module"
+#define TR_INTERNAL_MODULE             TR("Int. module","Internal module")
+#define TR_EXTERNAL_MODULE             TR("Ext. module","External module")
 #define TR_OPENTX_UPGRADE_REQUIRED     "OpenTX upgrade required"
 #define TR_TELEMETRY_DISABLED          "Telem. disabled"
 #define TR_MORE_OPTIONS_AVAILABLE      "More options available"
@@ -945,8 +938,16 @@
 #define TR_UNIT                "Unit"
 #define TR_TELEMETRY_NEWSENSOR INDENT "Add a new sensor..."
 #define TR_CHANNELRANGE        INDENT "Channel Range"
-#define TR_ANTENNASELECTION    TR(INDENT "Antenna", TR(INDENT "Antenna", INDENT "Antenna selection"))
-#define TR_ANTENNACONFIRM1     "Really switch?"
+#define TR_ANTENNACONFIRM1     "EXT. ANTENNA"
+#if defined(PCBX12S)
+#define LEN_ANTENNA_MODES      "\023"
+#define TR_ANTENNA_MODES       "Internal\0          ""Ask\0               ""Per model\0         ""Internal + External"
+#else
+#define LEN_ANTENNA_MODES      "\011"
+#define TR_ANTENNA_MODES       "Internal\0""Ask\0     ""Per model""External"
+#endif
+#define TR_USE_INTERNAL_ANTENNA        TR("Use int. antenna", "Use internal antenna")
+#define TR_USE_EXTERNAL_ANTENNA        TR("Use ext. antenna", "Use external antenna")
 #define TR_ANTENNACONFIRM2     TR("Check antenna", "Make sure antenna is installed!")
 #define TR_MODULE_PROTOCOL_FLEX_WARN_LINE1                "Requires non"
 #define TR_MODULE_PROTOCOL_FCC_WARN_LINE1         "Requires FCC"
