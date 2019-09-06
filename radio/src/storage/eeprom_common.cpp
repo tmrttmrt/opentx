@@ -85,12 +85,13 @@ void eeLoadModelHeaders()
   }
 }
 
-#if !defined(CPUESP32)
-void storageClearRadioSetting()
+
+void storageClearRadioSettings()
 {
   memclear(&g_eeGeneral, sizeof(RadioData));
 }
 
+#if !defined(CPUESP32)
 bool storageReadRadioSettings(bool allowFixes)
 {
   if (!eepromOpen() || !eeLoadGeneral(allowFixes)) {

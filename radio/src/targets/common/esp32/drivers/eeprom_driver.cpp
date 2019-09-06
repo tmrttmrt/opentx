@@ -464,11 +464,6 @@ bool storageReadRadioSettings(bool allowFixes)
   return true;
 }
 
-void storageClearRadioSetting()
-{
-  
-}
-
 #if defined(SDCARD)
 
 const char * eeBackupAll()

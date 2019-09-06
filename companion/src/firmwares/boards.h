@@ -190,7 +190,7 @@ class Boards
 
 inline bool IS_ESP32(Board::Type board)
 {
-  (board==Board::BOARD_ESP_WROOM_32)
+  return board==Board::BOARD_ESP_WROOM_32;
 }
 
 inline bool IS_9X(Board::Type board)
