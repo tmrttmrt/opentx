@@ -2,10 +2,10 @@
 
 set -e
 
-branch=2.2
-docker=rc22
-workdir=/home/opentx/rc22
-output=/var/www/html/2.2/rc
+branch=2.3.0
+docker=rc23
+workdir=/home/opentx/rc23
+output=/var/www/html/2.3/rc
 version=2.3.0
 
 # Increment RC index
@@ -25,16 +25,16 @@ docker tag new-${docker} ${docker}
 docker rmi -f new-${docker}
 
 # Call sdcard generation
-code/tools/rc22/build-sdcard.sh
+code/tools/rc23/build-sdcard.sh
 
 # Build Linux companion
 docker run -dit --name companion -v /home/opentx/${docker}:/opentx ${docker}
 docker exec companion sh -c "mkdir -p build && cd build && cmake /opentx/code && cp radio/src/stamp.h /opentx/binaries/stamp-opentx.txt"
 docker exec companion rm -rf build
-if [ ! -f ${output}/companion/linux/companion22_${version}${suffix}_amd64.deb ]; then
+if [ ! -f ${output}/companion/linux/companion23_${version}${suffix}_amd64.deb ]; then
   docker exec companion /opentx/code/tools/build-companion-release.sh /opentx/code /opentx/binaries/
   docker exec companion sh -c "cp /build/radio/src/lua/*.txt /opentx/binaries"
-  cp -f binaries/*.deb ${output}/companion/linux/companion22_${version}${suffix}_amd64.deb
+  cp -f binaries/*.deb ${output}/companion/linux/companion23_${version}${suffix}_amd64.deb
   cp -f binaries/lua_fields_*.txt ${output}/firmware
 fi
 docker stop companion
@@ -43,7 +43,7 @@ docker rm companion
 # Request companion compilation on Windows
 if [ ! -f ${output}/companion/windows/companion-windows-${version}${suffix}.exe ]; then
   cd ${output}/companion/windows
-  wget -qO- http://winbox.open-tx.org/companion-builds/compile22.php?branch=$branch\&suffix=${suffix}
+  wget -qO- http://winbox.open-tx.org/companion-builds/compile23.php?branch=$branch\&suffix=${suffix}
   wget -O companion-windows-${version}${suffix}.exe http://winbox.open-tx.org/companion-builds/companion-windows-${version}${suffix}.exe
   chmod -Rf g+w companion-windows-${version}${suffix}.exe
 fi

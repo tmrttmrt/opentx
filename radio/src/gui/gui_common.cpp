@@ -719,7 +719,7 @@ bool isTrainerModeAvailable(int mode)
     return false;
 #endif
 
-#if !defined(PCBSKY9X) && !defined(TRAINER_BATTERY_COMPARTMENT) && !defined(CPUESP32)
+#if defined(PCBTARANIS) && !defined(TRAINER_BATTERY_COMPARTMENT) && !defined(CPUESP32)
   if (mode == TRAINER_MODE_MASTER_BATTERY_COMPARTMENT)
     return false;
 #endif
