@@ -131,7 +131,12 @@ void getSwitchesPosition(bool startup)
   CHECK_3POS(1, SW_SB);
   CHECK_3POS(2, SW_SC);
 
-#if defined(PCBX9LITE)
+#if defined(PCBX9LITES)
+  CHECK_2POS(SW_SD);
+  CHECK_2POS(SW_SE);
+  CHECK_2POS(SW_SF);
+  CHECK_2POS(SW_SG);
+#elif defined(PCBX9LITE)
   CHECK_2POS(SW_SD);
   CHECK_2POS(SW_SE);
 #elif defined(PCBXLITES)
@@ -152,6 +157,15 @@ void getSwitchesPosition(bool startup)
   CHECK_2POS(SW_SF);
   CHECK_3POS(5, SW_SG);
   CHECK_2POS(SW_SH);
+#endif
+
+#if defined(PCBX9DP) && PCBREV >= 2019
+  CHECK_2POS(SW_SI);
+#endif
+
+#if defined(PCBHORUS) || defined(PCBX7)
+  CHECK_2POS(SW_SI);
+  CHECK_2POS(SW_SJ);
 #endif
 
 #if defined(PCBX9E)

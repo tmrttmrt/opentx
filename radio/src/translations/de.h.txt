@@ -52,9 +52,6 @@
 #define LEN_VBEEPMODE                  "\005"
 #define TR_VBEEPMODE                   "Stumm""Alarm""NoKey""Alle\0"
 
-#define LEN_VRENAVIG                   "\003"
-#define TR_VRENAVIG                    "AUSDGaDGb"
-
 #define LEN_VBLMODE                    "\005"
 #define TR_VBLMODE                     "AUS\0 ""Taste""Stks\0""Beide""EIN\0 " // Anpassung
 
@@ -514,7 +511,6 @@
 #define TR_MODEL_STILL_POWERED         "Model still powered"
 #define TR_MODEL_SHUTDOWN              "Shutdown ?"
 #define TR_PRESS_ENTER_TO_CONFIRM      "Press enter to confirm"
-#define TR_RENAVIG                     TR ("Rol", "Drehgeb. Navig.")
 #define TR_THROTTLE_LABEL              "Gas-Kontrolle"
 #define TR_THROTTLEREVERSE             TR("Gas invers", INDENT "Vollgas hinten?") //Änderung wg TH9x, Taranis
 #define TR_MINUTEBEEP                  TR("Min-Alarm", "Minuten-Alarm")
@@ -567,9 +563,7 @@
 #define OFS_RX                         4
 #define TR_ACCEL                       "Acc:"
 #define TR_NODATA                      CENTER"Keine Daten"
-#define TR_TOTTM1TM2THRTHP             "\037\146SES\036TM1\037\146TM2\036GAS\037\146GS%"
 #define TR_US                                 "us"
-#define TR_TMR1JITTERUS                "Tmr1 Jitter\037\124us"
 #define TR_TMIXMAXMS         	       "Tmix max"
 #define TR_FREE_STACK     		       "Freier Stack"
 #define TR_MENUTORESET                 TR_ENTER " für Reset"
@@ -669,7 +663,6 @@
 #define TR_PITCH_AT_ZERO                INDENT "Töne sinken"
 #define TR_PITCH_AT_MAX                 INDENT "Töne steigen"
 #define TR_REPEAT_AT_ZERO               INDENT "Wiederholrate"
-#define TR_POWEROFF                     "\027Power OFF..."
 #define TR_SHUTDOWN                     "Herunterfahren"
 #define TR_SAVEMODEL                    "Modelleinstellungen speichern"
 #define TR_BATT_CALIB                   TR("AkkuSpgwert", "Akku Kalibrierung")
@@ -736,6 +729,7 @@
 #define TR_NIGHTLY_NOTSAFE     			"Nicht für Flug geeignet"
 #define TR_WRONG_SDCARDVERSION          TR("Erw. Version: ","Erwartete Version: ")
 #define TR_WARN_RTC_BATTERY_LOW         "RTC Battery low"
+#define TR_WARN_MULTI_LOWPOWER         "Low power mode"
 #define TR_BATTERY                      "BATTERY"
 #define TR_WRONG_PCBREV                 "Falsche PCB erkannt"
 #define TR_EMERGENCY_MODE               "NOTFALL MODUS"
@@ -823,7 +817,9 @@
 #define TR_FLASH_POWER_MANAGEMENT_UNIT TR("Flash pwr mngt unit", "Flash power management unit")
 #define TR_CURRENT_VERSION             TR("Current vers. ", "Current version: ")
 #define TR_FLASH_INTERNAL_MODULE       TR("Flash int. XJT","Flash internes XJT-Modul")
+#define TR_FLASH_INTERNAL_MULTI        TR("Flash Int. Multi", "Flash Internal Multi")
 #define TR_FLASH_EXTERNAL_MODULE       TR("Flash ext. mod","Flash extern module")
+#define TR_FLASH_EXTERNAL_MULTI        TR("Flash Ext. Multi", "Flash External Multi")
 #define TR_FIRMWARE_UPDATE_ERROR       TR("FW update Error","Firmware update error")
 #define TR_FIRMWARE_UPDATE_SUCCESS     "Flash successful"
 #define TR_WRITING                     "Writing..."
@@ -1168,6 +1164,21 @@
 #define ZSTR_ALT                       "Alt"
 #define ZSTR_TEMP1                     "Tmp1"
 #define ZSTR_TEMP2                     "Tmp2"
+#define ZSTR_TEMP3                     "Tmp3"
+#define ZSTR_TEMP4                     "Tmp4"
+#define ZSTR_RPM2                      "RPM2"
+#define ZSTR_PRES                      "Pres"
+#define ZSTR_ODO1                      "Odo1"
+#define ZSTR_ODO2                      "Odo2"
+#define ZSTR_TXV                       "TX_V"
+#define ZSTR_CURR_SERVO1               "CSv1"
+#define ZSTR_CURR_SERVO2               "CSv2"
+#define ZSTR_CURR_SERVO3               "CSv3"
+#define ZSTR_CURR_SERVO4               "CSv4"
+#define ZSTR_DIST                      "Dist"
+#define ZSTR_ARM                       "Arm"
+#define ZSTR_C50                       "C50"
+#define ZSTR_C200                      "C200"
 #define ZSTR_RPM                       "RPM"
 #define ZSTR_FUEL                      "Fuel"
 #define ZSTR_VSPD                      "VSpd"

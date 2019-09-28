@@ -121,7 +121,7 @@ uint32_t isBootloaderStart(const uint8_t * buffer);
 #define IS_INTERNAL_MODULE_ON()         (GPIO_ReadInputDataBit(INTMODULE_PWR_GPIO, INTMODULE_PWR_GPIO_PIN) == Bit_SET)
 #endif
 
-void intmoduleSerialStart(uint32_t baudrate, uint8_t rxEnable);
+void intmoduleSerialStart(uint32_t baudrate, uint8_t rxEnable, uint16_t parity, uint16_t stopBits, uint16_t wordLength);
 void intmoduleSendByte(uint8_t byte);
 void intmoduleSendBuffer(const uint8_t * data, uint8_t size);
 void intmoduleSendNextFrame();
@@ -130,6 +130,7 @@ void extmoduleSerialStart(uint32_t baudrate, uint32_t period_half_us, bool inver
 void extmoduleInvertedSerialStart(uint32_t baudrate);
 void extmoduleSendBuffer(const uint8_t * data, uint8_t size);
 void extmoduleSendNextFrame();
+void extmoduleSendInvertedByte(uint8_t byte);
 
 // Trainer driver
 #define SLAVE_MODE()                    (g_model.trainerData.mode == TRAINER_MODE_SLAVE)
@@ -307,17 +308,17 @@ enum EnumSwitchesPositions
   SW_SD0,
   SW_SD1,
   SW_SD2,
-#if defined(PCBX9) || defined(PCBXLITES)
+#if defined(PCBX9) || defined(PCBXLITES) || defined(PCBX9LITES)
   SW_SE0,
   SW_SE1,
   SW_SE2,
 #endif
-#if defined(PCBX9D) || defined(PCBX9DP) || defined(PCBX9E) || defined(PCBX7) || defined(PCBXLITES)
+#if defined(PCBX9D) || defined(PCBX9DP) || defined(PCBX9E) || defined(PCBX7) || defined(PCBXLITES) || defined(PCBX9LITES)
   SW_SF0,
   SW_SF1,
   SW_SF2,
 #endif
-#if defined(PCBX9D) || defined(PCBX9DP) || defined(PCBX9E)
+#if defined(PCBX9D) || defined(PCBX9DP) || defined(PCBX9E) || defined(PCBX9LITES)
   SW_SG0,
   SW_SG1,
   SW_SG2,
@@ -395,6 +396,11 @@ enum EnumSwitchesPositions
   #define STORAGE_NUM_SWITCHES          NUM_SWITCHES
   #define DEFAULT_SWITCH_CONFIG         (SWITCH_TOGGLE << 10) + (SWITCH_2POS << 8) + (SWITCH_3POS << 6) + (SWITCH_3POS << 4) + (SWITCH_3POS << 2) + (SWITCH_3POS << 0)
   #define DEFAULT_POTS_CONFIG           (POT_WITHOUT_DETENT << 0) + (POT_WITH_DETENT << 2); // S1 = pot without detent, S2 = pot with detent
+#elif defined(PCBX9LITES)
+  #define NUM_SWITCHES                  7
+  #define STORAGE_NUM_SWITCHES          NUM_SWITCHES
+  #define DEFAULT_SWITCH_CONFIG         (SWITCH_TOGGLE << 12) + (SWITCH_TOGGLE << 10) + (SWITCH_TOGGLE << 8) + (SWITCH_2POS << 6) + (SWITCH_3POS << 4) + (SWITCH_3POS << 2) + (SWITCH_3POS << 0);
+  #define DEFAULT_POTS_CONFIG           (POT_WITH_DETENT << 0); // S1 = pot with detent
 #elif defined(PCBX9LITE)
   #define NUM_SWITCHES                  5
   #define STORAGE_NUM_SWITCHES          NUM_SWITCHES
@@ -665,7 +671,7 @@ void sportSendByte(uint8_t byte);
 void sportSendByteLoop(uint8_t byte);
 void sportStopSendByteLoop();
 void sportSendBuffer(const uint8_t * buffer, uint32_t count);
-uint8_t telemetryGetByte(uint8_t * byte);
+bool telemetryGetByte(uint8_t * byte);
 void telemetryClearFifo();
 extern uint32_t telemetryErrors;
 
@@ -766,7 +772,9 @@ void bluetoothInit(uint32_t baudrate, bool enable);
 void bluetoothWriteWakeup();
 uint8_t bluetoothIsWriting();
 void bluetoothDisable();
-#if defined(PCBX9LITE)
+#if defined(PCBX9LITES)
+  #define IS_BLUETOOTH_CHIP_PRESENT()     (true)
+#elif defined(PCBX9LITE)
   #define IS_BLUETOOTH_CHIP_PRESENT()     (false)
 #elif (defined(PCBX7) || defined(PCBXLITE)) && !defined(SIMU)
   extern volatile uint8_t btChipPresent;

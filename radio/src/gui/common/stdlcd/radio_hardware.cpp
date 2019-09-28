@@ -209,6 +209,8 @@ enum {
   #define SWITCHES_ROWS           NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1
 #elif NUM_SWITCHES == 8
   #define SWITCHES_ROWS           NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1
+#elif NUM_SWITCHES == 7
+  #define SWITCHES_ROWS           NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1
 #elif NUM_SWITCHES == 6
   #define SWITCHES_ROWS           NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1, NAVIGATION_LINE_BY_LINE|1
 #elif NUM_SWITCHES == 5
@@ -602,7 +604,7 @@ void menuRadioHardware(event_t event)
         break;
 
       case ITEM_RADIO_HARDWARE_RAS:
-#if defined(PCBX9LITE)
+#if defined(PCBX9LITE) && !defined(PCBX9LITES)
         lcdDrawTextAlignedLeft(y, "Ext. RAS");
         lcdNextPos = HW_SETTINGS_COLUMN2;
 #else
@@ -632,7 +634,10 @@ void menuRadioHardware(event_t event)
         break;
 
       case ITEM_RADIO_BACKUP_EEPROM:
-        lcdDrawText(LCD_W / 2, y, BUTTON(STR_EEBACKUP), attr | CENTERED);
+        if (LCD_W < 212)
+          lcdDrawText(LCD_W / 2, y, BUTTON(STR_EEBACKUP), attr | CENTERED);
+        else
+          lcdDrawText(HW_SETTINGS_COLUMN2, y, BUTTON(STR_EEBACKUP), attr);
         if (attr && event == EVT_KEY_BREAK(KEY_ENTER)) {
           s_editMode = EDIT_SELECT_FIELD;
           eepromBackup();
@@ -640,7 +645,10 @@ void menuRadioHardware(event_t event)
         break;
 
       case ITEM_RADIO_FACTORY_RESET:
-        lcdDrawText(LCD_W / 2, y, BUTTON(STR_FACTORYRESET), attr | CENTERED);
+        if (LCD_W < 212)
+          lcdDrawText(LCD_W / 2, y, BUTTON(STR_FACTORYRESET), attr | CENTERED);
+        else
+          lcdDrawText(HW_SETTINGS_COLUMN2, y, BUTTON(STR_FACTORYRESET), attr);
         if (attr && event == EVT_KEY_BREAK(KEY_ENTER)) {
           s_editMode = EDIT_SELECT_FIELD;
           POPUP_CONFIRMATION(STR_CONFIRMRESET, onFactoryResetConfirm);

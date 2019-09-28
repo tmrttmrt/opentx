@@ -52,9 +52,6 @@
 #define LEN_VBEEPMODE                  "\005"
 #define TR_VBEEPMODE                   "Aucun""Alarm""NoKey""Tout\0"
 
-#define LEN_VRENAVIG                   "\003"
-#define TR_VRENAVIG                    "NonREaREb"
-
 #define LEN_VBLMODE                    TR("\004", "\011")
 #define TR_VBLMODE                     TR("OFF\0""Btns""Ctrl""Tous""ON\0","OFF\0     ""Touches\0 ""Controles""Tous\0    ""ON\0      ")
 
@@ -532,7 +529,6 @@
 #define TR_MODEL_STILL_POWERED         TR("Modèle allumé", "Modèle encore allumé")
 #define TR_MODEL_SHUTDOWN              "Eteindre ?"
 #define TR_PRESS_ENTER_TO_CONFIRM      "Presser [Enter] pour confirmer"
-#define TR_RENAVIG                     "Navig EncRot"
 #define TR_THROTTLE_LABEL              "Gaz"
 #define TR_THROTTLEREVERSE             TR("Inv. gaz", INDENT "Inversion gaz")
 #define TR_MINUTEBEEP                  TR("Bip min.", "Annonces minutes")
@@ -583,10 +579,8 @@
 #define OFS_RX                         4
 #define TR_ACCEL                       "Acc:"
 #define TR_NODATA                      CENTER "NO DATA"
-#define TR_TOTTM1TM2THRTHP             "\037\146SES\036TM1\037\146TM2\036GAZ\037\146GZ%"
 #define TR_US                         "us"
 #define TR_TMR1LATMINUS                "Tmr1Lat min\037\124us"
-#define TR_TMR1JITTERUS                "Tmr1 Jitter\037\124us"
 
   #define TR_TMIXMAXMS                 "Tmix max"
   #define TR_FREE_STACK             "Free stack"
@@ -689,7 +683,6 @@
 #define TR_PITCH_AT_ZERO               INDENT "Tonalité zéro"
 #define TR_PITCH_AT_MAX                INDENT "Tonalité max"
 #define TR_REPEAT_AT_ZERO              TR(INDENT "Interv. zéro", INDENT "Intervalle au zéro")
-#define TR_POWEROFF                    "\037\120ARRET..."
 #define TR_SHUTDOWN                    "ARRET EN COURS"
 #define TR_SAVEMODEL                   "Sauvegarde modèle..."
 #define TR_BATT_CALIB                  "Calib. batt"
@@ -756,6 +749,7 @@
 #define TR_NIGHTLY_NOTSAFE             "Version de test uniq."
 #define TR_WRONG_SDCARDVERSION         "Version requise: "
 #define TR_WARN_RTC_BATTERY_LOW        "RTC Battery low"
+#define TR_WARN_MULTI_LOWPOWER         "Low power mode"
 #define TR_BATTERY                     "BATTERY"
 #define TR_WRONG_PCBREV                "PCB incorrect détecté"
 #define TR_EMERGENCY_MODE              "MODE SECOURS"
@@ -842,7 +836,9 @@
 #define TR_FLASH_POWER_MANAGEMENT_UNIT    "Flash pwr mngt unit"
 #define TR_CURRENT_VERSION             "Version courante :"
 #define TR_FLASH_INTERNAL_MODULE       TR("Flasher module int.", "Flasher module interne")
+#define TR_FLASH_INTERNAL_MULTI        TR("Flash Int. Multi", "Flash Internal Multi")
 #define TR_FLASH_EXTERNAL_MODULE       TR("Flasher module ext.", "Flasher module externe")
+#define TR_FLASH_EXTERNAL_MULTI        TR("Flash Ext. Multi", "Flash External Multi")
 #define TR_FIRMWARE_UPDATE_ERROR       TR("Erreur màj FW","Erreur de mise à jour")
 #define TR_FIRMWARE_UPDATE_SUCCESS     "Flash ok"
 #define TR_WRITING                     TR("\14Ecriture...", "\032Ecriture...")
@@ -1191,6 +1187,21 @@
 #define ZSTR_ALT                       "Alt"
 #define ZSTR_TEMP1                     "Tmp1"
 #define ZSTR_TEMP2                     "Tmp2"
+#define ZSTR_TEMP3                     "Tmp3"
+#define ZSTR_TEMP4                     "Tmp4"
+#define ZSTR_RPM2                      "RPM2"
+#define ZSTR_PRES                      "Pres"
+#define ZSTR_ODO1                      "Odo1"
+#define ZSTR_ODO2                      "Odo2"
+#define ZSTR_TXV                       "TX_V"
+#define ZSTR_CURR_SERVO1               "CSv1"
+#define ZSTR_CURR_SERVO2               "CSv2"
+#define ZSTR_CURR_SERVO3               "CSv3"
+#define ZSTR_CURR_SERVO4               "CSv4"
+#define ZSTR_DIST                      "Dist"
+#define ZSTR_ARM                       "Arm"
+#define ZSTR_C50                       "C50"
+#define ZSTR_C200                      "C200"
 #define ZSTR_RPM                       "RPM"
 #define ZSTR_FUEL                      "Fuel"
 #define ZSTR_VSPD                      "VSpd"

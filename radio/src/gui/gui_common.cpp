@@ -570,6 +570,13 @@ bool isInternalModuleAvailable(int moduleType)
   if (moduleType == MODULE_TYPE_NONE)
     return true;
 
+#if defined(INTERNAL_MODULE_MULTI)
+  if (moduleType == MODULE_TYPE_MULTIMODULE)
+    return true;
+  else
+    return false;
+#endif
+
   if (moduleType == MODULE_TYPE_XJT_PXX1) {
 #if defined(PXX1) && defined(INTERNAL_MODULE_PXX1)
     return !isModuleUsingSport(EXTERNAL_MODULE, g_model.moduleData[EXTERNAL_MODULE].type);
@@ -850,7 +857,7 @@ const mm_protocol_definition multi_protocols[] = {
   {MODULE_SUBTYPE_MULTI_HITEC,      2, false,      STR_SUBTYPE_HITEC,     STR_MULTI_RFTUNE},
   {MODULE_SUBTYPE_MULTI_BUGS_MINI,  1, false,      STR_SUBTYPE_BUGS_MINI, nullptr},
   {MODULE_SUBTYPE_MULTI_TRAXXAS,    0, false,      STR_SUBTYPE_TRAXXAS,   nullptr},
-  {MODULE_SUBTYPE_MULTI_E01X,       2, false,      STR_SUBTYPE_E01X,      nullptr},
+  {MODULE_SUBTYPE_MULTI_E01X,       2, false,      STR_SUBTYPE_E01X,      STR_MULTI_OPTION},
   {MODULE_SUBTYPE_MULTI_V911S,      0, false,      NO_SUBTYPE,            STR_MULTI_RFTUNE},
   {MODULE_SUBTYPE_MULTI_GD00X,      1, false,      STR_SUBTYPE_GD00X,     STR_MULTI_RFTUNE},
   {MODULE_SUBTYPE_MULTI_KF606,      0, false,      NO_SUBTYPE,            STR_MULTI_RFTUNE},
