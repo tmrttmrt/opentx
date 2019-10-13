@@ -453,7 +453,7 @@ int OpenTxFirmware::getCapability(::Capability capability)
       else
         return id.contains("imperial") ? 1 : 0;
     case ModelImage:
-      return (board == BOARD_TARANIS_X9D || IS_TARANIS_PLUS(board) || IS_HORUS(board));
+      return (board == BOARD_TARANIS_X9D || IS_TARANIS_PLUS(board) || board == BOARD_TARANIS_X9DP_2019 || IS_HORUS(board));
     case HasBeeper:
       return (!IS_ARM(board) && !IS_ESP32(board));
     case HasPxxCountry:
@@ -776,14 +776,14 @@ bool OpenTxFirmware::isAvailable(PulsesProtocol proto, int port)
             return true;
           case PULSES_PXX_XJT_X16:
           case PULSES_PXX_XJT_LR12:
-            return !(IS_TARANIS_XLITES(board) || IS_TARANIS_X9LITE(board) || IS_JUMPER_T16(board));
+            return !IS_ACCESS_RADIO(board, id);
           case PULSES_PXX_XJT_D8:
-            return !(IS_TARANIS_XLITES(board) || IS_TARANIS_X9LITE(board) || IS_JUMPER_T16(board) || id.contains("eu"));
+            return !(IS_ACCESS_RADIO(board, id)  || id.contains("eu"));
           case PULSES_PPM:
             return id.contains("internalppm");
           case PULSES_ACCESS_ISRM:
           case PULSES_ACCST_ISRM_D16:
-            return IS_TARANIS_XLITES(board) || IS_TARANIS_X9LITE(board) || board == BOARD_TARANIS_X9DP_2019 || board == BOARD_X10_EXPRESS || (IS_HORUS(board) && id.contains("internalaccess"));
+            return IS_ACCESS_RADIO(board, id);
           case PULSES_MULTIMODULE:
             return id.contains("internalmulti");
           default:
@@ -807,13 +807,15 @@ bool OpenTxFirmware::isAvailable(PulsesProtocol proto, int port)
           case PULSES_MULTIMODULE:
           case PULSES_CROSSFIRE:
             return true;
+          case PULSES_ACCESS_R9M:
+            return IS_TARANIS_XLITE(board) || IS_TARANIS_X9LITE(board) || board == BOARD_TARANIS_X9DP_2019 || board == BOARD_X10_EXPRESS || (IS_HORUS(board) && id.contains("internalaccess"));
+          case PULSES_PXX_R9M_LITE:
           case PULSES_ACCESS_R9M_LITE:
           case PULSES_ACCESS_R9M_LITE_PRO:
-            return (IS_TARANIS_XLITES(board) || IS_TARANIS_X9LITE(board));
           case PULSES_XJT_LITE_X16:
           case PULSES_XJT_LITE_D8:
           case PULSES_XJT_LITE_LR12:
-            return (IS_TARANIS_XLITES(board) || IS_TARANIS_X9LITE(board));
+            return (IS_TARANIS_XLITE(board) || IS_TARANIS_X9LITE(board));
           default:
             return false;
         }

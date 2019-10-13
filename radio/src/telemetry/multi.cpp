@@ -21,10 +21,12 @@
 #include "telemetry.h"
 #include "multi.h"
 
+extern uint8_t g_moduleIdx;
+
 enum MultiPacketTypes : uint8_t
 {
   MultiStatus = 1,
-  FrSkySportTelemtry,
+  FrSkySportTelemetry,
   FrSkyHubTelemetry,
   SpektrumTelemetry,
   DSMBindPacket,
@@ -138,12 +140,57 @@ void setMultiTelemetryBufferState(uint8_t, MultiBufferState state)
 
 static MultiBufferState guessProtocol(uint8_t module)
 {
-  if (g_model.moduleData[module].getMultiProtocol(false) == MODULE_SUBTYPE_MULTI_DSM2)
+  uint32_t moduleIdx = EXTERNAL_MODULE;
+#if defined(INTERNAL_MODULE_MULTI)
+  if (isModuleMultimodule(INTERNAL_MODULE)) {
+    moduleIdx = INTERNAL_MODULE;
+  }
+#endif
+
+  if (g_model.moduleData[moduleIdx].getMultiProtocol(false) == MODULE_SUBTYPE_MULTI_DSM2)
     return SpektrumTelemetryFallback;
   else if (g_model.moduleData[module].getMultiProtocol(false) == MODULE_SUBTYPE_MULTI_FS_AFHDS2A)
     return FlyskyTelemetryFallback;
   else
     return FrskyTelemetryFallback;
+}
+
+static void processMultiScannerPacket(const uint8_t *data)
+{
+  uint8_t cur_channel = data[0];
+  if (moduleState[g_moduleIdx].mode == MODULE_MODE_SPECTRUM_ANALYSER) {
+    for (uint8_t channel = 0; channel <5; channel++) {
+      uint8_t power = max<int>(0,(data[channel+1] - 34) >> 1); // remove everything below -120dB
+
+#if LCD_W == 480
+      coord_t x = cur_channel*2;
+      if (x < LCD_W) {
+        reusableBuffer.spectrumAnalyser.bars[x] = power;
+        reusableBuffer.spectrumAnalyser.bars[x+1] = power;
+        if (power > reusableBuffer.spectrumAnalyser.max[x]) {
+          reusableBuffer.spectrumAnalyser.max[x] = power;
+          reusableBuffer.spectrumAnalyser.max[x+1] = power;
+        }
+#elif LCD_W == 212
+        coord_t x = cur_channel;
+      if (x <= LCD_W) {
+        reusableBuffer.spectrumAnalyser.bars[x] = power;
+        if (power > reusableBuffer.spectrumAnalyser.max[x]) {
+          reusableBuffer.spectrumAnalyser.max[x] = power;
+        }
+#else
+      coord_t x = cur_channel/2 + 1;
+      if (x <= LCD_W) {
+        reusableBuffer.spectrumAnalyser.bars[x] = power;
+        if (power > reusableBuffer.spectrumAnalyser.max[x]) {
+          reusableBuffer.spectrumAnalyser.max[x] = power;
+        }
+#endif
+      }
+      if (++cur_channel > MULTI_SCANNER_MAX_CHANNEL)
+        cur_channel = 0;
+    }
+  }
 }
 
 static void processMultiStatusPacket(const uint8_t * data, uint8_t module)
@@ -248,7 +295,7 @@ static void processMultiTelemetryPaket(const uint8_t * packet, uint8_t module)
         TRACE("[MP] Received Frsky HUB telemetry len %d < 4", len);
       break;
 
-    case FrSkySportTelemtry:
+    case FrSkySportTelemetry:
       if (len >= 4)
         sportProcessTelemetryPacket(data);
       else
@@ -274,6 +321,12 @@ static void processMultiTelemetryPaket(const uint8_t * packet, uint8_t module)
       }
       break;
 #endif
+    case SpectrumScannerPacket:
+      if (len == 6)
+        processMultiScannerPacket(data);
+      else
+        TRACE("[MP] Received spectrum scanner len %d != 6", len);
+      break;
 
     default:
       TRACE("[MP] Unkown multi packet type 0x%02X, len %d", type, len);

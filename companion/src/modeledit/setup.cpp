@@ -217,15 +217,14 @@ ModulePanel::ModulePanel(QWidget * parent, ModelData & model, ModuleData & modul
   // The protocols available on this board
   for (unsigned int i=0; i<PULSES_PROTOCOL_LAST; i++) {
     if (firmware->isAvailable((PulsesProtocol) i, moduleIdx)) {
-      if (IS_TARANIS_XLITE(firmware->getBoard()) && i == PULSES_PXX_R9M)  //TODO remove when mini are handled as a different module type
-        ui->protocol->addItem("FrSky R9M Mini", (QVariant) i);
-      else
-        ui->protocol->addItem(ModuleData::protocolToString(i), i);
+      ui->protocol->addItem(ModuleData::protocolToString(i), i);
       if (i == module.protocol)
         ui->protocol->setCurrentIndex(ui->protocol->count()-1);
     }
   }
   for (int i=0; i<=MODULE_SUBTYPE_MULTI_LAST; i++) {
+    if (i == MODULE_SUBTYPE_MULTI_SCANNER)
+      continue;
     ui->multiProtocol->addItem(Multiprotocols::protocolToString(i), i);
   }
 
@@ -546,7 +545,7 @@ void ModulePanel::update()
   ui->lowPower->setVisible(mask & MASK_MULTIMODULE);
 
   if (mask & MASK_MULTIMODULE) {
-    ui->multiProtocol->setCurrentIndex(module.multi.rfProtocol);
+    ui->multiProtocol->setCurrentIndex(ui->multiProtocol->findData(module.multi.rfProtocol));
     ui->autoBind->setChecked(module.multi.autoBindMode);
     ui->lowPower->setChecked(module.multi.lowPowerMode);
   }
@@ -717,9 +716,10 @@ void ModulePanel::on_failsafeMode_currentIndexChanged(int value)
 
 void ModulePanel::onMultiProtocolChanged(int index)
 {
-  if (!lock && module.multi.rfProtocol != (unsigned)index) {
+  int rfProtocol = ui->multiProtocol->itemData(index).toInt();
+  if (!lock && module.multi.rfProtocol != (unsigned)rfProtocol) {
     lock=true;
-    module.multi.rfProtocol = (unsigned int) index;
+    module.multi.rfProtocol = (unsigned int)rfProtocol;
     unsigned int maxSubTypes = multiProtocols.getProtocol(index).numSubTypes();
     if (module.multi.customProto)
       maxSubTypes=8;

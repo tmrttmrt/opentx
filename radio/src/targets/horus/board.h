@@ -569,7 +569,7 @@ void telemetryClearFifo();
 extern uint32_t telemetryErrors;
 
 // Sport update driver
-#if defined(PCBX10)
+#if defined(PCBX10) && !defined(RADIO_T16)
 void sportUpdatePowerOn();
 void sportUpdatePowerOff();
 #define SPORT_UPDATE_POWER_ON()        sportUpdatePowerOn()
@@ -592,7 +592,7 @@ uint8_t gpsGetByte(uint8_t * byte);
 extern uint8_t gpsTraceEnabled;
 #endif
 void gpsSendByte(uint8_t byte);
-#if defined(PCBX12S)
+#if defined(INTERNAL_GPS)
 #define PILOTPOS_MIN_HDOP             500
 #endif
 

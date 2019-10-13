@@ -787,8 +787,8 @@
 #define TR_BLUETOOTH                   "Bluetooth"
 #define TR_BLUETOOTH_DISC              "Discover"
 #define TR_BLUETOOTH_INIT              "Init"
-#define TR_BLUETOOTH_DIST_ADDR         INDENT "Dist addr"
-#define TR_BLUETOOTH_LOCAL_ADDR        INDENT "Local addr"
+#define TR_BLUETOOTH_DIST_ADDR         "Dist addr"
+#define TR_BLUETOOTH_LOCAL_ADDR        "Local addr"
 #define TR_BLUETOOTH_PIN_CODE          "PIN code"
 #define TR_BAUDRATE                    "BT Baudrate"
 #define LEN_BLUETOOTH_MODES            "\011"
@@ -1158,6 +1158,7 @@
 #define TR_MENU_OTHER                  "Other"
 #define TR_MENU_INVERT                 "Invert"
 #define TR_JITTER_FILTER               "ADC filter"
+#define TR_RTC_CHECK                   TR("Check RTC", "Check RTC voltage")
 
 #define ZSTR_RSSI                      "RSSI"
 #define ZSTR_R9PW                      "R9PW"
