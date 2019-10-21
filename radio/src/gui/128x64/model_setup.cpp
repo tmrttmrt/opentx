@@ -209,7 +209,7 @@ inline uint8_t EXTERNAL_MODULE_TYPE_ROW()
 #define TIMER_ROWS                     2, 0, 0, 0, 0
 
 #if defined(PCBSKY9X)
-  #define EXTRA_MODULE_ROWS              LABEL(ExtraModule), 1, 2,
+  #define EXTRA_MODULE_ROWS             LABEL(ExtraModule), 1, 2,
 #else
   #define EXTRA_MODULE_ROWS
 #endif
@@ -350,27 +350,53 @@ void menuModelSetup(event_t event)
     TRAINER_ROWS
   });
 #else
-  MENU_TAB({ HEADER_LINE_COLUMNS 0, TIMER_ROWS, TIMER_ROWS, TIMER_ROWS, 0, 1, 0, 0, 0, 0, 0, LABEL(PreflightCheck), 0, 0, NUM_SWITCHES-1, NUM_STICKS+NUM_POTS+NUM_SLIDERS-1, 0,
+  MENU_TAB({
+    HEADER_LINE_COLUMNS
+    0,
+    TIMER_ROWS,
+    TIMER_ROWS,
+    TIMER_ROWS,
+    0, // Extended limits
+    1, // Extended trims
+    0, // Show trims
+    0, // Trims step
+    0, // Throttle reverse
+    0, // Throttle trace source
+    0, // Throttle trim
+
+    LABEL(PreflightCheck),
+      0,  // Checklist
+      0, // Throttle warning
+      NUM_SWITCHES-1, // Switch warning
+
+    NUM_STICKS+NUM_POTS+NUM_SLIDERS-1, // Center beeps
+    0, // Global functions
+
 #if defined(CPUESP32)
     LABEL(InternalModule),
-    0,
-    isModuleESPNOW(INTERNAL_MODULE)?(uint8_t)1:HIDDEN_ROW,
-    LABEL(ExternalModule),
-    EXTERNAL_MODULE_TYPE_ROW(),
-    HIDDEN_ROW,
+      0,
+      isModuleESPNOW(INTERNAL_MODULE)?(uint8_t)1:HIDDEN_ROW,
+      LABEL(ExternalModule),
+      EXTERNAL_MODULE_TYPE_ROW(),
 #else
     LABEL(ExternalModule),
-    EXTERNAL_MODULE_TYPE_ROW(),
+      EXTERNAL_MODULE_TYPE_ROW(),
 #endif
-    MULTIMODULE_SUBTYPE_ROWS(EXTERNAL_MODULE)
-    MULTIMODULE_STATUS_ROWS(EXTERNAL_MODULE)
-    MODULE_CHANNELS_ROWS(EXTERNAL_MODULE),
-    MODULE_BIND_ROWS(EXTERNAL_MODULE),
-    OUTPUT_TYPE_ROW
-    MODULE_OPTION_ROW(EXTERNAL_MODULE),
-    MULTIMODULE_MODULE_ROWS(EXTERNAL_MODULE)
-    MODULE_POWER_ROW(EXTERNAL_MODULE),
-    FAILSAFE_ROWS(EXTERNAL_MODULE),
+      MULTIMODULE_SUBTYPE_ROWS(EXTERNAL_MODULE)
+      MODULE_POWER_ROW(EXTERNAL_MODULE),
+      MULTIMODULE_STATUS_ROWS(EXTERNAL_MODULE)
+      MODULE_CHANNELS_ROWS(EXTERNAL_MODULE),
+      IF_NOT_ACCESS_MODULE_RF(EXTERNAL_MODULE, MODULE_BIND_ROWS(EXTERNAL_MODULE)),      // line reused for PPM: PPM settings
+      OUTPUT_TYPE_ROW
+      IF_ACCESS_MODULE_RF(EXTERNAL_MODULE, 0),                     // RxNum
+      IF_NOT_PXX2_MODULE(EXTERNAL_MODULE, MODULE_OPTION_ROW(EXTERNAL_MODULE)),
+      MULTIMODULE_MODULE_ROWS(EXTERNAL_MODULE)
+      FAILSAFE_ROWS(EXTERNAL_MODULE),
+      IF_ACCESS_MODULE_RF(EXTERNAL_MODULE, 1),                     // Range check and Register buttons
+      IF_PXX2_MODULE(EXTERNAL_MODULE, 0),                          // Module options
+      IF_ACCESS_MODULE_RF(EXTERNAL_MODULE, 0),                     // Receiver 1
+      IF_ACCESS_MODULE_RF(EXTERNAL_MODULE, 0),                     // Receiver 2
+      IF_ACCESS_MODULE_RF(EXTERNAL_MODULE, 0),                     // Receiver 3
     EXTRA_MODULE_ROWS
     TRAINER_ROWS
   });
@@ -872,7 +898,6 @@ void menuModelSetup(event_t event)
             lcdDrawTextAtIndex(lcdNextPos + 3, y, STR_MULTI_PROTOCOLS, multi_rfProto, menuHorizontalPosition==1 ? attr : 0);
         }
 #endif
-#if defined(PCBTARANIS)
         if (attr && menuHorizontalPosition == 0) {
           if (s_editMode > 0) {
             g_model.moduleData[EXTERNAL_MODULE].type = MODULE_TYPE_NONE;
@@ -886,7 +911,6 @@ void menuModelSetup(event_t event)
             g_model.moduleData[EXTERNAL_MODULE].type = reusableBuffer.moduleSetup.newType;
           }
         }
-#endif
         if (attr) {
           if (s_editMode > 0) {
             switch (menuHorizontalPosition) {
@@ -1220,16 +1244,14 @@ void menuModelSetup(event_t event)
 #if defined(PCBSKY9X)
       case ITEM_MODEL_SETUP_EXTRA_MODULE_BIND:
 #endif
-#if defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
-      case ITEM_MODEL_SETUP_EXTERNAL_MODULE_NOT_ACCESS_BIND:
-      case ITEM_MODEL_SETUP_INTERNAL_MODULE_BIND:
-#endif
-#if defined(PCBTARANIS)
 #if defined(HARDWARE_INTERNAL_MODULE)
+#if defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
+      case ITEM_MODEL_SETUP_INTERNAL_MODULE_BIND:
+#else
       case ITEM_MODEL_SETUP_INTERNAL_MODULE_NOT_ACCESS_BIND:
 #endif
-      case ITEM_MODEL_SETUP_EXTERNAL_MODULE_NOT_ACCESS_BIND:
 #endif
+      case ITEM_MODEL_SETUP_EXTERNAL_MODULE_NOT_ACCESS_BIND:
       {
         uint8_t moduleIdx = CURRENT_MODULE_EDITED(k);
         ModuleData & moduleData = g_model.moduleData[moduleIdx];
