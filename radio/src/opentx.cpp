@@ -1858,8 +1858,6 @@ void opentxInit()
   }
 
 #if defined(SDCARD)
-  globalData.sdcardPresent = SD_CARD_PRESENT();
-
   // SDCARD related stuff, only done if not unexpectedShutdown
   if (!globalData.unexpectedShutdown) {
     sdInit();

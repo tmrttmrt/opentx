@@ -575,9 +575,8 @@ void flightReset(uint8_t check=true);
 
 PACK(struct GlobalData {
   uint8_t unexpectedShutdown:1;
-  uint8_t sdcardPresent:1;
   uint8_t externalAntennaEnabled: 1;
-  uint8_t spare:5;
+  uint8_t spare:6;
 });
 
 extern GlobalData globalData;
@@ -925,8 +924,9 @@ uint8_t lswFamily(uint8_t func);
 int16_t lswTimerValue(delayval_t val);
 
 enum FunctionsActive {
-  FUNCTION_TRAINER,
-  FUNCTION_INSTANT_TRIM = FUNCTION_TRAINER+4,
+  FUNCTION_TRAINER_STICK1,
+  FUNCTION_TRAINER_CHANNELS = FUNCTION_TRAINER_STICK1 + NUM_STICKS,
+  FUNCTION_INSTANT_TRIM,
   FUNCTION_VARIO,
   FUNCTION_BACKLIGHT,
 #if defined(SDCARD)
@@ -1421,5 +1421,9 @@ inline bool isAsteriskDisplayed()
 
   return globalData.unexpectedShutdown;
 }
+
+#if defined(ACCESS_LIB)
+#include "thirdparty/libACCESS/libAccess.h"
+#endif
 
 #endif // _OPENTX_H_
