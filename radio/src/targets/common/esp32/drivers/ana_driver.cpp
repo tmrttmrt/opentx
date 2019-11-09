@@ -71,10 +71,9 @@ void getADC()
         if ( err == ESP_OK ) {
             s_anaFilt[channel]=read_raw;
         } else {
-            s_anaFilt[channel]=0;
+            s_anaFilt[channel]= 0x0FFF;
         }
     }
-
 }
 
 void initADC()
