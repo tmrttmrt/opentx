@@ -165,9 +165,10 @@ class ModuleData {
 
     struct Multi {
       unsigned int rfProtocol;
+      bool disableTelemetry;
+      bool disableMapping;
       bool autoBindMode;
       bool lowPowerMode;
-      bool customProto;
       int optionValue;
     } multi;
 
