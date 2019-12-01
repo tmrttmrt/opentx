@@ -14,7 +14,7 @@ set(GUI_DIR 480x272)
 set(NAVIGATION_TYPE horus)
 set(TARGET_DIR horus)
 set(LINKER_SCRIPT targets/horus/stm32f4_flash.ld)
-set(RAMBACKUP YES)
+set(RTC_BACKUP_RAM YES)
 set(LUA YES)
 set(PPM_LIMITS_SYMETRICAL YES)
 set(USB_SERIAL ON CACHE BOOL "Enable USB serial (CDC)")
@@ -91,7 +91,12 @@ endif()
 add_definitions(-DPCBREV=${PCBREV})
 add_definitions(-DPCBREV_${PCBREV})
 
-set(FIRMWARE_DEPENDENCIES ${FIRMWARE_DEPENDENCIES} ${BITMAPS_TARGET})
+set(RADIO_DEPENDENCIES
+  ${RADIO_DEPENDENCIES}
+  ${BITMAPS_TARGET}
+  )
+
+set(FIRMWARE_DEPENDENCIES datacopy)
 
 add_definitions(-DPCBHORUS -DSTM32F429_439xx -DSDRAM -DCOLORLCD)
 add_definitions(-DEEPROM_VARIANT=0 -DAUDIO -DVOICE -DRTCLOCK)
@@ -222,9 +227,13 @@ set(STM32LIB_SRC
   )
 
 if(PYTHONINTERP_FOUND)
-  add_custom_target(datacopy
+  add_custom_command(
+    OUTPUT ${PROJECT_BINARY_DIR}/radio/src/datacopy.cpp
     WORKING_DIRECTORY ${RADIO_DIRECTORY}/src
-    COMMAND ${PYTHON_EXECUTABLE} ${RADIO_DIRECTORY}/util/generate_datacopy.py datastructs.h -DPCBHORUS -DPCBX10 -DCPUARM -DCOLORLCD -DBACKUP -Itargets/horus > storage/datacopy.cpp
+    COMMAND ${PYTHON_EXECUTABLE} ${RADIO_DIRECTORY}/util/generate_datacopy.py datastructs.h -DPCBHORUS -DPCBX10 -DCPUARM -DCOLORLCD -DBACKUP -Itargets/horus > ${PROJECT_BINARY_DIR}/radio/src/datacopy.cpp
     DEPENDS ${RADIO_DIRECTORY}/src/datastructs.h ${RADIO_DIRECTORY}/util/generate_datacopy.py
-  )
+    )
+  add_custom_target(datacopy
+    DEPENDS ${PROJECT_BINARY_DIR}/radio/src/datacopy.cpp
+    )
 endif()

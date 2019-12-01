@@ -208,7 +208,7 @@
 #endif
 
 #if defined(GVARS)
-  #define TR_ADJUST_GVAR               "Ändere \0  "
+  #define TR_ADJUST_GVAR               "Ändere\0   "
 #else
   #define TR_ADJUST_GVAR               "[ÄndereGV]"
 #endif
@@ -629,7 +629,7 @@
 #define TR_MULTI_RFTUNE        			TR(INDENT "RF Freq.", INDENT "RF Freq. Feintuning")
 #define TR_MULTI_TELEMETRY             "Telemetry"
 #define TR_MULTI_VIDFREQ       			TR(INDENT "Vid. Freq.", INDENT "Video Frequenz")
-#define TR_RFPOWER              		INDENT "RF Power"
+#define TR_RFPOWER              		"RF Power"
 #define TR_MULTI_FIXEDID               TR("FixedID", "Fixed ID")
 #define TR_MULTI_OPTION        			TR(INDENT "Option", INDENT "Optionswert")
 #define TR_MULTI_AUTOBIND      			TR(INDENT "Bind Ch.",INDENT "Bind on channel")
@@ -645,7 +645,8 @@
 #define TR_MODULE_NO_TELEMETRY         TR3( "No telmetry", "No MULTI_TELEMETRY", "No telemetry (enable MULTI_TELEMETRY)")
 #define TR_MODULE_WAITFORBIND          "Bind to load protocol"
 #define TR_MODULE_BINDING              "Binding"
-#define TR_MODULE_UPGRADE              "Module upgrade required"
+#define TR_MODULE_UPGRADE_ALERT        TR3("Upg. needed", "Module upgrade required", "Module\nUpgrade required")
+#define TR_MODULE_UPGRADE              TR("Upg. needed", "Module update recommended")
 #define TR_REBIND                      "Rebinding required"
 #define TR_REG_OK                      "Registration ok"
 #define TR_BIND_OK                     "Bind successful"
@@ -915,6 +916,7 @@
 #define TR_CALIBRATION                 "Kalibrieren"
 #define TR_SET                   	   BUTTON("Set")
 #define TR_TRAINER             		   "DSC Buchse PPM In/Out"
+#define TR_CHANS                       "Chans"
 #define TR_ANTENNAPROBLEM     		   CENTER "TX-Antennenproblem!"
 #if defined(COLORLCD)
   #define TR_MODELIDUSED               "ID used in:"

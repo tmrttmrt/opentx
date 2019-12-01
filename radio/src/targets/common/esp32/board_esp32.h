@@ -88,7 +88,9 @@ extern TaskPrio audioTaskPrio;
 #define enableVBatBridge()
 #define disableVBatBridge()
 #define pwrOn()
-
+// WDT driver
+#define WDG_RESET()
+#define WDG_ENABLE(x)
 
 void telemetryPortInit(uint32_t baudrate, uint8_t mode);
 void rtosInit();

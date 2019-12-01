@@ -1232,10 +1232,25 @@ void menuModelSetup(event_t event)
          int optionValue = g_model.moduleData[moduleIdx].multi.optionValue;
 
          const uint8_t multi_proto = g_model.moduleData[EXTERNAL_MODULE].getMultiProtocol();
-         const mm_protocol_definition *pdef = getMultiProtocolDefinition(multi_proto);
-         if (pdef->optionsstr)
-           lcdDrawText(INDENT_WIDTH, y, pdef->optionsstr);
-
+         if (multi_proto < MODULE_SUBTYPE_MULTI_LAST) {
+           const mm_protocol_definition * pdef = getMultiProtocolDefinition(multi_proto);
+           if (pdef->optionsstr)
+             lcdDrawText(INDENT_WIDTH, y, pdef->optionsstr);
+           if (pdef->optionsstr == STR_MULTI_RFTUNE) {
+             lcdDrawText(MODEL_SETUP_3RD_COLUMN+22, y, "RSSI(", LEFT);
+             lcdDrawNumber(lcdLastRightPos, y, TELEMETRY_RSSI(), LEFT);
+             lcdDrawText(lcdLastRightPos, y, ")", LEFT);
+           }
+         }
+         else {
+           MultiModuleStatus &status = getMultiModuleStatus(moduleIdx);
+           lcdDrawText(INDENT_WIDTH, y, mm_options_strings::options[status.optionDisp]);
+           if (attr && status.optionDisp == 2) {
+             lcdDrawText(MODEL_SETUP_3RD_COLUMN+22, y, "RSSI(", LEFT);
+             lcdDrawNumber(lcdLastRightPos, y, TELEMETRY_RSSI(), LEFT);
+             lcdDrawText(lcdLastRightPos, y, ")", LEFT);
+           }
+         }
          if (multi_proto == MODULE_SUBTYPE_MULTI_FS_AFHDS2A)
            optionValue = 50 + 5 * optionValue;
 
@@ -1249,11 +1264,6 @@ void menuModelSetup(event_t event)
            }
            else {
              CHECK_INCDEC_MODELVAR(event, g_model.moduleData[moduleIdx].multi.optionValue, -128, 127);
-             if (pdef->optionsstr == STR_MULTI_RFTUNE) {
-               lcdDrawText(MODEL_SETUP_3RD_COLUMN+22, y, "RSSI(", LEFT);
-               lcdDrawNumber(lcdLastRightPos, y, TELEMETRY_RSSI(), LEFT);
-               lcdDrawText(lcdLastRightPos, y, ")", LEFT);
-             }
            }
          }
        }
@@ -1278,7 +1288,7 @@ void menuModelSetup(event_t event)
     {
       uint8_t moduleIdx = CURRENT_MODULE_EDITED(k);
       if (isModuleR9MNonAccess(moduleIdx)) {
-        lcdDrawTextAlignedLeft(y, TR_RFPOWER);
+        lcdDrawText(INDENT_WIDTH, y, STR_RFPOWER);
         if (isModuleR9M_FCC_VARIANT(moduleIdx)) {
           lcdDrawTextAtIndex(MODEL_SETUP_2ND_COLUMN, y, STR_R9M_FCC_POWER_VALUES, g_model.moduleData[moduleIdx].pxx.power, LEFT | attr);
           if (attr)

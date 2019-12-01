@@ -207,7 +207,7 @@
 #endif
 
 #ifdef GVARS
-  #define TR_ADJUST_GVAR               "Nastav \0   "
+  #define TR_ADJUST_GVAR               "Nastav\0    "
 #else
   #define TR_ADJUST_GVAR               "[Nastav GP]"
 #endif
@@ -627,7 +627,7 @@
 #define TR_MULTI_RFTUNE                TR(INDENT "Ladění frek", INDENT "Jemné ladění frek. RF")
 #define TR_MULTI_TELEMETRY             "Telemetrie"
 #define TR_MULTI_VIDFREQ               TR(INDENT "Freq. videa", INDENT "Frekvence videa")
-#define TR_RFPOWER                     INDENT "Výkon RF"
+#define TR_RFPOWER                     "Výkon RF"
 #define TR_MULTI_FIXEDID               TR("FixedID", "Fixed ID")
 #define TR_MULTI_OPTION                TR(INDENT "Možnosti", INDENT "Hodnota")
 #define TR_MULTI_AUTOBIND              TR(INDENT "Bind Ch.",INDENT "Bind při zapnutí")
@@ -643,7 +643,8 @@
 #define TR_MODULE_NO_TELEMETRY         TR3("Bez telemetrie", "Bez MULTI_TELEMETIE", "Nedetekována MULTI_TELEMETRIE")
 #define TR_MODULE_WAITFORBIND          "Párovat při zavedení protokolu"
 #define TR_MODULE_BINDING              TR("Bind...","Párování")
-#define TR_MODULE_UPGRADE              "Module upgrade required"
+#define TR_MODULE_UPGRADE_ALERT        TR3("Upg. needed", "Module upgrade required", "Module\nUpgrade required")
+#define TR_MODULE_UPGRADE              TR("Upg. needed", "Module update recommended")
 #define TR_REBIND                      "Nutno přepárovat"
 #define TR_REG_OK                      "Registrace ok"
 #define TR_BIND_OK                     "Úspěšné párovaní"
@@ -913,6 +914,7 @@
 #define TR_CALIBRATION                 "Kalibrace"
 #define TR_SET                         BUTTON("Nast")
 #define TR_TRAINER                     "Trenér"
+#define TR_CHANS                       "Chans"
 #define TR_ANTENNAPROBLEM              CENTER "Problém s TX anténou!"
 #define TR_MODELIDUSED                 TR("ID již použito","ID modelu je již použito")
 #define TR_MODULE                      "Modul"

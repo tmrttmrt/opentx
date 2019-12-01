@@ -209,7 +209,7 @@
 #endif
 
 #if defined(GVARS)
-  #define TR_ADJUST_GVAR       "Regola \0     "
+  #define TR_ADJUST_GVAR       "Regola\0      "
 #else
   #define TR_ADJUST_GVAR       "[RegolaVG]\0  "
 #endif
@@ -664,7 +664,8 @@
 #define TR_MODULE_NO_TELEMETRY         TR3("No telemetria", "MULTI_TELEMETRY disattivato", "Nessuna telem. (abilita MULTI_TELEMETRY)")
 #define TR_MODULE_WAITFORBIND          "Associa per caricare il protocollo"
 #define TR_MODULE_BINDING              "Associa"
-#define TR_MODULE_UPGRADE              "Richiede agg. modulo"
+#define TR_MODULE_UPGRADE_ALERT        TR3("Richiede agg.", "Richiede agg. modulo", "Modulo\nRichiede agg.")
+#define TR_MODULE_UPGRADE              TR("Richiede agg.", "Richiede agg. modulo")
 #define TR_REBIND                      "Richiede associazione"
 #define TR_REG_OK                      "Registrazione ok"
 #define TR_BIND_OK                     "Associazione riuscita"
@@ -934,6 +935,7 @@
 #define TR_CALIBRATION                    TR("Calibraz.", "Calibrazione")
 #define TR_SET                 "[Set]"
 #define TR_TRAINER             TR("Trainer", "Maestro/Allievo")
+#define TR_CHANS                       "Chans"
 #define TR_ANTENNAPROBLEM      CENTER "Problemi antenna TX!"
 #define TR_MODELIDUSED         TR("ID già usato", "ID Modello già usato")
 #define TR_MODULE              "Modulo"

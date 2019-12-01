@@ -1305,7 +1305,7 @@ void registerOpenTxFirmwares()
   registerOpenTxFirmware(firmware);
 
   /* FrSky X10 Express board */
-  firmware = new OpenTxFirmware("opentx-x10express", Firmware::tr("FrSky Horus X10 / X10S Express"), BOARD_X10_EXPRESS);
+  firmware = new OpenTxFirmware("opentx-x10express", Firmware::tr("FrSky Horus X10 Express / X10S Express"), BOARD_X10_EXPRESS);
   addOpenTxFrskyOptions(firmware);
   registerOpenTxFirmware(firmware);
 
@@ -1317,17 +1317,18 @@ void registerOpenTxFirmwares()
   registerOpenTxFirmware(firmware);
 
   /* Jumper T12 board */
-  firmware = new OpenTxFirmware("opentx-t12", QCoreApplication::translate("Firmware", "Jumper T12"), BOARD_JUMPER_T12);
+  firmware = new OpenTxFirmware("opentx-t12", QCoreApplication::translate("Firmware", "Jumper T12 / T12 Pro"), BOARD_JUMPER_T12);
   addOpenTxCommonOptions(firmware);
   firmware->addOption("noheli", Firmware::tr("Disable HELI menu and cyclic mix support"));
   firmware->addOption("nogvars", Firmware::tr("Disable Global variables"));
   firmware->addOption("lua", Firmware::tr("Enable Lua custom scripts screen"));
   firmware->addOption("flexr9m", Firmware::tr("Enable non certified R9M firmwares"));
+  firmware->addOption("internalmulti", Firmware::tr("Support for MULTI internal module"));
   addOpenTxFontOptions(firmware);
   registerOpenTxFirmware(firmware);
 
   /* Jumper T16 board */
-  firmware = new OpenTxFirmware("opentx-t16", Firmware::tr("Jumper T16 / T16+"), BOARD_JUMPER_T16);
+  firmware = new OpenTxFirmware("opentx-t16", Firmware::tr("Jumper T16 / T16+ / T16 Pro"), BOARD_JUMPER_T16);
   addOpenTxFrskyOptions(firmware);
   firmware->addOption("internalmulti", Firmware::tr("Support for MULTI internal module"));
   firmware->addOption("bluetooth", Firmware::tr("Support for bluetooth module"));

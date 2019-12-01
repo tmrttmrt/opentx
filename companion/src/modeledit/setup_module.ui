@@ -417,7 +417,6 @@
           <item>
            <widget class="QCheckBox" name="autoBind">
             <property name="text">
-             <string>Bind on startup</string>
             </property>
            </widget>
           </item>
@@ -933,6 +932,21 @@
           <item>
            <property name="text">
             <string>Master/SBUS in battery compartment</string>
+           </property>
+          </item>
+	  <item>
+           <property name="text">
+            <string>Master/Bluetooth</string>
+           </property>
+          </item>
+	  <item>
+           <property name="text">
+            <string>Slave/Bluetooth</string>
+           </property>
+          </item>
+	  <item>
+           <property name="text">
+            <string>Master/Multi</string>
            </property>
           </item>
          </widget>

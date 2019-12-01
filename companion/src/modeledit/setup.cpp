@@ -195,13 +195,24 @@ ModulePanel::ModulePanel(QWidget * parent, ModelData & model, ModuleData & modul
 
   ui->label_module->setText(ModuleData::indexToString(moduleIdx, firmware));
   if (moduleIdx < 0) {
-    if (IS_HORUS(firmware->getBoard())) {
+    if (!IS_TARANIS(firmware->getBoard())) {
       ui->trainerMode->setItemData(TRAINER_MODE_MASTER_CPPM_EXTERNAL_MODULE, 0, Qt::UserRole - 1);
       ui->trainerMode->setItemData(TRAINER_MODE_MASTER_SBUS_EXTERNAL_MODULE, 0, Qt::UserRole - 1);
-    }
-    if (generalSettings.auxSerialMode != UART_MODE_SBUS_TRAINER) {
       ui->trainerMode->setItemData(TRAINER_MODE_MASTER_BATTERY_COMPARTMENT, 0, Qt::UserRole - 1);
     }
+    else if (generalSettings.auxSerialMode != UART_MODE_SBUS_TRAINER) {
+      ui->trainerMode->setItemData(TRAINER_MODE_MASTER_BATTERY_COMPARTMENT, 0, Qt::UserRole - 1);
+    }
+
+    if (generalSettings.bluetoothMode != 2) {
+      ui->trainerMode->setItemData(TRAINER_MODE_MASTER_BLUETOOTH, 0, Qt::UserRole - 1);
+      ui->trainerMode->setItemData(TRAINER_MODE_SLAVE_BLUETOOTH, 0, Qt::UserRole - 1);
+    }
+
+    if (!IS_JUMPER_T16(firmware->getBoard())) {
+      ui->trainerMode->setItemData(TRAINER_MODE_MULTI, 0, Qt::UserRole - 1);
+    }
+
     ui->trainerMode->setCurrentIndex(model.trainerMode);
     if (!IS_HORUS_OR_TARANIS(firmware->getBoard())) {
       ui->label_trainerMode->hide();
@@ -272,7 +283,9 @@ bool ModulePanel::moduleHasFailsafes()
     (PulsesProtocol)module.protocol == PulsesProtocol::PULSES_ACCESS_R9M ||
     (PulsesProtocol)module.protocol == PulsesProtocol::PULSES_ACCESS_R9M_LITE ||
     (PulsesProtocol)module.protocol == PulsesProtocol::PULSES_ACCESS_R9M_LITE_PRO ||
-    (PulsesProtocol)module.protocol == PulsesProtocol::PULSES_XJT_LITE_X16);
+    (PulsesProtocol)module.protocol == PulsesProtocol::PULSES_XJT_LITE_X16 ||
+    (PulsesProtocol)module.protocol == PulsesProtocol::PULSES_MULTIMODULE
+    );
 }
 
 void ModulePanel::setupFailsafes()
@@ -592,8 +605,12 @@ void ModulePanel::update()
   ui->optionValue->setVisible(mask & MASK_MULTIOPTION);
   ui->disableTelem->setVisible(mask & MASK_MULTIMODULE);
   ui->disableChMap->setVisible(mask & MASK_MULTIMODULE);
-  ui->autoBind->setVisible(mask & MASK_MULTIMODULE);
   ui->lowPower->setVisible(mask & MASK_MULTIMODULE);
+  ui->autoBind->setVisible(mask & MASK_MULTIMODULE);
+  if (module.multi.rfProtocol == MODULE_SUBTYPE_MULTI_DSM2)
+    ui->autoBind->setText(tr("Autodetect Format"));
+  else
+    ui->autoBind->setText(tr("Bind on channel"));
 
   if (mask & MASK_MULTIMODULE) {
     ui->multiProtocol->setCurrentIndex(ui->multiProtocol->findData(module.multi.rfProtocol));

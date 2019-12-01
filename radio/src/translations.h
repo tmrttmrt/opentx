@@ -382,7 +382,6 @@ extern const char STR_AND_SWITCH[];
 extern const char STR_SF[];
 extern const char STR_GF[];
 
-#if defined(MULTIMODULE)
 extern const char STR_MULTI_CUSTOM[];
 extern const char STR_MULTI_FIXEDID[];
 extern const char STR_MULTI_OPTION[];
@@ -399,6 +398,7 @@ extern const char STR_MODULE_NO_INPUT[];
 extern const char STR_MODULE_WAITFORBIND[];
 extern const char STR_MODULE_NO_TELEMETRY[];
 extern const char STR_MODULE_BINDING[];
+extern const char STR_MODULE_UPGRADE_ALERT[];
 extern const char STR_MODULE_UPGRADE[];
 extern const char STR_PROTOCOL_INVALID[];
 extern const char STR_MODULE_STATUS[];
@@ -408,9 +408,6 @@ extern const char STR_MULTI_MAX_THROW[];
 extern const char STR_MULTI_RFCHAN[];
 #if LCD_W < 212
 extern const char STR_SUBTYPE[];
-#endif
-#elif defined(CPUESP32)
-  extern const char STR_MODULE_BINDING[];
 #endif
 
 #if defined(DSM2) || defined(PXX)
@@ -728,6 +725,7 @@ extern const char STR_EXPONAME[];
 #endif
 
   extern const char STR_TRAINER[];
+extern const char STR_CHANS[];
 extern const char STR_MODULE_BIND[];
 extern const char STR_POWERMETER_ATTN_NEEDED[];
 extern const char STR_PXX2_SELECT_RX[];

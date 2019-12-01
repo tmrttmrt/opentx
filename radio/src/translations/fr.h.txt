@@ -649,7 +649,7 @@
 #define TR_MULTI_RFTUNE                TR(INDENT "Ajust.fréq", INDENT "Ajustement fréq.")
 #define TR_MULTI_TELEMETRY             "Télémétrie"
 #define TR_MULTI_VIDFREQ               TR(INDENT "Fréq. vidéo", INDENT "Fréquence vidéo")
-#define TR_RFPOWER                     TR(INDENT "Puiss. RF", INDENT "Puissance RF")
+#define TR_RFPOWER                     TR("Puiss. RF", "Puissance RF")
 #define TR_MULTI_FIXEDID               "ID fixe"
 #define TR_MULTI_OPTION                TR(INDENT "Option", INDENT "Option perso")
 #define TR_MULTI_AUTOBIND              TR(INDENT "Bind voie", INDENT "Bind sur voie")
@@ -665,7 +665,8 @@
 #define TR_MODULE_NO_TELEMETRY         TR3("Pas de télm.", "Télémétrie absente", "Télémétrie absente(act. MULTI_TELEMETRY)")
 #define TR_MODULE_WAITFORBIND          "Binder d'abord"
 #define TR_MODULE_BINDING              "Bind..."
-#define TR_MODULE_UPGRADE              "Mise à jour requise"
+#define TR_MODULE_UPGRADE_ALERT              "Mise à jour requise"
+#define TR_MODULE_UPGRADE              TR("Upg. needed", "Module update recommended")
 #define TR_REBIND                      "Rebind requis"
 #define TR_REG_OK                      "Enregistr. ok"
 #define TR_BIND_OK                     "Bind ok"
@@ -934,6 +935,7 @@
 #define TR_CALIBRATION                 "Calibration"
 #define TR_SET                         BUTTON("Déf")
 #define TR_TRAINER                     "Ecolage"
+#define TR_CHANS                       "Chans"
 #define TR_ANTENNAPROBLEM              CENTER "Antenne radio défect.!"
 #define TR_MODELIDUSED                 TR("ID affecté à :", "No de récepteur utilisé par :")
 #define TR_MODULE                      "Module"
