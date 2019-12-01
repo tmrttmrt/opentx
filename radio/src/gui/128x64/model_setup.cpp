@@ -86,7 +86,6 @@ enum MenuModelSetupItems {
   ITEM_MODEL_SETUP_INTERNAL_MODULE_TYPE,
 #if defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   ITEM_MODEL_SETUP_INTERNAL_MODULE_BIND,
-  ITEM_MODEL_SETUP_INTERNAL_MODULE_OPTIONS,
 #elif  
 #if defined(MULTIMODULE)
   ITEM_MODEL_SETUP_INTERNAL_MODULE_SUBTYPE,
@@ -412,14 +411,9 @@ void menuModelSetup(event_t event)
     LABEL(InternalModule),
       0,
       isModuleESPNOW(INTERNAL_MODULE)?(uint8_t)1:HIDDEN_ROW,
-      0,
-    LABEL(ExternalModule),
-      0,
-      MODULE_TYPE_ROWS(EXTERNAL_MODULE),
-#else
-    LABEL(ExternalModule),
-      MODULE_TYPE_ROWS(EXTERNAL_MODULE),
 #endif
+    LABEL(ExternalModule),
+      MODULE_TYPE_ROWS(EXTERNAL_MODULE),
       MULTIMODULE_SUBTYPE_ROWS(EXTERNAL_MODULE)
       MULTIMODULE_STATUS_ROWS(EXTERNAL_MODULE)
       MODULE_CHANNELS_ROWS(EXTERNAL_MODULE),
@@ -955,7 +949,7 @@ void menuModelSetup(event_t event)
           if (s_editMode > 0) {
             switch (menuHorizontalPosition) {
               case 0:
-#if defined(HARDWARE_INTERNAL_MODULE)
+#if defined(HARDWARE_INTERNAL_MODULE) && !defined(CPUESP32)
                 if (moduleIdx == INTERNAL_MODULE) {
                   uint8_t moduleType = checkIncDec(event, g_model.moduleData[moduleIdx].type, MODULE_TYPE_NONE, MODULE_TYPE_MAX, EE_MODEL,
                                                    isInternalModuleAvailable);
@@ -1277,12 +1271,11 @@ void menuModelSetup(event_t event)
 #if defined(PCBSKY9X)
       case ITEM_MODEL_SETUP_EXTRA_MODULE_BIND:
 #endif
-#if defined(HARDWARE_INTERNAL_MODULE)
 #if defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
       case ITEM_MODEL_SETUP_INTERNAL_MODULE_BIND:
-#else
-      case ITEM_MODEL_SETUP_INTERNAL_MODULE_NOT_ACCESS_RXNUM_BIND_RANGE:
 #endif
+#if defined(HARDWARE_INTERNAL_MODULE) && !defined(CPUESP32)
+      case ITEM_MODEL_SETUP_INTERNAL_MODULE_NOT_ACCESS_RXNUM_BIND_RANGE:
 #endif
       case ITEM_MODEL_SETUP_EXTERNAL_MODULE_NOT_ACCESS_RXNUM_BIND_RANGE:
       {
@@ -1524,7 +1517,7 @@ void menuModelSetup(event_t event)
         }
         break;
 #endif
-#if defined(HARDWARE_INTERNAL_MODULE)
+#if defined(HARDWARE_INTERNAL_MODULE) && !defined(CPUESP32)
       case ITEM_MODEL_SETUP_INTERNAL_MODULE_OPTIONS:
 #endif
       case ITEM_MODEL_SETUP_EXTERNAL_MODULE_OPTIONS:
