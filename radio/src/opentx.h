@@ -654,7 +654,6 @@ static inline void GET_ADC_IF_MIXER_NOT_RUNNING()
 
 void backlightOn();
 void checkBacklight();
-void doLoopCommonActions();
 
 #define BITMASK(bit) (1<<(bit))
 

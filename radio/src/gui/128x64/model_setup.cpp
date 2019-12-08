@@ -988,14 +988,7 @@ void menuModelSetup(event_t event)
                   if (checkIncDec_Ret) {
                     g_model.moduleData[moduleIdx].setMultiProtocol(multiRfProto);
                     g_model.moduleData[moduleIdx].subType = 0;
-                    // Sensible default for DSM2 (same as for ppm): 7ch@22ms + Autodetect settings enabled
-                    if (g_model.moduleData[moduleIdx].getMultiProtocol() == MODULE_SUBTYPE_MULTI_DSM2) {
-                      g_model.moduleData[moduleIdx].multi.autoBindMode = 1;
-                    }
-                    else {
-                      g_model.moduleData[moduleIdx].multi.autoBindMode = 0;
-                    }
-                    g_model.moduleData[moduleIdx].multi.optionValue = 0;
+                    resetMultiProtocolsOptions(moduleIdx);
                   }
                 }
 #endif
@@ -1044,6 +1037,9 @@ void menuModelSetup(event_t event)
           switch (menuHorizontalPosition) {
             case 0:{
               CHECK_INCDEC_MODELVAR(event, g_model.moduleData[moduleIdx].subType, 0, getMaxMultiSubtype(moduleIdx));
+              if (checkIncDec_Ret) {
+                resetMultiProtocolsOptions(moduleIdx);
+              }
               break;
             }
           }
@@ -1523,7 +1519,7 @@ void menuModelSetup(event_t event)
       case ITEM_MODEL_SETUP_EXTERNAL_MODULE_OPTIONS:
       {
 #if defined(MULTIMODULE)
-        if (isModuleMultimodule(moduleIdx)) {
+        if (MULTIMODULE_PROTOCOL_KNOWN(moduleIdx)) {
           int optionValue = g_model.moduleData[moduleIdx].multi.optionValue;
 
           const uint8_t multi_proto = g_model.moduleData[moduleIdx].getMultiProtocol();
@@ -1553,15 +1549,9 @@ void menuModelSetup(event_t event)
 
           lcdDrawNumber(MODEL_SETUP_2ND_COLUMN, y, optionValue, LEFT | attr);
           if (attr) {
-            if (multi_proto == MODULE_SUBTYPE_MULTI_FS_AFHDS2A) {
-              CHECK_INCDEC_MODELVAR(event, g_model.moduleData[moduleIdx].multi.optionValue, 0, 70);
-            }
-            else if (multi_proto == MODULE_SUBTYPE_MULTI_OLRS) {
-              CHECK_INCDEC_MODELVAR(event, g_model.moduleData[moduleIdx].multi.optionValue, -1, 7);
-            }
-            else {
-              CHECK_INCDEC_MODELVAR(event, g_model.moduleData[moduleIdx].multi.optionValue, -128, 127);
-            }
+            uint8_t min, max;
+            getMultiOptionValues(multi_proto, min, max);
+            CHECK_INCDEC_MODELVAR(event, g_model.moduleData[moduleIdx].multi.optionValue, min, max);
           }
         }
 #endif
