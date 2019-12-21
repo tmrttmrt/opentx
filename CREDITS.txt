@@ -1669,3 +1669,6 @@ Peter Schneider
 Norman Schenck
 Boris Hemmer
 Gilles Arbona
+Patrice Germain
+Mart Rogers
+Stefan Möst
