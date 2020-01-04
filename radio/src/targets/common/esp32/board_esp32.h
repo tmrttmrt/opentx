@@ -136,7 +136,7 @@ uint32_t sdIsHC(void);
 uint32_t sdGetSpeed(void);
 uint32_t sdMounted(void);
 void sdMountPoll();
-void sdDone();
+#define sdDone()
 void checkSDVersion();
 const char * eeBackupModel(uint8_t i_fileSrc);
 const char * eeRestoreModel(uint8_t i_fileDst, char *model_name);

@@ -92,7 +92,7 @@ void extmoduleSerialStart(uint32_t baudrate, uint32_t period_half_us, bool inver
     //    init_ssc(100);
   }
 }
-
+/*
 void disable_serial(uint32_t port)
 {
   ESP_LOGI(TAG, "'disable_serial' called. port:%d",port);
@@ -103,7 +103,7 @@ void disable_serial(uint32_t port)
     // TODO
   }
 }
-
+*/
 template<class T>
 void setupPulsesPPM(PpmPulsesData<T> * ppmPulsesData, uint8_t channelsStart, int8_t channelsCount, int8_t frameLength)
 {

@@ -434,7 +434,6 @@ endif()
 
 if(ARCH STREQUAL ESP32)
     #has to be defined on commnd line by -DCMAKE_TOOLCHAIN_FILE=$IDF_PATH/tools/cmake/toolchain-esp32.cmake
-    set(CMAKE_EXECUTABLE_SUFFIX ".elf")
 else()
     set(CMAKE_EXECUTABLE_SUFFIX ".elf")
     # trick to remove the -rdynamic and --out-implib issues
@@ -551,35 +550,10 @@ if(NOT MSVC)
     endif()
 
   elseif(ARCH STREQUAL ESP32)
-
     add_library(firmware ${SRC} ${FIRMWARE_HEADERS})
-    include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
-    ExternalProject_Add(project_idfotx
-        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/targets/common/esp32/esp-idf
-        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/idfotx
-        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/idfotx
-        CMAKE_ARGS cmake -G "MinGW Makefiles" -DCMAKE_MAKE_PROGRAM=mingw32-make -DCMAKE_TOOLCHAIN_FILE=$ENV{IDF_PATH}/tools/cmake/toolchain-esp32.cmake -DSDKCONFIG_DEFAULTS=${SDKCONFIG_DEFAULTS} 
-        BUILD_COMMAND mingw32-make idfotx
-        INSTALL_COMMAND ""
-    )
-    add_library(idfotx STATIC IMPORTED)
-    add_dependencies(idfotx project_idfotx)
-    set_property(TARGET idfotx PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/idfotx/libidfotx.a)
-    add_dependencies(firmware  ${RADIO_DEPENDENCIES} ${FIRMWARE_DEPENDENCIES} idfotx)
+    add_dependencies(firmware  ${RADIO_DEPENDENCIES} ${FIRMWARE_DEPENDENCIES})
     set_target_properties(firmware PROPERTIES EXCLUDE_FROM_ALL TRUE)
-    target_link_libraries(firmware idfotx)
-    target_compile_options(firmware PRIVATE "@${CMAKE_CURRENT_BINARY_DIR}/idfotx/libidfotx.includes")
-
-    add_custom_target(flash
-        DEPENDS firmware
-        COMMAND cp libfirmware.a ${CMAKE_CURRENT_BINARY_DIR}/idfotx
-    )
-    
-    add_custom_target(ota
-        DEPENDS app
-        COMMAND echo "OTA to: \$(ESP32_IP):8032" & curl "\$(ESP32_IP):8032" --data-binary @- < firmware.bin
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    )
+    target_compile_options(firmware PRIVATE "@${IDF_INCLUDES}")
   endif()  # ARM or ESP32
 
   if(CPU_FAMILY STREQUAL STM32)
