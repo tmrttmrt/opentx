@@ -11,7 +11,7 @@ set(TARGET_DIR esp-heltec-32)
 set(FIRMWARE_DEPENDENCIES ${FIRMWARE_DEPENDENCIES} 9x_bitmaps)
 set(PPM_LIMITS_SYMETRICAL YES)
 set(PXX1 NO)
-set(IDF_SDKCONFIG_DEFAULTS "${CMAKE_CURRENT_SOURCE_DIR}/targets/esp-heltec-32/esp-idf/sdkconfig.defaults")
+set(SDKCONFIG_DEFAULTS  "${CMAKE_CURRENT_SOURCE_DIR}/targets/esp-heltec-32/esp-idf/sdkconfig.defaults")
 
 set(FLAVOUR esp32-heltec)
 

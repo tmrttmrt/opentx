@@ -1,4 +1,3 @@
-set(IDF_TARGET "esp32")
 include_directories(targets/common/esp32) 
 include_directories(targets/common/esp32/ota_server/include)
 include_directories(targets/common/esp32/drivers)

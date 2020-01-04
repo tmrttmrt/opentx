@@ -33,6 +33,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "fs_wrappers.h"
+#include "gpio.h"
 #endif
 
 #define RTOS_WAIT_TICKS(a) vTaskDelay(a);

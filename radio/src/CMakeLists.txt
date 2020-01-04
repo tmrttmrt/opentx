@@ -434,6 +434,7 @@ endif()
 
 if(ARCH STREQUAL ESP32)
     #has to be defined on commnd line by -DCMAKE_TOOLCHAIN_FILE=$IDF_PATH/tools/cmake/toolchain-esp32.cmake
+    set(CMAKE_EXECUTABLE_SUFFIX ".elf")
 else()
     set(CMAKE_EXECUTABLE_SUFFIX ".elf")
     # trick to remove the -rdynamic and --out-implib issues
@@ -551,36 +552,29 @@ if(NOT MSVC)
 
   elseif(ARCH STREQUAL ESP32)
 
-    add_executable(firmware.elf ${SRC} ${FIRMWARE_HEADERS})
-    add_dependencies(firmware.elf  ${RADIO_DEPENDENCIES} ${FIRMWARE_DEPENDENCIES} )
-    set_target_properties(firmware.elf PROPERTIES EXCLUDE_FROM_ALL TRUE)
+    add_library(firmware ${SRC} ${FIRMWARE_HEADERS})
+    include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+    ExternalProject_Add(project_idfotx
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/targets/common/esp32/esp-idf
+        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/idfotx
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/idfotx
+        CMAKE_ARGS cmake -G "MinGW Makefiles" -DCMAKE_MAKE_PROGRAM=mingw32-make -DCMAKE_TOOLCHAIN_FILE=$ENV{IDF_PATH}/tools/cmake/toolchain-esp32.cmake -DSDKCONFIG_DEFAULTS=${SDKCONFIG_DEFAULTS} 
+        BUILD_COMMAND mingw32-make idfotx
+        INSTALL_COMMAND ""
+    )
+    add_library(idfotx STATIC IMPORTED)
+    add_dependencies(idfotx project_idfotx)
+    set_property(TARGET idfotx PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/idfotx/libidfotx.a)
+    add_dependencies(firmware  ${RADIO_DEPENDENCIES} ${FIRMWARE_DEPENDENCIES} idfotx)
+    set_target_properties(firmware PROPERTIES EXCLUDE_FROM_ALL TRUE)
+    target_link_libraries(firmware idfotx)
+    target_compile_options(firmware PRIVATE "@${CMAKE_CURRENT_BINARY_DIR}/idfotx/libidfotx.includes")
 
-    cmake_policy(SET CMP0057 NEW)
-
-    include($ENV{IDF_PATH}/tools/cmake/idf_functions.cmake)
-
-    # Create artifacts used for flashing the project to target chip
-    set(IDF_BUILD_ARTIFACTS ON)
-    set(IDF_PROJECT_EXECUTABLE firmware.elf)
-    set(IDF_BUILD_ARTIFACTS_DIR ${CMAKE_BINARY_DIR})
+    add_custom_target(flash
+        DEPENDS firmware
+        COMMAND cp libfirmware.a ${CMAKE_CURRENT_BINARY_DIR}/idfotx
+    )
     
-    # Trim down components included in the build. Although freertos and spi_flash are the ones needed by the application
-    # itself, the bootloader and esptool_py components are also needed in order to create the artifacts to be used
-    # for flashing to the target chip
-    set(IDF_COMPONENTS freertos spi_flash fatfs spiffs bootloader esptool_py)
-    
-    get_property(OTX_INCLUDE_DIRECTORIES DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES "")
-    
-    # Wraps add_subdirectory() to create library targets for components, and then return them using the specified variable
-    idf_import_components(components $ENV{IDF_PATH} esp-idf)
-    target_include_directories(firmware.elf PRIVATE "${OTX_INCLUDE_DIRECTORIES}")
-    target_include_directories(firmware.elf PRIVATE $<TARGET_PROPERTY:idf_component_esp32,INCLUDE_DIRECTORIES>)
-        
-    # Wraps target_link_libraries() to link processed components by idf_import_components to target
-    idf_link_components(firmware.elf "${components}")
-    
-
     add_custom_target(ota
         DEPENDS app
         COMMAND echo "OTA to: \$(ESP32_IP):8032" & curl "\$(ESP32_IP):8032" --data-binary @- < firmware.bin

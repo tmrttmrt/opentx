@@ -279,7 +279,7 @@ extern volatile uint32_t testCount;
 extern volatile uint32_t testTime;
 extern volatile uint32_t ppmMixDly;
 
-extern "C"   void app_main()
+extern "C"   void otx_main()
 {
     main();
     eeBackupAll();
