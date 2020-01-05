@@ -43,6 +43,7 @@ ExternalProject_Add(project_firmware
         CMAKE_ARGS cmake -G "MinGW Makefiles" -DCMAKE_MAKE_PROGRAM=mingw32-make -DCMAKE_TOOLCHAIN_FILE=$ENV{IDF_PATH}/tools/cmake/toolchain-esp32.cmake -DPCB=${PCB} -DIDF_INCLUDES=${CMAKE_BINARY_DIR}/idf.includes
         BUILD_COMMAND mingw32-make firmware
         INSTALL_COMMAND ""
+        BUILD_ALWAYS 1
 )
 add_library(firmware STATIC IMPORTED)
 add_dependencies(firmware idf_includes)

@@ -20,18 +20,18 @@ The project is still in development. The radio firmware has most of the function
 
 Compilation
 
-To build radio firmware ESP-IDF environment is needed (only tested on Windows with ESP-IDF 4.0-dev). 
+To build radio firmware ESP-IDF environment v4.0 or later is needed (only tested on Windows with ESP-IDF v4.0 snapshot). 
 
 In Windows:
 ```
 cd [build-folder]
-cmake -G "MinGW Makefiles" [OpenTX source folder]  -DPCB=ESP_WROOM_32  -DCMAKE_MAKE_PROGRAM=mingw32-make -DCMAKE_TOOLCHAIN_FILE=$IDF_PATH/tools/cmake/toolchain-esp32.cmake
+cmake -G "MinGW Makefiles" [OpenTX source folder]/radio/src/targets/common/esp32/esp-idf  -DPCB=ESP_WROOM_32  -DCMAKE_MAKE_PROGRAM=mingw32-make -DCMAKE_TOOLCHAIN_FILE=$IDF_PATH/tools/cmake/toolchain-esp32.cmake
 mingw32-make flash ESPPORT=[serial-port]  
 ```
 In Linux(not tested):
 ```
 cd [build-folder]
-cmake  [OpenTX source folder] -DPCB=ESP_WROOM_32 -DCMAKE_TOOLCHAIN_FILE=$IDF_PATH/tools/cmake/toolchain-esp32.cmake
+cmake  [OpenTX source folder]/radio/src/targets/common/esp32/esp-idf -DPCB=ESP_WROOM_32 -DCMAKE_TOOLCHAIN_FILE=$IDF_PATH/tools/cmake/toolchain-esp32.cmake
 make flash ESPPORT=[serial-port]  
 ```
 
