@@ -18,13 +18,13 @@ idf_build_process(esp32
                     # processing the component is needed for flashing related
                     # targets and file generation
                     SDKCONFIG_DEFAULTS ${SDKCONFIG_DEFAULTS}
-                    COMPONENTS freertos spi_flash fatfs spiffs vfs driver bootloader esptool_py
+                    COMPONENTS freertos spi_flash fatfs spiffs bootloader esptool_py
                     SDKCONFIG ${CMAKE_BINARY_DIR}/sdkconfig
                     BUILD_DIR ${CMAKE_BINARY_DIR} 
                     PROJECT_DIR ${IDF_PROJECT_DIR})
 set(elf_file ${CMAKE_PROJECT_NAME}.elf)
 add_executable(${elf_file} main.c)
-target_link_libraries(${elf_file} firmware idf::freertos idf::spi_flash idf::fatfs idf::driver )
+target_link_libraries(${elf_file} firmware idf::freertos idf::spi_flash idf::fatfs )
 idf_build_executable(${elf_file})
 
 add_custom_target(idf_includes cmake -E echo "-I$<JOIN:$<TARGET_PROPERTY:idf::esp32,INCLUDE_DIRECTORIES>, -I>" > "${CMAKE_BINARY_DIR}/idf.includes"
