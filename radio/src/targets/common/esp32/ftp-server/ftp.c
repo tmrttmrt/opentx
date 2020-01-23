@@ -60,7 +60,7 @@
 #include "network.h"
 #include "../drivers/fs_wrappers.h"
 #include "ftp.h"
-#include "wifi.h"
+#include "WiFi.h"
 
 
 #define FTPSERVER_BUFFER_SIZE 0x2000
