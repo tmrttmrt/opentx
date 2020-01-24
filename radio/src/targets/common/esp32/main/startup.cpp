@@ -174,7 +174,7 @@ static void tg0_timer_init(timer_idx_t timer_idx)
     config.counter_en = TIMER_PAUSE;
     config.alarm_en = TIMER_ALARM_EN;
     config.intr_type = TIMER_INTR_LEVEL;
-    config.auto_reload = 1;
+    config.auto_reload = TIMER_AUTORELOAD_EN;
     timer_init(TIMER_GROUP_0, timer_idx, &config);
 
     /* Timer's counter will initially start from value below.

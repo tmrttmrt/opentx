@@ -21,7 +21,7 @@ idf_build_process(esp32
                     COMPONENTS freertos spi_flash fatfs spiffs bootloader esptool_py
                     SDKCONFIG ${CMAKE_BINARY_DIR}/sdkconfig
                     BUILD_DIR ${CMAKE_BINARY_DIR} 
-                    PROJECT_DIR ${IDF_PROJECT_DIR})
+                    PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(elf_file ${CMAKE_PROJECT_NAME}.elf)
 add_executable(${elf_file} main.c)
 target_link_libraries(${elf_file} firmware idf::freertos idf::spi_flash idf::fatfs )
@@ -31,7 +31,7 @@ add_custom_target(idf_includes cmake -E echo "-I$<JOIN:$<TARGET_PROPERTY:idf::es
     COMMAND cmake -E echo " -I$<JOIN:$<TARGET_PROPERTY:idf::fatfs,INCLUDE_DIRECTORIES>, -I>" >> "${CMAKE_BINARY_DIR}/idf.includes"
     COMMAND cmake -E echo " -I$<JOIN:$<TARGET_PROPERTY:idf::spiffs,INCLUDE_DIRECTORIES>, -I>" >> "${CMAKE_BINARY_DIR}/idf.includes"
     COMMAND cmake -E echo " -I$<JOIN:$<TARGET_PROPERTY:idf::driver,INCLUDE_DIRECTORIES>, -I>" >> "${CMAKE_BINARY_DIR}/idf.includes"
-    DEPENDS __idf_build_target
+    DEPENDS ${CMAKE_BINARY_DIR}/config/sdkconfig.h
     COMMENT "Extracting IDF include directories"
 )
 

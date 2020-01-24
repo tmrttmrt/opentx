@@ -32,13 +32,14 @@
 #define DEFAULT_ESP_WIFI_SSID      "OpenTXWiFi"
 #define DEFAULT_ESP_WIFI_PASS      ""
 #define MAX_STA_CONN    1
-
+#define ESP_MAXIMUM_RETRY 1
 
 
 static const char *TAG = "WiFi.c";
 tcpip_adapter_if_t tcpip_if[MAX_ACTIVE_INTERFACES];
 volatile enum WifiState wifiState=WIFI_IDLE;
 volatile uint32_t expireTimer_ms;
+static int s_retry_num = 0;
 
 
 int network_get_active_interfaces()
@@ -155,33 +156,38 @@ exit1:
     ftp_mutex = NULL;
 }
 
-static esp_err_t event_handler(void *ctx, system_event_t *event)
+static void event_handler(void* arg, esp_event_base_t event_base,
+                                int32_t event_id, void* event_data)
 {
-    switch(event->event_id) {
-    case SYSTEM_EVENT_STA_START:
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();
         wifiState = WIFI_CONNECTING;
-        break;
-    case SYSTEM_EVENT_STA_GOT_IP:
-        ESP_LOGI(TAG, "got ip:%s", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
+    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+        if (s_retry_num < ESP_MAXIMUM_RETRY) {
+            esp_wifi_connect();
+            s_retry_num++;
+            ESP_LOGI(TAG, "retry to connect to the AP");
+        } else {
+//            xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
+        }
+        ESP_LOGI(TAG,"connect to the AP fail");
+    } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
+        ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
+        ESP_LOGI(TAG, "got ip:%s",
+                 ip4addr_ntoa(&event->ip_info.ip));
+        s_retry_num = 0;
         wifiState = WIFI_CONNECTED;
-        break;
-    case SYSTEM_EVENT_AP_STACONNECTED:
-        ESP_LOGI(TAG, "station:"MACSTR" join, AID=%d", MAC2STR(event->event_info.sta_connected.mac), event->event_info.sta_connected.aid);
-        break;
-    case SYSTEM_EVENT_AP_STADISCONNECTED:
-        ESP_LOGI(TAG, "station:"MACSTR"leave, AID=%d",
-        MAC2STR(event->event_info.sta_disconnected.mac),
-        event->event_info.sta_disconnected.aid);
-        break;
-    case SYSTEM_EVENT_STA_DISCONNECTED:
-        esp_wifi_connect();
-        wifiState = WIFI_CONNECTING;
-        break;
-    default:
-        break;
+//        xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+    } else if (event_id == WIFI_EVENT_AP_STACONNECTED) {
+        wifi_event_ap_staconnected_t* event = (wifi_event_ap_staconnected_t*) event_data;
+        ESP_LOGI(TAG, "station "MACSTR" join, AID=%d",
+                 MAC2STR(event->mac), event->aid);
+    } else if (event_id == WIFI_EVENT_AP_STADISCONNECTED) {
+        wifi_event_ap_stadisconnected_t* event = (wifi_event_ap_stadisconnected_t*) event_data;
+        ESP_LOGI(TAG, "station "MACSTR" leave, AID=%d",
+                 MAC2STR(event->mac), event->aid);
+        wifiState = WIFI_CONNECTING;         
     }
-    return ESP_OK;
 }
 
 void wifi_init_sta(char *ssid, char *passwd)
@@ -202,6 +208,7 @@ void wifi_init_sta(char *ssid, char *passwd)
     ESP_LOGI(TAG, "connect to ap SSID:%s password:%s",
     ssid, passwd);
 }
+
 
 void wifi_init_softap()
 {
@@ -236,9 +243,12 @@ void init_wifi(){
     }
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
     tcpip_adapter_init();
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_event_loop_create_default());
     ESP_ERROR_CHECK_WITHOUT_ABORT(esp_event_loop_init(event_handler, NULL));
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_init(&cfg));
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL));
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL));
 }
 
 
