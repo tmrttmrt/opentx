@@ -62,7 +62,8 @@ set_property(TARGET firmware PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_D
 
 add_custom_target(ota
         DEPENDS app
-        COMMAND echo "OTA to: \$(ESP32_IP):8032" & curl "\$(ESP32_IP):8032" --data-binary @- < opentx.bin
+        COMMAND cmake -E echo "OTA to: \$(ESP32_IP):8032"
+        COMMAND curl --connect-timeout 30 --progress-bar "\$(ESP32_IP):8032" --data-binary @- < opentx.bin | cat
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )   
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
