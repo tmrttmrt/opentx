@@ -35,15 +35,25 @@ add_custom_target(idf_includes cmake -E echo "-I$<JOIN:$<TARGET_PROPERTY:idf::es
     COMMENT "Extracting IDF include directories"
 )
 
+get_cmake_property(vars CACHE_VARIABLES)
+foreach(var ${vars})
+  get_property(currentHelpString CACHE "${var}" PROPERTY HELPSTRING)
+    if("${currentHelpString}" MATCHES "No help, variable specified on the command line." OR "${currentHelpString}" STREQUAL "")
+         # message("${var} = [${${var}}]  --  ${currentHelpString}") # uncomment to see the variables being processed
+        list(APPEND CL_ARGS "-D${var}=${${var}}")
+    endif()
+endforeach()
+
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 ExternalProject_Add(project_firmware
         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../..
         BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/firmware
         PREFIX ${CMAKE_CURRENT_BINARY_DIR}/firmware
-        CMAKE_ARGS cmake -G "MinGW Makefiles" -DCMAKE_MAKE_PROGRAM=mingw32-make -DCMAKE_TOOLCHAIN_FILE=$ENV{IDF_PATH}/tools/cmake/toolchain-esp32.cmake -DPCB=${PCB} -DIDF_INCLUDES=${CMAKE_BINARY_DIR}/idf.includes
-        BUILD_COMMAND mingw32-make firmware
+        CMAKE_ARGS cmake -G ${CMAKE_GENERATOR} ${CL_ARGS} -DIDF_INCLUDES=${CMAKE_BINARY_DIR}/idf.includes -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE} 
+        BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} firmware
         INSTALL_COMMAND ""
         BUILD_ALWAYS 1
+        DEPENDS idf_includes
 )
 add_library(firmware STATIC IMPORTED)
 add_dependencies(firmware idf_includes)
