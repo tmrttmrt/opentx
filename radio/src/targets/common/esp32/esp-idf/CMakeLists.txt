@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(opentx)
+
 #cmake_policy(SET CMP0057 NEW)
 include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
 if(PCB STREQUAL ESP_WROOM_32)
@@ -64,6 +65,12 @@ add_custom_target(ota
         DEPENDS app
         COMMAND cmake -E echo "OTA to: \$(ESP32_IP):8032"
         COMMAND curl --connect-timeout 30 --progress-bar "\$(ESP32_IP):8032" --data-binary @- < opentx.bin | cat
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+add_custom_target(mon
+        DEPENDS app
+        COMMAND idf_monitor.py --port $ENV{ESPPORT} --baud $ENV{ESPMONBAUD} opentx.elf
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )   
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)

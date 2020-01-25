@@ -18,7 +18,9 @@
 * GNU General Public License for more details.
 */
 
+#include "soc/periph_defs.h"
 #include "driver/rmt.h"
+#include "driver/periph_ctrl.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_log.h"
@@ -29,13 +31,18 @@
 #define SETUP_PULSES_DURATION 1000 // 500us
 #define MAX_TX_RMT_ITEMS MAX_OUTPUT_CHANNELS+2
 
+
+#define RMT_SOUCCE_CLK_APB (APB_CLK_FREQ) /*!< RMT source clock is APB_CLK */
+#define RMT_SOURCE_CLK_REF (1 * 1000000)  /*!< not used yet */
+#define RMT_SOURCE_CLK(select) ((select == RMT_BASECLK_REF) ? (RMT_SOURCE_CLK_REF) : (RMT_SOUCCE_CLK_APB)) /*! RMT source clock frequency */ 
+
 static const char *TAG = "pulses_esp32.cpp";
 
 DRAM_ATTR uint8_t s_current_protocol[1] = { 255 };
-rmt_isr_handle_t handle = 0;
+static rmt_isr_handle_t handle = 0;
 TaskHandle_t xInitPulsesTaskId;
 static portMUX_TYPE rmt_spinlock = portMUX_INITIALIZER_UNLOCKED;
-QueueHandle_t xPulsesQueue;
+static QueueHandle_t xPulsesQueue;
 static DRAM_ATTR rmt_item32_t rmtItems[MAX_TX_RMT_ITEMS];
 volatile uint32_t testCount=0;
 volatile uint32_t testTime=0;
@@ -43,6 +50,143 @@ static volatile bool ppmEnabled = false;
 static volatile int intTrCount = 0;
 volatile uint64_t lastMixTime;
 volatile uint32_t ppmMixDly;
+
+esp_err_t rmt_config_otx(const rmt_config_t* rmt_param)
+{
+    rmt_mode_t mode = rmt_param->rmt_mode;
+    rmt_channel_t channel = rmt_param->channel;
+    gpio_num_t gpio_num = rmt_param->gpio_num;
+    uint8_t mem_cnt = rmt_param->mem_block_num;
+    int clk_div = rmt_param->clk_div;
+    uint32_t carrier_freq_hz = rmt_param->tx_config.carrier_freq_hz;
+    bool carrier_en = rmt_param->tx_config.carrier_en;
+
+    periph_module_enable(PERIPH_RMT_MODULE);
+
+    RMT.conf_ch[channel].conf0.div_cnt = clk_div;
+    /*Visit data use memory not FIFO*/
+    RMT.apb_conf.fifo_mask = RMT_DATA_MODE_MEM;
+    /*Reset tx/rx memory index */
+    portENTER_CRITICAL(&rmt_spinlock);
+    RMT.conf_ch[channel].conf1.mem_rd_rst = 1;
+    RMT.conf_ch[channel].conf1.mem_wr_rst = 1;
+    portEXIT_CRITICAL(&rmt_spinlock);
+
+    if(mode == RMT_MODE_TX) {
+        uint32_t rmt_source_clk_hz = 0;
+        uint16_t carrier_duty_percent = rmt_param->tx_config.carrier_duty_percent;
+        uint8_t carrier_level = rmt_param->tx_config.carrier_level;
+        uint8_t idle_level = rmt_param->tx_config.idle_level;
+
+        portENTER_CRITICAL(&rmt_spinlock);
+        RMT.conf_ch[channel].conf1.tx_conti_mode = rmt_param->tx_config.loop_en;
+        /*Memory set block number*/
+        RMT.conf_ch[channel].conf0.mem_size = mem_cnt;
+        RMT.conf_ch[channel].conf1.mem_owner = RMT_MEM_OWNER_TX;
+        /*We use APB clock in this version, which is 80Mhz, later we will release system reference clock*/
+        RMT.conf_ch[channel].conf1.ref_always_on = RMT_BASECLK_APB;
+        rmt_source_clk_hz = RMT_SOURCE_CLK(RMT_BASECLK_APB);
+        /*Set idle level */
+        RMT.conf_ch[channel].conf1.idle_out_en = rmt_param->tx_config.idle_output_en;
+        RMT.conf_ch[channel].conf1.idle_out_lv = idle_level;
+        /*Set carrier*/
+        RMT.conf_ch[channel].conf0.carrier_en = carrier_en;
+        if (carrier_en) {
+            uint32_t duty_div, duty_h, duty_l;
+            duty_div = rmt_source_clk_hz / carrier_freq_hz;
+            duty_h = duty_div * carrier_duty_percent / 100;
+            duty_l = duty_div - duty_h;
+            RMT.conf_ch[channel].conf0.carrier_out_lv = carrier_level;
+            RMT.carrier_duty_ch[channel].high = duty_h;
+            RMT.carrier_duty_ch[channel].low = duty_l;
+        } else {
+            RMT.conf_ch[channel].conf0.carrier_out_lv = 0;
+            RMT.carrier_duty_ch[channel].high = 0;
+            RMT.carrier_duty_ch[channel].low = 0;
+        }
+        portEXIT_CRITICAL(&rmt_spinlock);
+
+        ESP_LOGD(TAG, "Rmt Tx Channel %u|Gpio %u|Sclk_Hz %u|Div %u|Carrier_Hz %u|Duty %u",
+                 channel, gpio_num, rmt_source_clk_hz, clk_div, carrier_freq_hz, carrier_duty_percent);
+
+    }
+    else if(RMT_MODE_RX == mode) {
+        uint8_t filter_cnt = rmt_param->rx_config.filter_ticks_thresh;
+        uint16_t threshold = rmt_param->rx_config.idle_threshold;
+
+        portENTER_CRITICAL(&rmt_spinlock);
+        /*clock init*/
+        RMT.conf_ch[channel].conf1.ref_always_on = RMT_BASECLK_APB;
+        uint32_t rmt_source_clk_hz = RMT_SOURCE_CLK(RMT_BASECLK_APB);
+        /*memory set block number and owner*/
+        RMT.conf_ch[channel].conf0.mem_size = mem_cnt;
+        RMT.conf_ch[channel].conf1.mem_owner = RMT_MEM_OWNER_RX;
+        /*Set idle threshold*/
+        RMT.conf_ch[channel].conf0.idle_thres = threshold;
+        /* Set RX filter */
+        RMT.conf_ch[channel].conf1.rx_filter_thres = filter_cnt;
+        RMT.conf_ch[channel].conf1.rx_filter_en = rmt_param->rx_config.filter_en;
+        portEXIT_CRITICAL(&rmt_spinlock);
+
+        ESP_LOGD(TAG, "Rmt Rx Channel %u|Gpio %u|Sclk_Hz %u|Div %u|Thresold %u|Filter %u",
+            channel, gpio_num, rmt_source_clk_hz, clk_div, threshold, filter_cnt);
+    }
+    rmt_set_pin(channel, mode, gpio_num);
+    return ESP_OK;
+}
+
+
+esp_err_t rmt_tx_stop_otx(rmt_channel_t channel)
+{
+    portENTER_CRITICAL(&rmt_spinlock);
+    RMTMEM.chan[channel].data32[0].val = 0;
+    RMT.conf_ch[channel].conf1.tx_start = 0;
+    RMT.conf_ch[channel].conf1.mem_rd_rst = 1;
+    RMT.conf_ch[channel].conf1.mem_rd_rst = 0;
+    portEXIT_CRITICAL(&rmt_spinlock);
+    return ESP_OK;
+}
+
+esp_err_t rmt_tx_start_otx(rmt_channel_t channel, bool tx_idx_rst)
+{
+    portENTER_CRITICAL(&rmt_spinlock);
+    if(tx_idx_rst) {
+        RMT.conf_ch[channel].conf1.mem_rd_rst = 1;
+    }
+    RMT.conf_ch[channel].conf1.mem_owner = RMT_MEM_OWNER_TX;
+    RMT.conf_ch[channel].conf1.tx_start = 1;
+    portEXIT_CRITICAL(&rmt_spinlock);
+    return ESP_OK;
+}
+
+inline void rmt_set_intr_enable_mask_otx(uint32_t mask)
+{
+    portENTER_CRITICAL(&rmt_spinlock);
+    RMT.int_ena.val |= mask;
+    portEXIT_CRITICAL(&rmt_spinlock);
+}
+
+inline void rmt_clr_intr_enable_mask_otx(uint32_t mask)
+{
+    portENTER_CRITICAL(&rmt_spinlock);
+    RMT.int_ena.val &= (~mask);
+    portEXIT_CRITICAL(&rmt_spinlock);
+}
+
+esp_err_t rmt_set_tx_thr_intr_en_otx(rmt_channel_t channel, bool en, uint16_t evt_thresh)
+{
+    if(en) {
+        portENTER_CRITICAL(&rmt_spinlock);
+        RMT.tx_lim_ch[channel].limit = evt_thresh;
+        portEXIT_CRITICAL(&rmt_spinlock);
+        RMT.apb_conf.mem_tx_wrap_en = true;
+        rmt_set_intr_enable_mask_otx(BIT(channel + 24));
+    } else {
+        rmt_clr_intr_enable_mask_otx(BIT(channel + 24));
+
+    }
+    return ESP_OK;
+}
 
 void extmoduleSendNextFrame()
 {
@@ -58,8 +202,8 @@ void init_main_ppm(uint32_t out_enable){
     for(int i=0; i < MAX_TX_RMT_ITEMS; i++){
       RMTMEM.chan[PPM_OUT_RMT_CHANNEL_0].data32[i].val = rmtItems[i].val;
     }
-    rmt_set_tx_thr_intr_en(PPM_OUT_RMT_CHANNEL_0, true, intTrCount);
-    rmt_tx_start(PPM_OUT_RMT_CHANNEL_0,true);
+    rmt_set_tx_thr_intr_en_otx(PPM_OUT_RMT_CHANNEL_0, true, intTrCount);
+    rmt_tx_start_otx(PPM_OUT_RMT_CHANNEL_0,true);
     ppmEnabled = true;
     ESP_LOGI(TAG, "PPM started: intTrCount: %d", intTrCount);
   } else {
@@ -212,12 +356,12 @@ void initPulses()
   config.tx_config.carrier_en = 0;
   config.clk_div = 40; //2MHz tick
 
-  ESP_ERROR_CHECK(rmt_config(&config));
+  ESP_ERROR_CHECK(rmt_config_otx(&config));
   if(ESP_OK != rmt_isr_register(rmt_driver_isr_PPM, NULL, ESP_INTR_FLAG_IRAM, &handle )){
     ESP_LOGE(TAG, "Failed to register rmt (PPM) interrupt");
   }
-  rmt_tx_stop(PPM_OUT_RMT_CHANNEL_0);
   ESP_LOGI(TAG, "PPM initialized.");
+  rmt_tx_stop_otx(PPM_OUT_RMT_CHANNEL_0);
 }
 
 

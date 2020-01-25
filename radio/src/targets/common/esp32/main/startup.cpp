@@ -181,17 +181,17 @@ static void tg0_timer_init(timer_idx_t timer_idx)
     Also, if auto_reload is set, this value will be automatically reload on alarm */
     timer_set_counter_value(TIMER_GROUP_0, timer_idx, 0x00000000ULL);
 
-    /* Configure the alarm value and the interrupt on alarm. */
-    timer_set_alarm_value(TIMER_GROUP_0, timer_idx, TIMER_BASE_CLK/(16*100)); //100Hz
-    timer_enable_intr(TIMER_GROUP_0, timer_idx);
-    timer_isr_register(TIMER_GROUP_0, timer_idx, timer_group0_isr,
-    (void *) timer_idx, ESP_INTR_FLAG_IRAM, NULL);
-
     xPer10msSem = xSemaphoreCreateBinary();
     if( xPer10msSem == NULL ) {
         ESP_LOGE(TAG,"Failed to create semaphore: xPer10msSem.");
         return;
     }
+
+    /* Configure the alarm value and the interrupt on alarm. */
+    timer_set_alarm_value(TIMER_GROUP_0, timer_idx, TIMER_BASE_CLK/(16*100)); //100Hz
+    timer_enable_intr(TIMER_GROUP_0, timer_idx);
+    timer_isr_register(TIMER_GROUP_0, timer_idx, timer_group0_isr,
+    (void *) timer_idx, ESP_INTR_FLAG_IRAM, NULL);
     timer_start(TIMER_GROUP_0, timer_idx);
 }
 
