@@ -19,8 +19,8 @@
  */
 
  
-#ifndef _BOARD_ESP_WROOM_32_H_
-#define _BOARD_ESP_WROOM_32_H_
+#ifndef _BOARD_ESP_HELTEC_32_H_
+#define _BOARD_ESP_HELTEC_32_H_
 
 #include "../opentx_constants.h"
 #include "board_esp32.h"
