@@ -523,7 +523,7 @@ fragmentsFifo()
 #if !defined(SIMU)
 void audioTask(void * pdata)
 {
-  ESP_LOGI(TAG,"Starting audioTask.");
+  ESP_LOGD(TAG,"Starting audioTask.");
   while (!audioQueue.started()) {
     vTaskDelay(1);
   }
@@ -534,7 +534,7 @@ void audioTask(void * pdata)
   if (!globalData.unexpectedShutdown) {
     AUDIO_HELLO();
   }
-
+//  RTOS_WAIT_MS(3000);
   while (1) {
     DEBUG_TIMER_SAMPLE(debugTimerAudioIterval);
     DEBUG_TIMER_START(debugTimerAudioDuration);
@@ -902,7 +902,7 @@ void AudioQueue::playFile(const char * filename, uint8_t flags, uint8_t id)
   if (flags & PLAY_BACKGROUND) {
     backgroundContext.clear();
     backgroundContext.setFragment(filename, 0, id);
-  } else {
+  } else {  
     fragmentsFifo.push(AudioFragment(filename, flags & 0x0f, id));
   }
 
@@ -956,7 +956,9 @@ void AudioQueue::flush()
 
 void audioPlay(unsigned int index, uint8_t id)
 {
+  ESP_LOGD(TAG,"audioPlay index=%d, id_%d",index,id);
   if (g_eeGeneral.beepMode >= -1) {
+    ESP_LOGD(TAG,"beepMode=%d", g_eeGeneral.beepMode);
     char filename[AUDIO_FILENAME_MAXLEN+1];
     if (isAudioFileReferenced(index, filename)) {
       audioQueue.playFile(filename, 0, id);

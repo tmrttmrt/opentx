@@ -289,6 +289,7 @@ extern "C"   void otx_main()
 //        ESP_LOGI(TAG,"");
 //        heap_caps_print_heap_info(MALLOC_CAP_INTERNAL);
 #if false
+        ESP_LOGI(TAG,"");
         TaskHandle_t *tasks[]= {&menusTaskId,&mixerTaskId,&audioTaskId,&xPer10msTaskHandle,&xEncTaskHandle,&wifiTaskHandle, &otaTaskHandle, & xInitPulsesTaskId};
         uint8_t nTasks= sizeof(tasks)/sizeof(tasks[0]);
         ESP_LOGI(TAG,"");

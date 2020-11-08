@@ -256,7 +256,7 @@ void eeSwapModels(uint8_t id1, uint8_t id2)
 size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size,  uint8_t &version)
 {
     uint16_t ret=size;
-    ESP_LOGI(TAG,"Load model data from '%s'.", mpath );
+    ESP_LOGD(TAG,"Load model data from '%s'.", mpath );
     FILE * fp = fopen ( mpath, "rb" );
     if (NULL==fp) { /* Check if the file has been opened */
         ESP_LOGE(TAG,"Failed to open '%s'.", mpath);
@@ -272,10 +272,10 @@ size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size,  uint8_t &versio
     if ((*(uint32_t*)&head[0] != OTX_FOURCC) || (version != FIRST_CONV_EEPROM_VER && version != EEPROM_VER) || head[5] != 'M') {
         fclose(fp);
         ESP_LOGE(TAG,"Incompatible model header from '%s'.", mpath);
-        ESP_LOGI(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0],version);
+        ESP_LOGE(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0],version);
         return 0;
     }
-    ESP_LOGI(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0], version);
+    ESP_LOGD(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0], version);
     if(version == FIRST_CONV_EEPROM_VER){ //RLC encoded!
         uint8_t m_zeroes   = 0;
         uint8_t m_bRlc     = 0;
@@ -332,7 +332,7 @@ size_t fsLoadModelData(char *mpath, uint8_t *buff, size_t size,  uint8_t &versio
 
 size_t fsLoadModelData(uint8_t index, uint8_t *buff, size_t size)
 {
-    ESP_LOGI(TAG,"Load model %d data.", index );
+    ESP_LOGD(TAG,"Load model %d data.", index );
     char * fn=makeModPath(index);
     uint8_t version;
     return fsLoadModelData(fn, buff, size, version);
@@ -340,7 +340,7 @@ size_t fsLoadModelData(uint8_t index, uint8_t *buff, size_t size)
 
 void eeLoadModelName(uint8_t id, char *name)
 {
-    ESP_LOGI(TAG,"Load model %d.", id );
+    ESP_LOGD(TAG,"Load model %d.", id );
     memclear(name, sizeof(g_model.header.name));
     if (id < MAX_MODELS) {
         fsLoadModelData(id,(uint8_t *) name, sizeof(g_model.header.name));
@@ -377,21 +377,21 @@ bool eeLoadGeneral()
     if ((*(uint32_t*)&head[0] != OTX_FOURCC ) || ( version != EEPROM_VER) || head[5] != 'M') {
         fclose(fp);
         ESP_LOGE(TAG,"Incompatible radio settings header from '%s'.", fn);
-        ESP_LOGI(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0],version);
+        ESP_LOGE(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0],version);
         return 0;
     }
-    ESP_LOGI(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0],version);
+    ESP_LOGD(TAG,"OTX_FOURCC:%x, version: %d", *(uint32_t*)&head[0],version);
     if (fread ((uint8_t*)&g_eeGeneral, sizeof(g_eeGeneral), 1,fp) == 1) {
         if(g_eeGeneral.version == EEPROM_VER) {
             fclose(fp);
-            ESP_LOGI(TAG,"EEPROM version %d variant %d", g_eeGeneral.version, g_eeGeneral.variant);
+            ESP_LOGD(TAG,"EEPROM version %d variant %d", g_eeGeneral.version, g_eeGeneral.variant);
             return true;
         }
     }
     fclose(fp);
     ESP_LOGI(TAG,"EEPROM version %d variant %d", g_eeGeneral.version, g_eeGeneral.variant);
     if (g_eeGeneral.variant != EEPROM_VARIANT) {
-        ESP_LOGI(TAG,"EEPROM variant %d instead of %d", g_eeGeneral.variant, EEPROM_VARIANT);
+        ESP_LOGE(TAG,"EEPROM variant %d instead of %d", g_eeGeneral.variant, EEPROM_VARIANT);
         return false;
     }
 
@@ -404,7 +404,7 @@ bool eeLoadGeneral()
     }
     return true;
 #else
-    ESP_LOGI(TAG,"EEPROM version %d (%d) instead of %d (%d)", g_eeGeneral.version, g_eeGeneral.variant, EEPROM_VER, EEPROM_VARIANT);
+    ESP_LOGE(TAG,"EEPROM version %d (%d) instead of %d (%d)", g_eeGeneral.version, g_eeGeneral.variant, EEPROM_VER, EEPROM_VARIANT);
     return false;
 #endif
 }

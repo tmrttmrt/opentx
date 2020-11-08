@@ -45,12 +45,20 @@ void initAudio()
         ESP_LOGE(TAG,"%s",esp_err_to_name(err));
     }
     //You can call i2s_set_dac_mode to set built-in DAC output mode.
-    i2s_set_dac_mode(I2S_DAC_CHANNEL_LEFT_EN);
+    err = i2s_set_dac_mode(I2S_DAC_CHANNEL_LEFT_EN);
+    if (err != ESP_OK) {
+        // handle other errors
+        ESP_LOGE(TAG,"%s",esp_err_to_name(err));
+    }
 }
 
 void setSampleRate(uint32_t frequency)
 {
     ESP_LOGI(TAG,"setSampleRate: %d",frequency);
-    i2s_set_clk(I2S_NUM_0, 2*frequency, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO);
+    esp_err_t err = i2s_set_clk(I2S_NUM_0, 2*frequency, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO);
+    if (err != ESP_OK) {
+        // handle other errors
+        ESP_LOGE(TAG,"%s",esp_err_to_name(err));
+    }
 }
 
