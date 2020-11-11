@@ -194,12 +194,13 @@ void initKeys()
     io_conf.mode = GPIO_MODE_INPUT;
     io_conf.pull_up_en = (gpio_pullup_t)1;
     gpio_config(&io_conf);
-    gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
+//Already called in fs_driver.cpp.  gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT); 
     xRotEncSem = xSemaphoreCreateBinary();
     if( xRotEncSem == NULL ) {
       ESP_LOGE(TAG,"Failed to create semaphore: xRotEncSem.");
     }
-    gpio_isr_handler_add(GPIO_INTR_PIN, gpio_isr_handler, (void*) GPIO_INTR_PIN);
+    ret=gpio_isr_handler_add(GPIO_INTR_PIN, gpio_isr_handler, (void*) GPIO_INTR_PIN);
+    ESP_ERROR_CHECK(ret);
 #else
     gpio_set_direction(INP_ID2,GPIO_MODE_INPUT);
     gpio_set_pull_mode(INP_ID2, GPIO_PULLUP_ONLY);

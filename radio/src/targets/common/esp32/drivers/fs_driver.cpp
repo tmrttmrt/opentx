@@ -32,6 +32,8 @@
 #include "driver/sdspi_host.h"
 #include "sdmmc_cmd.h"
 #include "driver/sdmmc_defs.h"
+#include "diskio_impl.h"
+#include "diskio_sdmmc.h"
 #define HASASSERT
 #include "opentx.h"
 
@@ -66,33 +68,76 @@ void mountSDCard()
 {
     ESP_LOGI(TAG, "Initializing SD card SPI peripheral");
 
-    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
-    host.slot=VSPI_HOST;
-
-    sdspi_slot_config_t slot_config = SDSPI_SLOT_CONFIG_DEFAULT();
-    slot_config.gpio_miso = SD_PIN_NUM_MISO;
-    slot_config.gpio_mosi = SD_PIN_NUM_MOSI;
-    slot_config.gpio_sck  = SD_PIN_NUM_CLK;
-    slot_config.gpio_cs   = SD_PIN_NUM_CS;
-    slot_config.dma_channel=2;
-    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
-        .format_if_mount_failed = false,
-        .max_files = 5,
-        .allocation_unit_size = 16 * 1024
-    };
     gpio_set_pull_mode(SD_PIN_NUM_MISO, GPIO_PULLUP_ONLY);
     gpio_set_pull_mode(SD_PIN_NUM_MOSI, GPIO_PULLUP_ONLY);
     gpio_set_pull_mode(SD_PIN_NUM_CLK, GPIO_PULLUP_ONLY);
     gpio_set_pull_mode(SD_PIN_NUM_CS, GPIO_PULLUP_ONLY);
 
-    esp_err_t ret = esp_vfs_fat_sdmmc_mount("/sdcard", &host, &slot_config, &mount_config, &card);
+    esp_err_t ret = gpio_install_isr_service(0);
+    ESP_ERROR_CHECK(ret);
 
-    if (ret != ESP_OK) {
-        if (ret == ESP_FAIL) {
-            ESP_LOGE(TAG, "Failed to mount filesystem.");
-        } else {
-            ESP_LOGE(TAG, "Failed to initialize the card (%s).", esp_err_to_name(ret));
-        }
+    spi_bus_config_t bus_config;
+    memset(&bus_config, 0, sizeof(bus_config));
+    bus_config.miso_io_num=SD_PIN_NUM_MISO;
+    bus_config.mosi_io_num=SD_PIN_NUM_MOSI;
+    bus_config.sclk_io_num=SD_PIN_NUM_CLK;
+    bus_config.quadwp_io_num=-1;
+    bus_config.quadhd_io_num=-1;
+    
+    ret = spi_bus_initialize(VSPI_HOST, &bus_config, 2);
+    ESP_ERROR_CHECK(ret);
+
+    ret = sdspi_host_init();
+    ESP_ERROR_CHECK(ret);  
+    
+    sdspi_dev_handle_t sdspi_handle;
+    sdspi_device_config_t dev_config = SDSPI_DEVICE_CONFIG_DEFAULT();
+    dev_config.host_id = VSPI_HOST,
+    dev_config.gpio_cs = SD_PIN_NUM_CS,
+    
+    ret = sdspi_host_init_device(&dev_config, &sdspi_handle);
+    ESP_ERROR_CHECK(ret);
+
+    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
+    host.slot = sdspi_handle;
+    
+    BYTE pdrv = FF_DRV_NOT_USED;
+    if (ff_diskio_get_drive(&pdrv) != ESP_OK || pdrv == FF_DRV_NOT_USED) {
+        ESP_LOGE(TAG, "the maximum count of volumes is already mounted");
+        return;
+    }
+    
+    card = (sdmmc_card_t*)malloc(sizeof(sdmmc_card_t));
+    if (card == NULL) {
+        ESP_LOGE(TAG, "could not locate new sdmmc_card_t");
+        return;
+    }
+    
+    ret = sdmmc_card_init(&host, card);
+    ESP_ERROR_CHECK(ret);
+    
+    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
+        .format_if_mount_failed = false,
+        .max_files = 5,
+        .allocation_unit_size = 16 * 1024
+    };
+
+    FATFS* fs = NULL;
+    ff_diskio_register_sdmmc(pdrv, card);
+    ESP_LOGD(TAG, "using pdrv=%i", pdrv);
+    char drv[3] = {(char)('0' + pdrv), ':', 0};
+    
+    ret = esp_vfs_fat_register("/sdcard", drv, mount_config.max_files, &fs);
+    if (ret == ESP_ERR_INVALID_STATE) {
+        // it's okay, already registered with VFS
+    } else if (ret != ESP_OK) {
+        ESP_LOGD(TAG, "esp_vfs_fat_register failed 0x(%x)", ret);
+        return;
+    }
+    
+    FRESULT res = f_mount(fs, drv, 1);
+    if (res != FR_OK) {
+        ESP_LOGW(TAG, "failed to mount card (%d)", res);
         return;
     }
     sdmmc_card_print_info(stdout, card);
