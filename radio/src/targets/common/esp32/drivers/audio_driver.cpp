@@ -22,6 +22,7 @@
 #include "opentx.h"
 
 static const char *TAG = "audio_driver.cpp";
+bool audioReady=false;
 
 
 void initAudio()
@@ -50,6 +51,7 @@ void initAudio()
         // handle other errors
         ESP_LOGE(TAG,"%s",esp_err_to_name(err));
     }
+    audioReady=true;
 }
 
 void setSampleRate(uint32_t frequency)

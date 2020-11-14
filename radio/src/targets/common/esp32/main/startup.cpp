@@ -35,10 +35,6 @@
 #define HASASSERT
 #include "opentx.h"
 
-#define AUDIO_TASK_CORE 0
-#define PER10MS_TASK_CORE 0
-#define ENC_TASK_CORE 0
-
 TaskPrio mixerTaskPrio = {ESP_TASK_PRIO_MAX -6, MIXER_TASK_CORE};
 TaskPrio menuTaskPrio = {ESP_TASK_PRIO_MAX -9, MENU_TASK_CORE};
 TaskPrio audioTaskPrio = {ESP_TASK_PRIO_MAX -8, MENU_TASK_CORE};

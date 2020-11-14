@@ -30,8 +30,9 @@
 
 static const char *TAG = "audio_driver.cpp";
 extern SemaphoreHandle_t audioMutex;
+extern bool audioReady;
 
-const int16_t sineValues[] =
+ const int16_t sineValues[] =
 {
   0, 196, 392, 588, 784, 980, 1175, 1370, 1564, 1758,
   1951, 2143, 2335, 2525, 2715, 2904, 3091, 3278, 3463, 3647,
@@ -140,7 +141,7 @@ const int16_t sineValues[] =
 
 #if defined(SDCARD)
 
-const char * const unitsFilenames[] = {
+ const char * const unitsFilenames[] = {
   "",
   "volt",
   "amp",
@@ -181,7 +182,7 @@ const char * const unitsFilenames[] = {
   "second",
 };
 
-const char * const audioFilenames[] = {
+ const char * const audioFilenames[] = {
   "hello",
   "bye",
   "thralert",
@@ -441,7 +442,7 @@ void referenceModelAudioFiles()
   }
 }
 
-bool isAudioFileReferenced(uint32_t i, char * filename)
+ bool isAudioFileReferenced(uint32_t i, char * filename)
 {
   uint8_t category = (i >> 24);
   uint8_t index = (i >> 16) & 0xFF;
@@ -502,8 +503,8 @@ void playModelName()
 
 #endif  // defined(SDCARD)
 
-const int16_t alawTable[256] = { -5504, -5248, -6016, -5760, -4480, -4224, -4992, -4736, -7552, -7296, -8064, -7808, -6528, -6272, -7040, -6784, -2752, -2624, -3008, -2880, -2240, -2112, -2496, -2368, -3776, -3648, -4032, -3904, -3264, -3136, -3520, -3392, -22016, -20992, -24064, -23040, -17920, -16896, -19968, -18944, -30208, -29184, -32256, -31232, -26112, -25088, -28160, -27136, -11008, -10496, -12032, -11520, -8960, -8448, -9984, -9472, -15104, -14592, -16128, -15616, -13056, -12544, -14080, -13568, -344, -328, -376, -360, -280, -264, -312, -296, -472, -456, -504, -488, -408, -392, -440, -424, -88, -72, -120, -104, -24, -8, -56, -40, -216, -200, -248, -232, -152, -136, -184, -168, -1376, -1312, -1504, -1440, -1120, -1056, -1248, -1184, -1888, -1824, -2016, -1952, -1632, -1568, -1760, -1696, -688, -656, -752, -720, -560, -528, -624, -592, -944, -912, -1008, -976, -816, -784, -880, -848, 5504, 5248, 6016, 5760, 4480, 4224, 4992, 4736, 7552, 7296, 8064, 7808, 6528, 6272, 7040, 6784, 2752, 2624, 3008, 2880, 2240, 2112, 2496, 2368, 3776, 3648, 4032, 3904, 3264, 3136, 3520, 3392, 22016, 20992, 24064, 23040, 17920, 16896, 19968, 18944, 30208, 29184, 32256, 31232, 26112, 25088, 28160, 27136, 11008, 10496, 12032, 11520, 8960, 8448, 9984, 9472, 15104, 14592, 16128, 15616, 13056, 12544, 14080, 13568, 344, 328, 376, 360, 280, 264, 312, 296, 472, 456, 504, 488, 408, 392, 440, 424, 88, 72, 120, 104, 24, 8, 56, 40, 216, 200, 248, 232, 152, 136, 184, 168, 1376, 1312, 1504, 1440, 1120, 1056, 1248, 1184, 1888, 1824, 2016, 1952, 1632, 1568, 1760, 1696, 688, 656, 752, 720, 560, 528, 624, 592, 944, 912, 1008, 976, 816, 784, 880, 848 };
-const int16_t ulawTable[256] = { -32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956, -23932, -22908, -21884, -20860, -19836, -18812, -17788, -16764, -15996, -15484, -14972, -14460, -13948, -13436, -12924, -12412, -11900, -11388, -10876, -10364, -9852, -9340, -8828, -8316, -7932, -7676, -7420, -7164, -6908, -6652, -6396, -6140, -5884, -5628, -5372, -5116, -4860, -4604, -4348, -4092, -3900, -3772, -3644, -3516, -3388, -3260, -3132, -3004, -2876, -2748, -2620, -2492, -2364, -2236, -2108, -1980, -1884, -1820, -1756, -1692, -1628, -1564, -1500, -1436, -1372, -1308, -1244, -1180, -1116, -1052, -988, -924, -876, -844, -812, -780, -748, -716, -684, -652, -620, -588, -556, -524, -492, -460, -428, -396, -372, -356, -340, -324, -308, -292, -276, -260, -244, -228, -212, -196, -180, -164, -148, -132, -120, -112, -104, -96, -88, -80, -72, -64, -56, -48, -40, -32, -24, -16, -8, 0, 32124, 31100, 30076, 29052, 28028, 27004, 25980, 24956, 23932, 22908, 21884, 20860, 19836, 18812, 17788, 16764, 15996, 15484, 14972, 14460, 13948, 13436, 12924, 12412, 11900, 11388, 10876, 10364, 9852, 9340, 8828, 8316, 7932, 7676, 7420, 7164, 6908, 6652, 6396, 6140, 5884, 5628, 5372, 5116, 4860, 4604, 4348, 4092, 3900, 3772, 3644, 3516, 3388, 3260, 3132, 3004, 2876, 2748, 2620, 2492, 2364, 2236, 2108, 1980, 1884, 1820, 1756, 1692, 1628, 1564, 1500, 1436, 1372, 1308, 1244, 1180, 1116, 1052, 988, 924, 876, 844, 812, 780, 748, 716, 684, 652, 620, 588, 556, 524, 492, 460, 428, 396, 372, 356, 340, 324, 308, 292, 276, 260, 244, 228, 212, 196, 180, 164, 148, 132, 120, 112, 104, 96, 88, 80, 72, 64, 56, 48, 40, 32, 24, 16, 8, 0 };
+ const int16_t alawTable[256] = { -5504, -5248, -6016, -5760, -4480, -4224, -4992, -4736, -7552, -7296, -8064, -7808, -6528, -6272, -7040, -6784, -2752, -2624, -3008, -2880, -2240, -2112, -2496, -2368, -3776, -3648, -4032, -3904, -3264, -3136, -3520, -3392, -22016, -20992, -24064, -23040, -17920, -16896, -19968, -18944, -30208, -29184, -32256, -31232, -26112, -25088, -28160, -27136, -11008, -10496, -12032, -11520, -8960, -8448, -9984, -9472, -15104, -14592, -16128, -15616, -13056, -12544, -14080, -13568, -344, -328, -376, -360, -280, -264, -312, -296, -472, -456, -504, -488, -408, -392, -440, -424, -88, -72, -120, -104, -24, -8, -56, -40, -216, -200, -248, -232, -152, -136, -184, -168, -1376, -1312, -1504, -1440, -1120, -1056, -1248, -1184, -1888, -1824, -2016, -1952, -1632, -1568, -1760, -1696, -688, -656, -752, -720, -560, -528, -624, -592, -944, -912, -1008, -976, -816, -784, -880, -848, 5504, 5248, 6016, 5760, 4480, 4224, 4992, 4736, 7552, 7296, 8064, 7808, 6528, 6272, 7040, 6784, 2752, 2624, 3008, 2880, 2240, 2112, 2496, 2368, 3776, 3648, 4032, 3904, 3264, 3136, 3520, 3392, 22016, 20992, 24064, 23040, 17920, 16896, 19968, 18944, 30208, 29184, 32256, 31232, 26112, 25088, 28160, 27136, 11008, 10496, 12032, 11520, 8960, 8448, 9984, 9472, 15104, 14592, 16128, 15616, 13056, 12544, 14080, 13568, 344, 328, 376, 360, 280, 264, 312, 296, 472, 456, 504, 488, 408, 392, 440, 424, 88, 72, 120, 104, 24, 8, 56, 40, 216, 200, 248, 232, 152, 136, 184, 168, 1376, 1312, 1504, 1440, 1120, 1056, 1248, 1184, 1888, 1824, 2016, 1952, 1632, 1568, 1760, 1696, 688, 656, 752, 720, 560, 528, 624, 592, 944, 912, 1008, 976, 816, 784, 880, 848 };
+ const int16_t ulawTable[256] = { -32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956, -23932, -22908, -21884, -20860, -19836, -18812, -17788, -16764, -15996, -15484, -14972, -14460, -13948, -13436, -12924, -12412, -11900, -11388, -10876, -10364, -9852, -9340, -8828, -8316, -7932, -7676, -7420, -7164, -6908, -6652, -6396, -6140, -5884, -5628, -5372, -5116, -4860, -4604, -4348, -4092, -3900, -3772, -3644, -3516, -3388, -3260, -3132, -3004, -2876, -2748, -2620, -2492, -2364, -2236, -2108, -1980, -1884, -1820, -1756, -1692, -1628, -1564, -1500, -1436, -1372, -1308, -1244, -1180, -1116, -1052, -988, -924, -876, -844, -812, -780, -748, -716, -684, -652, -620, -588, -556, -524, -492, -460, -428, -396, -372, -356, -340, -324, -308, -292, -276, -260, -244, -228, -212, -196, -180, -164, -148, -132, -120, -112, -104, -96, -88, -80, -72, -64, -56, -48, -40, -32, -24, -16, -8, 0, 32124, 31100, 30076, 29052, 28028, 27004, 25980, 24956, 23932, 22908, 21884, 20860, 19836, 18812, 17788, 16764, 15996, 15484, 14972, 14460, 13948, 13436, 12924, 12412, 11900, 11388, 10876, 10364, 9852, 9340, 8828, 8316, 7932, 7676, 7420, 7164, 6908, 6652, 6396, 6140, 5884, 5628, 5372, 5116, 4860, 4604, 4348, 4092, 3900, 3772, 3644, 3516, 3388, 3260, 3132, 3004, 2876, 2748, 2620, 2492, 2364, 2236, 2108, 1980, 1884, 1820, 1756, 1692, 1628, 1564, 1500, 1436, 1372, 1308, 1244, 1180, 1116, 1052, 988, 924, 876, 844, 812, 780, 748, 716, 684, 652, 620, 588, 556, 524, 492, 460, 428, 396, 372, 356, 340, 324, 308, 292, 276, 260, 244, 228, 212, 196, 180, 164, 148, 132, 120, 112, 104, 96, 88, 80, 72, 64, 56, 48, 40, 32, 24, 16, 8, 0 };
 
 AudioQueue audioQueue;
 AudioQueue::AudioQueue()
@@ -524,17 +525,16 @@ fragmentsFifo()
 void audioTask(void * pdata)
 {
   ESP_LOGD(TAG,"Starting audioTask.");
-  while (!audioQueue.started()) {
+  while (!audioQueue.started() && !audioReady) {
     vTaskDelay(1);
   }
 
   setSampleRate(AUDIO_SAMPLE_RATE);
-
+  RTOS_WAIT_MS(1000);
 
   if (!globalData.unexpectedShutdown) {
     AUDIO_HELLO();
   }
-//  RTOS_WAIT_MS(3000);
   while (1) {
     DEBUG_TIMER_SAMPLE(debugTimerAudioIterval);
     DEBUG_TIMER_START(debugTimerAudioDuration);
@@ -555,7 +555,7 @@ inline void mixSample(audio_data_t * result, int sample, unsigned int fade)
 #define RIFF_CHUNK_SIZE 12
 uint8_t wavBuffer[AUDIO_BUFFER_SIZE*2];
 
-int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
+ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
 {
   ssize_t rb = 0;
 
@@ -650,7 +650,7 @@ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
 }
 #endif
 
-const unsigned int toneVolumes[] = { 10, 8, 6, 4, 2 };
+ const unsigned int toneVolumes[] = { 10, 8, 6, 4, 2 };
 inline float evalVolumeRatio(int freq, int volume)
 {
   float result = toneVolumes[2+volume];
@@ -660,7 +660,7 @@ inline float evalVolumeRatio(int freq, int volume)
   return result;
 }
 
-int ToneContext::mixBuffer(AudioBuffer * buffer, int volume, unsigned int fade)
+ int ToneContext::mixBuffer(AudioBuffer * buffer, int volume, unsigned int fade)
 {
   int duration = 0;
   int result = 0;
@@ -745,7 +745,7 @@ int ToneContext::mixBuffer(AudioBuffer * buffer, int volume, unsigned int fade)
   return result;
 }
 
-void AudioQueue::wakeup()
+ void AudioQueue::wakeup()
 {
   static AudioBuffer aBuffer;
   AudioBuffer * buffer = & aBuffer;
@@ -799,7 +799,7 @@ void AudioQueue::wakeup()
     buffer->data[i] = (int16_t) (((tmpSample * currentSpeakerVolume) / (VOLUME_LEVEL_MAX)) + AUDIO_DATA_SILENCE);
   }
   size_t bytes_written=0;
-  static bool needsInit=true;
+/*  static bool needsInit=true;
   if(needsInit) {
     audio_data_t val[100];
     for(uint32_t i=0; i<AUDIO_SAMPLE_RATE/100;) {
@@ -809,7 +809,7 @@ void AudioQueue::wakeup()
       i2s_write(I2S_NUM_0, (const void*) &val, 100*sizeof(audio_data_t), &bytes_written, portMAX_DELAY);
     }
     needsInit=false;
-  }
+  }*/
   static audio_data_t usbuff[AUDIO_BUFFER_SIZE*2];
   audio_data_t *p=usbuff;
   for(uint16_t i=0; i<AUDIO_BUFFER_SIZE; i++) { //Upsampling due to strange i2s behaviour
@@ -830,19 +830,19 @@ inline unsigned int getToneLength(uint16_t len)
   return result;
 }
 
-void AudioQueue::pause(uint16_t len)
+ void AudioQueue::pause(uint16_t len)
 {
   playTone(0, 0, len);
 }
 
-bool AudioQueue::isPlaying(uint8_t id)
+ bool AudioQueue::isPlaying(uint8_t id)
 {
   return normalContext.hasPromptId(id) ||
   (isFunctionActive(FUNCTION_BACKGND_MUSIC) && backgroundContext.hasPromptId(id)) ||
   fragmentsFifo.hasPromptId(id);
 }
 
-void AudioQueue::playTone(uint16_t freq, uint16_t len, uint16_t pause, uint8_t flags, int8_t freqIncr)
+ void AudioQueue::playTone(uint16_t freq, uint16_t len, uint16_t pause, uint8_t flags, int8_t freqIncr)
 {
 #if defined(SIMU) && !defined(SIMU_AUDIO)
   return;
@@ -936,7 +936,7 @@ void AudioQueue::stopSD()
 
 #endif
 
-void AudioQueue::stopAll()
+ void AudioQueue::stopAll()
 {
   flush();
   xSemaphoreTake(audioMutex, portMAX_DELAY);
@@ -945,7 +945,7 @@ void AudioQueue::stopAll()
   xSemaphoreGive(audioMutex);
 }
 
-void AudioQueue::flush()
+ void AudioQueue::flush()
 {
   xSemaphoreTake(audioMutex, portMAX_DELAY);
   fragmentsFifo.clear();
@@ -954,7 +954,7 @@ void AudioQueue::flush()
   xSemaphoreGive(audioMutex);
 }
 
-void audioPlay(unsigned int index, uint8_t id)
+ void audioPlay(unsigned int index, uint8_t id)
 {
   ESP_LOGD(TAG,"audioPlay index=%d, id_%d",index,id);
   if (g_eeGeneral.beepMode >= -1) {
@@ -966,7 +966,7 @@ void audioPlay(unsigned int index, uint8_t id)
   }
 }
 
-void audioKeyPress()
+ void audioKeyPress()
 {
   if (g_eeGeneral.beepMode == e_mode_all) {
     audioQueue.playTone(BEEP_DEFAULT_FREQ, 40, 20, PLAY_NOW);
@@ -978,7 +978,7 @@ void audioKeyPress()
 #endif
 }
 
-void audioKeyError()
+ void audioKeyError()
 {
   if (g_eeGeneral.beepMode >= e_mode_nokeys) {
     audioQueue.playTone(BEEP_DEFAULT_FREQ, 160, 20, PLAY_NOW);
@@ -991,7 +991,7 @@ void audioKeyError()
 #endif
 }
 
-void audioTrimPress(int value)
+ void audioTrimPress(int value)
 {
   if (g_eeGeneral.beepMode >= e_mode_nokeys) {
     value = limit(TRIM_MIN, value, TRIM_MAX) * 8 + 120*16;
@@ -999,7 +999,7 @@ void audioTrimPress(int value)
   }
 }
 
-void audioTimerCountdown(uint8_t timer, int value)
+ void audioTimerCountdown(uint8_t timer, int value)
 {
   if (g_model.timers[timer].countdownBeep == COUNTDOWN_VOICE) {
     if (value >= 0 && value <= TIMER_COUNTDOWN_START(timer)) {
@@ -1047,7 +1047,7 @@ void audioTimerCountdown(uint8_t timer, int value)
 #endif
 }
 
-void audioEvent(unsigned int index)
+ void audioEvent(unsigned int index)
 {
   if (index == AU_NONE)
   return;
@@ -1218,7 +1218,7 @@ void pushUnit(uint8_t unit, uint8_t idx, uint8_t id)
 }
 #endif
 
-void pushPrompt(uint16_t prompt, uint8_t id)
+ void pushPrompt(uint16_t prompt, uint8_t id)
 {
 #if defined(SDCARD)
   char filename[AUDIO_FILENAME_MAXLEN+1];

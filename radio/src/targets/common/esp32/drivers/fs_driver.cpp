@@ -114,7 +114,12 @@ void mountSDCard()
     }
     
     ret = sdmmc_card_init(&host, card);
-    ESP_ERROR_CHECK(ret);
+    if (ret != ESP_OK) {
+        free(card);
+        card=NULL;
+        ESP_LOGW(TAG, "Failed to init SD card (%s)", esp_err_to_name(ret));
+        return;
+    }
     
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
