@@ -35,6 +35,10 @@
 #define HASASSERT
 #include "opentx.h"
 
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
+
+
 #define AUDIO_TASK_CORE 0
 #define PER10MS_TASK_CORE 0
 #define ENC_TASK_CORE 0
@@ -112,6 +116,8 @@ void  per10msTask(void * pdata)
 void espTasksStart()
 {
     BaseType_t ret;
+
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
 
     ESP_LOGI(TAG,"Starting tasks.");
 
