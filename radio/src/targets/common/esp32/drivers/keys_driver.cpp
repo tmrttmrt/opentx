@@ -43,7 +43,7 @@ static uint8_t keState = 0;
 #if defined(MCP23017_ADDR_SW)
 static uint8_t swState = 0;
 
-void readI2CSw(){
+void IRAM_ATTR readI2CSw(){
   swState = readI2CGPIO(MCP23017_ADDR_SW, MCP_GPIOA) ;
 }
 #endif
@@ -221,7 +221,7 @@ void initKeys()
 
 }
 
-uint16_t readI2CGPIO(uint8_t addr)
+uint16_t IRAM_ATTR readI2CGPIO(uint8_t addr)
 {
   uint8_t dataa;
   uint8_t datab;
@@ -245,7 +245,7 @@ uint16_t readI2CGPIO(uint8_t addr)
   return dataa | ((int16_t)datab)<<8;
 }
 
-uint8_t readI2CGPIO(uint8_t addr, uint8_t port)
+uint8_t IRAM_ATTR readI2CGPIO(uint8_t addr, uint8_t port)
 {
   uint8_t data;
   i2c_cmd_handle_t cmd = i2c_cmd_link_create();
@@ -266,7 +266,7 @@ uint8_t readI2CGPIO(uint8_t addr, uint8_t port)
   return data;
 }
 
-void writeMCP(uint8_t addr, uint8_t port, uint8_t value)
+void IRAM_ATTR writeMCP(uint8_t addr, uint8_t port, uint8_t value)
 {
   i2c_cmd_handle_t cmd = i2c_cmd_link_create();
   i2c_master_start(cmd);
@@ -283,13 +283,13 @@ void writeMCP(uint8_t addr, uint8_t port, uint8_t value)
   i2c_cmd_link_delete(cmd);
 }
 
-void setI2CGPIO(uint8_t addr, uint8_t port, uint8_t mask, uint8_t value) {
+void IRAM_ATTR setI2CGPIO(uint8_t addr, uint8_t port, uint8_t mask, uint8_t value) {
   uint8_t cval = readI2CGPIO(addr, port);
   value = (value & mask) | (cval & !mask);
   writeMCP( addr, port, value);
 }
 
-void readKeysAndTrims()
+void IRAM_ATTR readKeysAndTrims()
 {
 
   uint16_t keys_input = readI2CGPIO(MCP23017_ADDR_KEYS) ;
@@ -320,7 +320,7 @@ void readKeysAndTrims()
 #endif
 }
 
-bool keyDown()
+bool IRAM_ATTR keyDown()
 {
   if((reState | keState) != 0) {
     ESP_LOGD(TAG,"keyDown: %x, keyRe: %x", keState, reState);
@@ -329,14 +329,14 @@ bool keyDown()
 }
 
 #if defined(MCP23017_ADDR_SW)
-bool rEncDown(uint8_t bit)
+bool IRAM_ATTR rEncDown(uint8_t bit)
 {
   uint8_t keysre = readI2CGPIO(MCP23017_ADDR_SW, MCP_GPIOA + 1) & BIT(bit);
   return  keysre;
 }
 #endif
 
-uint8_t switchState(uint8_t index)
+uint8_t IRAM_ATTR switchState(uint8_t index)
 {
   uint8_t result = 0;
 #if defined(MCP23017_ADDR_SW)
@@ -434,7 +434,7 @@ uint8_t switchState(uint8_t index)
   return result;
 }
 
-bool trimDown(uint8_t idx)
+bool IRAM_ATTR trimDown(uint8_t idx)
 {
   return trState & (1 << idx);
 }
