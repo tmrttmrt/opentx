@@ -23,7 +23,9 @@
 #define _BOARD_ESP_HELTEC_32_H_
 
 #include "../opentx_constants.h"
+#ifndef EXPORT
 #include "board_esp32.h"
+#endif
 
 // Stubs
 #define wdt_reset()

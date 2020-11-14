@@ -18,7 +18,7 @@ option(DEBUG_USB_INTERRUPTS "Count individual USB interrupts" OFF)
 option(DEBUG_TASKS "Task switching statistics" OFF)
 option(DEBUG_TIMERS "Time critical parts of the code" OFF)
 
-add_definitions(-DCPUESP32)
+add_definitions(-DCPUESP32 -DPCBESP32 -DLUA_INPUTS)
 
 set(GUI_SRC ${GUI_SRC}
     radio_hardware_esp32.cpp
@@ -168,6 +168,7 @@ set(FIRMWARE_TARGET_SRC
   ../common/esp32/drivers/keys_driver.cpp
   ../common/esp32/drivers/pulses_ppm_esp32.cpp
   ../common/esp32/drivers/pulses_espnow.cpp
+  ../common/esp32/drivers/rtc_driver.cpp
   ../common/esp32/drivers/sdcard.cpp
   ../common/esp32/drivers/telemetry_driver.cpp
   ../common/esp32/ftp-server/ftp.c         

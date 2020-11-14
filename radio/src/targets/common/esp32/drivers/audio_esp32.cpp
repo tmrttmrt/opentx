@@ -25,6 +25,7 @@
 #include "driver/i2s.h"
 #include <math.h>
 #define HASASSERT
+#define NO_FF_DIR
 #include "opentx.h"
 #include <math.h>
 

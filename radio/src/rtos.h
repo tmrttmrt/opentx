@@ -277,6 +277,7 @@ template<int SIZE>
   #define TASK_RETURN()                 return
 
 #else // no RTOS
+#ifndef CPUESP32
   static inline void RTOS_START()
   {
   }
@@ -288,6 +289,7 @@ template<int SIZE>
   static inline void RTOS_WAIT_TICKS(unsigned x)
   {
   }
+#endif
 #endif  // RTOS type
 
 #ifdef __cplusplus
