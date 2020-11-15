@@ -24,6 +24,8 @@
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 #include "esp_task.h"
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
 #include "soc/timer_group_struct.h"
 #include "driver/periph_ctrl.h"
 #include "driver/timer.h"
@@ -108,6 +110,8 @@ void  per10msTask(void * pdata)
 void espTasksStart()
 {
     BaseType_t ret;
+
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
 
     ESP_LOGI(TAG,"Starting tasks.");
 
