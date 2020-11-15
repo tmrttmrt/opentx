@@ -1,6 +1,7 @@
 set(CPU_FAMILY ESP32)
 set(ARCH ESP32)
-set(LUA NO)
+#set(LUA NO)
+set(LUA_EXPORT lua_export_wroom32)
 add_definitions(-DEEPROM_VARIANT=${EEPROM_VARIANT} -DLCD_SPI)
 set(SDCARD YES)
 set(HAPTIC NO)
@@ -14,7 +15,7 @@ set(PXX1 NO)
 
 set(FLAVOUR esp32-wroom)
 
-add_definitions(-DPCBESP_HELTEC_32 -DPPM_PIN_SERIAL -DAUDIO_DUAL_BUFFER)
+add_definitions(-DPCBESP_WROOM_32 -DPPM_PIN_SERIAL -DAUDIO_DUAL_BUFFER)
 add_definitions(-DAUDIO -DVOICE -DVARIO)
 add_definitions(-DEEPROM_VARIANT=0)
 add_definitions(-DSOFTWARE_VOLUME)
@@ -28,6 +29,7 @@ set(GUI_SRC
   radio_diaganas.cpp
   view_telemetry.cpp
   view_about.cpp
+  bmp.cpp
   )
 
 if(GVARS)

@@ -50,6 +50,8 @@
   #include "lua/lua_exports_xlite.inc"
 #elif defined(PCBTARANIS)
   #include "lua/lua_exports_x9d.inc"
+#elif defined(PCBESP_WROOM_32)
+  #include "lua/lua_exports_wroom32.inc"
 #endif
 
 #if defined(SIMU)
@@ -1657,15 +1659,23 @@ const luaR_value_entry opentxConstants[] = {
   { "MIXSRC_Ele", MIXSRC_Ele },
   { "MIXSRC_Thr", MIXSRC_Thr },
   { "MIXSRC_Ail", MIXSRC_Ail },
+#ifdef HARDWARE_SWITCH_A
   { "MIXSRC_SA", MIXSRC_SA },
+#endif
+#ifdef HARDWARE_SWITCH_B
   { "MIXSRC_SB", MIXSRC_SB },
+#endif
+#ifdef HARDWARE_SWITCH_C
   { "MIXSRC_SC", MIXSRC_SC },
+#endif
+#ifdef HARDWARE_SWITCH_D
   { "MIXSRC_SD", MIXSRC_SD },
-#if !defined(PCBX7) && !defined(PCBXLITE) && !defined(PCBX9LITE)
+#endif
+#if !defined(PCBX7) && !defined(PCBXLITE) && !defined(PCBX9LITE) && !defined(PCBESP_WROOM_32)
   { "MIXSRC_SE", MIXSRC_SE },
   { "MIXSRC_SG", MIXSRC_SG },
 #endif
-#if !defined(PCBXLITE) && !defined(PCBX9LITE)
+#if !defined(PCBXLITE) && !defined(PCBX9LITE) && !defined(PCBESP_WROOM_32)
   { "MIXSRC_SF", MIXSRC_SF },
   { "MIXSRC_SH", MIXSRC_SH },
 #endif

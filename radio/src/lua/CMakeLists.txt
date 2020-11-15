@@ -8,12 +8,15 @@ macro(add_lua_export_target target)
   add_custom_target(lua_export_${target} DEPENDS lua_exports_${target}.inc)
 endmacro(add_lua_export_target)
 
+#include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
+
 set(LUA_INCLUDES
   -DCPUARM -DLUA -DLUA_INPUTS -DLUA_EXPORT_GENERATION -DSIMU
   -I${RADIO_SRC_DIRECTORY}
   -I${RADIO_SRC_DIRECTORY}/targets/${TARGET_DIR}
   -I${RADIO_SRC_DIRECTORY}/thirdparty
   -I${RADIO_SRC_DIRECTORY}/targets/common/arm/stm32
+  -I${RADIO_SRC_DIRECTORY}/targets/common/esp32
   )
 
 if(PYTHONINTERP_FOUND)
@@ -29,4 +32,5 @@ if(PYTHONINTERP_FOUND)
   add_lua_export_target(x12s      ${LUA_INCLUDES} -DPCBHORUS   -DPCBX12S)
   add_lua_export_target(t12       ${LUA_INCLUDES} -DPCBTARANIS -DPCBX7 -DRADIO_T12)
   add_lua_export_target(t16       ${LUA_INCLUDES} -DPCBHORUS   -DPCBX10 -DRADIO_T16)
+  add_lua_export_target(wroom32   ${LUA_INCLUDES} -DPCBESP_WROOM_32 -DPCBESP_HELTEC_32)
 endif()
