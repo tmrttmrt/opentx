@@ -22,6 +22,7 @@
 #include <errno.h>
 #include "esp_log.h"
 #define HASASSERT
+#define NO_FF_DIR
 #include "opentx.h"
 
 static const char *TAG = "sdcard.cpp";

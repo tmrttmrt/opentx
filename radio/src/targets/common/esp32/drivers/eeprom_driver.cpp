@@ -33,6 +33,7 @@
 #define HASASSERT
 #include "opentx.h"
 #undef DIR
+//#define UPGRADE_MODELS
 
 const char * CopyConvertModel_M217(uint8_t i_fileDst, char * path);
 
@@ -355,6 +356,11 @@ uint16_t eeLoadModelData(uint8_t index)
 
 void eeLoadModelHeader(uint8_t id, ModelHeader * header)
 {
+#if defined(UPGRADE_MODELS)
+    memset(&g_model, 0, sizeof(g_model));
+    fsLoadModelData(id,(uint8_t *) &g_model,  sizeof(g_model));
+    fsWriteModelData(id, (uint8_t *) &g_model, sizeof(g_model));
+#endif
     fsLoadModelData(id,(uint8_t *) header,  sizeof(ModelHeader));
 }
 

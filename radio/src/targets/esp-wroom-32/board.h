@@ -23,7 +23,9 @@
 #define _BOARD_ESP_WROOM_32_H_
 
 #include "../opentx_constants.h"
+#ifndef EXPORT
 #include "board_esp32.h"
+#endif
 
 // Stubs
 #define wdt_reset()
