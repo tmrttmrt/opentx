@@ -20,7 +20,7 @@ The project is still in development. The radio firmware has most of the function
 
 Compilation
 
-To build radio firmware ESP-IDF environment v4.0 or later is needed (only tested on Windows with ESP-IDF v4.0 snapshot). 
+To build radio firmware ESP-IDF environment v4.2 or later is needed (only tested on Windows with ESP-IDF v4.2 snapshot). 
 
 In Windows:
 ```
