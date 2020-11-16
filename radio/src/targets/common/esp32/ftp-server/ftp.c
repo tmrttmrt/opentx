@@ -31,9 +31,6 @@
  */
 
 #include "sdkconfig.h"
-
-
-
 #include <stdint.h>
 #include <string.h>
 #include <ctype.h>
@@ -58,6 +55,7 @@
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 #include "network.h"
+#define FS_WRAPPERS
 #include "../drivers/fs_wrappers.h"
 #include "ftp.h"
 #include "WiFi.h"
@@ -66,8 +64,8 @@
 #define FTPSERVER_BUFFER_SIZE 0x2000
 #define FTPSERVER_TIMEOUT 300
 #define ALLOC_PATH_MAX CONFIG_FATFS_MAX_LFN
-#define VFS_NATIVE_INTERNAL_MP "/flash"
-#define VFS_NATIVE_EXTERNAL_MP "/sdcard"
+#define VFS_NATIVE_INTERNAL_MP VFS_NATIVE_MOUNT_POINT
+#define VFS_NATIVE_EXTERNAL_MP VFS_NATIVE_SDCARD_MOUNT_POINT
 
 bool native_vfs_mounted[2] = {true, true};
 extern tcpip_adapter_if_t tcpip_if[MAX_ACTIVE_INTERFACES];

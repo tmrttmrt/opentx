@@ -26,7 +26,7 @@
 #endif
 
 #include "opentx.h"
-#if defined(CPUESP32) 
+#if defined(CPUESP32)
 #define ROOT_PATH           SD_PATH "/"
 #define BACKUP_PATH         ROOT_PATH "BACKUP"
 #else

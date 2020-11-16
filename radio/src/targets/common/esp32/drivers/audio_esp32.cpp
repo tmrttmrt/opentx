@@ -25,8 +25,8 @@
 #include "driver/i2s.h"
 #include <math.h>
 #define HASASSERT
+#define FS_WRAPPERS
 #include "opentx.h"
-#include <math.h>
 
 static const char *TAG = "audio_driver.cpp";
 extern SemaphoreHandle_t audioMutex;

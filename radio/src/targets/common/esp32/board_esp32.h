@@ -129,7 +129,8 @@ uint16_t eeModelSize(uint8_t index);
 #define SD_PATH "/sdcard"
 #define sdPoll10ms()
 #define SD_CARD_PRESENT() sdMounted()
-
+#define SD_GET_FREE_BLOCKNR() (sdGetFreeSectors())
+extern char SDdrv[3];
 void sdInit(void);
 void mountSDCard();
 uint32_t sdIsHC(void);
