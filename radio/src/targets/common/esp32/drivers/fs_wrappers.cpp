@@ -26,9 +26,10 @@
 #include <sys/stat.h>
 #include "esp_log.h"
 #include "sdkconfig.h"
-#include "fs_wrappers.h"
+#define FS_WRAPPERS
+#include "opentx.h"
 
-static const char *TAG = "unistd.cpp";
+static const char *TAG = "fs_wrappers";
 static const char *SL = "/";
 static char cpath[CONFIG_FATFS_MAX_LFN+1]="/";
 
@@ -36,7 +37,7 @@ static char cpath[CONFIG_FATFS_MAX_LFN+1]="/";
 
 int wr_chdir(const char *path)
 {
-    ESP_LOGD(TAG, "wr_chdir(\"%s\"), cpath: \"%s\"",path,cpath);
+    ESP_LOGI(TAG, "wr_chdir(\"%s\"), cpath: \"%s\"",path,cpath);
     if (!path) {
         errno = EFAULT;
         return -1;
@@ -108,7 +109,7 @@ char *wr_getcwd(char *buf, size_t size)
     }
 }
 
-WR_DIR *wr_opendir(const char *name)
+WR_DIR *otx_opendir(const char *name)
 {
     WR_DIR *pd=(WR_DIR *)malloc(sizeof(WR_DIR));
     const char *p;
@@ -181,3 +182,38 @@ struct dirent *wr_readdir(WR_DIR *dirp)
     }
     return NULL;
 }
+
+FRESULT wr_open(FIL* fp, const TCHAR* path, BYTE flags){
+  FRESULT fr=FR_INT_ERR;
+  ESP_LOGI(TAG,"wr_open: path:%s\n",path);
+  if(0==memcmp(path,SD_PATH,sizeof(SD_PATH)-1)){
+    char mpath[CONFIG_FATFS_MAX_LFN+1];
+    strcpy(mpath,SDdrv);
+    strcat(mpath,path+sizeof(SD_PATH)-1);
+    ESP_LOGI(TAG,"wr_open: mpath:%s\n",mpath);
+    fr=f_open(fp,mpath,flags);
+  }
+  return fr;
+}
+
+FRESULT wr_opendir(FF_DIR* dir,TCHAR* path){
+  FRESULT fr=FR_INT_ERR;
+  ESP_LOGI(TAG,"wr_open: path:%s\n",path);
+  if(0==memcmp(path,SD_PATH,sizeof(SD_PATH)-1)){
+    char mpath[CONFIG_FATFS_MAX_LFN+1];
+    strcpy(mpath,SDdrv);
+    strcat(mpath,path+sizeof(SD_PATH)-1);
+    ESP_LOGI(TAG,"wr_openndir: mpath:%s\n",mpath);
+    fr=f_opendir(dir,mpath);
+  }
+  return fr;
+}
+
+int wr_puts (TCHAR* buff, FIL* fp){
+  UINT bw;
+  UINT btw=strlen(buff);
+  if(FR_OK==f_write(fp, buff, btw ,&bw)) 
+    return bw==btw?bw:EOF;
+  return EOF;
+}
+

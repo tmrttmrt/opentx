@@ -40,10 +40,10 @@
 // Handle of the wear levelling library instance
 static wl_handle_t s_wl_handle = WL_INVALID_HANDLE;
 static const char *TAG = "fs_driver";
-// Mount path for the partition
+// Mount path for the flash partition
 const char *base_path = "/flash";
-const char *sd_base_path = SD_PATH;
 sdmmc_card_t* card = NULL;
+char SDdrv[3]="";
 
 void initFS()
 {
@@ -131,12 +131,12 @@ void mountSDCard()
     ff_diskio_register_sdmmc(pdrv, card);
     ESP_LOGD(TAG, "using pdrv=%i", pdrv);
     char drv[3] = {(char)('0' + pdrv), ':', 0};
-    
-    ret = esp_vfs_fat_register("/sdcard", drv, mount_config.max_files, &fs);
+    strcpy(SDdrv,drv);
+    ret = esp_vfs_fat_register(SD_PATH, drv, mount_config.max_files, &fs);
     if (ret == ESP_ERR_INVALID_STATE) {
         // it's okay, already registered with VFS
     } else if (ret != ESP_OK) {
-        ESP_LOGD(TAG, "esp_vfs_fat_register failed 0x(%x)", ret);
+        ESP_LOGE(TAG, "esp_vfs_fat_register failed 0x(%x)", ret);
         return;
     }
     

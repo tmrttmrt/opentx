@@ -476,7 +476,7 @@ void menuRadioSdManager(event_t _event)
       reusableBuffer.sdManager.count = 0;
 
 #if defined(CPUESP32)
-    dir = wr_opendir(".");
+    dir = otx_opendir(".");
     if(NULL!=dir) {
       bool firstTime = true;
       struct dirent deup;

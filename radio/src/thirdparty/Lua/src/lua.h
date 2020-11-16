@@ -420,16 +420,11 @@ struct lua_Debug {
 
 #if defined(USE_FATFS)
   #if defined(CPUESP32)
-    // #undef FF_USE_STRFUNC
-    // #define FF_USE_STRFUNC 1 // fails to link f_puts
     #include "ff.h"
-    #define f_puts fputs
-    #ifndef NO_FF_DIR
-      #define DIR FF_DIR
-    #endif
+    #include "fs_wrappers.h"
     int lua__getc(FIL *f);
     #define lua_getc(f) lua__getc(&f)
-    #define lua_fclose  fclose
+    #define lua_fclose  f_fclose
   #else
     #include "FatFs/ff.h"
     int lua__getc(FIL *f);

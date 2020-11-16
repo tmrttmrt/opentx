@@ -22,7 +22,7 @@
 #include <errno.h>
 #include "esp_log.h"
 #define HASASSERT
-#define NO_FF_DIR
+#define FS_WRAPPERS
 #include "opentx.h"
 
 static const char *TAG = "sdcard.cpp";
@@ -461,7 +461,7 @@ void checkSDVersion()
     char error[sizeof(TR_WRONG_SDCARDVERSION)+ sizeof(version)];
 
     strAppend(strAppend(error, STR_WRONG_SDCARDVERSION, sizeof(TR_WRONG_SDCARDVERSION)), REQUIRED_SDCARD_VERSION, sizeof(REQUIRED_SDCARD_VERSION));
-    versionFile = open("/sdcard/opentx.sdcard.version", O_RDONLY);
+    versionFile = open(SD_PATH "/opentx.sdcard.version", O_RDONLY);
     if (versionFile != -1) {
       if (read(versionFile,  &version, sizeof(version)) != sizeof(version) ||
           strncmp(version, REQUIRED_SDCARD_VERSION, sizeof(version)) != 0) {
