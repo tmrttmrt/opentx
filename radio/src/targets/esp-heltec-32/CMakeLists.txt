@@ -1,6 +1,6 @@
 set(CPU_FAMILY ESP32)
 set(ARCH ESP32)
-set(LUA NO)
+set(LUA_EXPORT lua_export_esp32)
 add_definitions(-DEEPROM_VARIANT=${EEPROM_VARIANT} -DLCD_I2C)
 set(SDCARD YES)
 set(HAPTIC NO)

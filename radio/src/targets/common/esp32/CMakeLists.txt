@@ -18,7 +18,7 @@ option(DEBUG_USB_INTERRUPTS "Count individual USB interrupts" OFF)
 option(DEBUG_TASKS "Task switching statistics" OFF)
 option(DEBUG_TIMERS "Time critical parts of the code" OFF)
 
-add_definitions(-DCPUESP32 -DPCBESP32 -DLUA_INPUTS)
+add_definitions(-DCPUESP32 -DLUA_INPUTS)
 
 set(GUI_SRC ${GUI_SRC}
     radio_hardware_esp32.cpp

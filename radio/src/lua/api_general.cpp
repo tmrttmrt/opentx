@@ -51,7 +51,7 @@
 #elif defined(PCBTARANIS)
   #include "lua/lua_exports_x9d.inc"
 #elif defined(PCBESP_WROOM_32)
-  #include "lua/lua_exports_wroom32.inc"
+  #include "lua/lua_exports_esp32.inc"
 #endif
 
 #if defined(SIMU)
