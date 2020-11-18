@@ -28,6 +28,7 @@ set(GUI_SRC
   radio_diaganas.cpp
   view_telemetry.cpp
   view_about.cpp
+  bmp.cpp
   )
 
 if(GVARS)

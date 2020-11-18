@@ -98,7 +98,7 @@ extern coord_t lcdNextPos;
 #define DISPLAY_END                    (displayBuf + DISPLAY_BUFFER_SIZE)
 #define ASSERT_IN_DISPLAY(p)           assert((p) >= displayBuf && (p) < DISPLAY_END)
 
-#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32)
+#if defined(PCBSKY9X) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   extern volatile uint8_t lcdLock ;
   extern volatile uint32_t lcdInputs ;
 #endif

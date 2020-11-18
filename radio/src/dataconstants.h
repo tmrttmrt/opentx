@@ -343,7 +343,7 @@ enum TelemetryUnit {
   #define NUM_LINE_ITEMS 2
 #endif
 
-#if defined(PCBTARANIS) || defined(PCBESP_WROOM_32)
+#if defined(PCBTARANIS) || defined(PCBESP_WROOM_32) || defined(PCBESP_HELTEC_32)
   #define MAX_TELEM_SCRIPT_INPUTS  8
 #endif
 
